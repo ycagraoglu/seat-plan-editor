@@ -20,7 +20,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const srcPath = path.join(root, "src/PlanEditor.jsx");
 const tmpPath = path.join(root, `.tmp-planeditor-test-${process.pid}.mjs`);
 
-const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ARENA", "HARBIYE", "AYLAK", "SUREYYA",
+const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ARENA", "HARBIYE", "AYLAK", "SUREYYA", "AKM",
   "validate", "buildMeta", "buildSeats", "boundaryPolys", "gateMap", "inPoly", "ATTRS"];
 
 async function loadModule() {
@@ -94,7 +94,7 @@ function overlapArea(polyA, polyB) {
 const mod = await loadModule();
 const { validate, buildMeta, buildSeats, boundaryPolys, gateMap, inPoly, ATTRS } = mod;
 const VENUES = { CSO: mod.CSO, ZORLU: mod.ZORLU, GS: mod.GS, ARENA: mod.ARENA,
-  HARBIYE: mod.HARBIYE, AYLAK: mod.AYLAK, SUREYYA: mod.SUREYYA };
+  HARBIYE: mod.HARBIYE, AYLAK: mod.AYLAK, SUREYYA: mod.SUREYYA, AKM: mod.AKM };
 
 console.log("── 4. Gerçek render testi ──");
 try {
@@ -162,5 +162,6 @@ for (const [name, venue] of Object.entries(VENUES)) {
   console.log("");
 }
 
-console.log(anyFail ? "SONUÇ: en az bir salonda hata var — yukarıya bak." : "SONUÇ: 7 salon da temiz.");
+const venueCount = Object.keys(VENUES).length;
+console.log(anyFail ? "SONUÇ: en az bir salonda hata var — yukarıya bak." : `SONUÇ: ${venueCount} salon da temiz.`);
 if (anyFail) process.exitCode = 1;

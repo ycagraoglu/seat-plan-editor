@@ -1449,6 +1449,84 @@ const SUREYYA = {
 SUREYYA.blocks = withAccessible(SUREYYA.blocks, (b) => b.level === "Zemin Loca" || b.label === "P", 2);
 SUREYYA.shapes = autoGates(SUREYYA, SUREYYA.blocks.map((b) => ({ b, m: buildMeta(b) })));
 
+/* ══════════════  SALON 8 · AKM TÜRK TELEKOM OPERA SALONU  ══════════════
+   Taksim, at nalı (horseshoe) formlu opera salonu — parter + 2 balkon,
+   her biri ORTA/ÇİFT/TEK üçlüsü. Passo'nun yayınladığı gerçek oturma
+   planından (akmistanbul.gov.tr / passo.com.tr) çıkarıldı: 2040 koltuk,
+   85 kişilik orkestra çukuru, 3 kattan 16 kapı. Burada 1.829 koltuk ve
+   6 kapıya sadeleştirildi — gerçek planın 4 derinlik-bandı (fiyat
+   kategorisine göre) 2'ye indirildi, tam sayı hedeflenmedi.
+   ─────────────────────────────────────────────────────────────────────
+   Parter'ın iki bandı (ön/arka) ve 1./2. Balkon aynı yarıçapta DEĞİL —
+   Süreyya'daki kat ilkesiyle aynı: her kat kendi halkasında oturur,
+   halkalar yarıçapça çakışmaz. Fiziksel olarak balkon parterin üstünde
+   çıkıntı yapar ama bu düzlemsel planda katları çakıştırırsak
+   validate() "koltuk çifti üst üste biniyor" der — kat ayrımı yalnızca
+   yürüme payı kontrolünde var, ham çakışma kontrolünde yok.
+   ORTA ile ÇİFT/TEK arasındaki açı boşluğu (Parter'da 44°, balkonlarda
+   ~6-8°) taban payının (~100cm) çakışmaması için — dar tutulursa
+   Sutherland-Hodgman testi gizli bir taban çakışması buluyor (ilk
+   denemede P.ORTA-2 ↔ ÇİFT-2/TEK-2 arasında ~5.500cm² çıkmıştı).
+   ═══════════════════════════════════════════════════════════════════ */
+
+const akmDoor = (n, x, y) => ({
+  id: nid("s"), kind: "rect", type: "door", x, y, w: 200, h: 200, rot: 0,
+  label: `KAPI ${n}`, capacity: 0, fs: 150, blocks: [],
+});
+
+const AKM = {
+  key: "akm", name: "AKM · Türk Telekom Opera Salonu", unit: "cm",
+  home: { x: -2700, y: -3350, w: 5400, h: 3600 }, underlay: null,
+  shapes: [
+    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -450, w: 1200, h: 350, rot: 0,
+      label: "SAHNE", capacity: 0, fs: 100, blocks: [] },
+    { id: nid("s"), kind: "rect", type: "wall", x: 0, y: -1550, w: 5200, h: 3400, rot: 0,
+      label: "DUVAR", capacity: 0, fs: 100, blocks: [] },
+    akmDoor(1, -1893, -166), akmDoor(2, 1893, -166),
+    akmDoor(3, -1543, -1839), akmDoor(4, 1543, -1839),
+    akmDoor(5, -2155, -1940), akmDoor(6, 2155, -1940),
+  ],
+  blocks: [
+    /* Sahneye en yakın küçük ön bant — tek parça (ÇİFT/TEK ayrımı bu
+       yarıçapta ≥26°'lik bir koridor açısı ister, gereksiz daralma). */
+    fanB({ label: "P.ON", level: "Parter", mode: "span", x: 0, y: 0,
+      r0: 200, rows: 5, rowGap: 85, aStart: -78, aEnd: 78, seatGap: 48, color: "#3E7FBF",
+      ov: {
+        "4,8": { at: "wheel" }, "4,9": { at: "wheel" }, "4,10": { at: "wheel" },
+        "4,11": { at: "wheel" }, "4,12": { at: "wheel" }, "4,13": { at: "wheel" },
+        "4,14": { at: "wheel" }, "4,15": { at: "wheel" }, "4,16": { at: "wheel" }, "4,17": { at: "wheel" },
+        "3,8": { at: "comp" }, "3,9": { at: "comp" }, "3,10": { at: "comp" },
+        "3,11": { at: "comp" }, "3,12": { at: "comp" }, "3,13": { at: "comp" },
+        "3,14": { at: "comp" }, "3,15": { at: "comp" }, "3,16": { at: "comp" }, "3,17": { at: "comp" },
+      } }),
+    fanB({ label: "P.ORTA-2", level: "Parter", mode: "span", x: 0, y: 0,
+      r0: 825, rows: 13, rowGap: 88, aStart: -22, aEnd: 22, seatGap: 50, color: "#3E7FBF" }),
+    fanB({ label: "P.ÇİFT-2", level: "Parter", mode: "span", x: 0, y: 0,
+      r0: 825, rows: 13, rowGap: 88, aStart: -86, aEnd: -37, seatGap: 50, color: "#3E7FBF" }),
+    fanB({ label: "P.TEK-2", level: "Parter", mode: "span", x: 0, y: 0,
+      r0: 825, rows: 13, rowGap: 88, aStart: 37, aEnd: 86, seatGap: 50, color: "#3E7FBF" }),
+    fanB({ label: "1B.ORTA", level: "1. Balkon", mode: "span", x: 0, y: 0,
+      r0: 2069, rows: 7, rowGap: 88, aStart: -16, aEnd: 16, seatGap: 52, color: "#3E7FBF",
+      ov: {
+        "6,8": { at: "wheel" }, "6,9": { at: "wheel" }, "6,10": { at: "wheel" }, "6,11": { at: "wheel" },
+        "6,12": { at: "wheel" }, "6,13": { at: "wheel" }, "6,14": { at: "wheel" }, "6,15": { at: "wheel" },
+        "5,8": { at: "comp" }, "5,9": { at: "comp" }, "5,10": { at: "comp" }, "5,11": { at: "comp" },
+        "5,12": { at: "comp" }, "5,13": { at: "comp" }, "5,14": { at: "comp" }, "5,15": { at: "comp" },
+      } }),
+    fanB({ label: "1B.ÇİFT", level: "1. Balkon", mode: "span", x: 0, y: 0,
+      r0: 2069, rows: 7, rowGap: 88, aStart: -43, aEnd: -22, seatGap: 52, color: "#3E7FBF" }),
+    fanB({ label: "1B.TEK", level: "1. Balkon", mode: "span", x: 0, y: 0,
+      r0: 2069, rows: 7, rowGap: 88, aStart: 22, aEnd: 43, seatGap: 52, color: "#3E7FBF" }),
+    fanB({ label: "2B.ORTA", level: "2. Balkon", mode: "span", x: 0, y: 0,
+      r0: 2697, rows: 5, rowGap: 88, aStart: -21, aEnd: 21, seatGap: 52, color: "#3E7FBF" }),
+    fanB({ label: "2B.ÇİFT", level: "2. Balkon", mode: "span", x: 0, y: 0,
+      r0: 2697, rows: 5, rowGap: 88, aStart: -52, aEnd: -27, seatGap: 52, color: "#3E7FBF" }),
+    fanB({ label: "2B.TEK", level: "2. Balkon", mode: "span", x: 0, y: 0,
+      r0: 2697, rows: 5, rowGap: 88, aStart: 27, aEnd: 52, seatGap: 52, color: "#3E7FBF" }),
+  ],
+};
+AKM.shapes = autoGates(AKM, AKM.blocks.map((b) => ({ b, m: buildMeta(b) })));
+
 const EMPTY = { key: "empty", name: "Yeni plan", unit: "cm",
   home: { x: -2000, y: -1500, w: 4000, h: 3000 }, underlay: null, blocks: [], shapes: [] };
 
@@ -1512,6 +1590,54 @@ function inPoly(x, y, poly) {
 /** Sınır tanımlı değilse her yer geçerli sayılır. */
 const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
 
+/* ───────────────  TABAN-TABAN ÇAKIŞMA (Sutherland-Hodgman)  ───────────────
+   İki blok tabanı (m.outline) gerçekten kesişiyor mu? Görünürde bir
+   boşluk olsa bile otomatik taban payı (offsetPoly'nin şişirdiği dış hat)
+   yine de çakışabilir — ZORLU'da ve AKM'de tam bunu bulduk: dar açısal
+   boşluk, geniş taban payını durduramadı, ama koltuklar güvendeydi. Bu
+   yüzden bu kontrol koltuk merkezlerine değil, tabanın kendisine bakar.
+   clip poligonu dışbükey olmasa da bbox ile önceden elenmiş komşu
+   bloklar için doğru sonuç veriyor. */
+function polySignedArea(poly) {
+  let a = 0;
+  for (let i = 0; i < poly.length; i++) {
+    const p = poly[i], q = poly[(i + 1) % poly.length];
+    a += p.x * q.y - q.x * p.y;
+  }
+  return a / 2;
+}
+const polyCCW = (poly) => (polySignedArea(poly) < 0 ? [...poly].reverse() : poly);
+function segIntersect(p1, p2, p3, p4) {
+  const d1x = p2.x - p1.x, d1y = p2.y - p1.y, d2x = p4.x - p3.x, d2y = p4.y - p3.y;
+  const denom = d1x * d2y - d1y * d2x;
+  const t = denom === 0 ? 0 : ((p3.x - p1.x) * d2y - (p3.y - p1.y) * d2x) / denom;
+  return { x: p1.x + t * d1x, y: p1.y + t * d1y };
+}
+function clipPoly(subject, clip) {
+  let out = subject;
+  for (let i = 0; i < clip.length && out.length; i++) {
+    const a = clip[i], b = clip[(i + 1) % clip.length];
+    const inside = (p) => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x) >= 0;
+    const inp = out; out = [];
+    for (let j = 0; j < inp.length; j++) {
+      const cur = inp[j], prev = inp[(j - 1 + inp.length) % inp.length];
+      const curIn = inside(cur), prevIn = inside(prev);
+      if (curIn) { if (!prevIn) out.push(segIntersect(prev, cur, a, b)); out.push(cur); }
+      else if (prevIn) out.push(segIntersect(prev, cur, a, b));
+    }
+  }
+  return out;
+}
+/** İki dış hattın kesişim alanı (cm²) — kesişmiyorsa 0. */
+function outlineOverlapArea(polyA, polyB) {
+  const xa = polyA.map((p) => p.x), ya = polyA.map((p) => p.y);
+  const xb = polyB.map((p) => p.x), yb = polyB.map((p) => p.y);
+  if (Math.max(...xa) < Math.min(...xb) || Math.max(...xb) < Math.min(...xa)) return 0;
+  if (Math.max(...ya) < Math.min(...yb) || Math.max(...yb) < Math.min(...ya)) return 0;
+  const result = clipPoly(polyCCW(polyA), polyCCW(polyB));
+  return result.length < 3 ? 0 : Math.abs(polySignedArea(result));
+}
+
 /* ─────────────────────────  DOĞRULAMA  ───────────────────────── */
 
 function validate(plan, metas, gates) {
@@ -1554,6 +1680,33 @@ function validate(plan, metas, gates) {
     d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", ") });
   if (polys.length && !outCount && !outBlocks.length)
     out.push({ t: "ok", m: "Tüm koltuklar ve blok tabanları salon sınırı içinde" });
+
+  /* Taban-taban çakışma: aynı kattaki iki bloğun dış hattı (koltukların
+     değil, platformun kendisi) örtüşüyor mu? Sadece aynı kat karşılaştırılır
+     — farklı katlar fiziksel olarak üst üste, kesişmeleri anlamsız bir
+     uyarı olurdu. Koltuklar güvende olsa da (yürüme payı ve çakışma
+     kontrolleri ayrı geçse de) taban payı örtüşebilir — bu, koltuk
+     merkezlerine bakan diğer kontrollerin kaçırdığı bir sınıf hata. */
+  const footprintByLevel = new Map();
+  metas.forEach((x) => {
+    const key = x.b.level || "";
+    if (!footprintByLevel.has(key)) footprintByLevel.set(key, []);
+    footprintByLevel.get(key).push(x);
+  });
+  const footprintOverlaps = [];
+  footprintByLevel.forEach((group) => {
+    for (let i = 0; i < group.length; i++) {
+      for (let j = i + 1; j < group.length; j++) {
+        const area = outlineOverlapArea(group[i].m.outline, group[j].m.outline);
+        if (area > 50) footprintOverlaps.push({
+          a: group[i].b.name || group[i].b.label, b: group[j].b.name || group[j].b.label, area,
+        });
+      }
+    }
+  });
+  if (footprintOverlaps.length) out.push({ t: "err",
+    m: `${footprintOverlaps.length} blok tabanı başka bir bloğun tabanıyla çakışıyor`,
+    d: footprintOverlaps.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · ") });
 
   /* Üst üste binen koltuk: merkezleri 30 cm'den yakın iki koltuk fiziksel
      olarak aynı yerde demektir. Izgara indeksiyle taranıyor. */
@@ -1692,7 +1845,7 @@ const HANDLE_HINT = {
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
 
 export default function PlanEditor() {
-  const [venues, setVenues] = useState({ sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, arena: ARENA, zorlu: ZORLU, cso: CSO, empty: EMPTY });
+  const [venues, setVenues] = useState({ sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, arena: ARENA, zorlu: ZORLU, cso: CSO, akm: AKM, empty: EMPTY });
   const [vk, setVk] = useState("gs");
   const plan = venues[vk];
 
