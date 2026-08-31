@@ -1950,6 +1950,20 @@ export default function PlanEditor() {
   const shownSeats = useMemo(() => shown.reduce((a, x) => a + x.m.seatCount, 0), [shown]);
   const seatMode = shownSeats <= SEAT_BUDGET;
 
+  /* Bir kat filtrelendiğinde diğer katlar tamamen kaybolmasın — koltuk
+     sayısına değil, sadece dış hatta bakan soluk bir "gölge" olarak
+     yerinde kalsın. Kullanıcı hangi katta olduğunu değil, o katın
+     bina içindeki konumunu da görsün. Seçilemez/tıklanamaz: marquee
+     seçimi ve diğer tüm etkileşimler zaten levelFilter'a göre süzülüyor. */
+  const dimmedBlocks = useMemo(() => {
+    if (levelFilter === "*") return [];
+    const pad = view.w * 0.08;
+    const vx0 = view.x - pad, vx1 = view.x + view.w + pad;
+    const vy0 = view.y - pad, vy1 = view.y + view.h + pad;
+    return metas.filter(({ b, m }) => (b.level || "") !== levelFilter &&
+      m.bbox.x1 > vx0 && m.bbox.x0 < vx1 && m.bbox.y1 > vy0 && m.bbox.y0 < vy1);
+  }, [metas, view, levelFilter]);
+
   const drawn = useMemo(() => {
     if (!seatMode) return [];
     return shown.map(({ b, m }) => {
@@ -3296,6 +3310,18 @@ export default function PlanEditor() {
                 </g>
               );
             })}
+
+            {dimmedBlocks.length > 0 && (
+              <g className="dimmed">
+                {dimmedBlocks.map(({ b, m }) => (
+                  <polygon key={`dim${b.id}`} pointerEvents="none"
+                    points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                    fill="var(--mut)" fillOpacity={dark ? 0.16 : 0.11}
+                    stroke="var(--mut)" strokeOpacity={0.45}
+                    strokeWidth={Math.max(3, 1.2 / (pxPerCm || 0.01))} />
+                ))}
+              </g>
+            )}
 
             {!seatMode && shown.map(({ b, m }) => {
               const col = cc(b);
