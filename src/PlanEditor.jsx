@@ -25,6 +25,10 @@ import React, { useState, useMemo, useRef, useCallback, useEffect } from "react"
 const RAD = Math.PI / 180;
 const DEF = { seatGap: 50, rowGap: 90, seatW: 41, seatH: 38 };
 const SEAT_BUDGET = 3500;
+/* cm ve derece için 4 ondalık yeter (0.0001° ~ birkaç mikron yay) — trig
+   sonuçlarını (bowl/tier'daki aisle→açı çevrimi, radyal dizi) ekranda ve
+   dışa aktarımda 15 haneli gürültüye dönüşmeden önce burada temizle. */
+const R4 = (n) => Math.round(n * 10000) / 10000;
 
 /* ─────────────────────────  YARDIMCILAR  ───────────────────────── */
 
@@ -415,7 +419,12 @@ function incLabel(label, n) {
   if (/^[A-Za-z]{1,3}$/.test(s)) return bumpAlpha(s, n);
   return `${s}-${n + 1}`;
 }
-const reLabel = (b, l) => ({ ...b, label: l, name: b.level ? `${b.level} · ${l}` : l });
+const reLabel = (b, l) => {
+  const nb = { ...b, label: l, name: b.level ? `${b.level} · ${l}` : l };
+  for (const k of ["x", "y", "rot", "aStart", "aEnd", "aCenter"])
+    if (typeof nb[k] === "number") nb[k] = R4(nb[k]);
+  return nb;
+};
 
 function linearArray(blocks, { count, dx, dy }) {
   const out = [], step = blocks.length;
@@ -3527,6 +3536,10 @@ export default function PlanEditor() {
             )}
           </svg>
 
+          {!plan.blocks.length && !plan.shapes.length && (
+            <div className="cempty">Sol menüden bir araç seçip çizmeye başlayın, ya da yukarıdan bir örnek salon açın.</div>
+          )}
+
           {legend && (
             <div className="lgnd">
               <p>Katlar<button className="link" onClick={() => setLegend(false)}>gizle</button></p>
@@ -3949,17 +3962,17 @@ const Num = ({ v, on, step = 1, min }) => (
 function ArraySection({ lin, setLin, rad, setRad, onArrayL, onArrayR, prev, setPrev }) {
   return (
     <>
-      <section onMouseEnter={() => setPrev("lin")} className={prev === "lin" ? "prev" : ""}>
-        <p className="lab">Doğrusal dizi{prev === "lin" && <em>önizleme açık</em>}</p>
+      <details className={`sec${prev === "lin" ? " prev" : ""}`} onMouseEnter={() => setPrev("lin")}>
+        <summary className="lab">Doğrusal dizi{prev === "lin" && <em>önizleme açık</em>}</summary>
         <div className="g3">
           <Row label="Kopya"><Num v={lin.count} on={(v) => setLin({ ...lin, count: Math.max(2, v) })} min={2} /></Row>
           <Row label="ΔX (cm)"><Num v={lin.dx} on={(v) => setLin({ ...lin, dx: v })} step={50} /></Row>
           <Row label="ΔY (cm)"><Num v={lin.dy} on={(v) => setLin({ ...lin, dy: v })} step={50} /></Row>
         </div>
         <button className="wide" onClick={onArrayL}>Doğrusal çoğalt</button>
-      </section>
-      <section onMouseEnter={() => setPrev("rad")} className={prev === "rad" ? "prev" : ""}>
-        <p className="lab">Radyal dizi{prev === "rad" && <em>önizleme açık</em>}</p>
+      </details>
+      <details className={`sec${prev === "rad" ? " prev" : ""}`} onMouseEnter={() => setPrev("rad")}>
+        <summary className="lab">Radyal dizi{prev === "rad" && <em>önizleme açık</em>}</summary>
         <div className="g2">
           <Row label="Merkez X"><Num v={rad.cx} on={(v) => setRad({ ...rad, cx: v })} step={100} /></Row>
           <Row label="Merkez Y"><Num v={rad.cy} on={(v) => setRad({ ...rad, cy: v })} step={100} /></Row>
@@ -3967,7 +3980,7 @@ function ArraySection({ lin, setLin, rad, setRad, onArrayL, onArrayR, prev, setP
           <Row label="Açı adımı °"><Num v={rad.step} on={(v) => setRad({ ...rad, step: v })} step={5} /></Row>
         </div>
         <button className="wide" onClick={onArrayR}>Radyal çoğalt</button>
-      </section>
+      </details>
     </>
   );
 }
@@ -4320,8 +4333,8 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
       )}
 
       {b.kind !== "free" && (
-        <section>
-          <p className="lab">Taban{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</p>
+        <details className="sec">
+          <summary className="lab">Taban{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</summary>
           {b.foot && b.foot.length >= 3 ? (<>
             <p className="mut sm">
               {b.foot.length} nokta. Köşeleri tuvalde sürükleyerek düzeltebilirsin.
@@ -4343,13 +4356,13 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <button onClick={onFootSeed}>Otomatikten başla</button>
             </div>
           </>)}
-        </section>
+        </details>
       )}
 
       <ArraySection {...arr} />
 
-      <section>
-        <p className="lab">Sıra etiketi</p>
+      <details className="sec">
+        <summary className="lab">Sıra etiketi</summary>
         <div className="g2">
           <Row label="Şema">
             <select value={n.rowScheme} onChange={(e) => setNum({ rowScheme: e.target.value })}>
@@ -4368,10 +4381,10 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
           {n.rowScheme === "letter" &&
             <label><input type="checkbox" checked={n.skipAmbig} onChange={(e) => setNum({ skipAmbig: e.target.checked })} />I, O, Q atla</label>}
         </div>
-      </section>
+      </details>
 
-      <section>
-        <p className="lab">Koltuk numarası</p>
+      <details className="sec">
+        <summary className="lab">Koltuk numarası</summary>
         <div className="g2">
           <Row label="Şema">
             <select value={n.seatScheme} onChange={(e) => setNum({ seatScheme: e.target.value })}>
@@ -4395,7 +4408,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
             <option value="column">Bloktaki sütun konumuna göre</option>
           </select>
         </Row>
-      </section>
+      </details>
 
       <section className="acts">
         <button onClick={onMirror}>Aynala</button>
@@ -4421,20 +4434,20 @@ const CSS = `
 
 .ed.dark{
   --ink:#0E1013; --panel:#14161A; --panel2:#1B1E24; --ovl:#14161AF5;
-  --line:#23262D; --bone:#E7E8EA; --dim:#9096A0; --mut:#5C616B;
+  --line:#23262D; --bone:#E7E8EA; --dim:#9096A0; --mut:#818896;
   --acc:#4FA8BD; --accrgb:79,168,189; --accline:#1D3A44; --onacc:#07242B;
   --canvas:#0B0D10; --grid:#15181D; --grid2:#1E222A; --rowlab:#6A7079;
   --sel:#FFFFFF; --marqfill:rgba(255,255,255,.05);
-  --ok:#5FA37F; --okline:#25392F; --err:#D9646F;
+  --ok:#5FA37F; --okline:#25392F; --err:#D9646F; --warn:#C2903F;
   --shapefill:#191C22; --shapeline:#333842; --seatoff:#272B33;
 }
 .ed.light{
   --ink:#FFFFFF; --panel:#FFFFFF; --panel2:#F2F4F6; --ovl:#FFFFFFF7;
-  --line:#E4E7EB; --bone:#15181C; --dim:#5C626C; --mut:#8C929C;
+  --line:#E4E7EB; --bone:#15181C; --dim:#5C626C; --mut:#6A6F77;
   --acc:#1F7A91; --accrgb:31,122,145; --accline:#CFE4EA; --onacc:#FFFFFF;
   --canvas:#F9FAFB; --grid:#EDEFF2; --grid2:#E1E4E9; --rowlab:#6B717A;
   --sel:#15181C; --marqfill:rgba(21,24,28,.06);
-  --ok:#2E7A57; --okline:#CBE2D6; --err:#B23A46;
+  --ok:#2E7A57; --okline:#CBE2D6; --err:#B23A46; --warn:#95661A;
   --shapefill:#E2E4E8; --shapeline:#AEB3BB; --seatoff:#CBCED4;
 }
 
@@ -4506,6 +4519,8 @@ kbd{ font:10px var(--mono); color:var(--mut); }
 /* ── tuval ── */
 .canvas{ position:relative; min-width:0; display:flex; flex-direction:column; }
 .canvas svg{ flex:1; width:100%; min-height:0; display:block; touch-action:none; background:var(--canvas); }
+.cempty{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; color:var(--mut); font-size:12.5px; text-align:center; padding:0 40px; }
 svg.t-select{ cursor:default; } svg.t-pan{ cursor:grab; } svg.t-seat{ cursor:pointer; }
 svg.t-grid, svg.t-fan, svg.t-row, svg.t-shape, svg.t-poly, svg.t-measure,
 svg.t-seatAdd, svg.t-cal, svg.t-attr, svg.t-table{ cursor:crosshair; }
@@ -4631,7 +4646,7 @@ svg.t-foot{ cursor:crosshair; }
 .val p .link{ margin-left:auto; }
 .val div{ margin-bottom:6px; }
 .val em{ display:block; color:var(--mut); font-style:normal; font-size:11px; margin-top:2px; }
-.val .err{ color:var(--err); } .val .warn{ color:var(--acc); }
+.val .err{ color:var(--err); } .val .warn{ color:var(--warn); }
 .val .info{ color:var(--dim); } .val .ok{ color:var(--ok); }
 .val .go{ cursor:pointer; } .val .go:hover{ background:var(--panel2); }
 
@@ -4662,7 +4677,7 @@ svg.t-foot{ cursor:crosshair; }
 .diff{ margin-top:11px; border-top:1px solid var(--line); padding-top:10px; }
 .diff div{ margin-bottom:6px; font-size:11.5px; }
 .diff em{ display:block; font-style:normal; color:var(--mut); font-size:11px; margin-top:2px; font-family:var(--mono); }
-.diff .err{ color:var(--err); } .diff .warn{ color:var(--acc); }
+.diff .err{ color:var(--err); } .diff .warn{ color:var(--warn); }
 .diff .ok{ color:var(--ok); } .diff .info{ color:var(--dim); }
 
 /* ── sağ panel ── */
@@ -4678,7 +4693,10 @@ svg.t-foot{ cursor:crosshair; }
 .cap{ font-size:11.5px; color:var(--mut); display:flex; align-items:center; gap:7px; margin-bottom:5px; }
 .cap b{ color:var(--bone); font-size:15px; font-family:var(--mono); font-variant-numeric:tabular-nums; }
 .cap .link{ margin-left:auto; }
-.panel section{ border-top:1px solid var(--line); padding:11px 0; }
+.panel section, .panel details.sec{ border-top:1px solid var(--line); padding:11px 0; }
+.panel details.sec summary{ cursor:pointer; list-style-position:outside; }
+.panel details.sec summary::marker{ color:var(--mut); font-size:9px; }
+.panel details.sec[open] summary{ margin-bottom:9px; }
 .g2{ display:grid; grid-template-columns:1fr 1fr; gap:7px; }
 .g3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
 .pr{ display:flex; flex-direction:column; gap:3px; margin-top:7px; }
@@ -4751,7 +4769,7 @@ button.wide:hover{ border-color:var(--acc); color:var(--acc); }
 .mut.sm{ font-size:11px; margin:6px 0 8px; line-height:1.55; }
 .link{ background:none; border:0; color:var(--acc); cursor:pointer; padding:0; font-size:11px; }
 .link:hover{ text-decoration:underline; }
-.panel section.prev{ background:var(--panel2); margin:0 -15px; padding-left:15px; padding-right:15px; }
+.panel section.prev, .panel details.sec.prev{ background:var(--panel2); margin:0 -15px; padding-left:15px; padding-right:15px; }
 .lab em{ font-style:normal; color:var(--acc); margin-left:7px; letter-spacing:0; text-transform:none; }
 select.full{ width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--bone);
   border-radius:5px; padding:5px 7px; font-size:12px; }
