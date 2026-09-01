@@ -1646,6 +1646,7 @@ function validate(plan, metas, gates) {
   const at = {};
   const polys = boundaryPolys(plan);
   const outside = {};
+  const outsideIds = new Set();
   const pts = [];
   let outCount = 0, unlabeled = 0, total = 0;
   metas.forEach(({ b, m }) => {
@@ -1656,9 +1657,9 @@ function validate(plan, metas, gates) {
          oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi —
          erişim arkadan/koridordan, yandan değil; komşu kutular arasında
          sadece ince bir bölme olur). */
-      pts.push({ x: s.x, y: s.y, b: s.block, l: s.level, t: b.kind === "table" || !!b.noAisle });
+      pts.push({ x: s.x, y: s.y, b: s.block, bid: b.id, l: s.level, t: b.kind === "table" || !!b.noAisle });
       if (polys.length && !inBounds(s.x, s.y, polys)) {
-        outCount++; outside[s.block] = (outside[s.block] || 0) + 1;
+        outCount++; outside[s.block] = (outside[s.block] || 0) + 1; outsideIds.add(b.id);
       }
       if (s.at) at[s.at] = (at[s.at] || 0) + 1;
       if (s.num === "" || s.num == null) unlabeled++;
@@ -1674,10 +1675,11 @@ function validate(plan, metas, gates) {
     : [];
   if (outCount) out.push({ t: "err",
     m: `${outCount.toLocaleString("tr-TR")} koltuk salon sınırının dışında`,
-    d: Object.entries(outside).map(([b, n]) => `${b}: ${n}`).join(" · ") });
+    d: Object.entries(outside).map(([b, n]) => `${b}: ${n}`).join(" · "), ids: [...outsideIds] });
   if (outBlocks.length) out.push({ t: "err",
     m: `${outBlocks.length} bloğun tabanı salon sınırına taşıyor`,
-    d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", ") });
+    d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", "),
+    ids: outBlocks.map(({ b }) => b.id) });
   if (polys.length && !outCount && !outBlocks.length)
     out.push({ t: "ok", m: "Tüm koltuklar ve blok tabanları salon sınırı içinde" });
 
@@ -1700,24 +1702,26 @@ function validate(plan, metas, gates) {
         const area = outlineOverlapArea(group[i].m.outline, group[j].m.outline);
         if (area > 50) footprintOverlaps.push({
           a: group[i].b.name || group[i].b.label, b: group[j].b.name || group[j].b.label, area,
+          ai: group[i].b.id, bi: group[j].b.id,
         });
       }
     }
   });
   if (footprintOverlaps.length) out.push({ t: "err",
     m: `${footprintOverlaps.length} blok tabanı başka bir bloğun tabanıyla çakışıyor`,
-    d: footprintOverlaps.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · ") });
+    d: footprintOverlaps.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
+    ids: [...new Set(footprintOverlaps.flatMap((o) => [o.ai, o.bi]))] });
 
   /* Üst üste binen koltuk: merkezleri 30 cm'den yakın iki koltuk fiziksel
      olarak aynı yerde demektir. Izgara indeksiyle taranıyor. */
   const CELL = 200, grid = new Map();
-  let clash = 0; const clashPairs = new Set();
+  let clash = 0; const clashPairs = new Set(); const clashIds = new Set();
   pts.forEach((q, i) => {
     const k = `${Math.floor(q.x / CELL)}:${Math.floor(q.y / CELL)}`;
     if (!grid.has(k)) grid.set(k, []);
     grid.get(k).push(i);
   });
-  const narrow = { min: Infinity, pair: "" };
+  const narrow = { min: Infinity, pair: "", ids: [] };
   pts.forEach((q, i) => {
     const cx = Math.floor(q.x / CELL), cy = Math.floor(q.y / CELL);
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
@@ -1725,28 +1729,28 @@ function validate(plan, metas, gates) {
         if (j <= i) return;
         const w = pts[j];
         const d = Math.hypot(q.x - w.x, q.y - w.y);
-        if (d < 30) { clash++; clashPairs.add(q.b === w.b ? q.b : `${q.b}↔${w.b}`); }
+        if (d < 30) { clash++; clashPairs.add(q.b === w.b ? q.b : `${q.b}↔${w.b}`); clashIds.add(q.bid).add(w.bid); }
         /* İki masa arasında koridor aranmaz — sandalye sırtları bitişik
            olabilir. Farklı katlardaki bloklar da aranmaz — aralarında
            zaten düşey bir ayrım (tavan/zemin) var, "80 cm boşluk yeter
            mi" sorusu anlamsız; kural yalnızca aynı kat içinde geçerli. */
         if (q.b !== w.b && q.l === w.l && !(q.t && w.t) && d < narrow.min) {
-          narrow.min = d; narrow.pair = `${q.b} ↔ ${w.b}`;
+          narrow.min = d; narrow.pair = `${q.b} ↔ ${w.b}`; narrow.ids = [q.bid, w.bid];
         }
       });
     }
   });
   if (clash) out.push({ t: "err", m: `${clash.toLocaleString("tr-TR")} koltuk çifti üst üste biniyor`,
-    d: [...clashPairs].slice(0, 6).join(" · ") });
+    d: [...clashPairs].slice(0, 6).join(" · "), ids: [...clashIds] });
 
   /* Farklı bloklar arasında insanın geçebileceği bir açıklık olmalı.
      90 cm altı geçit sayılmaz; iki blok pratikte tek blok gibi olur. */
   if (narrow.min < 90 && narrow.min < Infinity)
     out.push({ t: "err", m: `Bloklar arasında yürüme payı yok — en dar açıklık ${Math.round(narrow.min)} cm`,
-      d: `${narrow.pair} · geçit için en az 90 cm gerekir` });
+      d: `${narrow.pair} · geçit için en az 90 cm gerekir`, ids: narrow.ids });
   else if (narrow.min < 120 && narrow.min < Infinity)
     out.push({ t: "warn", m: `Bloklar arası en dar açıklık ${Math.round(narrow.min)} cm`,
-      d: `${narrow.pair} · rahat geçiş için 120 cm önerilir` });
+      d: `${narrow.pair} · rahat geçiş için 120 cm önerilir`, ids: narrow.ids });
 
   const sellable = total - (at.tech || 0);
   out.push({ t: "info", m: `${sellable.toLocaleString("tr-TR")} satılabilir koltuk`,
@@ -1783,7 +1787,7 @@ function validate(plan, metas, gates) {
   else {
     const orphan = plan.blocks.filter((b) => !gates || !gates.has(b.id));
     if (orphan.length) out.push({ t: "err", m: `${orphan.length} blok hiçbir kapıya bağlı değil`,
-      d: orphan.slice(0, 8).map((b) => b.name || b.label).join(", ") });
+      d: orphan.slice(0, 8).map((b) => b.name || b.label).join(", "), ids: orphan.map((b) => b.id) });
     const emptyDoor = doors.filter((d) => !(d.blocks || []).length);
     if (emptyDoor.length) out.push({ t: "warn", m: `${emptyDoor.length} kapıya blok atanmamış`,
       d: emptyDoor.slice(0, 8).map((d) => d.label).join(", ") });
@@ -1792,12 +1796,17 @@ function validate(plan, metas, gates) {
   const lbl = new Map();
   plan.blocks.forEach((b) => lbl.set(b.label, (lbl.get(b.label) || 0) + 1));
   const dupL = [...lbl].filter(([, n]) => n > 1);
-  if (dupL.length) out.push({ t: "info",
-    m: `${dupL.length} blok kimliği birden fazla blokta kullanılmış`,
-    d: dupL.slice(0, 6).map(([l, n]) => `${l} ×${n}`).join(", ") });
+  if (dupL.length) {
+    const dupLbls = new Set(dupL.map(([l]) => l));
+    out.push({ t: "info",
+      m: `${dupL.length} blok kimliği birden fazla blokta kullanılmış`,
+      d: dupL.slice(0, 6).map(([l, n]) => `${l} ×${n}`).join(", "),
+      ids: plan.blocks.filter((b) => dupLbls.has(b.label)).map((b) => b.id) });
+  }
 
-  const empty = plan.blocks.filter((b, i) => metas[i].m.seatCount === 0).length;
-  if (empty) out.push({ t: "warn", m: `${empty} boş blok` });
+  const emptyBlocks = plan.blocks.filter((b, i) => metas[i].m.seatCount === 0);
+  if (emptyBlocks.length) out.push({ t: "warn", m: `${emptyBlocks.length} boş blok`,
+    ids: emptyBlocks.map((b) => b.id) });
 
   if (!out.some((o) => o.t === "err" || o.t === "warn"))
     out.push({ t: "ok", m: "Hata veya uyarı yok" });
@@ -2077,10 +2086,7 @@ export default function PlanEditor() {
       label: best >= 100 ? `${(best / 100).toLocaleString("tr-TR")} m` : `${best} cm` };
   }, [pxPerCm]);
 
-  const zoomToSelection = () => {
-    const items = selIds.length
-      ? selIds.map((id) => metaById.get(id)).filter(Boolean)
-      : metas.map((x) => x.m);
+  const zoomToBBox = (items) => {
     if (!items.length) return;
     const x0 = Math.min(...items.map((m) => m.bbox.x0)), x1 = Math.max(...items.map((m) => m.bbox.x1));
     const y0 = Math.min(...items.map((m) => m.bbox.y0)), y1 = Math.max(...items.map((m) => m.bbox.y1));
@@ -2092,6 +2098,13 @@ export default function PlanEditor() {
     setView({ x: (x0 + x1) / 2 - W / 2, y: (y0 + y1) / 2 - (W * view.h / view.w) / 2,
       w: W, h: (W * view.h) / view.w });
   };
+  const zoomToSelection = () => zoomToBBox(selIds.length
+    ? selIds.map((id) => metaById.get(id)).filter(Boolean)
+    : metas.map((x) => x.m));
+  /* Sığdır: plan.home sabit bir değer — bir oturumda büyüyen bloklar onun
+     dışına taştığında sessizce ekran dışında kalıyordu. Gerçek içerik
+     sınırını hesapla; plan boşsa (Yeni plan) home'a düş. */
+  const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(plan.home));
 
   const zoomTo = (m) => {
     const w = Math.max(900, (m.bbox.x1 - m.bbox.x0) * 1.6);
@@ -2814,7 +2827,7 @@ export default function PlanEditor() {
         label: isPitch ? P.label : SHAPES[shapeType].label,
         capacity: shapeType === "standing" ? 100 : 0, fs: 100, blocks: [] };
       commit({ ...plan, shapes: [...plan.shapes, sh] });
-      setSelShapeId(sh.id); setTool("select"); return;
+      setSelShapeId(sh.id); return;
     }
     let b = null;
     if (tool === "grid") {
@@ -3281,13 +3294,26 @@ export default function PlanEditor() {
                 <g key={s.id} className={selShapeId === s.id ? "shp on" : "shp"}
                   transform={`translate(${s.x} ${s.y}) rotate(${s.rot})`}>
                   {s.kind === "rect"
-                    ? <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h} rx={s.type === "pitch" ? 10 : 20}
-                        fill={st.fill} stroke={s.type === "note" && s.w < 50 ? "none" : st.stroke}
-                        strokeWidth={s.type === "pitch" ? 14 : 6}
-                        strokeDasharray={s.type === "standing" ? "40 26" : ""} />
-                    : <polygon data-s={s.id} points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
-                        fill={st.fill} stroke={st.stroke} strokeWidth={6}
-                        strokeDasharray={s.type === "standing" ? "40 26" : ""} />}
+                    ? <>
+                        <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h} rx={s.type === "pitch" ? 10 : 20}
+                          fill={st.fill} stroke={s.type === "note" && s.w < 50 ? "none" : st.stroke}
+                          strokeWidth={s.type === "pitch" ? 14 : 6}
+                          strokeDasharray={s.type === "standing" ? "40 26" : ""} />
+                        {/* fill:none olan tipler (duvar, not) SVG'de sadece kenardan
+                            tıklanır — görünmez ama tıklamayı yakalayan bir ikinci
+                            hedef ekleniyor. "transparent" bilerek: "none" tıklamayı
+                            hiç yakalamaz, "transparent" görünmez ama yakalar. */}
+                        {st.fill === "none" && <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2}
+                          width={s.w} height={s.h} fill="transparent" stroke="none" />}
+                      </>
+                    : <>
+                        <polygon data-s={s.id} points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                          fill={st.fill} stroke={st.stroke} strokeWidth={6}
+                          strokeDasharray={s.type === "standing" ? "40 26" : ""} />
+                        {st.fill === "none" && <polygon data-s={s.id}
+                          points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                          fill="transparent" stroke="none" />}
+                      </>}
                   {s.label && (() => {
                     const txt = s.label + (s.type === "standing" && s.capacity ? ` · ${s.capacity} kişi` : "");
                     const w = s.kind === "rect" ? s.w
@@ -3562,7 +3588,7 @@ export default function PlanEditor() {
             <button className={legend ? "on" : ""} onClick={() => setLegend(!legend)}>Lejant</button>
             <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
             <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
-            <button onClick={() => setView(plan.home)}>Sığdır</button>
+            <button onClick={zoomToAll}>Sığdır</button>
             <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "İçeriğe zumla"}</button>
           </div>
 
@@ -3701,7 +3727,11 @@ export default function PlanEditor() {
               <p>Doğrulama · {report.total.toLocaleString("tr-TR")} koltuk tarandı
                 <button className="link" onClick={() => setReport(null)}>kapat</button></p>
               {report.list.map((i, k) => (
-                <div key={k} className={i.t}>
+                <div key={k} className={i.ids && i.ids.length ? `${i.t} go` : i.t}
+                  onClick={i.ids && i.ids.length ? () => {
+                    setSelIds(i.ids); setSelShapeId(null);
+                    zoomToBBox(i.ids.map((id) => metaById.get(id)).filter(Boolean));
+                  } : undefined}>
                   {i.m}{i.d && <em>{i.d}</em>}
                 </div>
               ))}
@@ -3965,32 +3995,6 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
         </div>
         <p className="mut sm">Ok tuşları 1 cm kaydırır · Shift 10 cm · Alt ızgara adımı.</p>
       </section>
-      {b.kind !== "free" && (
-        <section>
-          <p className="lab">Taban{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</p>
-          {b.foot && b.foot.length >= 3 ? (<>
-            <p className="mut sm">
-              {b.foot.length} nokta. Köşeleri tuvalde sürükleyerek düzeltebilirsin.
-            </p>
-            <div className="acts">
-              <button onClick={onFootDraw}>Yeniden çiz</button>
-              <button onClick={onFootClear}>Otomatiğe dön</button>
-            </div>
-          </>) : (<>
-            <Row label="Taban payı (cm)">
-              <Num v={b.pad != null ? b.pad : 55} on={(v) => onChange({ pad: Math.max(0, v) })} step={5} />
-            </Row>
-            <p className="mut sm">
-              Taban koltuklardan türetiliyor. Sütun, merdiven boşluğu veya düzensiz
-              kenar varsa elle çiz.
-            </p>
-            <div className="acts">
-              <button onClick={onFootDraw}>Elle çiz</button>
-              <button onClick={onFootSeed}>Otomatikten başla</button>
-            </div>
-          </>)}
-        </section>
-      )}
 
       <ArraySection {...arr} />
       <section>
@@ -4315,6 +4319,33 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
         </section>
       )}
 
+      {b.kind !== "free" && (
+        <section>
+          <p className="lab">Taban{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</p>
+          {b.foot && b.foot.length >= 3 ? (<>
+            <p className="mut sm">
+              {b.foot.length} nokta. Köşeleri tuvalde sürükleyerek düzeltebilirsin.
+            </p>
+            <div className="acts">
+              <button onClick={onFootDraw}>Yeniden çiz</button>
+              <button onClick={onFootClear}>Otomatiğe dön</button>
+            </div>
+          </>) : (<>
+            <Row label="Taban payı (cm)">
+              <Num v={b.pad != null ? b.pad : 55} on={(v) => onChange({ pad: Math.max(0, v) })} step={5} />
+            </Row>
+            <p className="mut sm">
+              Taban koltuklardan türetiliyor. Sütun, merdiven boşluğu veya düzensiz
+              kenar varsa elle çiz.
+            </p>
+            <div className="acts">
+              <button onClick={onFootDraw}>Elle çiz</button>
+              <button onClick={onFootSeed}>Otomatikten başla</button>
+            </div>
+          </>)}
+        </section>
+      )}
+
       <ArraySection {...arr} />
 
       <section>
@@ -4602,6 +4633,7 @@ svg.t-foot{ cursor:crosshair; }
 .val em{ display:block; color:var(--mut); font-style:normal; font-size:11px; margin-top:2px; }
 .val .err{ color:var(--err); } .val .warn{ color:var(--acc); }
 .val .info{ color:var(--dim); } .val .ok{ color:var(--ok); }
+.val .go{ cursor:pointer; } .val .go:hover{ background:var(--panel2); }
 
 .ver{ position:absolute; right:12px; top:12px; width:326px; max-height:calc(100% - 60px);
   overflow:auto; background:var(--ovl); border:1px solid var(--line); border-radius:8px;
