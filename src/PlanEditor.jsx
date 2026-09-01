@@ -2046,7 +2046,7 @@ export default function PlanEditor() {
   const [hoverId, setHoverId] = useState("");
   const [setOpen, setSetOpen] = useState(false);
   const [theme, setTheme] = useState("system");
-  const [legend, setLegend] = useState(true);
+  const [legend, setLegend] = useState(false);
   const [plates, setPlates] = useState(true);
   const [footDraft, setFootDraft] = useState(null);
   const [poiKind, setPoiKind] = useState("wc");
@@ -2234,11 +2234,6 @@ export default function PlanEditor() {
 
   /* ekrandaki 1 cm kaç piksel — ölçek çubuğu ve tutamak boyu için */
   const pxPerCm = Math.min(canvasSize.w / view.w, canvasSize.h / view.h);
-  /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
-     olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
-     birimi paylaşmıyor). %100 = plan.home ile aynı zum seviyesi. */
-  const homePxPerCm = Math.min(canvasSize.w / plan.home.w, canvasSize.h / plan.home.h);
-  const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
   /* Koltuk numarası ancak koltuk ekranda okunacak kadar büyükse yazılır.
      Sabit bir zoom eşiği yerine gerçek piksel boyu ölçülüyor. */
   const seatNums = pxPerCm * DEF.seatW > 16;
@@ -2255,17 +2250,23 @@ export default function PlanEditor() {
       label: best >= 100 ? `${(best / 100).toLocaleString("tr-TR")} m` : `${best} cm` };
   }, [pxPerCm]);
 
-  const zoomToBBox = (items) => {
-    if (!items.length) return;
+  /* aspect: hedef yükseklik/genişlik oranı. view'in eski oranı yerine
+     canvas'ın gerçek piksel oranını kullanır — pencere yeniden
+     boyutlandığında view hemen düzelmez, eski oranla sığdırmak
+     gereksiz boşluk (letterbox) bırakırdı. */
+  const fitBBoxRect = (items, aspect) => {
     const x0 = Math.min(...items.map((m) => m.bbox.x0)), x1 = Math.max(...items.map((m) => m.bbox.x1));
     const y0 = Math.min(...items.map((m) => m.bbox.y0)), y1 = Math.max(...items.map((m) => m.bbox.y1));
     const pad = Math.max(x1 - x0, y1 - y0) * 0.12 + 100;
     const w = Math.max(MINW, (x1 - x0) + 2 * pad);
-    const h = (w * view.h) / view.w;
+    const h = w * aspect;
     const need = ((y1 - y0) + 2 * pad) / h;
     const W = need > 1 ? w * need : w;
-    setView({ x: (x0 + x1) / 2 - W / 2, y: (y0 + y1) / 2 - (W * view.h / view.w) / 2,
-      w: W, h: (W * view.h) / view.w });
+    return { x: (x0 + x1) / 2 - W / 2, y: (y0 + y1) / 2 - (W * aspect) / 2, w: W, h: W * aspect };
+  };
+  const zoomToBBox = (items) => {
+    if (!items.length) return;
+    setView(fitBBoxRect(items, canvasSize.h / canvasSize.w));
   };
   const zoomToSelection = () => zoomToBBox(selIds.length
     ? selIds.map((id) => metaById.get(id)).filter(Boolean)
@@ -2274,6 +2275,15 @@ export default function PlanEditor() {
      dışına taştığında sessizce ekran dışında kalıyordu. Gerçek içerik
      sınırını hesapla; plan boşsa (Yeni plan) home'a düş. */
   const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(plan.home));
+  /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
+     olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
+     birimi paylaşmıyor). %100 = Sığdır'ın ürettiği görünüm — Sığdır'a
+     basınca bu yüzden her zaman tam %100 görünür. */
+  const homeRect = metas.length
+    ? fitBBoxRect(metas.map((x) => x.m), canvasSize.h / canvasSize.w)
+    : plan.home;
+  const homePxPerCm = Math.min(canvasSize.w / homeRect.w, canvasSize.h / homeRect.h);
+  const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
 
   const zoomTo = (m) => {
     const w = Math.max(900, (m.bbox.x1 - m.bbox.x0) * 1.6);
@@ -3728,7 +3738,7 @@ export default function PlanEditor() {
             <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Taban</button>
             <button className={legend ? "on" : ""} onClick={() => setLegend(!legend)}>Lejant</button>
             <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
-            <span className="n zoompct" title="%100'e sıfırla" onClick={() => setView(plan.home)}>
+            <span className="n zoompct" title="%100'e sıfırla" onClick={zoomToAll}>
               {zoomPct}%
             </span>
             <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
