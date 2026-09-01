@@ -556,6 +556,8 @@ const ICONS = {
   image: [{d:"M15 8h.01"},{d:"M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12"},{d:"M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"},{d:"M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"}],
   table: [{d:"M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"},{d:"M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"}],
   info: [{d:"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"},{d:"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"}],
+  undo: [{d:"M9 13l-4 -4l4 -4"},{d:"M5 9h7a4 4 0 1 1 0 8h-1"}],
+  redo: [{d:"M15 13l4 -4l-4 -4"},{d:"M19 9h-7a4 4 0 1 0 0 8h1"}],
 };
 
 /* Tabler Icons (MIT) — 24'lük ızgara, 2 kalınlık, yuvarlak uçlar.
@@ -3286,8 +3288,8 @@ export default function PlanEditor() {
 
         <div className="grow" />
 
-        <button className="ib" onClick={undo} disabled={!past.length} title="Geri al (⌘Z)">↶</button>
-        <button className="ib" onClick={redo} disabled={!future.length} title="Yinele (⇧⌘Z)">↷</button>
+        <button className="ib" onClick={undo} disabled={!past.length} title="Geri al (⌘Z)"><Icon n="undo" /></button>
+        <button className="ib" onClick={redo} disabled={!future.length} title="Yinele (⇧⌘Z)"><Icon n="redo" /></button>
         <span className="tsep" />
         <button className={setOpen ? "on" : ""} onClick={() => { setSetOpen(!setOpen); setVerOpen(false); }}>Ayarlar</button>
         <button className={verOpen ? "on" : ""} onClick={() => { setVerOpen(!verOpen); setSetOpen(false); }}>Sürümler</button>
@@ -4749,10 +4751,11 @@ svg.t-foot{ cursor:crosshair; }
 
 /* ── alt ölçüm şeridi ── */
 .status{ display:flex; align-items:center; gap:8px; height:32px; padding:0 10px; flex:none;
-  border-top:1px solid var(--line); background:var(--panel); font-size:11px; color:var(--mut); }
+  border-top:1px solid var(--line); background:var(--panel); font-size:11px; color:var(--mut);
+  min-width:0; overflow-x:auto; overflow-y:hidden; white-space:nowrap; }
 .status .hi{ color:var(--bone); flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:320px; }
 .status .hi.err{ color:#E5484D; font-weight:600; }
-.status .ok{ color:var(--ok); } .status .wr{ color:var(--acc); }
+.status .ok{ color:var(--ok); flex-shrink:0; } .status .wr{ color:var(--acc); flex-shrink:0; }
 .status .n{ color:var(--bone); }
 .status .coord{ min-width:112px; text-align:right; color:var(--dim); }
 .status button{ background:none; border:0; color:var(--dim); border-radius:5px; height:24px;
