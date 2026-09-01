@@ -2314,7 +2314,7 @@ export default function PlanEditor() {
       let best = null;
       cands.forEach((c) => list.forEach((t) => {
         const diff = Math.abs(c - t.v);
-        if (diff <= tol && (!best || diff < best.diff)) best = { diff, shift: t.v - c, v: t.v, t };
+        if (diff <= tol && (!best || diff < best.diff)) best = { diff, shift: t.v - c, v: t.v, t: t.t };
       }));
       return best;
     };
