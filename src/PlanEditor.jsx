@@ -426,6 +426,17 @@ const reLabel = (b, l) => {
   return nb;
 };
 
+/** reLabel'den farkı: bu YENİ blok üretmiyor, VAR OLAN bir bloğun
+ *  "Kimlik ön eki" alanı elle değiştirildiğinde çağrılır. name'i sadece
+ *  hâlâ otomatik türetilmiş haldeyse (kullanıcı özelleştirmediyse) takip
+ *  ettirir — aksi halde elle girilmiş özel adı ezip kaybetmiş oluruz. */
+function relabelPatch(b, label) {
+  const autoName = b.level ? `${b.level} · ${b.label}` : b.label;
+  const patch = { label };
+  if (!b.name || b.name === autoName) patch.name = b.level ? `${b.level} · ${label}` : label;
+  return patch;
+}
+
 function linearArray(blocks, { count, dx, dy }) {
   const out = [], step = blocks.length;
   for (let i = 1; i < count; i++)
@@ -443,6 +454,63 @@ function radialArray(blocks, { count, cx, cy, step }) {
         x: cx + px * c - py * s, y: cy + px * s + py * c, rot: b.rot + t },
         incLabel(b.label, lstep * i)));
     });
+  }
+  return out;
+}
+
+/* ── akıllı hizalama kılavuzları ───────────────────────────────
+   Sürüklenen seçimin kutusunun merkezi ve kenarları, diğer blokların
+   ve şekillerin merkez/kenarlarıyla eşleştiğinde o eksene yapışır ve
+   kırmızı bir referans çizgisi gösterir. Eşik ekranda 7 piksel —
+   yakınlaştıkça hassaslaşır, uzaklaştıkça yardımcı olur. */
+function alignSetup(ids, metas, metaById, shapes) {
+  const sel = ids.map((id) => metaById.get(id)).filter(Boolean);
+  if (!sel.length) return null;
+  const box = {
+    x0: Math.min(...sel.map((m) => m.bbox.x0)), x1: Math.max(...sel.map((m) => m.bbox.x1)),
+    y0: Math.min(...sel.map((m) => m.bbox.y0)), y1: Math.max(...sel.map((m) => m.bbox.y1)),
+  };
+  box.cx = (box.x0 + box.x1) / 2; box.cy = (box.y0 + box.y1) / 2;
+
+  const tg = [];
+  metas.forEach(({ b, m }) => { if (!ids.includes(b.id)) tg.push(m.bbox); });
+  shapes.forEach((s) => {
+    if (s.kind !== "rect" || s.w < 40) return;
+    tg.push({ x0: s.x - s.w / 2, x1: s.x + s.w / 2, y0: s.y - s.h / 2, y1: s.y + s.h / 2 });
+  });
+  const xs = [], ys = [];
+  tg.forEach((t) => {
+    const cx = (t.x0 + t.x1) / 2, cy = (t.y0 + t.y1) / 2;
+    xs.push({ v: cx, t }, { v: t.x0, t }, { v: t.x1, t });
+    ys.push({ v: cy, t }, { v: t.y0, t }, { v: t.y1, t });
+  });
+  return { box, xs, ys };
+}
+
+/** Ham kaydırmayı hizaya oturtur; yakalanan eksenler için kılavuz döndürür. */
+function alignDelta(d, dx, dy, tol) {
+  const out = { dx, dy, g: [] };
+  if (!d.box) return out;
+  const b = d.box;
+  const pick = (cands, list) => {
+    let best = null;
+    cands.forEach((c) => list.forEach((t) => {
+      const diff = Math.abs(c - t.v);
+      if (diff <= tol && (!best || diff < best.diff)) best = { diff, shift: t.v - c, v: t.v, t: t.t };
+    }));
+    return best;
+  };
+  const bx = pick([b.cx + dx, b.x0 + dx, b.x1 + dx], d.xs);
+  if (bx) {
+    out.dx = dx + bx.shift;
+    out.g.push({ axis: "x", v: bx.v,
+      a: Math.min(b.y0 + dy, bx.t.y0) - 120, z: Math.max(b.y1 + dy, bx.t.y1) + 120 });
+  }
+  const by = pick([b.cy + dy, b.y0 + dy, b.y1 + dy], d.ys);
+  if (by) {
+    out.dy = dy + by.shift;
+    out.g.push({ axis: "y", v: by.v,
+      a: Math.min(b.x0 + out.dx, by.t.x0) - 120, z: Math.max(b.x1 + out.dx, by.t.x1) + 120 });
   }
   return out;
 }
@@ -1952,6 +2020,15 @@ export default function PlanEditor() {
     setPast((p) => [...p.slice(-39), plan]); setFuture([]); setPlan(next);
     setRev((r) => r + 1);
   }, [plan, setPlan]);
+  /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
+   *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
+   *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
+   *  paint) ayrı ayrı unutmasın. Gerçekten değişiklik yoksa (salt tıklama)
+   *  no-op — geri-al/kayıt boş yere kirlenmesin. */
+  const finalizeDrag = useCallback((snapshot) => {
+    if (plan === snapshot) return;
+    setPast((p) => [...p.slice(-39), snapshot]); setFuture([]); setRev((r) => r + 1);
+  }, [plan]);
   const patchBlock = (id, patch) =>
     commit({ ...plan, blocks: plan.blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)) });
   const patchSelected = (patch) =>
@@ -2305,62 +2382,6 @@ export default function PlanEditor() {
   };
 
   /* ── hizala / eşit dağıt ──────────────────────────────────────── */
-  /* ── akıllı hizalama kılavuzları ───────────────────────────────
-     Sürüklenen seçimin kutusunun merkezi ve kenarları, diğer blokların
-     ve şekillerin merkez/kenarlarıyla eşleştiğinde o eksene yapışır ve
-     kırmızı bir referans çizgisi gösterir. Eşik ekranda 7 piksel —
-     yakınlaştıkça hassaslaşır, uzaklaştıkça yardımcı olur. */
-  const alignSetup = useCallback((ids) => {
-    const sel = ids.map((id) => metaById.get(id)).filter(Boolean);
-    if (!sel.length) return null;
-    const box = {
-      x0: Math.min(...sel.map((m) => m.bbox.x0)), x1: Math.max(...sel.map((m) => m.bbox.x1)),
-      y0: Math.min(...sel.map((m) => m.bbox.y0)), y1: Math.max(...sel.map((m) => m.bbox.y1)),
-    };
-    box.cx = (box.x0 + box.x1) / 2; box.cy = (box.y0 + box.y1) / 2;
-
-    const tg = [];
-    metas.forEach(({ b, m }) => { if (!ids.includes(b.id)) tg.push(m.bbox); });
-    plan.shapes.forEach((s) => {
-      if (s.kind !== "rect" || s.w < 40) return;
-      tg.push({ x0: s.x - s.w / 2, x1: s.x + s.w / 2, y0: s.y - s.h / 2, y1: s.y + s.h / 2 });
-    });
-    const xs = [], ys = [];
-    tg.forEach((t) => {
-      const cx = (t.x0 + t.x1) / 2, cy = (t.y0 + t.y1) / 2;
-      xs.push({ v: cx, t }, { v: t.x0, t }, { v: t.x1, t });
-      ys.push({ v: cy, t }, { v: t.y0, t }, { v: t.y1, t });
-    });
-    return { box, xs, ys };
-  }, [metas, metaById, plan.shapes]);
-
-  /** Ham kaydırmayı hizaya oturtur; yakalanan eksenler için kılavuz döndürür. */
-  const alignDelta = (d, dx, dy, tol) => {
-    const out = { dx, dy, g: [] };
-    if (!d.box) return out;
-    const b = d.box;
-    const pick = (cands, list, axis) => {
-      let best = null;
-      cands.forEach((c) => list.forEach((t) => {
-        const diff = Math.abs(c - t.v);
-        if (diff <= tol && (!best || diff < best.diff)) best = { diff, shift: t.v - c, v: t.v, t: t.t };
-      }));
-      return best;
-    };
-    const bx = pick([b.cx + dx, b.x0 + dx, b.x1 + dx], d.xs, "x");
-    if (bx) {
-      out.dx = dx + bx.shift;
-      out.g.push({ axis: "x", v: bx.v,
-        a: Math.min(b.y0 + dy, bx.t.y0) - 120, z: Math.max(b.y1 + dy, bx.t.y1) + 120 });
-    }
-    const by = pick([b.cy + dy, b.y0 + dy, b.y1 + dy], d.ys, "y");
-    if (by) {
-      out.dy = dy + by.shift;
-      out.g.push({ axis: "y", v: by.v,
-        a: Math.min(b.x0 + out.dx, by.t.x0) - 120, z: Math.max(b.x1 + out.dx, by.t.x1) + 120 });
-    }
-    return out;
-  };
 
   const alignSel = (mode) => {
     const it = selBlocks.map((b) => ({ b, m: metaById.get(b.id) })).filter((x) => x.m);
@@ -2651,7 +2672,7 @@ export default function PlanEditor() {
           : (selIds.includes(t.b) ? selIds : [t.b]);
         setSelIds(next);
         drag.current = { mode: "move", ids: next, p: raw, snapshot: plan,
-          ...alignSetup(next) };
+          ...alignSetup(next, metas, metaById, plan.shapes) };
       } else if (t?.s) {
         setSelIds([]); setSelShapeId(t.s); setSelSeat(null);
         drag.current = { mode: "moveShape", id: t.s, p: raw, snapshot: plan };
@@ -2783,7 +2804,7 @@ export default function PlanEditor() {
     const d = drag.current;
     drag.current = null;
     if (d?.mode === "handle" || d?.mode === "paint") {
-      if (plan !== d.snapshot) { setPast((p) => [...p.slice(-39), d.snapshot]); setFuture([]); setRev((r) => r + 1); }
+      finalizeDrag(d.snapshot);
       return;
     }
     if (d?.mode === "seatMarq") {
@@ -2841,7 +2862,7 @@ export default function PlanEditor() {
     }
     if (d?.mode === "move" || d?.mode === "moveShape" || d?.mode === "seat") {
       setGuides([]);
-      if (plan !== d.snapshot) { setPast((p) => [...p.slice(-39), d.snapshot]); setFuture([]); setRev((r) => r + 1); }
+      finalizeDrag(d.snapshot);
       return;
     }
     if (d?.mode !== "draw" || !draft) { setDraft(null); return; }
@@ -4253,13 +4274,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
       </div>
       <section>
         <div className="g2">
-          <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => {
-            const label = e.target.value;
-            const autoName = b.level ? `${b.level} · ${b.label}` : b.label;
-            const patch = { label };
-            if (!b.name || b.name === autoName) patch.name = b.level ? `${b.level} · ${label}` : label;
-            onChange(patch);
-          }} /></Row>
+          <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => onChange(relabelPatch(b, e.target.value))} /></Row>
           <Row label="Kat / kuşak">
             <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange({ level: e.target.value })} />
             <datalist id="lv">{levels.map((l) => <option key={l} value={l} />)}</datalist>
