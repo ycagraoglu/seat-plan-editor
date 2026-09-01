@@ -567,8 +567,16 @@ const ATTRS = {
 
 const SKEY = (k) => `plan:${k}`;
 
+/* window.storage yoksa (ör. Vercel/Netlify/S3 gibi düz statik barındırma —
+   bkz. README) localStorage gerçek tarayıcıda kalıcılığı sağlıyor; o da
+   yoksa (gizli sekme, kota dolu) bellek-içi Map son çare. */
+const hasLS = (() => {
+  try { const k = "__ls_probe"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return true; }
+  catch { return false; }
+})();
+
 const Store = {
-  driver: (typeof window !== "undefined" && window.storage) ? "kv" : "memory",
+  driver: (typeof window !== "undefined" && window.storage) ? "kv" : hasLS ? "ls" : "memory",
   mem: new Map(),
 
   async list() {
@@ -577,12 +585,23 @@ const Store = {
         return (r?.keys || []).map((k) => String(k).slice(5)).filter(Boolean); }
       catch { return []; }
     }
+    if (this.driver === "ls") {
+      const out = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k?.startsWith("plan:")) out.push(k.slice(5));
+      }
+      return out;
+    }
     return [...this.mem.keys()];
   },
   async load(k) {
     if (this.driver === "kv") {
       try { const r = await window.storage.get(SKEY(k), false); return r ? JSON.parse(r.value) : null; }
       catch { return null; }
+    }
+    if (this.driver === "ls") {
+      try { const v = localStorage.getItem(SKEY(k)); return v ? JSON.parse(v) : null; } catch { return null; }
     }
     return this.mem.get(k) || null;
   },
@@ -591,25 +610,35 @@ const Store = {
     if (this.driver === "kv") {
       try { await window.storage.set(SKEY(k), body, false); return true; } catch { return false; }
     }
+    if (this.driver === "ls") {
+      try { localStorage.setItem(SKEY(k), body); return true; } catch { return false; }
+    }
     this.mem.set(k, JSON.parse(body));
     return true;
   },
   async remove(k) {
     if (this.driver === "kv") { try { await window.storage.delete(SKEY(k), false); } catch { /* yok */ } }
+    else if (this.driver === "ls") { try { localStorage.removeItem(SKEY(k)); } catch { /* yok */ } }
     else this.mem.delete(k);
   },
 
   /** Küçük kullanıcı tercihleri (tema gibi). Değer verilmezse okur. */
   async pref(k, v) {
     const key = `pref:${k}`;
-    if (this.driver !== "kv") {
-      if (v === undefined) return this.mem.get(key) ?? null;
-      this.mem.set(key, v); return v;
+    if (this.driver === "kv") {
+      try {
+        if (v === undefined) { const r = await window.storage.get(key, false); return r ? r.value : null; }
+        await window.storage.set(key, v, false); return v;
+      } catch { return null; }
     }
-    try {
-      if (v === undefined) { const r = await window.storage.get(key, false); return r ? r.value : null; }
-      await window.storage.set(key, v, false); return v;
-    } catch { return null; }
+    if (this.driver === "ls") {
+      try {
+        if (v === undefined) return localStorage.getItem(key);
+        localStorage.setItem(key, v); return v;
+      } catch { return null; }
+    }
+    if (v === undefined) return this.mem.get(key) ?? null;
+    this.mem.set(key, v); return v;
   },
 };
 
@@ -2754,7 +2783,8 @@ export default function PlanEditor() {
     const d = drag.current;
     drag.current = null;
     if (d?.mode === "handle" || d?.mode === "paint") {
-      setPast((p) => [...p.slice(-39), d.snapshot]); return;
+      if (plan !== d.snapshot) { setPast((p) => [...p.slice(-39), d.snapshot]); setFuture([]); setRev((r) => r + 1); }
+      return;
     }
     if (d?.mode === "seatMarq") {
       const q = marq; setMarq(null);
@@ -2811,7 +2841,8 @@ export default function PlanEditor() {
     }
     if (d?.mode === "move" || d?.mode === "moveShape" || d?.mode === "seat") {
       setGuides([]);
-      setPast((p) => [...p.slice(-39), d.snapshot]); return;
+      if (plan !== d.snapshot) { setPast((p) => [...p.slice(-39), d.snapshot]); setFuture([]); setRev((r) => r + 1); }
+      return;
     }
     if (d?.mode !== "draw" || !draft) { setDraft(null); return; }
     const { x0, y0, x1, y1 } = draft;
@@ -4222,7 +4253,13 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
       </div>
       <section>
         <div className="g2">
-          <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => onChange({ label: e.target.value })} /></Row>
+          <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => {
+            const label = e.target.value;
+            const autoName = b.level ? `${b.level} · ${b.label}` : b.label;
+            const patch = { label };
+            if (!b.name || b.name === autoName) patch.name = b.level ? `${b.level} · ${label}` : label;
+            onChange(patch);
+          }} /></Row>
           <Row label="Kat / kuşak">
             <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange({ level: e.target.value })} />
             <datalist id="lv">{levels.map((l) => <option key={l} value={l} />)}</datalist>
