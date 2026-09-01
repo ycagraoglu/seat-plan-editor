@@ -3034,7 +3034,11 @@ export default function PlanEditor() {
       setView((v) => ({ ...v, x: v.x + e.deltaY / s }));
       return;
     }
-    zoomAt(e.clientX, e.clientY, e.deltaY > 0 ? 1.18 : 1 / 1.18);
+    /* Büyük bir stadyumda tam salondan tek koltuk numarasının okunacağı
+       yakınlığa gitmek fiziksel olarak yüzlerce kat zum ister (bkz.
+       seatNums eşiği). Adım başına 1.18 ile bu onlarca tekerlek hareketi
+       istiyordu; 1.3 aynı mesafeyi ~%35 daha az hareketle aldırıyor. */
+    zoomAt(e.clientX, e.clientY, e.deltaY > 0 ? 1.3 : 1 / 1.3);
   };
 
   const toggleOv = ({ bid, r, c }, key) => {
