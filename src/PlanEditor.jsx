@@ -2234,6 +2234,11 @@ export default function PlanEditor() {
 
   /* ekrandaki 1 cm kaç piksel — ölçek çubuğu ve tutamak boyu için */
   const pxPerCm = Math.min(canvasSize.w / view.w, canvasSize.h / view.h);
+  /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
+     olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
+     birimi paylaşmıyor). %100 = plan.home ile aynı zum seviyesi. */
+  const homePxPerCm = Math.min(canvasSize.w / plan.home.w, canvasSize.h / plan.home.h);
+  const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
   /* Koltuk numarası ancak koltuk ekranda okunacak kadar büyükse yazılır.
      Sabit bir zoom eşiği yerine gerçek piksel boyu ölçülüyor. */
   const seatNums = pxPerCm * DEF.seatW > 16;
@@ -3723,6 +3728,9 @@ export default function PlanEditor() {
             <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Taban</button>
             <button className={legend ? "on" : ""} onClick={() => setLegend(!legend)}>Lejant</button>
             <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
+            <span className="n zoompct" title="%100'e sıfırla" onClick={() => setView(plan.home)}>
+              {zoomPct}%
+            </span>
             <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
             <button onClick={zoomToAll}>Sığdır</button>
             <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "İçeriğe zumla"}</button>
@@ -4736,6 +4744,8 @@ svg.t-foot{ cursor:crosshair; }
 .status button:hover{ background:var(--panel2); color:var(--bone); }
 .status button.on{ color:var(--acc); }
 .status .ib{ width:24px; padding:0; font-size:14px; }
+.status .zoompct{ min-width:38px; text-align:center; cursor:pointer; user-select:none; }
+.status .zoompct:hover{ color:var(--acc); }
 .chk{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--mut); cursor:pointer; }
 .chk input{ accent-color:var(--acc); }
 .mini{ background:none; border:1px solid var(--line); color:var(--dim); border-radius:5px;
