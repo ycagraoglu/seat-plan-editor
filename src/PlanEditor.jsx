@@ -2053,7 +2053,10 @@ export default function PlanEditor() {
   const [wheelPref, setWheelPref] = useState("auto");
   const [q, setQ] = useState("");
   const [sysDark, setSysDark] = useState(true);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsgOk] = useState("");
+  const [msgErr, setMsgErr] = useState(false);
+  const setMsg = (text) => { setMsgOk(text); setMsgErr(false); };
+  const setErr = (text) => { setMsgOk(text); setMsgErr(true); };
 
   const svgRef = useRef(null);
   const drag = useRef(null);
@@ -2305,6 +2308,13 @@ export default function PlanEditor() {
     setMsg("doğrulanıyor…");
     setTimeout(() => { setReport(validate(plan, metas, gates)); setMsg(""); }, 10);
   };
+  /* Doğrula rozeti son çalıştırmadan kalır — her düzenlemede yeniden
+     hesaplamak büyük salonlarda (bkz. yukarıdaki 10ms'lik yield) fark
+     edilir bir gecikme yaratırdı. "Son kontrolde şu vardı" göstermek,
+     hiç göstermemekten iyi; tam canlı takip istenirse plan'a bağlı bir
+     useMemo'ya çevrilebilir. */
+  const reportErrN = report ? report.list.filter((x) => x.t === "err").length : 0;
+  const reportWarnN = report ? report.list.filter((x) => x.t === "warn").length : 0;
 
   /* ── sürümleme ─────────────────────────────────────────────── */
   const versions = plan.versions || [];
@@ -2592,7 +2602,10 @@ export default function PlanEditor() {
         setVerOpen(false); setReport(null);
         setMsg(`${hits.length} koltuk eşleşti`);
       } catch (err) {
-        setMsg(`CSV okunamadı: ${err.message}`);
+        console.error("CSV içe aktarma hatası:", err);
+        const detail = (err instanceof TypeError || err instanceof RangeError)
+          ? "dosya beklenen CSV biçiminde değil" : err.message;
+        setErr(`CSV okunamadı: ${detail}`);
       }
     };
     rd.readAsText(f, "utf-8");
@@ -3145,7 +3158,9 @@ export default function PlanEditor() {
         setLevelFilter("*"); setView(p.home); setReport(null);
         setMsg(`${p.blocks.length} blok içe aktarıldı`);
       } catch (err) {
-        setMsg(`İçe aktarılamadı: ${err.message}`);
+        console.error("Plan içe aktarma hatası:", err);
+        const detail = err instanceof SyntaxError ? "dosya geçerli bir JSON değil" : err.message;
+        setErr(`İçe aktarılamadı: ${detail}`);
       }
     };
     rd.readAsText(f);
@@ -3257,7 +3272,10 @@ export default function PlanEditor() {
         <span className="tsep" />
         <button className={setOpen ? "on" : ""} onClick={() => { setSetOpen(!setOpen); setVerOpen(false); }}>Ayarlar</button>
         <button className={verOpen ? "on" : ""} onClick={() => { setVerOpen(!verOpen); setSetOpen(false); }}>Sürümler</button>
-        <button onClick={runValidate}>Doğrula</button>
+        <button onClick={runValidate}>Doğrula
+          {reportErrN > 0 && <span className="badge err">{reportErrN}</span>}
+          {reportErrN === 0 && reportWarnN > 0 && <span className="badge warn">{reportWarnN}</span>}
+        </button>
         <span className="tsep" />
         <label className="btn">Aç<input type="file" accept="application/json,.json" onChange={importPlan} hidden /></label>
         <button onClick={exportPlan}>plan.json</button>
@@ -3681,7 +3699,8 @@ export default function PlanEditor() {
               <button className="alert" onClick={() => { setSelIds(breach); setSelShapeId(null); }}>
                 {breach.length} blok salon sınırı dışında
               </button></>}
-            {msg && <><span className="tsep" /><span className="hi">{msg}</span></>}
+            {msg && <><span className="tsep" />
+              <span className={msgErr ? "hi err" : "hi"} title={msg}>{msg}</span></>}
 
             <div className="grow" />
 
@@ -4137,7 +4156,7 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
             <div className="sw">
               <button title="Kat rengini kullan" onClick={() => onSet({ color: "" })}>A</button>
               {PALETTE.map((c) => (
-                <button key={c} style={{ background: c }} onClick={() => onSet({ color: c })} />
+                <button key={c} title={c} style={{ background: c }} onClick={() => onSet({ color: c })} />
               ))}
             </div>
           </Row>
@@ -4340,7 +4359,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <button className={!b.color ? "on" : ""} title="Kat rengini kullan"
                 onClick={() => onChange({ color: "" })}>A</button>
               {PALETTE.map((c) => (
-                <button key={c} style={{ background: c }} className={b.color === c ? "on" : ""}
+                <button key={c} title={c} style={{ background: c }} className={b.color === c ? "on" : ""}
                   onClick={() => onChange({ color: c })} />
               ))}
             </div>
@@ -4579,6 +4598,10 @@ const CSS = `
 .top button:hover, .btn:hover{ background:var(--panel2); color:var(--bone); }
 .top button.on{ background:var(--accline); color:var(--acc); }
 .top button:disabled{ opacity:.3; cursor:default; }
+.top .badge{ border-radius:999px; font-size:10px; font-weight:700; line-height:1; color:#fff;
+  min-width:15px; height:15px; display:inline-flex; align-items:center; justify-content:center; padding:0 4px; }
+.top .badge.err{ background:#E5484D; }
+.top .badge.warn{ background:var(--warn); }
 .top button:disabled:hover{ background:none; color:var(--dim); }
 .top .ib{ width:28px; padding:0; justify-content:center; font-size:14px; }
 .top .pri{ background:var(--acc); color:var(--onacc); font-weight:600; padding:0 12px; }
@@ -4630,7 +4653,7 @@ kbd{ font:10px var(--mono); color:var(--mut); }
 .tree li.mut{ color:var(--mut); cursor:default; }
 
 /* ── tuval ── */
-.canvas{ position:relative; min-width:0; display:flex; flex-direction:column; }
+.canvas{ position:relative; min-width:0; min-height:0; display:flex; flex-direction:column; }
 .canvas svg{ flex:1; width:100%; min-height:0; display:block; touch-action:none; background:var(--canvas); }
 .cempty{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   pointer-events:none; color:var(--mut); font-size:12.5px; text-align:center; padding:0 40px; }
@@ -4703,7 +4726,8 @@ svg.t-foot{ cursor:crosshair; }
 /* ── alt ölçüm şeridi ── */
 .status{ display:flex; align-items:center; gap:8px; height:32px; padding:0 10px; flex:none;
   border-top:1px solid var(--line); background:var(--panel); font-size:11px; color:var(--mut); }
-.status .hi{ color:var(--bone); }
+.status .hi{ color:var(--bone); flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:320px; }
+.status .hi.err{ color:#E5484D; font-weight:600; }
 .status .ok{ color:var(--ok); } .status .wr{ color:var(--acc); }
 .status .n{ color:var(--bone); }
 .status .coord{ min-width:112px; text-align:right; color:var(--dim); }
