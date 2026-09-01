@@ -806,7 +806,7 @@ const arc = (x1, y1, r, sw, x2, y2) =>
 
 const PITCHES = {
   football: {
-    label: "Futbol sahası (FIFA)", w: 10500, h: 6800, surf: "#2B5236", line: "#DCE8DD", lw: 12,
+    label: "Futbol sahası (FIFA)", w: 10500, h: 6800, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
     note: "105 × 68 m · nizami",
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
@@ -831,22 +831,27 @@ const PITCHES = {
   },
 
   basket: {
-    label: "Basketbol sahası (FIBA)", w: 2800, h: 1500, surf: "#8A5A32", line: "#F2E8DA", lw: 5,
+    label: "Basketbol sahası (FIBA)", w: 2800, h: 1500, surf: "#8A5A32", surf2: "#8F6239",
+    stripes: 21, line: "#F2E8DA", lw: 5, blw: 11, paint: "#1B4E75",
     note: "28 × 15 m · nizami",
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
-      m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
-      m.push({ t: "circle", cx: 0, cy: 0, r: 180 });
+      m.push({ t: "circle", cx: 0, cy: 0, r: 180, fill: this.paint });
+      m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 8 });
       [-1, 1].forEach((s) => {
         const gx = s * L, bx = gx - s * 157.5;                                    // pota merkezi
-        m.push({ t: "rect", x: s > 0 ? gx - 580 : gx, y: -245, w: 580, h: 490 }); // boyalı alan
+        m.push({ t: "rect", x: s > 0 ? gx - 580 : gx, y: -245, w: 580, h: 490, fill: this.paint }); // boyalı alan
+        [90, 180, 290].forEach((off) => {                                          // ribaunt çizgileri
+          const hx = gx - s * off;
+          [-1, 1].forEach((v) => m.push({ t: "line", x1: hx, y1: v * 245, x2: hx, y2: v * 245 + v * 16, lw: 4 }));
+        });
         m.push({ t: "circle", cx: gx - s * 580, cy: 0, r: 180 });                 // serbest atış çemberi
         const cy3 = W - 90, dx3 = Math.sqrt(675 * 675 - cy3 * cy3);               // üçlük
         const ax = bx - s * dx3;                                                  // yayın başladığı yer
         [-1, 1].forEach((v) => m.push({ t: "line", x1: gx, y1: v * cy3, x2: ax, y2: v * cy3 }));
         m.push({ t: "path", d: arc(ax, -cy3, 675, s > 0 ? 0 : 1, ax, cy3) });
         m.push({ t: "path", d: arc(bx, -125, 125, s > 0 ? 0 : 1, bx, 125) });     // yarım daire
-        m.push({ t: "line", x1: gx - s * 120, y1: -90, x2: gx - s * 120, y2: 90 }); // panya
+        m.push({ t: "line", x1: gx - s * 120, y1: -90, x2: gx - s * 120, y2: 90, lw: 8 }); // panya
         m.push({ t: "circle", cx: bx, cy: 0, r: 22.5 });                          // çember
       });
       return m;
@@ -1047,7 +1052,7 @@ function badgeColor(hex) {
 const SHAPES = {
   stage:    { label: "Sahne",       fill: "var(--shapefill)", stroke: "var(--shapeline)" },
   pitch:    { label: "Saha",        fill: "#22452C",          stroke: "#3E6B4A" },
-  door:     { label: "Kapı",        fill: "var(--canvas)",    stroke: "var(--acc)" },
+  door:     { label: "Kapı",        fill: "var(--acc)",       stroke: "var(--acc)" },
   wall:     { label: "Duvar",       fill: "none",             stroke: "var(--shapeline)" },
   screen:   { label: "Perde",       fill: "var(--shapefill)", stroke: "var(--acc)" },
   standing: { label: "Ayakta alan", fill: "rgba(90,130,102,.16)", stroke: "#5B8266" },
@@ -1275,7 +1280,7 @@ GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
 
 const ARENA = {
   key: "arena", name: "Örnek Basketbol Arena (FIBA)", unit: "cm",
-  home: { x: -6400, y: -5600, w: 12800, h: 11200 }, underlay: null,
+  home: { x: -9200, y: -10150, w: 18400, h: 20300 }, underlay: null,
   shapes: [
     { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
       w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
@@ -1297,13 +1302,13 @@ const ARENA = {
       seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
       num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
 
-    ...bowl({ W: 2400, H: 1600, Rc: 800, rows: 18, rowGap: 85, seatGap: 50,
+    ...bowl({ W: 4000, H: 3200, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
       nLong: 5, nShort: 3, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
       colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }),
-    ...withAccessible(bowl({ W: 4500, H: 3750, Rc: 2100, rows: 20, rowGap: 85, seatGap: 50,
+    ...withAccessible(bowl({ W: 5600, H: 4850, Rc: 3200, rows: 20, rowGap: 85, seatGap: 50,
       nLong: 6, nShort: 4, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
       colors: { long: "#5F9142", short: "#6E7787", corner: "#B79A32" } }),
-      ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 7),
+      ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9),
   ],
 };
 ARENA.shapes = autoGates(ARENA, ARENA.blocks.map((b) => ({ b, m: buildMeta(b) })));
@@ -2122,7 +2127,22 @@ export default function PlanEditor() {
       (levelFilter === "*" || (b.level || "") === levelFilter) &&
       m.bbox.x1 > vx0 && m.bbox.x0 < vx1 && m.bbox.y1 > vy0 && m.bbox.y0 < vy1);
   }, [metas, view, levelFilter]);
-  const shownSeats = useMemo(() => shown.reduce((a, x) => a + x.m.seatCount, 0), [shown]);
+  /* Sadece kesişen değil, GERÇEKTEN görünen koltuk sayısı: yelpaze gibi
+     büyük bloklarda ekranın köşesine değen tek bir blok bile tüm koltuk
+     sayısını eklerse, o blok tek başına koltuk moduna geçişi bloklardı —
+     salonun tamamına yakınlaştırılmış gibi davranırdı, oysa asıl görünen
+     alan küçücüktü. Kesişim alanının bloğa oranı kadar say. */
+  const shownSeats = useMemo(() => {
+    const pad = view.w * 0.08;
+    const vx0 = view.x - pad, vx1 = view.x + view.w + pad;
+    const vy0 = view.y - pad, vy1 = view.y + view.h + pad;
+    return shown.reduce((a, { m }) => {
+      const ox = Math.max(0, Math.min(m.bbox.x1, vx1) - Math.max(m.bbox.x0, vx0));
+      const oy = Math.max(0, Math.min(m.bbox.y1, vy1) - Math.max(m.bbox.y0, vy0));
+      const areaB = (m.bbox.x1 - m.bbox.x0) * (m.bbox.y1 - m.bbox.y0);
+      return a + m.seatCount * (areaB > 0 ? (ox * oy) / areaB : 1);
+    }, 0);
+  }, [shown, view]);
   const seatMode = shownSeats <= SEAT_BUDGET;
 
   /* Bir kat filtrelendiğinde diğer katlar tamamen kaybolmasın — koltuk
@@ -4077,6 +4097,16 @@ function Poi({ s, selected, U }) {
   );
 }
 
+/* Zemin dokusu: düz tek renk bir dikdörtgen oyuncak gibi durur — çimde
+   biçme şeridi, parkede tahta şeridi gerçek bir zemin hissi verir.
+   Sadece surf2 tanımlı sahalarda (P.stripes şerit sayısını belirler). */
+function MowStripes({ w, h, surf2, n = 9 }) {
+  const sw = w / n;
+  return Array.from({ length: n }, (_, i) => i % 2 === 1 && (
+    <rect key={i} x={-w / 2 + i * sw} y={-h / 2} width={sw} height={h} fill={surf2} />
+  ));
+}
+
 /** Saha zemini + nizami çizgi işaretlemeleri. */
 function Pitch({ s, selected }) {
   const P = PITCHES[s.sport] || PITCHES.generic;
@@ -4084,11 +4114,12 @@ function Pitch({ s, selected }) {
   return (
     <g className={selected ? "pit on" : "pit"} transform={`translate(${s.x} ${s.y}) rotate(${s.rot})`}>
       <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h}
-        rx={P.rx || 0} fill={P.surf} stroke={P.line} strokeWidth={P.lw} />
+        rx={P.rx || 0} fill={P.surf} stroke={P.line} strokeWidth={P.blw || P.lw} />
+      {P.surf2 && <MowStripes w={s.w} h={s.h} surf2={P.surf2} n={P.stripes || 9} />}
       <g fill="none" strokeLinecap="butt" pointerEvents="none">
         {marks.map((k, i) => {
           const st = { stroke: k.c || P.line, strokeWidth: k.lw || P.lw,
-            strokeDasharray: k.dash || undefined, opacity: k.o || 1 };
+            strokeDasharray: k.dash || undefined, opacity: k.o || 1, fill: k.fill || "none" };
           if (k.t === "line") return <line key={i} x1={k.x1} y1={k.y1} x2={k.x2} y2={k.y2} {...st} />;
           if (k.t === "rect") return <rect key={i} x={k.x} y={k.y} width={k.w} height={k.h} {...st} />;
           if (k.t === "circle") return <circle key={i} cx={k.cx} cy={k.cy} r={k.r} {...st} />;
@@ -4704,8 +4735,8 @@ svg.t-seatAdd, svg.t-cal, svg.t-attr, svg.t-table{ cursor:crosshair; }
 .pit rect{ cursor:pointer; }
 .pit.on > rect:first-child{ stroke:var(--sel); }
 .dr circle{ cursor:pointer; stroke-width:6; }
-.dr text{ fill:var(--dim); text-anchor:middle; pointer-events:none; letter-spacing:.1em; }
-.dr .dv{ fill:var(--acc); font-weight:700; letter-spacing:0; font-family:var(--mono); }
+.dr text{ fill:var(--onacc); opacity:.75; text-anchor:middle; pointer-events:none; letter-spacing:.1em; }
+.dr .dv{ fill:var(--onacc); opacity:1; font-weight:700; letter-spacing:0; font-family:var(--mono); }
 .dr line{ stroke:var(--acc); stroke-width:6; stroke-dasharray:26 20; opacity:.6; }
 .dr.on circle{ stroke:var(--sel); }
 .rl{ fill:var(--rowlab); text-anchor:middle; pointer-events:none; font-family:var(--mono); }
