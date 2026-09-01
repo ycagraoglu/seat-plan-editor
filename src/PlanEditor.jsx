@@ -4103,7 +4103,8 @@ const Num = ({ v, on, step = 1, min }) => (
 function ArraySection({ lin, setLin, rad, setRad, onArrayL, onArrayR, prev, setPrev }) {
   return (
     <>
-      <details className={`sec${prev === "lin" ? " prev" : ""}`} onMouseEnter={() => setPrev("lin")}>
+      <details className={`sec${prev === "lin" ? " prev" : ""}`}
+        onToggle={(e) => setPrev(e.target.open ? "lin" : null)}>
         <summary className="lab">Doğrusal dizi{prev === "lin" && <em>önizleme açık</em>}</summary>
         <div className="g3">
           <Row label="Kopya"><Num v={lin.count} on={(v) => setLin({ ...lin, count: Math.max(2, v) })} min={2} /></Row>
@@ -4112,7 +4113,8 @@ function ArraySection({ lin, setLin, rad, setRad, onArrayL, onArrayR, prev, setP
         </div>
         <button className="wide" onClick={onArrayL}>Doğrusal çoğalt</button>
       </details>
-      <details className={`sec${prev === "rad" ? " prev" : ""}`} onMouseEnter={() => setPrev("rad")}>
+      <details className={`sec${prev === "rad" ? " prev" : ""}`}
+        onToggle={(e) => setPrev(e.target.open ? "rad" : null)}>
         <summary className="lab">Radyal dizi{prev === "rad" && <em>önizleme açık</em>}</summary>
         <div className="g2">
           <Row label="Merkez X"><Num v={rad.cx} on={(v) => setRad({ ...rad, cx: v })} step={100} /></Row>
