@@ -3133,6 +3133,12 @@ export default function PlanEditor() {
     <div className={`ed ${dark ? "dark" : "light"}`}>
       <style>{CSS}</style>
 
+      <div className="gate">
+        <p>Bu editör geniş bir çalışma alanı gerektirir.
+          <span>Lütfen masaüstü tarayıcıda veya en az 1024px genişliğinde bir pencerede açın.</span>
+        </p>
+      </div>
+
       <header className="top">
         <select className="venue" value={vk} onChange={(e) => switchVenue(e.target.value)}>
           {Object.entries(venues).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
@@ -4485,6 +4491,15 @@ const CSS = `
 .pub.dirty{ color:var(--acc); }
 
 .body{ flex:1; display:grid; grid-template-columns:190px 1fr 292px; min-height:0; }
+
+.gate{ display:none; }
+@media (max-width:1023px){
+  .ed > .top, .ed > .body{ display:none; }
+  .gate{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:var(--ink); padding:32px; text-align:center; }
+  .gate p{ max-width:320px; color:var(--bone); font-size:14px; line-height:1.6; }
+  .gate p span{ display:block; color:var(--mut); font-size:12px; margin-top:8px; }
+}
 
 /* ── araç rayı ── */
 .tools{ border-right:1px solid var(--line); padding:8px; overflow:auto; }
