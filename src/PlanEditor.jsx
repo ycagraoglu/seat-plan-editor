@@ -4634,7 +4634,7 @@ const CSS = `
 .ed.light{
   --ink:#FFFFFF; --panel:#FFFFFF; --panel2:#F2F4F6; --ovl:#FFFFFFF7;
   --line:#E4E7EB; --bone:#15181C; --dim:#5C626C; --mut:#6A6F77;
-  --acc:#1F7A91; --accrgb:31,122,145; --accline:#CFE4EA; --onacc:#FFFFFF;
+  --acc:#0891B2; --accrgb:8,145,178; --accline:#CFEEF3; --onacc:#FFFFFF;
   --canvas:#F9FAFB; --grid:#EDEFF2; --grid2:#E1E4E9; --rowlab:#6B717A;
   --sel:#15181C; --marqfill:rgba(21,24,28,.06);
   --ok:#2E7A57; --okline:#CBE2D6; --err:#B23A46; --warn:#95661A;
