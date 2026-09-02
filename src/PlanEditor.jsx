@@ -1,13 +1,14 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats } from "./core/geometry.js";
-import { offsetPoly, inPoly, outlineOverlapArea } from "./core/polygon.js";
+import { offsetPoly } from "./core/polygon.js";
 import { incLabel, reLabel, relabelPatch } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
 import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
 import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
-import { gateMap, autoGates, boundaryPolys } from "./core/gates.js";
+import { gateMap, autoGates } from "./core/gates.js";
 import { absorbIds, nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
+import { buildCtx, runRules } from "./core/rules.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -147,6 +148,10 @@ const ATTRS = {
   obstr: { label: "Görüş kısıtlı",       short: "Görüş kıs.", color: "#F5A623", glyph: "!" },
   tech:  { label: "Teknik / satışa kapalı", short: "Kapalı",  color: "#6E6E70", glyph: "×" },
 };
+/* core/rules.js kendi görünüm sabitlerini (renk/etiket) bilmemeli — koltuk
+   köşesi kontrolleri için ihtiyaç duyduğu tek fiziksel gerçek, hangi
+   niteliğin koltuğu GENİŞ yaptığı. Bunu ATTRS'ten türetip ctx'e taşıyoruz. */
+const WIDE_ATTRS = new Set(Object.keys(ATTRS).filter((k) => ATTRS[k].wide));
 
 /* ══════════════════════════════════════════════════════════════════════════
    DEPOLAMA KATMANI
@@ -1181,205 +1186,25 @@ function adoptPlan(raw, key) {
     home, underlay: null, blocks, shapes };
 }
 
-/** Sınır tanımlı değilse her yer geçerli sayılır. */
-const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
-
-
-/* ─────────────────────────  DOĞRULAMA  ───────────────────────── */
-
+/* ─────────────────────────  DOĞRULAMA  ─────────────────────────
+   Kuralların kendisi artık core/rules.js'te — burası ince bir sarmalayıcı:
+   ctx'i hazırlar, runRules()'u (TÜM kurallarla, liveOnly değil) çağırır,
+   eski { list, total } şeklini geri verir. "Hata veya uyarı yok" özeti
+   burada kalıyor çünkü bir kural değil, DİĞER TÜM kuralların sonucuna
+   bakan bir toplam — onu da bir kural yapmak, kendi tetikleme koşulunu
+   diğer ~15 kuralınkiyle ayrı ayrı yeniden yazıp senkron tutmayı
+   gerektirirdi (tam da bu görevin ortadan kaldırmaya çalıştığı türden
+   bir kopya). */
 function validate(plan, metas, gates) {
-  const out = [];
-  const seen = new Map();
-  const at = {};
-  const polys = boundaryPolys(plan);
-  const outside = {};
-  const outsideIds = new Set();
-  const pts = [];
-  let outCount = 0, unlabeled = 0, total = 0;
-  metas.forEach(({ b, m }) => {
-    buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (s.gap) return;
-      total++;
-      /* Yandan geçiş gerektirmeyen bloklar: masa (etrafı zaten bitişik
-         oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi —
-         erişim arkadan/koridordan, yandan değil; komşu kutular arasında
-         sadece ince bir bölme olur). */
-      pts.push({ x: s.x, y: s.y, b: s.block, bid: b.id, l: s.level, t: b.kind === "table" || !!b.noAisle });
-      if (polys.length && !inBounds(s.x, s.y, polys)) {
-        outCount++; outside[s.block] = (outside[s.block] || 0) + 1; outsideIds.add(b.id);
-      }
-      if (s.at) at[s.at] = (at[s.at] || 0) + 1;
-      if (s.num === "" || s.num == null) unlabeled++;
-      seen.set(s.id, (seen.get(s.id) || 0) + 1);
-    });
-  });
-
-  /* Tuvaldeki canlı uyarı blok tabanına, doğrulama koltuklara bakıyordu;
-     biri kırmızı çerçeve çizerken öteki "temiz" diyordu. İkisi de artık
-     hem koltuğu hem tabanı ölçüyor. */
-  const outBlocks = polys.length
-    ? metas.filter(({ m }) => m.outline.some((q) => !inBounds(q.x, q.y, polys)))
-    : [];
-  if (outCount) out.push({ t: "err",
-    m: `${outCount.toLocaleString("tr-TR")} koltuk salon sınırının dışında`,
-    d: Object.entries(outside).map(([b, n]) => `${b}: ${n}`).join(" · "), ids: [...outsideIds] });
-  if (outBlocks.length) out.push({ t: "err",
-    m: `${outBlocks.length} bloğun tabanı salon sınırına taşıyor`,
-    d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", "),
-    ids: outBlocks.map(({ b }) => b.id) });
-  if (polys.length && !outCount && !outBlocks.length)
-    out.push({ t: "ok", m: "Tüm koltuklar ve blok tabanları salon sınırı içinde" });
-
-  /* Taban-taban çakışma: aynı kattaki iki bloğun dış hattı (koltukların
-     değil, platformun kendisi) örtüşüyor mu? Sadece aynı kat karşılaştırılır
-     — farklı katlar fiziksel olarak üst üste, kesişmeleri anlamsız bir
-     uyarı olurdu. Koltuklar güvende olsa da (yürüme payı ve çakışma
-     kontrolleri ayrı geçse de) taban payı örtüşebilir — bu, koltuk
-     merkezlerine bakan diğer kontrollerin kaçırdığı bir sınıf hata. */
-  const footprintByLevel = new Map();
-  metas.forEach((x) => {
-    const key = x.b.level || "";
-    if (!footprintByLevel.has(key)) footprintByLevel.set(key, []);
-    footprintByLevel.get(key).push(x);
-  });
-  const footprintOverlaps = [];
-  footprintByLevel.forEach((group) => {
-    for (let i = 0; i < group.length; i++) {
-      for (let j = i + 1; j < group.length; j++) {
-        const area = outlineOverlapArea(group[i].m.outline, group[j].m.outline);
-        if (area > 50) footprintOverlaps.push({
-          a: group[i].b.name || group[i].b.label, b: group[j].b.name || group[j].b.label, area,
-          ai: group[i].b.id, bi: group[j].b.id,
-        });
-      }
-    }
-  });
-  if (footprintOverlaps.length) out.push({ t: "err",
-    m: `${footprintOverlaps.length} blok tabanı başka bir bloğun tabanıyla çakışıyor`,
-    d: footprintOverlaps.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
-    ids: [...new Set(footprintOverlaps.flatMap((o) => [o.ai, o.bi]))] });
-
-  /* Kat-arası taban çakışması. Gerçek bir salonda balkon partere sarkabilir,
-     o yüzden bu HATA değil UYARI: fiziksel olarak mümkün ama 2B oturma
-     planında bloklar üst üste binince hem tıklanamaz hem bozuk görünür.
-     (AKM'de 1. ve 2. Balkon tabanları %16 biniyordu; yalnız-aynı-kat
-     kontrolü bunu hiç görmemişti.) */
-  const crossPairs = [], crossIds = new Set();
-  const lvKeys = [...footprintByLevel.keys()];
-  for (let a = 0; a < lvKeys.length; a++)
-    for (let b2 = a + 1; b2 < lvKeys.length; b2++)
-      for (const A of footprintByLevel.get(lvKeys[a]))
-        for (const B of footprintByLevel.get(lvKeys[b2])) {
-          const area = outlineOverlapArea(A.m.outline, B.m.outline);
-          if (area > 50) {
-            crossPairs.push(`${A.b.name || A.b.label}\u2194${B.b.name || B.b.label}`);
-            crossIds.add(A.b.id); crossIds.add(B.b.id);
-          }
-        }
-  if (crossPairs.length) out.push({ t: "warn",
-    m: `${crossPairs.length} blok tabanı farklı kattaki bir blokla çakışıyor`,
-    d: `${crossPairs.slice(0, 6).join(" \u00b7 ")} \u00b7 balkon sarkması olabilir, ama planda üst üste binerler`,
-    ids: [...crossIds] });
-
-  /* Üst üste binen koltuk: merkezleri 30 cm'den yakın iki koltuk fiziksel
-     olarak aynı yerde demektir. Izgara indeksiyle taranıyor. */
-  const CELL = 200, grid = new Map();
-  let clash = 0; const clashPairs = new Set(); const clashIds = new Set();
-  pts.forEach((q, i) => {
-    const k = `${Math.floor(q.x / CELL)}:${Math.floor(q.y / CELL)}`;
-    if (!grid.has(k)) grid.set(k, []);
-    grid.get(k).push(i);
-  });
-  const narrow = { min: Infinity, pair: "", ids: [] };
-  pts.forEach((q, i) => {
-    const cx = Math.floor(q.x / CELL), cy = Math.floor(q.y / CELL);
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
-      (grid.get(`${cx + dx}:${cy + dy}`) || []).forEach((j) => {
-        if (j <= i) return;
-        const w = pts[j];
-        const d = Math.hypot(q.x - w.x, q.y - w.y);
-        if (d < 30) { clash++; clashPairs.add(q.b === w.b ? q.b : `${q.b}↔${w.b}`); clashIds.add(q.bid).add(w.bid); }
-        /* İki masa arasında koridor aranmaz — sandalye sırtları bitişik
-           olabilir. Farklı katlardaki bloklar da aranmaz — aralarında
-           zaten düşey bir ayrım (tavan/zemin) var, "80 cm boşluk yeter
-           mi" sorusu anlamsız; kural yalnızca aynı kat içinde geçerli. */
-        if (q.b !== w.b && q.l === w.l && !(q.t && w.t) && d < narrow.min) {
-          narrow.min = d; narrow.pair = `${q.b} ↔ ${w.b}`; narrow.ids = [q.bid, w.bid];
-        }
-      });
-    }
-  });
-  if (clash) out.push({ t: "err", m: `${clash.toLocaleString("tr-TR")} koltuk çifti üst üste biniyor`,
-    d: [...clashPairs].slice(0, 6).join(" · "), ids: [...clashIds] });
-
-  /* Farklı bloklar arasında insanın geçebileceği bir açıklık olmalı.
-     90 cm altı geçit sayılmaz; iki blok pratikte tek blok gibi olur. */
-  if (narrow.min < 90 && narrow.min < Infinity)
-    out.push({ t: "err", m: `Bloklar arasında yürüme payı yok — en dar açıklık ${Math.round(narrow.min)} cm`,
-      d: `${narrow.pair} · geçit için en az 90 cm gerekir`, ids: narrow.ids });
-  else if (narrow.min < 120 && narrow.min < Infinity)
-    out.push({ t: "warn", m: `Bloklar arası en dar açıklık ${Math.round(narrow.min)} cm`,
-      d: `${narrow.pair} · rahat geçiş için 120 cm önerilir`, ids: narrow.ids });
-
-  const sellable = total - (at.tech || 0);
-  out.push({ t: "info", m: `${sellable.toLocaleString("tr-TR")} satılabilir koltuk`,
-    d: at.tech ? `${at.tech} koltuk teknik/satışa kapalı` : null });
-
-  /* Gerekli tekerlekli sandalye yeri sabit bir yüzde değil, kademeli:
-     ilk 500 koltuk için 6, sonraki her 150 koltuk için 1, 5.000'in
-     üstünde her 200 koltuk için 1. Küçük salonda oran yüksek, büyükte
-     düşük olur — sabit yüzde iki uçta da yanlış sonuç veriyordu. */
-  const need = total <= 25 ? 1 : total <= 50 ? 2 : total <= 150 ? 4
-    : total <= 300 ? 5 : total <= 500 ? 6
-    : total <= 5000 ? 6 + Math.ceil((total - 500) / 150)
-    : 36 + Math.ceil((total - 5000) / 200);
-  const wheel = at.wheel || 0;
-  if (!wheel) out.push({ t: "err", m: `Tekerlekli sandalye alanı tanımlanmamış — en az ${need} gerekiyor` });
-  else if (wheel < need) out.push({ t: "warn",
-    m: `${wheel} tekerlekli sandalye alanı — bu kapasite için ${need} gerekiyor`,
-    d: `${need - wheel} yer daha eklenmeli` });
-  else out.push({ t: "ok", m: `${wheel} tekerlekli sandalye alanı · ${at.comp || 0} refakatçi`,
-    d: `gereken ${need}` });
-  if (wheel && (at.comp || 0) < wheel)
-    out.push({ t: "warn", m: `Refakatçi koltuğu tekerlekli sandalye alanından az (${at.comp || 0} < ${wheel})` });
-  if (at.obstr) out.push({ t: "info", m: `${at.obstr.toLocaleString("tr-TR")} görüş kısıtlı koltuk` });
-  const dups = [...seen].filter(([, n]) => n > 1);
-  if (dups.length) out.push({ t: "err",
-    m: `${dups.length} yinelenen koltuk kimliği`, d: dups.slice(0, 6).map(([id, n]) => `${id} ×${n}`).join(", ") });
-  if (unlabeled) out.push({ t: "err", m: `${unlabeled} etiketsiz koltuk` });
-
-  const noLevel = plan.blocks.filter((b) => !b.level).length;
-  if (noLevel) out.push({ t: "warn", m: `${noLevel} blok katsız` });
-
-  const doors = plan.shapes.filter((s) => s.type === "door");
-  if (!doors.length) out.push({ t: "warn", m: "Hiç kapı tanımlanmamış" });
-  else {
-    const orphan = plan.blocks.filter((b) => !gates || !gates.has(b.id));
-    if (orphan.length) out.push({ t: "err", m: `${orphan.length} blok hiçbir kapıya bağlı değil`,
-      d: orphan.slice(0, 8).map((b) => b.name || b.label).join(", "), ids: orphan.map((b) => b.id) });
-    const emptyDoor = doors.filter((d) => !(d.blocks || []).length);
-    if (emptyDoor.length) out.push({ t: "warn", m: `${emptyDoor.length} kapıya blok atanmamış`,
-      d: emptyDoor.slice(0, 8).map((d) => d.label).join(", ") });
-  }
-
-  const lbl = new Map();
-  plan.blocks.forEach((b) => lbl.set(b.label, (lbl.get(b.label) || 0) + 1));
-  const dupL = [...lbl].filter(([, n]) => n > 1);
-  if (dupL.length) {
-    const dupLbls = new Set(dupL.map(([l]) => l));
-    out.push({ t: "info",
-      m: `${dupL.length} blok kimliği birden fazla blokta kullanılmış`,
-      d: dupL.slice(0, 6).map(([l, n]) => `${l} ×${n}`).join(", "),
-      ids: plan.blocks.filter((b) => dupLbls.has(b.label)).map((b) => b.id) });
-  }
-
-  const emptyBlocks = plan.blocks.filter((b, i) => metas[i].m.seatCount === 0);
-  if (emptyBlocks.length) out.push({ t: "warn", m: `${emptyBlocks.length} boş blok`,
-    ids: emptyBlocks.map((b) => b.id) });
-
-  if (!out.some((o) => o.t === "err" || o.t === "warn"))
-    out.push({ t: "ok", m: "Hata veya uyarı yok" });
-  return { list: out, total };
+  const ctx = buildCtx(plan, metas, gates, { wideAttrs: WIDE_ATTRS });
+  /* runRules() her bulguya hangi kuraldan geldiğini söyleyen `id` ekliyor
+     (canlı taraf breach'i collide'dan bu alanla ayırıyor). validate()'in
+     dönüş şekli tarihsel olarak { t, m, d, ids } — o alanı burada atarak
+     eski çıktıyla BİREBİR (fazladan alan bile olmadan) aynı kalıyor. */
+  const list = runRules(ctx).map(({ id, ...f }) => f);
+  if (!list.some((o) => o.t === "err" || o.t === "warn"))
+    list.push({ t: "ok", m: "Hata veya uyarı yok" });
+  return { list, total: ctx.seats.total };
 }
 
 /* ─────────────────────────  TUTAMAKLAR  ───────────────────────── */
@@ -1633,46 +1458,30 @@ export default function PlanEditor() {
     Math.max(0, levels.indexOf(b.level || "")) % LEVEL_COLORS.length], [levels]);
   const gates = useMemo(() => gateMap(plan), [plan.shapes]);
 
-  /* Sınır taşması canlı izleniyor: blok dış hattının bir noktası bile
-     duvarın dışındaysa blok işaretlenir. Kesin koltuk sayısı Doğrula'da. */
-  const bounds = useMemo(() => boundaryPolys(plan), [plan.shapes]);
-  const breach = useMemo(() => {
-    if (!bounds.length) return [];
-    return metas.filter(({ m }) => m.outline.some((p) => !inBounds(p.x, p.y, bounds)))
-      .map(({ b }) => b.id);
-  }, [metas, bounds]);
+  /* Sınır taşması VE aynı kat çakışması canlı izleniyor — ikisi de artık
+     core/rules.js'teki AYNI runRules() motorundan geliyor (liveOnly: true):
+     Doğrula raporuyla ayrı bir kopya değil, tek kaynak. bbox ön elemesi
+     rules.js içinde KORUNUYOR — 96 bloklu bir stadyumda her sürükleme
+     karesinde binlerce çokgen kırpımı yapılamaz; bbox ile pratikte
+     birkaç tanesi kalıyor (bkz. görev raporundaki ölçüm). */
+  const liveCtx = useMemo(() => buildCtx(plan, metas, gates), [plan, metas, gates]);
+  const liveFindings = useMemo(() => runRules(liveCtx, { liveOnly: true }), [liveCtx]);
+  /* Sınır taşması: blok dış hattının bir noktası bile duvarın dışındaysa
+     blok işaretlenir. Kesin koltuk sayısı Doğrula'da. */
+  const breach = useMemo(() =>
+    liveFindings.find((f) => f.id === "blocks-outside-boundary")?.ids || [],
+    [liveFindings]);
   const breachSet = useMemo(() => new Set(breach), [breach]);
 
   /* Aynı kattaki iki bloğun tabanı birbirinin içine giremez — fiziksel
-     olarak imkânsız ve planı tıklanamaz hale getirir. Sınır taşması gibi
-     CANLI izleniyor: kullanıcı bloğu sürüklerken anında kırmızıya dönüyor,
-     Doğrula'yı beklemesine gerek kalmıyor.
-     Farklı katlar burada kasıtlı olarak karşılaştırılmıyor: gerçek bir
-     salonda balkon partere sarkabilir. O durum yine de 2B planda sorun
-     olduğu için Doğrula raporunda uyarı olarak çıkıyor.
-     bbox ön elemesi şart — 96 bloklu stadyumda her sürükleme karesinde
-     binlerce çokgen kırpımı yapılamaz; bbox ile pratikte birkaç tanesi
-     kalıyor. */
-  const collide = useMemo(() => {
-    const byLevel = new Map();
-    metas.forEach((x) => {
-      const k = x.b.level || "";
-      if (!byLevel.has(k)) byLevel.set(k, []);
-      byLevel.get(k).push(x);
-    });
-    const hit = new Set();
-    for (const g of byLevel.values())
-      for (let i = 0; i < g.length; i++)
-        for (let j = i + 1; j < g.length; j++) {
-          const A = g[i].m, B = g[j].m;
-          if (A.bbox.x1 < B.bbox.x0 || B.bbox.x1 < A.bbox.x0) continue;
-          if (A.bbox.y1 < B.bbox.y0 || B.bbox.y1 < A.bbox.y0) continue;
-          if (outlineOverlapArea(A.outline, B.outline) > 50) {
-            hit.add(g[i].b.id); hit.add(g[j].b.id);
-          }
-        }
-    return [...hit];
-  }, [metas]);
+     olarak imkânsız ve planı tıklanamaz hale getirir. Kullanıcı bloğu
+     sürüklerken anında kırmızıya dönüyor, Doğrula'yı beklemesine gerek
+     kalmıyor. Farklı katlar burada kasıtlı olarak karşılaştırılmıyor:
+     gerçek bir salonda balkon partere sarkabilir. O durum yine de 2B
+     planda sorun olduğu için Doğrula raporunda uyarı olarak çıkıyor. */
+  const collide = useMemo(() =>
+    liveFindings.find((f) => f.id === "footprint-overlap-same-level")?.ids || [],
+    [liveFindings]);
   const collideSet = useMemo(() => new Set(collide), [collide]);
 
   const attrTotals = useMemo(() => {

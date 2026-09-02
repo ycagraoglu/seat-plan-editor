@@ -4,6 +4,8 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { buildSeatsPayload } from "../../src/core/export.js";
+import { buildMeta } from "../../src/core/geometry.js";
+import { gateMap, boundaryPolys } from "../../src/core/gates.js";
 
 function polyPts(poly) {
   return poly.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
@@ -16,8 +18,7 @@ function polyPts(poly) {
    salon sabitinden hazırlanıyor. Aradaki tek alan farkı runtime'da
    stampVer()'in eklediği "srcVer" — exportSeats o alanı hiç okumuyor,
    dolayısıyla çıktı birebir aynı kalıyor (bkz. görev raporu). */
-function buildSeatsData(venue, mod) {
-  const { buildMeta, gateMap } = mod;
+function buildSeatsData(venue) {
   const metas = venue.blocks.map((b) => ({ b, m: buildMeta(b) }));
   const levelCounts = {};
   metas.forEach(({ b, m }) => {
@@ -37,8 +38,7 @@ function buildSeatsData(venue, mod) {
    konumları zaten seats.json'da sayısal olarak birebir var; GS/Ülker gibi on
    binlerce koltuklu salonlarda koltuk başına <rect> çizmek dosyayı şişirmekten
    başka bir regresyon-yakalama değeri katmıyor, o yüzden burada tekrarlanmıyor. */
-function buildRenderSvg(venue, mod) {
-  const { buildMeta, boundaryPolys } = mod;
+function buildRenderSvg(venue) {
   const boundary = boundaryPolys(venue).map((poly, i) =>
     createElement("polygon", { key: `w${i}`, "data-role": "boundary", points: polyPts(poly) }));
   const blocks = venue.blocks.map((b) => {
@@ -56,12 +56,12 @@ function buildRenderSvg(venue, mod) {
   return header + markup.replace(/></g, ">\n<") + "\n";
 }
 
-export function buildGolden(venue, mod) {
-  const seatsData = buildSeatsData(venue, mod);
+export function buildGolden(venue) {
+  const seatsData = buildSeatsData(venue);
   return {
     plan: JSON.stringify(venue, null, 2) + "\n",
     seats: JSON.stringify(seatsData, null, 2) + "\n",
-    svg: buildRenderSvg(venue, mod),
+    svg: buildRenderSvg(venue),
     seatCount: seatsData.seatCount,
   };
 }

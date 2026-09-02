@@ -11,8 +11,16 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const root = path.resolve(here, "..", "..");
 const srcPath = path.join(root, "src/PlanEditor.jsx");
 
+/* Yalnız PlanEditor.jsx'e GERÇEKTEN özgü isimler: salon sabitleri, validate()
+   (orada tanımlı), ATTRS (görünüm sabiti, orada tanımlı). Geometri
+   yardımcıları (buildMeta, gateMap, boundaryPolys, inPoly, buildSeats, ...)
+   artık PlanEditor.jsx'in kendisi de src/core/*.js'ten import ediyor — o
+   isimleri PlanEditor.jsx modülünden yeniden dışa aktarmaya gerek yok,
+   ihtiyacı olan script core/'dan DOĞRUDAN import eder (core/ düz JS,
+   esbuild'e gerek duymaz). Buraya PlanEditor.jsx'te artık import EDİLMEYEN
+   bir isim eklersen esbuild "is not declared in this file" ile patlar. */
 const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI",
-  "validate", "buildMeta", "buildSeats", "boundaryPolys", "gateMap", "inPoly", "ATTRS"];
+  "validate", "ATTRS"];
 
 export async function loadModule() {
   const src = await readFile(srcPath, "utf8");
