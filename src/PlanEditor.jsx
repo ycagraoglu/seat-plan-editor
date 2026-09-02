@@ -1362,10 +1362,10 @@ GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
 const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: 2250, H: 1400, Rc: 900, rows: 20, rowGap: 85, seatGap: 50,
   nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
   colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
-const ulkerLoca = bowl({ W: 4100, H: 3250, Rc: 2600, rows: 2, rowGap: 90, seatGap: 90,
+const ulkerLoca = bowl({ W: 4300, H: 3450, Rc: 2600, rows: 2, rowGap: 90, seatGap: 90,
   nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: 60,
   colors: { long: "#B79A32", short: "#B79A32", corner: "#B79A32" } });
-const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: 4450, H: 3600, Rc: 2800, rows: 18, rowGap: 85, seatGap: 50,
+const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: 4750, H: 3900, Rc: 2800, rows: 16, rowGap: 85, seatGap: 50,
   nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
   colors: { long: "#5F9142", short: "#6E7787", corner: "#3E7FBF" } }),
   ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
@@ -1670,11 +1670,11 @@ const akmDoor = (n, x, y) => ({
 
 const AKM = {
   key: "akm", name: "AKM · Türk Telekom Opera Salonu", unit: "cm",
-  home: { x: -2700, y: -3350, w: 5400, h: 3600 }, underlay: null,
+  home: { x: -2950, y: -3550, w: 5900, h: 3900 }, underlay: null,
   shapes: [
     { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -450, w: 1200, h: 350, rot: 0,
       label: "SAHNE", capacity: 0, fs: 100, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "wall", x: 0, y: -1550, w: 5200, h: 3400, rot: 0,
+    { id: nid("s"), kind: "rect", type: "wall", x: 0, y: -1600, w: 5700, h: 3800, rot: 0,
       label: "DUVAR", capacity: 0, fs: 100, blocks: [] },
     akmDoor(1, -1893, -166), akmDoor(2, 1893, -166),
     akmDoor(3, -1543, -1839), akmDoor(4, 1543, -1839),
@@ -1700,7 +1700,7 @@ const AKM = {
     fanB({ label: "P.TEK-2", level: "Parter", mode: "span", x: 0, y: 0,
       r0: 825, rows: 13, rowGap: 88, aStart: 37, aEnd: 86, seatGap: 50, color: "#3E7FBF" }),
     fanB({ label: "1B.ORTA", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2069, rows: 7, rowGap: 88, aStart: -16, aEnd: 16, seatGap: 52, color: "#3E7FBF",
+      r0: 2150, rows: 7, rowGap: 88, aStart: -16, aEnd: 16, seatGap: 52, color: "#3E7FBF",
       ov: {
         "6,8": { at: "wheel" }, "6,9": { at: "wheel" }, "6,10": { at: "wheel" }, "6,11": { at: "wheel" },
         "6,12": { at: "wheel" }, "6,13": { at: "wheel" }, "6,14": { at: "wheel" }, "6,15": { at: "wheel" },
@@ -1708,15 +1708,15 @@ const AKM = {
         "5,12": { at: "comp" }, "5,13": { at: "comp" }, "5,14": { at: "comp" }, "5,15": { at: "comp" },
       } }),
     fanB({ label: "1B.ÇİFT", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2069, rows: 7, rowGap: 88, aStart: -43, aEnd: -22, seatGap: 52, color: "#3E7FBF" }),
+      r0: 2150, rows: 7, rowGap: 88, aStart: -43, aEnd: -22, seatGap: 52, color: "#3E7FBF" }),
     fanB({ label: "1B.TEK", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2069, rows: 7, rowGap: 88, aStart: 22, aEnd: 43, seatGap: 52, color: "#3E7FBF" }),
+      r0: 2150, rows: 7, rowGap: 88, aStart: 22, aEnd: 43, seatGap: 52, color: "#3E7FBF" }),
     fanB({ label: "2B.ORTA", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2697, rows: 5, rowGap: 88, aStart: -21, aEnd: 21, seatGap: 52, color: "#3E7FBF" }),
+      r0: 2950, rows: 5, rowGap: 88, aStart: -21, aEnd: 21, seatGap: 52, color: "#3E7FBF" }),
     fanB({ label: "2B.ÇİFT", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2697, rows: 5, rowGap: 88, aStart: -52, aEnd: -27, seatGap: 52, color: "#3E7FBF" }),
+      r0: 2950, rows: 5, rowGap: 88, aStart: -52, aEnd: -27, seatGap: 52, color: "#3E7FBF" }),
     fanB({ label: "2B.TEK", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2697, rows: 5, rowGap: 88, aStart: 27, aEnd: 52, seatGap: 52, color: "#3E7FBF" }),
+      r0: 2950, rows: 5, rowGap: 88, aStart: 27, aEnd: 52, seatGap: 52, color: "#3E7FBF" }),
   ],
 };
 AKM.shapes = autoGates(AKM, AKM.blocks.map((b) => ({ b, m: buildMeta(b) })));
@@ -1952,6 +1952,28 @@ function validate(plan, metas, gates) {
     d: footprintOverlaps.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
     ids: [...new Set(footprintOverlaps.flatMap((o) => [o.ai, o.bi]))] });
 
+  /* Kat-arası taban çakışması. Gerçek bir salonda balkon partere sarkabilir,
+     o yüzden bu HATA değil UYARI: fiziksel olarak mümkün ama 2B oturma
+     planında bloklar üst üste binince hem tıklanamaz hem bozuk görünür.
+     (AKM'de 1. ve 2. Balkon tabanları %16 biniyordu; yalnız-aynı-kat
+     kontrolü bunu hiç görmemişti.) */
+  const crossPairs = [], crossIds = new Set();
+  const lvKeys = [...footprintByLevel.keys()];
+  for (let a = 0; a < lvKeys.length; a++)
+    for (let b2 = a + 1; b2 < lvKeys.length; b2++)
+      for (const A of footprintByLevel.get(lvKeys[a]))
+        for (const B of footprintByLevel.get(lvKeys[b2])) {
+          const area = outlineOverlapArea(A.m.outline, B.m.outline);
+          if (area > 50) {
+            crossPairs.push(`${A.b.name || A.b.label}\u2194${B.b.name || B.b.label}`);
+            crossIds.add(A.b.id); crossIds.add(B.b.id);
+          }
+        }
+  if (crossPairs.length) out.push({ t: "warn",
+    m: `${crossPairs.length} blok tabanı farklı kattaki bir blokla çakışıyor`,
+    d: `${crossPairs.slice(0, 6).join(" \u00b7 ")} \u00b7 balkon sarkması olabilir, ama planda üst üste binerler`,
+    ids: [...crossIds] });
+
   /* Üst üste binen koltuk: merkezleri 30 cm'den yakın iki koltuk fiziksel
      olarak aynı yerde demektir. Izgara indeksiyle taranıyor. */
   const CELL = 200, grid = new Map();
@@ -2095,7 +2117,7 @@ const HANDLE_HINT = {
    artır — kullanıcının localStorage'ındaki ESKİ otomatik-kayıt kopyası
    kaynağı gölgelemesin. Yoksa bir kez açılan örnek salon sonsuza dek eski
    halinde takılı kalıyor, koddaki düzeltmeler kullanıcıya hiç ulaşmıyor. */
-const SRC_VER = 8;
+const SRC_VER = 10;
 const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, ulker: ULKER, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
 /* Sürüm kapısı yalnızca şablonlara uygulanır; empty ve p-* anahtarları
    kullanıcının kendi işini tutar (örn. empty üstüne kurulan Aspendos), asla
@@ -2313,6 +2335,38 @@ export default function PlanEditor() {
       .map(({ b }) => b.id);
   }, [metas, bounds]);
   const breachSet = useMemo(() => new Set(breach), [breach]);
+
+  /* Aynı kattaki iki bloğun tabanı birbirinin içine giremez — fiziksel
+     olarak imkânsız ve planı tıklanamaz hale getirir. Sınır taşması gibi
+     CANLI izleniyor: kullanıcı bloğu sürüklerken anında kırmızıya dönüyor,
+     Doğrula'yı beklemesine gerek kalmıyor.
+     Farklı katlar burada kasıtlı olarak karşılaştırılmıyor: gerçek bir
+     salonda balkon partere sarkabilir. O durum yine de 2B planda sorun
+     olduğu için Doğrula raporunda uyarı olarak çıkıyor.
+     bbox ön elemesi şart — 96 bloklu stadyumda her sürükleme karesinde
+     binlerce çokgen kırpımı yapılamaz; bbox ile pratikte birkaç tanesi
+     kalıyor. */
+  const collide = useMemo(() => {
+    const byLevel = new Map();
+    metas.forEach((x) => {
+      const k = x.b.level || "";
+      if (!byLevel.has(k)) byLevel.set(k, []);
+      byLevel.get(k).push(x);
+    });
+    const hit = new Set();
+    for (const g of byLevel.values())
+      for (let i = 0; i < g.length; i++)
+        for (let j = i + 1; j < g.length; j++) {
+          const A = g[i].m, B = g[j].m;
+          if (A.bbox.x1 < B.bbox.x0 || B.bbox.x1 < A.bbox.x0) continue;
+          if (A.bbox.y1 < B.bbox.y0 || B.bbox.y1 < A.bbox.y0) continue;
+          if (outlineOverlapArea(A.outline, B.outline) > 50) {
+            hit.add(g[i].b.id); hit.add(g[j].b.id);
+          }
+        }
+    return [...hit];
+  }, [metas]);
+  const collideSet = useMemo(() => new Set(collide), [collide]);
 
   const attrTotals = useMemo(() => {
     const t = {};
@@ -3781,6 +3835,12 @@ export default function PlanEditor() {
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
 
+            {collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
+              <polygon key={`co${b.id}`} className="collide"
+                points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
+            ))}
+
             {plan.shapes.filter((s) => s.type === "icon").map((s) => (
               <Poi key={s.id} s={s} selected={selShapeId === s.id} U={U} />
             ))}
@@ -3870,6 +3930,10 @@ export default function PlanEditor() {
               <button className="alert" onClick={() => { setSelIds(breach); setSelShapeId(null); }}>
                 {breach.length} blok salon sınırı dışında
               </button></>}
+            {collide.length > 0 && <><span className="tsep" />
+              <button className="alert" onClick={() => { setSelIds(collide); setSelShapeId(null); }}>
+                {collide.length} blok birbirinin alanına giriyor
+              </button></>}
             {msg && <><span className="tsep" />
               <span className={msgErr ? "hi err" : "hi"} title={msg}>{msg}</span></>}
 
@@ -3952,12 +4016,18 @@ export default function PlanEditor() {
                   {breach.length} blok salon sınırının dışında. Yayınlamadan önce düzeltilmeli.
                 </p>
               )}
+              {collide.length > 0 && (
+                <p className="stop">
+                  {collide.length} blok aynı katta birbirinin alanına giriyor.
+                  Yayınlamadan önce düzeltilmeli.
+                </p>
+              )}
 
               <div className="pubrow">
                 <input value={pubNote} placeholder="Sürüm notu (ör. yan localar eklendi)"
                   onChange={(e) => setPubNote(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && doPublish()} />
-                <button className="pri" onClick={doPublish} disabled={breach.length > 0}>Yayınla</button>
+                <button className="pri" onClick={doPublish} disabled={breach.length > 0 || collide.length > 0}>Yayınla</button>
               </div>
 
               {!versions.length && <p className="mut sm">Henüz sürüm yok. İlk yayın taban çizgisini kurar.</p>}
@@ -4935,6 +5005,7 @@ svg.t-foot{ cursor:crosshair; }
   stroke-linecap:round; stroke-linejoin:round; }
 .poigrid button.on svg{ stroke:var(--acc); }
 .breach{ fill:rgba(229,72,77,.12); stroke:var(--err); stroke-dasharray:26 18; pointer-events:none; }
+.collide{ fill:rgba(229,72,77,.16); stroke:var(--err); stroke-dasharray:10 10; pointer-events:none; }
 .status .alert{ color:var(--err); font-weight:600; }
 .status .alert:hover{ background:rgba(229,72,77,.12); color:var(--err); }
 .stop{ margin:0 0 9px; padding:8px 10px; border:1px solid var(--err); border-radius:var(--r-sm);

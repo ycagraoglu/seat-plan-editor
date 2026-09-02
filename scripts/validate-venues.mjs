@@ -140,6 +140,25 @@ for (const [name, venue] of Object.entries(VENUES)) {
         }
       }
 
+  /* 2b. taban-taban çakışma — FARKLI katlar arası.
+     Gerçek bir salonda balkon partere sarkar, o yüzden bu fiziksel bir hata
+     değil. Ama 2B'lik bir OTURMA PLANINDA üst üste binen tabanlar hem
+     tıklanamaz hem bozuk görünür. AKM'de 1. Balkon ile 2. Balkon tabanları
+     %16 biniyordu ve yalnız-aynı-kat kontrolü bunu hiç görmedi; kullanıcı
+     ekran görüntüsüyle yakaladı. Bu kontrol o kör noktayı kapatıyor. */
+  const lv = [...byLevel.entries()];
+  const crossOverlaps = [];
+  for (let a = 0; a < lv.length; a++)
+    for (let b2 = a + 1; b2 < lv.length; b2++)
+      for (const A of lv[a][1])
+        for (const B of lv[b2][1]) {
+          const area = overlapArea(A.m.outline, B.m.outline);
+          if (area > 50) {
+            const na = A.b.name || A.b.label, nb = B.b.name || B.b.label;
+            crossOverlaps.push(`"${na}"↔"${nb}" (${Math.round(area)}cm²)`);
+          }
+        }
+
   // 3. sınır — koltuk köşeleri + blok tabanı duvar içinde mi
   const polys = boundaryPolys(venue);
   const inBounds = (x, y) => !polys.length || polys.some((p) => inPoly(x, y, p));
@@ -151,12 +170,13 @@ for (const [name, venue] of Object.entries(VENUES)) {
   const report = validate(venue, metas, gates);
   const errs = report.list.filter((o) => o.t === "err");
 
-  const pass = !t1blocks.size && !overlaps.length && !t3seat && !t3blocks && !errs.length;
+  const pass = !t1blocks.size && !overlaps.length && !crossOverlaps.length && !t3seat && !t3blocks && !errs.length;
   if (!pass) anyFail = true;
 
   console.log(`── ${name} · ${report.total.toLocaleString("tr-TR")} koltuk ──`);
   console.log(`  1. koltuk-içerme:  ${t1blocks.size ? `HATA — bloklar: ${[...t1blocks].join(", ")}` : "OK"}`);
   console.log(`  2. taban çakışma:  ${overlaps.length ? `HATA — ${overlaps.length}: ${overlaps.slice(0, 5).join(" · ")}` : "OK"}`);
+  console.log(`  2b. kat-arası çak: ${crossOverlaps.length ? `HATA — ${crossOverlaps.length}: ${crossOverlaps.slice(0, 5).join(" · ")}` : "OK"}`);
   console.log(`  3. sınır:          ${t3seat || t3blocks ? `HATA — ${t3seat} koltuk, ${t3blocks} blok dışarıda` : "OK"}`);
   console.log(`  5. validate():     ${errs.length ? `HATA — ${errs.map((e) => e.m).join(" · ")}` : "OK"}`);
   console.log("");
