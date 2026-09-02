@@ -1334,18 +1334,26 @@ GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
    iki kuşaklı kase. Kase yine bowl() ile, yani tohum blok + dizi işlemiyle.
    Kapılar GS'deki gibi cutVomitories() ile tribünün içine oyuluyor: arka
    sıralardan koltuk silinip tünel o boşluğa konuyor (bkz. GS'nin yorumu).
-   Hangi blokları beslediği autoGates ile mesafeye göre çözülüyor. */
-const [arenaAlt, arenaAltDoors] = cutVomitories(bowl({ W: 4000, H: 3200, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
-  nLong: 5, nShort: 3, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
+   Hangi blokları beslediği autoGates ile mesafeye göre çözülüyor.
+
+   Kase ölçüleri sahaya göre: eskiden W/H 4000/3200 idi, yani saha kenarı
+   ile ilk sıra arasında 26 m / 24,5 m boşluk kalıyordu — saha kocaman bir
+   boşluğun ortasında minicik görünüyordu. Gerçek bir arenada bu pay
+   skorer masası, yedek kulübeleri, basın ve yürüme yolu için 5-8 m'dir.
+   Alt kase artık kenar çizgisine 7 m, dip çizgisine 8 m uzakta. Kase
+   küçülünce çevresi de kısaldığı için blok sayıları orantılı azaltıldı;
+   yoksa bloklar birkaç koltukluk şeritlere dönüşüyordu. */
+const [arenaAlt, arenaAltDoors] = cutVomitories(bowl({ W: 2200, H: 1450, Rc: 900, rows: 16, rowGap: 85, seatGap: 50,
+  nLong: 4, nShort: 2, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
   colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
-const [arenaUst, arenaUstDoors] = cutVomitories(withAccessible(bowl({ W: 5600, H: 4850, Rc: 3200, rows: 20, rowGap: 85, seatGap: 50,
-  nLong: 6, nShort: 4, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
+const [arenaUst, arenaUstDoors] = cutVomitories(withAccessible(bowl({ W: 3700, H: 2950, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
+  nLong: 5, nShort: 2, nCorner: 4, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
   colors: { long: "#5F9142", short: "#6E7787", corner: "#B79A32" } }),
   ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9));
 
 const ARENA = {
   key: "arena", name: "Örnek Basketbol Arena (FIBA)", unit: "cm",
-  home: { x: -9200, y: -10150, w: 18400, h: 20300 }, underlay: null,
+  home: { x: -6000, y: -5200, w: 12000, h: 10400 }, underlay: null,
   shapes: [
     { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
       w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
@@ -2068,7 +2076,7 @@ const HANDLE_HINT = {
    artır — kullanıcının localStorage'ındaki ESKİ otomatik-kayıt kopyası
    kaynağı gölgelemesin. Yoksa bir kez açılan örnek salon sonsuza dek eski
    halinde takılı kalıyor, koddaki düzeltmeler kullanıcıya hiç ulaşmıyor. */
-const SRC_VER = 6;
+const SRC_VER = 7;
 const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, arena: ARENA, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
 /* Sürüm kapısı yalnızca şablonlara uygulanır; empty ve p-* anahtarları
    kullanıcının kendi işini tutar (örn. empty üstüne kurulan Aspendos), asla
