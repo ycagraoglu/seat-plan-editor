@@ -9,31 +9,9 @@
 
    PlanEditor.jsx JSX içerdiği için Node onu doğrudan import edemez;
    esbuild ile geçici bir modüle derlenip iş bitince silinir. */
-import { transform } from "esbuild";
-import { readFile, writeFile, rm } from "node:fs/promises";
-import { fileURLToPath, pathToFileURL } from "node:url";
-import path from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-
-const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const srcPath = path.join(root, "src/PlanEditor.jsx");
-const tmpPath = path.join(root, `.tmp-planeditor-test-${process.pid}.mjs`);
-
-const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI",
-  "validate", "buildMeta", "buildSeats", "boundaryPolys", "gateMap", "inPoly", "ATTRS"];
-
-async function loadModule() {
-  const src = await readFile(srcPath, "utf8");
-  const patched = `${src}\nexport { ${EXTRA_EXPORTS.join(", ")} };\n`;
-  const { code } = await transform(patched, { loader: "jsx", format: "esm", target: "node18" });
-  await writeFile(tmpPath, code);
-  try {
-    return await import(pathToFileURL(tmpPath).href);
-  } finally {
-    await rm(tmpPath, { force: true });
-  }
-}
+import { loadModule } from "./lib/load-module.mjs";
 
 function seatCorners(s, ATTRS) {
   const w = (ATTRS[s.at]?.wide ? 86 : 41) / 2, h = 38 / 2;

@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "test:geometry": "node scripts/validate-venues.mjs",
     "test:interactions": "node scripts/validate-interactions.mjs",
-    "test": "npm run test:geometry && npm run test:interactions"
+    "test": "npm run test:geometry && npm run test:interactions",
+    "snapshot:golden": "node scripts/snapshot-golden.mjs",
+    "check:golden": "node scripts/check-golden.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

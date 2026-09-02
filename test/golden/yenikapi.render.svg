@@ -1,0 +1,11 @@
+<!-- render.svg: yalnızca türetilmiş geometri (salon sınırı + blok tabanları). Koltukların kendisi seats.json'da birebir sayısal var, burada tekrarlanmıyor. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10500 -2200 19000 20400">
+<g data-role="boundaries">
+<polygon data-role="boundary" points="-9500.00,-1800.00 7000.00,-1800.00 7000.00,17800.00 -9500.00,17800.00">
+</polygon>
+</g>
+<g data-role="blocks">
+<polygon data-role="block" data-label="LOCA" data-id="b511" data-seats="500" points="-700.50,15549.50 -500.00,15549.50 -400.00,15549.50 -300.00,15549.50 -250.00,15549.50 -150.00,15549.50 -50.00,15549.50 50.00,15549.50 150.00,15549.50 250.00,15549.50 300.00,15549.50 400.00,15549.50 500.00,15549.50 700.50,15549.50 700.50,17460.50 500.00,17460.50 400.00,17460.50 300.00,17460.50 250.00,17460.50 150.00,17460.50 50.00,17460.50 -50.00,17460.50 -150.00,17460.50 -250.00,17460.50 -300.00,17460.50 -400.00,17460.50 -500.00,17460.50 -700.50,17460.50">
+</polygon>
+</g>
+</svg>

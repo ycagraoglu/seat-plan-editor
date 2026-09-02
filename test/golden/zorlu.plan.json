@@ -1,0 +1,849 @@
+{
+  "key": "zorlu",
+  "name": "Zorlu PSM · Turkcell Sahnesi",
+  "unit": "cm",
+  "home": {
+    "x": -2950,
+    "y": -1500,
+    "w": 5900,
+    "h": 9200
+  },
+  "underlay": null,
+  "shapes": [
+    {
+      "id": "s28",
+      "kind": "rect",
+      "type": "stage",
+      "x": 0,
+      "y": -700,
+      "w": 2800,
+      "h": 900,
+      "rot": 0,
+      "label": "SAHNE",
+      "capacity": 0,
+      "fs": 220
+    },
+    {
+      "id": "s29",
+      "kind": "rect",
+      "type": "note",
+      "x": -2130,
+      "y": 1700,
+      "w": 10,
+      "h": 10,
+      "rot": 0,
+      "label": "ORKESTRA",
+      "capacity": 0,
+      "fs": 108
+    },
+    {
+      "id": "s30",
+      "kind": "rect",
+      "type": "note",
+      "x": -2130,
+      "y": 4780,
+      "w": 10,
+      "h": 10,
+      "rot": 0,
+      "label": "1. BALKON",
+      "capacity": 0,
+      "fs": 108
+    },
+    {
+      "id": "s31",
+      "kind": "rect",
+      "type": "note",
+      "x": -2130,
+      "y": 6600,
+      "w": 10,
+      "h": 10,
+      "rot": 0,
+      "label": "2. BALKON",
+      "capacity": 0,
+      "fs": 108
+    },
+    {
+      "id": "s32",
+      "kind": "rect",
+      "type": "door",
+      "x": -1900,
+      "y": 1400,
+      "w": 260,
+      "h": 260,
+      "rot": 0,
+      "label": "KAPI 1",
+      "capacity": 0,
+      "fs": 90,
+      "blocks": [
+        "b38",
+        "b39",
+        "b40",
+        "b41",
+        "b42",
+        "b43",
+        "b44"
+      ]
+    },
+    {
+      "id": "s33",
+      "kind": "rect",
+      "type": "door",
+      "x": 1900,
+      "y": 1400,
+      "w": 260,
+      "h": 260,
+      "rot": 0,
+      "label": "KAPI 2",
+      "capacity": 0,
+      "fs": 90,
+      "blocks": [
+        "b38",
+        "b39",
+        "b40",
+        "b45",
+        "b46",
+        "b47",
+        "b48"
+      ]
+    },
+    {
+      "id": "s34",
+      "kind": "rect",
+      "type": "door",
+      "x": -1900,
+      "y": 4900,
+      "w": 260,
+      "h": 260,
+      "rot": 0,
+      "label": "KAPI 3",
+      "capacity": 0,
+      "fs": 90,
+      "blocks": [
+        "b40",
+        "b44",
+        "b49",
+        "b50",
+        "b52"
+      ]
+    },
+    {
+      "id": "s35",
+      "kind": "rect",
+      "type": "door",
+      "x": 1900,
+      "y": 4900,
+      "w": 260,
+      "h": 260,
+      "rot": 0,
+      "label": "KAPI 4",
+      "capacity": 0,
+      "fs": 90,
+      "blocks": [
+        "b48",
+        "b49",
+        "b51"
+      ]
+    },
+    {
+      "id": "s36",
+      "kind": "rect",
+      "type": "door",
+      "x": -1750,
+      "y": 6900,
+      "w": 260,
+      "h": 260,
+      "rot": 0,
+      "label": "KAPI 5",
+      "capacity": 0,
+      "fs": 90,
+      "blocks": [
+        "b49",
+        "b52",
+        "b53"
+      ]
+    },
+    {
+      "id": "s37",
+      "kind": "rect",
+      "type": "door",
+      "x": 1750,
+      "y": 6900,
+      "w": 260,
+      "h": 260,
+      "rot": 0,
+      "label": "KAPI 6",
+      "capacity": 0,
+      "fs": 90,
+      "blocks": [
+        "b52",
+        "b54"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b38",
+      "kind": "grid",
+      "name": "Orkestra Orta (ön)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "18..20",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "AA,BB",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "rtl",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "ORK-O",
+      "level": "Orkestra",
+      "x": 0,
+      "y": 200,
+      "rows": 2
+    },
+    {
+      "id": "b39",
+      "kind": "grid",
+      "name": "Orkestra Orta",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "21..15",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "CC,DD,EE,FF,GG,HH,A,B,C,D,E,F,G,H,I",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "rtl",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        }
+      },
+      "label": "ORK-O",
+      "level": "Orkestra",
+      "x": 0,
+      "y": 560,
+      "rows": 15
+    },
+    {
+      "id": "b40",
+      "kind": "grid",
+      "name": "Orkestra Orta (arka)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "19..28",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "J,K,L,M,N,O,P,Q,R,S,T,U,V,W",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "rtl",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "13,0": {
+          "at": "wheel"
+        },
+        "13,1": {
+          "at": "comp"
+        },
+        "13,2": {
+          "at": "wheel"
+        },
+        "13,3": {
+          "at": "comp"
+        },
+        "13,4": {
+          "at": "wheel"
+        },
+        "13,5": {
+          "at": "comp"
+        },
+        "13,6": {
+          "at": "wheel"
+        },
+        "13,7": {
+          "at": "comp"
+        },
+        "13,8": {
+          "at": "wheel"
+        },
+        "13,9": {
+          "at": "comp"
+        },
+        "13,10": {
+          "at": "wheel"
+        },
+        "13,11": {
+          "at": "comp"
+        },
+        "13,12": {
+          "at": "wheel"
+        },
+        "13,13": {
+          "at": "comp"
+        },
+        "13,14": {
+          "at": "wheel"
+        },
+        "13,15": {
+          "at": "comp"
+        },
+        "13,16": {
+          "at": "wheel"
+        },
+        "13,17": {
+          "at": "comp"
+        }
+      },
+      "label": "ORK-O",
+      "level": "Orkestra",
+      "x": 0,
+      "y": 2140,
+      "rows": 14
+    },
+    {
+      "id": "b41",
+      "kind": "grid",
+      "name": "Orkestra Çift (ön)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "5,5",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "BB,CC",
+        "skipAmbig": true,
+        "seatScheme": "even",
+        "seatDir": "rtl",
+        "seatStart": 102,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-C",
+      "level": "Orkestra",
+      "x": -1000,
+      "y": 290,
+      "rows": 2
+    },
+    {
+      "id": "b42",
+      "kind": "grid",
+      "name": "Orkestra Çift",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "5..6",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "DD,EE,FF",
+        "skipAmbig": true,
+        "seatScheme": "even",
+        "seatDir": "rtl",
+        "seatStart": 102,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-C",
+      "level": "Orkestra",
+      "x": -1000,
+      "y": 650,
+      "rows": 3
+    },
+    {
+      "id": "b43",
+      "kind": "grid",
+      "name": "Orkestra Çift (yan)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "4..3",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G",
+        "skipAmbig": true,
+        "seatScheme": "even",
+        "seatDir": "rtl",
+        "seatStart": 102,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-C",
+      "level": "Orkestra",
+      "x": -880,
+      "y": 1040,
+      "rows": 7
+    },
+    {
+      "id": "b44",
+      "kind": "grid",
+      "name": "Orkestra Çift (arka)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "17..11",
+      "align": "left",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z",
+        "skipAmbig": true,
+        "seatScheme": "even",
+        "seatDir": "rtl",
+        "seatStart": 102,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-C",
+      "level": "Orkestra",
+      "x": -1300,
+      "y": 2140,
+      "rows": 17
+    },
+    {
+      "id": "b45",
+      "kind": "grid",
+      "name": "Orkestra Tek (ön)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "5,5",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "BB,CC",
+        "skipAmbig": true,
+        "seatScheme": "odd",
+        "seatDir": "ltr",
+        "seatStart": 101,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-T",
+      "level": "Orkestra",
+      "x": 1000,
+      "y": 290,
+      "rows": 2
+    },
+    {
+      "id": "b46",
+      "kind": "grid",
+      "name": "Orkestra Tek",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "5..6",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "DD,EE,FF",
+        "skipAmbig": true,
+        "seatScheme": "odd",
+        "seatDir": "ltr",
+        "seatStart": 101,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-T",
+      "level": "Orkestra",
+      "x": 1000,
+      "y": 650,
+      "rows": 3
+    },
+    {
+      "id": "b47",
+      "kind": "grid",
+      "name": "Orkestra Tek (yan)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "4..3",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G",
+        "skipAmbig": true,
+        "seatScheme": "odd",
+        "seatDir": "ltr",
+        "seatStart": 101,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-T",
+      "level": "Orkestra",
+      "x": 880,
+      "y": 1040,
+      "rows": 7
+    },
+    {
+      "id": "b48",
+      "kind": "grid",
+      "name": "Orkestra Tek (arka)",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "17..11",
+      "align": "right",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z",
+        "skipAmbig": true,
+        "seatScheme": "odd",
+        "seatDir": "ltr",
+        "seatStart": 101,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "ORK-T",
+      "level": "Orkestra",
+      "x": 1300,
+      "y": 2140,
+      "rows": 17
+    },
+    {
+      "id": "b49",
+      "kind": "grid",
+      "name": "1. Balkon Orta",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "20,21,21,22,22,22,23,23,23,23,23,23,8",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G,H,I,J,K,L,M",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "rtl",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "12,2": {
+          "at": "wheel"
+        },
+        "12,3": {
+          "at": "comp"
+        },
+        "12,4": {
+          "at": "wheel"
+        },
+        "12,5": {
+          "at": "comp"
+        },
+        "12,0": {
+          "at": "wheel"
+        },
+        "12,1": {
+          "at": "comp"
+        },
+        "12,6": {
+          "at": "wheel"
+        },
+        "12,7": {
+          "at": "comp"
+        },
+        "11,0": {
+          "at": "wheel"
+        },
+        "11,1": {
+          "at": "comp"
+        },
+        "11,2": {
+          "at": "wheel"
+        },
+        "11,3": {
+          "at": "comp"
+        },
+        "11,4": {
+          "at": "wheel"
+        },
+        "11,5": {
+          "at": "comp"
+        },
+        "11,6": {
+          "at": "wheel"
+        },
+        "11,7": {
+          "at": "comp"
+        },
+        "11,8": {
+          "at": "wheel"
+        },
+        "11,9": {
+          "at": "comp"
+        }
+      },
+      "label": "B1-O",
+      "level": "1. Balkon",
+      "x": 0,
+      "y": 4200,
+      "rows": 13
+    },
+    {
+      "id": "b50",
+      "kind": "grid",
+      "name": "1. Balkon Çift",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "19..5",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G,H,I,J,K,L,M",
+        "skipAmbig": true,
+        "seatScheme": "even",
+        "seatDir": "rtl",
+        "seatStart": 102,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "B1-C",
+      "level": "1. Balkon",
+      "x": -1200,
+      "y": 4200,
+      "rows": 12
+    },
+    {
+      "id": "b51",
+      "kind": "grid",
+      "name": "1. Balkon Tek",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "19..5",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G,H,I,J,K,L,M",
+        "skipAmbig": true,
+        "seatScheme": "odd",
+        "seatDir": "ltr",
+        "seatStart": 101,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "B1-T",
+      "level": "1. Balkon",
+      "x": 1200,
+      "y": 4200,
+      "rows": 12
+    },
+    {
+      "id": "b52",
+      "kind": "grid",
+      "name": "2. Balkon Orta",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "21..23",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "rtl",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "B2-O",
+      "level": "2. Balkon",
+      "x": 0,
+      "y": 6200,
+      "rows": 7
+    },
+    {
+      "id": "b53",
+      "kind": "grid",
+      "name": "2. Balkon Çift",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "17..5",
+      "align": "center",
+      "color": "#5F9142",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G,H,I",
+        "skipAmbig": true,
+        "seatScheme": "even",
+        "seatDir": "rtl",
+        "seatStart": 102,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "B2-C",
+      "level": "2. Balkon",
+      "x": -1150,
+      "y": 6200,
+      "rows": 9
+    },
+    {
+      "id": "b54",
+      "kind": "grid",
+      "name": "2. Balkon Tek",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "17..5",
+      "align": "center",
+      "color": "#5F9142",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "A,B,C,D,E,F,G,H,I",
+        "skipAmbig": true,
+        "seatScheme": "odd",
+        "seatDir": "ltr",
+        "seatStart": 101,
+        "skip": "",
+        "anchor": "column"
+      },
+      "ov": {},
+      "label": "B2-T",
+      "level": "2. Balkon",
+      "x": 1150,
+      "y": 6200,
+      "rows": 9
+    }
+  ]
+}

@@ -1,0 +1,7251 @@
+{
+  "key": "ulker",
+  "name": "Ülker Spor ve Etkinlik Salonu · Fenerbahçe Beko",
+  "unit": "cm",
+  "home": {
+    "x": -6600,
+    "y": -5700,
+    "w": 13200,
+    "h": 11400
+  },
+  "underlay": null,
+  "shapes": [
+    {
+      "id": "s392",
+      "kind": "rect",
+      "type": "pitch",
+      "sport": "basket",
+      "x": 0,
+      "y": 0,
+      "w": 2800,
+      "h": 1500,
+      "rot": 0,
+      "label": "Basketbol sahası",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": []
+    },
+    {
+      "id": "s272",
+      "kind": "rect",
+      "type": "door",
+      "x": -3594,
+      "y": 1429,
+      "w": 170,
+      "h": 250,
+      "rot": 157,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b252",
+        "b292",
+        "b293",
+        "b294",
+        "b295",
+        "b296"
+      ],
+      "label": "KAPI 1"
+    },
+    {
+      "id": "s273",
+      "kind": "rect",
+      "type": "door",
+      "x": -2279,
+      "y": 2744,
+      "w": 170,
+      "h": 250,
+      "rot": 112,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b253",
+        "b295",
+        "b296",
+        "b297",
+        "b298",
+        "b299"
+      ],
+      "label": "KAPI 2"
+    },
+    {
+      "id": "s274",
+      "kind": "rect",
+      "type": "door",
+      "x": -987,
+      "y": 2930,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b393",
+        "b254",
+        "b255",
+        "b299",
+        "b300",
+        "b301"
+      ],
+      "label": "KAPI 3"
+    },
+    {
+      "id": "s275",
+      "kind": "rect",
+      "type": "door",
+      "x": -312,
+      "y": 2930,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b393",
+        "b254",
+        "b255",
+        "b256",
+        "b301"
+      ],
+      "label": "KAPI 4"
+    },
+    {
+      "id": "s276",
+      "kind": "rect",
+      "type": "door",
+      "x": 363,
+      "y": 2930,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b393",
+        "b255",
+        "b256",
+        "b257",
+        "b302"
+      ],
+      "label": "KAPI 5"
+    },
+    {
+      "id": "s277",
+      "kind": "rect",
+      "type": "door",
+      "x": 1038,
+      "y": 2930,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b256",
+        "b257",
+        "b302",
+        "b303",
+        "b304"
+      ],
+      "label": "KAPI 6"
+    },
+    {
+      "id": "s278",
+      "kind": "rect",
+      "type": "door",
+      "x": 2279,
+      "y": 2744,
+      "w": 170,
+      "h": 250,
+      "rot": 67,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b258",
+        "b304",
+        "b305",
+        "b306",
+        "b307",
+        "b308"
+      ],
+      "label": "KAPI 7"
+    },
+    {
+      "id": "s279",
+      "kind": "rect",
+      "type": "door",
+      "x": 3594,
+      "y": 1429,
+      "w": 170,
+      "h": 250,
+      "rot": 22,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b259",
+        "b307",
+        "b308",
+        "b309",
+        "b310",
+        "b311"
+      ],
+      "label": "KAPI 8"
+    },
+    {
+      "id": "s280",
+      "kind": "rect",
+      "type": "door",
+      "x": 3780,
+      "y": 250,
+      "w": 170,
+      "h": 150,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b259",
+        "b260",
+        "b261",
+        "b311",
+        "b312",
+        "b313"
+      ],
+      "label": "KAPI 9"
+    },
+    {
+      "id": "s281",
+      "kind": "rect",
+      "type": "door",
+      "x": 3780,
+      "y": -250,
+      "w": 170,
+      "h": 150,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b260",
+        "b261",
+        "b262",
+        "b312",
+        "b313",
+        "b314"
+      ],
+      "label": "KAPI 10"
+    },
+    {
+      "id": "s282",
+      "kind": "rect",
+      "type": "door",
+      "x": 3594,
+      "y": -1429,
+      "w": 170,
+      "h": 250,
+      "rot": -23,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b262",
+        "b314",
+        "b315",
+        "b316",
+        "b317",
+        "b318"
+      ],
+      "label": "KAPI 11"
+    },
+    {
+      "id": "s283",
+      "kind": "rect",
+      "type": "door",
+      "x": 2279,
+      "y": -2744,
+      "w": 170,
+      "h": 250,
+      "rot": -68,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b263",
+        "b317",
+        "b318",
+        "b319",
+        "b320",
+        "b321"
+      ],
+      "label": "KAPI 12"
+    },
+    {
+      "id": "s284",
+      "kind": "rect",
+      "type": "door",
+      "x": 987,
+      "y": -2930,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b394",
+        "b264",
+        "b265",
+        "b321",
+        "b322",
+        "b323"
+      ],
+      "label": "KAPI 13"
+    },
+    {
+      "id": "s285",
+      "kind": "rect",
+      "type": "door",
+      "x": 312,
+      "y": -2930,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b394",
+        "b264",
+        "b265",
+        "b266",
+        "b323"
+      ],
+      "label": "KAPI 14"
+    },
+    {
+      "id": "s286",
+      "kind": "rect",
+      "type": "door",
+      "x": -363,
+      "y": -2930,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b394",
+        "b265",
+        "b266",
+        "b267",
+        "b324"
+      ],
+      "label": "KAPI 15"
+    },
+    {
+      "id": "s287",
+      "kind": "rect",
+      "type": "door",
+      "x": -1038,
+      "y": -2930,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b266",
+        "b267",
+        "b324",
+        "b325",
+        "b326"
+      ],
+      "label": "KAPI 16"
+    },
+    {
+      "id": "s288",
+      "kind": "rect",
+      "type": "door",
+      "x": -2279,
+      "y": -2744,
+      "w": 170,
+      "h": 250,
+      "rot": -113,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b268",
+        "b326",
+        "b327",
+        "b328",
+        "b329",
+        "b330"
+      ],
+      "label": "KAPI 17"
+    },
+    {
+      "id": "s289",
+      "kind": "rect",
+      "type": "door",
+      "x": -3594,
+      "y": -1429,
+      "w": 170,
+      "h": 250,
+      "rot": -158,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b269",
+        "b329",
+        "b330",
+        "b331",
+        "b332",
+        "b333"
+      ],
+      "label": "KAPI 18"
+    },
+    {
+      "id": "s290",
+      "kind": "rect",
+      "type": "door",
+      "x": -3780,
+      "y": -250,
+      "w": 170,
+      "h": 150,
+      "rot": 180,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b269",
+        "b270",
+        "b271",
+        "b333",
+        "b334",
+        "b335"
+      ],
+      "label": "KAPI 19"
+    },
+    {
+      "id": "s291",
+      "kind": "rect",
+      "type": "door",
+      "x": -3780,
+      "y": 250,
+      "w": 170,
+      "h": 150,
+      "rot": 180,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b252",
+        "b270",
+        "b271",
+        "b292",
+        "b334",
+        "b335"
+      ],
+      "label": "KAPI 20"
+    },
+    {
+      "id": "s364",
+      "kind": "rect",
+      "type": "door",
+      "x": -5806,
+      "y": 2120,
+      "w": 170,
+      "h": 250,
+      "rot": 157,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b336"
+      ],
+      "label": "KAPI 21"
+    },
+    {
+      "id": "s365",
+      "kind": "rect",
+      "type": "door",
+      "x": -4779,
+      "y": 3912,
+      "w": 170,
+      "h": 250,
+      "rot": 127,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b295",
+        "b296",
+        "b337"
+      ],
+      "label": "KAPI 22"
+    },
+    {
+      "id": "s366",
+      "kind": "rect",
+      "type": "door",
+      "x": -2994,
+      "y": 4950,
+      "w": 170,
+      "h": 250,
+      "rot": 97,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b338"
+      ],
+      "label": "KAPI 23"
+    },
+    {
+      "id": "s367",
+      "kind": "rect",
+      "type": "door",
+      "x": -1535,
+      "y": 5090,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b339"
+      ],
+      "label": "KAPI 24"
+    },
+    {
+      "id": "s368",
+      "kind": "rect",
+      "type": "door",
+      "x": -755,
+      "y": 5090,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b340"
+      ],
+      "label": "KAPI 25"
+    },
+    {
+      "id": "s369",
+      "kind": "rect",
+      "type": "door",
+      "x": 25,
+      "y": 5090,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b341"
+      ],
+      "label": "KAPI 26"
+    },
+    {
+      "id": "s370",
+      "kind": "rect",
+      "type": "door",
+      "x": 805,
+      "y": 5090,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b342"
+      ],
+      "label": "KAPI 27"
+    },
+    {
+      "id": "s371",
+      "kind": "rect",
+      "type": "door",
+      "x": 1585,
+      "y": 5090,
+      "w": 170,
+      "h": 250,
+      "rot": 90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b343"
+      ],
+      "label": "KAPI 28"
+    },
+    {
+      "id": "s372",
+      "kind": "rect",
+      "type": "door",
+      "x": 2970,
+      "y": 4956,
+      "w": 170,
+      "h": 250,
+      "rot": 67,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b344"
+      ],
+      "label": "KAPI 29"
+    },
+    {
+      "id": "s373",
+      "kind": "rect",
+      "type": "door",
+      "x": 4762,
+      "y": 3929,
+      "w": 170,
+      "h": 250,
+      "rot": 37,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b307",
+        "b308",
+        "b345"
+      ],
+      "label": "KAPI 30"
+    },
+    {
+      "id": "s374",
+      "kind": "rect",
+      "type": "door",
+      "x": 5800,
+      "y": 2144,
+      "w": 170,
+      "h": 250,
+      "rot": 7,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b346"
+      ],
+      "label": "KAPI 31"
+    },
+    {
+      "id": "s375",
+      "kind": "rect",
+      "type": "door",
+      "x": 5940,
+      "y": 733,
+      "w": 170,
+      "h": 250,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b347"
+      ],
+      "label": "KAPI 32"
+    },
+    {
+      "id": "s376",
+      "kind": "rect",
+      "type": "door",
+      "x": 5940,
+      "y": 0,
+      "w": 170,
+      "h": 250,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b348"
+      ],
+      "label": "KAPI 33"
+    },
+    {
+      "id": "s377",
+      "kind": "rect",
+      "type": "door",
+      "x": 5940,
+      "y": -733,
+      "w": 170,
+      "h": 250,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b349"
+      ],
+      "label": "KAPI 34"
+    },
+    {
+      "id": "s378",
+      "kind": "rect",
+      "type": "door",
+      "x": 5806,
+      "y": -2120,
+      "w": 170,
+      "h": 250,
+      "rot": -23,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b350"
+      ],
+      "label": "KAPI 35"
+    },
+    {
+      "id": "s379",
+      "kind": "rect",
+      "type": "door",
+      "x": 4779,
+      "y": -3912,
+      "w": 170,
+      "h": 250,
+      "rot": -53,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b317",
+        "b318",
+        "b351"
+      ],
+      "label": "KAPI 36"
+    },
+    {
+      "id": "s380",
+      "kind": "rect",
+      "type": "door",
+      "x": 2994,
+      "y": -4950,
+      "w": 170,
+      "h": 250,
+      "rot": -83,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b352"
+      ],
+      "label": "KAPI 37"
+    },
+    {
+      "id": "s381",
+      "kind": "rect",
+      "type": "door",
+      "x": 1535,
+      "y": -5090,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b353"
+      ],
+      "label": "KAPI 38"
+    },
+    {
+      "id": "s382",
+      "kind": "rect",
+      "type": "door",
+      "x": 755,
+      "y": -5090,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b354"
+      ],
+      "label": "KAPI 39"
+    },
+    {
+      "id": "s383",
+      "kind": "rect",
+      "type": "door",
+      "x": -25,
+      "y": -5090,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b355"
+      ],
+      "label": "KAPI 40"
+    },
+    {
+      "id": "s384",
+      "kind": "rect",
+      "type": "door",
+      "x": -805,
+      "y": -5090,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b356"
+      ],
+      "label": "KAPI 41"
+    },
+    {
+      "id": "s385",
+      "kind": "rect",
+      "type": "door",
+      "x": -1585,
+      "y": -5090,
+      "w": 170,
+      "h": 250,
+      "rot": -90,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b357"
+      ],
+      "label": "KAPI 42"
+    },
+    {
+      "id": "s386",
+      "kind": "rect",
+      "type": "door",
+      "x": -2970,
+      "y": -4956,
+      "w": 170,
+      "h": 250,
+      "rot": -113,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b358"
+      ],
+      "label": "KAPI 43"
+    },
+    {
+      "id": "s387",
+      "kind": "rect",
+      "type": "door",
+      "x": -4762,
+      "y": -3929,
+      "w": 170,
+      "h": 250,
+      "rot": -143,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b329",
+        "b330",
+        "b359"
+      ],
+      "label": "KAPI 44"
+    },
+    {
+      "id": "s388",
+      "kind": "rect",
+      "type": "door",
+      "x": -5800,
+      "y": -2144,
+      "w": 170,
+      "h": 250,
+      "rot": -173,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b360"
+      ],
+      "label": "KAPI 45"
+    },
+    {
+      "id": "s389",
+      "kind": "rect",
+      "type": "door",
+      "x": -5940,
+      "y": -733,
+      "w": 170,
+      "h": 250,
+      "rot": 180,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b361"
+      ],
+      "label": "KAPI 46"
+    },
+    {
+      "id": "s390",
+      "kind": "rect",
+      "type": "door",
+      "x": -5940,
+      "y": 0,
+      "w": 170,
+      "h": 250,
+      "rot": 180,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b362"
+      ],
+      "label": "KAPI 47"
+    },
+    {
+      "id": "s391",
+      "kind": "rect",
+      "type": "door",
+      "x": -5940,
+      "y": 733,
+      "w": 170,
+      "h": 250,
+      "rot": 180,
+      "capacity": 0,
+      "fs": 120,
+      "blocks": [
+        "b363"
+      ],
+      "label": "KAPI 48"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b393",
+      "kind": "grid",
+      "label": "P1",
+      "name": "Parket Kenarı · P1",
+      "level": "Parket Kenarı",
+      "x": 0,
+      "y": 950,
+      "rot": 0,
+      "cols": 30,
+      "rows": 2,
+      "counts": "",
+      "align": "center",
+      "seatGap": 55,
+      "rowGap": 90,
+      "curve": 0,
+      "taper": 0,
+      "color": "#C2415A",
+      "attr": "",
+      "num": {
+        "rowScheme": "letter",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {}
+    },
+    {
+      "id": "b394",
+      "kind": "grid",
+      "label": "P2",
+      "name": "Parket Kenarı · P2",
+      "level": "Parket Kenarı",
+      "x": 0,
+      "y": -950,
+      "rot": 180,
+      "cols": 30,
+      "rows": 2,
+      "counts": "",
+      "align": "center",
+      "seatGap": 55,
+      "rowGap": 90,
+      "curve": 0,
+      "taper": 0,
+      "color": "#C2415A",
+      "attr": "",
+      "num": {
+        "rowScheme": "letter",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {}
+    },
+    {
+      "id": "b252",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1350,
+      "y": 500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": -128.6338,
+      "aEnd": -96.3662,
+      "color": "#7C5BA8",
+      "label": "101",
+      "name": "Alt Tribün · 101"
+    },
+    {
+      "id": "b253",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1350,
+      "y": 500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": -128.6338,
+      "aEnd": -96.3662,
+      "color": "#7C5BA8",
+      "label": "102",
+      "name": "Alt Tribün · 102"
+    },
+    {
+      "id": "b254",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -1012.5,
+      "y": 1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "103",
+      "name": "Alt Tribün · 103"
+    },
+    {
+      "id": "b255",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -337.5,
+      "y": 1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "104",
+      "name": "Alt Tribün · 104"
+    },
+    {
+      "id": "b256",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 337.5,
+      "y": 1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "105",
+      "name": "Alt Tribün · 105"
+    },
+    {
+      "id": "b257",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 1012.5,
+      "y": 1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "106",
+      "name": "Alt Tribün · 106"
+    },
+    {
+      "id": "b258",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1350,
+      "y": 500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": 141.3662,
+      "aEnd": 173.6338,
+      "color": "#7C5BA8",
+      "label": "107",
+      "name": "Alt Tribün · 107"
+    },
+    {
+      "id": "b259",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1350,
+      "y": 500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": 141.3662,
+      "aEnd": 173.6338,
+      "color": "#7C5BA8",
+      "label": "108",
+      "name": "Alt Tribün · 108"
+    },
+    {
+      "id": "b260",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,1": {
+          "rm": true
+        },
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "18,1": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "19,1": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 2250,
+      "y": 250,
+      "rows": 20,
+      "cols": 6,
+      "color": "#3E9092",
+      "label": "109",
+      "name": "Alt Tribün · 109"
+    },
+    {
+      "id": "b261",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,1": {
+          "rm": true
+        },
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "18,1": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "19,1": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 2250,
+      "y": -250,
+      "rows": 20,
+      "cols": 6,
+      "color": "#3E9092",
+      "label": "110",
+      "name": "Alt Tribün · 110"
+    },
+    {
+      "id": "b262",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1350,
+      "y": -500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": -128.6338,
+      "aEnd": -96.3662,
+      "color": "#7C5BA8",
+      "label": "111",
+      "name": "Alt Tribün · 111"
+    },
+    {
+      "id": "b263",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1350,
+      "y": -500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": -128.6338,
+      "aEnd": -96.3662,
+      "color": "#7C5BA8",
+      "label": "112",
+      "name": "Alt Tribün · 112"
+    },
+    {
+      "id": "b264",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 1012.5,
+      "y": -1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "113",
+      "name": "Alt Tribün · 113"
+    },
+    {
+      "id": "b265",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 337.5,
+      "y": -1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "114",
+      "name": "Alt Tribün · 114"
+    },
+    {
+      "id": "b266",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -337.5,
+      "y": -1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "115",
+      "name": "Alt Tribün · 115"
+    },
+    {
+      "id": "b267",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "17,5": {
+          "rm": true
+        },
+        "17,6": {
+          "rm": true
+        },
+        "17,7": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "18,5": {
+          "rm": true
+        },
+        "18,6": {
+          "rm": true
+        },
+        "18,7": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        },
+        "19,5": {
+          "rm": true
+        },
+        "19,6": {
+          "rm": true
+        },
+        "19,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -1012.5,
+      "y": -1400,
+      "rows": 20,
+      "cols": 9,
+      "color": "#C1743C",
+      "label": "116",
+      "name": "Alt Tribün · 116"
+    },
+    {
+      "id": "b268",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1350,
+      "y": -500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": 141.3662,
+      "aEnd": 173.6338,
+      "color": "#7C5BA8",
+      "label": "117",
+      "name": "Alt Tribün · 117"
+    },
+    {
+      "id": "b269",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,10": {
+          "rm": true
+        },
+        "17,11": {
+          "rm": true
+        },
+        "17,12": {
+          "rm": true
+        },
+        "17,13": {
+          "rm": true
+        },
+        "17,14": {
+          "rm": true
+        },
+        "17,15": {
+          "rm": true
+        },
+        "18,11": {
+          "rm": true
+        },
+        "18,12": {
+          "rm": true
+        },
+        "18,13": {
+          "rm": true
+        },
+        "18,14": {
+          "rm": true
+        },
+        "18,15": {
+          "rm": true
+        },
+        "18,16": {
+          "rm": true
+        },
+        "19,11": {
+          "rm": true
+        },
+        "19,12": {
+          "rm": true
+        },
+        "19,13": {
+          "rm": true
+        },
+        "19,14": {
+          "rm": true
+        },
+        "19,15": {
+          "rm": true
+        },
+        "19,16": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1350,
+      "y": -500,
+      "r0": 900,
+      "rows": 20,
+      "aStart": 141.3662,
+      "aEnd": 173.6338,
+      "color": "#7C5BA8",
+      "label": "118",
+      "name": "Alt Tribün · 118"
+    },
+    {
+      "id": "b270",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,1": {
+          "rm": true
+        },
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "18,1": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "19,1": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -2250,
+      "y": -250,
+      "rows": 20,
+      "cols": 6,
+      "color": "#3E9092",
+      "label": "119",
+      "name": "Alt Tribün · 119"
+    },
+    {
+      "id": "b271",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "17,1": {
+          "rm": true
+        },
+        "17,2": {
+          "rm": true
+        },
+        "17,3": {
+          "rm": true
+        },
+        "17,4": {
+          "rm": true
+        },
+        "18,1": {
+          "rm": true
+        },
+        "18,2": {
+          "rm": true
+        },
+        "18,3": {
+          "rm": true
+        },
+        "18,4": {
+          "rm": true
+        },
+        "19,1": {
+          "rm": true
+        },
+        "19,2": {
+          "rm": true
+        },
+        "19,3": {
+          "rm": true
+        },
+        "19,4": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Alt Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -2250,
+      "y": 250,
+      "rows": 20,
+      "cols": 6,
+      "color": "#3E9092",
+      "label": "120",
+      "name": "Alt Tribün · 120"
+    },
+    {
+      "id": "b292",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "1",
+      "name": "Loca · 1"
+    },
+    {
+      "id": "b293",
+      "rot": -11.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "2",
+      "name": "Loca · 2"
+    },
+    {
+      "id": "b294",
+      "rot": -22.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "3",
+      "name": "Loca · 3"
+    },
+    {
+      "id": "b295",
+      "rot": -33.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "4",
+      "name": "Loca · 4"
+    },
+    {
+      "id": "b296",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "5",
+      "name": "Loca · 5"
+    },
+    {
+      "id": "b297",
+      "rot": -56.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "6",
+      "name": "Loca · 6"
+    },
+    {
+      "id": "b298",
+      "rot": -67.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "7",
+      "name": "Loca · 7"
+    },
+    {
+      "id": "b299",
+      "rot": -78.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "8",
+      "name": "Loca · 8"
+    },
+    {
+      "id": "b300",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": -1275,
+      "y": 3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "9",
+      "name": "Loca · 9"
+    },
+    {
+      "id": "b301",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": -425,
+      "y": 3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "10",
+      "name": "Loca · 10"
+    },
+    {
+      "id": "b302",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": 425,
+      "y": 3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "11",
+      "name": "Loca · 11"
+    },
+    {
+      "id": "b303",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": 1275,
+      "y": 3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "12",
+      "name": "Loca · 12"
+    },
+    {
+      "id": "b304",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "13",
+      "name": "Loca · 13"
+    },
+    {
+      "id": "b305",
+      "rot": -11.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "14",
+      "name": "Loca · 14"
+    },
+    {
+      "id": "b306",
+      "rot": -22.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "15",
+      "name": "Loca · 15"
+    },
+    {
+      "id": "b307",
+      "rot": -33.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "16",
+      "name": "Loca · 16"
+    },
+    {
+      "id": "b308",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "17",
+      "name": "Loca · 17"
+    },
+    {
+      "id": "b309",
+      "rot": -56.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "18",
+      "name": "Loca · 18"
+    },
+    {
+      "id": "b310",
+      "rot": -67.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "19",
+      "name": "Loca · 19"
+    },
+    {
+      "id": "b311",
+      "rot": -78.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": 850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "20",
+      "name": "Loca · 20"
+    },
+    {
+      "id": "b312",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": 4300,
+      "y": 425,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "21",
+      "name": "Loca · 21"
+    },
+    {
+      "id": "b313",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": 4300,
+      "y": -425,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "22",
+      "name": "Loca · 22"
+    },
+    {
+      "id": "b314",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "23",
+      "name": "Loca · 23"
+    },
+    {
+      "id": "b315",
+      "rot": 168.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "24",
+      "name": "Loca · 24"
+    },
+    {
+      "id": "b316",
+      "rot": 157.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "25",
+      "name": "Loca · 25"
+    },
+    {
+      "id": "b317",
+      "rot": 146.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "26",
+      "name": "Loca · 26"
+    },
+    {
+      "id": "b318",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "27",
+      "name": "Loca · 27"
+    },
+    {
+      "id": "b319",
+      "rot": 123.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "28",
+      "name": "Loca · 28"
+    },
+    {
+      "id": "b320",
+      "rot": 112.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "29",
+      "name": "Loca · 29"
+    },
+    {
+      "id": "b321",
+      "rot": 101.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": -98.4954,
+      "aEnd": -92.7546,
+      "color": "#B79A32",
+      "label": "30",
+      "name": "Loca · 30"
+    },
+    {
+      "id": "b322",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": 1275,
+      "y": -3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "31",
+      "name": "Loca · 31"
+    },
+    {
+      "id": "b323",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": 425,
+      "y": -3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "32",
+      "name": "Loca · 32"
+    },
+    {
+      "id": "b324",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": -425,
+      "y": -3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "33",
+      "name": "Loca · 33"
+    },
+    {
+      "id": "b325",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": -1275,
+      "y": -3450,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "34",
+      "name": "Loca · 34"
+    },
+    {
+      "id": "b326",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "35",
+      "name": "Loca · 35"
+    },
+    {
+      "id": "b327",
+      "rot": 168.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "36",
+      "name": "Loca · 36"
+    },
+    {
+      "id": "b328",
+      "rot": 157.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "37",
+      "name": "Loca · 37"
+    },
+    {
+      "id": "b329",
+      "rot": 146.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "38",
+      "name": "Loca · 38"
+    },
+    {
+      "id": "b330",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "39",
+      "name": "Loca · 39"
+    },
+    {
+      "id": "b331",
+      "rot": 123.75,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "40",
+      "name": "Loca · 40"
+    },
+    {
+      "id": "b332",
+      "rot": 112.5,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "41",
+      "name": "Loca · 41"
+    },
+    {
+      "id": "b333",
+      "rot": 101.25,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1700,
+      "y": -850,
+      "r0": 2600,
+      "rows": 2,
+      "aStart": 171.5046,
+      "aEnd": 177.2454,
+      "color": "#B79A32",
+      "label": "42",
+      "name": "Loca · 42"
+    },
+    {
+      "id": "b334",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": -4300,
+      "y": -425,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "43",
+      "name": "Loca · 43"
+    },
+    {
+      "id": "b335",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 90,
+      "rowGap": 90,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Loca",
+      "pad": 60,
+      "kind": "grid",
+      "x": -4300,
+      "y": 425,
+      "rows": 2,
+      "cols": 6,
+      "color": "#B79A32",
+      "label": "44",
+      "name": "Loca · 44"
+    },
+    {
+      "id": "b336",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,15": {
+          "rm": true
+        },
+        "15,16": {
+          "rm": true
+        },
+        "15,17": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1950,
+      "y": 1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": -117.7491,
+      "aEnd": -92.2509,
+      "color": "#3E7FBF",
+      "label": "201",
+      "name": "Üst Tribün · 201"
+    },
+    {
+      "id": "b337",
+      "rot": -30,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,15": {
+          "rm": true
+        },
+        "15,16": {
+          "rm": true
+        },
+        "15,17": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1950,
+      "y": 1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": -117.7491,
+      "aEnd": -92.2509,
+      "color": "#3E7FBF",
+      "label": "202",
+      "name": "Üst Tribün · 202"
+    },
+    {
+      "id": "b338",
+      "rot": -60,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1950,
+      "y": 1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": -117.7491,
+      "aEnd": -92.2509,
+      "color": "#3E7FBF",
+      "label": "203",
+      "name": "Üst Tribün · 203"
+    },
+    {
+      "id": "b339",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        },
+        "15,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -1560,
+      "y": 3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "204",
+      "name": "Üst Tribün · 204"
+    },
+    {
+      "id": "b340",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,8": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "14,0": {
+          "at": "wheel"
+        },
+        "14,1": {
+          "at": "comp"
+        },
+        "14,2": {
+          "at": "wheel"
+        },
+        "14,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -780,
+      "y": 3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "205",
+      "name": "Üst Tribün · 205"
+    },
+    {
+      "id": "b341",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        },
+        "15,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 0,
+      "y": 3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "206",
+      "name": "Üst Tribün · 206"
+    },
+    {
+      "id": "b342",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,8": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "14,0": {
+          "at": "wheel"
+        },
+        "14,1": {
+          "at": "comp"
+        },
+        "14,2": {
+          "at": "wheel"
+        },
+        "14,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 780,
+      "y": 3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "207",
+      "name": "Üst Tribün · 207"
+    },
+    {
+      "id": "b343",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        },
+        "15,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 1560,
+      "y": 3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "208",
+      "name": "Üst Tribün · 208"
+    },
+    {
+      "id": "b344",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1950,
+      "y": 1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": 152.2509,
+      "aEnd": 177.7491,
+      "color": "#3E7FBF",
+      "label": "209",
+      "name": "Üst Tribün · 209"
+    },
+    {
+      "id": "b345",
+      "rot": -30,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,15": {
+          "rm": true
+        },
+        "15,16": {
+          "rm": true
+        },
+        "15,17": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1950,
+      "y": 1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": 152.2509,
+      "aEnd": 177.7491,
+      "color": "#3E7FBF",
+      "label": "210",
+      "name": "Üst Tribün · 210"
+    },
+    {
+      "id": "b346",
+      "rot": -60,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1950,
+      "y": 1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": 152.2509,
+      "aEnd": 177.7491,
+      "color": "#3E7FBF",
+      "label": "211",
+      "name": "Üst Tribün · 211"
+    },
+    {
+      "id": "b347",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,2": {
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "14,2": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "15,2": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 4750,
+      "y": 733.3333,
+      "rows": 16,
+      "cols": 10,
+      "color": "#6E7787",
+      "label": "212",
+      "name": "Üst Tribün · 212"
+    },
+    {
+      "id": "b348",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "14,0": {
+          "at": "wheel"
+        },
+        "14,1": {
+          "at": "comp"
+        },
+        "14,2": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,2": {
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 4750,
+      "y": 0,
+      "rows": 16,
+      "cols": 10,
+      "color": "#6E7787",
+      "label": "213",
+      "name": "Üst Tribün · 213"
+    },
+    {
+      "id": "b349",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,2": {
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "14,2": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "15,2": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 4750,
+      "y": -733.3334,
+      "rows": 16,
+      "cols": 10,
+      "color": "#6E7787",
+      "label": "214",
+      "name": "Üst Tribün · 214"
+    },
+    {
+      "id": "b350",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1950,
+      "y": -1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": -117.7491,
+      "aEnd": -92.2509,
+      "color": "#3E7FBF",
+      "label": "215",
+      "name": "Üst Tribün · 215"
+    },
+    {
+      "id": "b351",
+      "rot": 150,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,15": {
+          "rm": true
+        },
+        "15,16": {
+          "rm": true
+        },
+        "15,17": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1950,
+      "y": -1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": -117.7491,
+      "aEnd": -92.2509,
+      "color": "#3E7FBF",
+      "label": "216",
+      "name": "Üst Tribün · 216"
+    },
+    {
+      "id": "b352",
+      "rot": 120,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": 1950,
+      "y": -1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": -117.7491,
+      "aEnd": -92.2509,
+      "color": "#3E7FBF",
+      "label": "217",
+      "name": "Üst Tribün · 217"
+    },
+    {
+      "id": "b353",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        },
+        "15,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 1560,
+      "y": -3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "218",
+      "name": "Üst Tribün · 218"
+    },
+    {
+      "id": "b354",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,8": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "14,0": {
+          "at": "wheel"
+        },
+        "14,1": {
+          "at": "comp"
+        },
+        "14,2": {
+          "at": "wheel"
+        },
+        "14,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 780,
+      "y": -3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "219",
+      "name": "Üst Tribün · 219"
+    },
+    {
+      "id": "b355",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        },
+        "15,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": 0,
+      "y": -3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "220",
+      "name": "Üst Tribün · 220"
+    },
+    {
+      "id": "b356",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,8": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "14,0": {
+          "at": "wheel"
+        },
+        "14,1": {
+          "at": "comp"
+        },
+        "14,2": {
+          "at": "wheel"
+        },
+        "14,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -780,
+      "y": -3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "221",
+      "name": "Üst Tribün · 221"
+    },
+    {
+      "id": "b357",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "13,8": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "14,8": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        },
+        "15,8": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -1560,
+      "y": -3900,
+      "rows": 16,
+      "cols": 11,
+      "color": "#5F9142",
+      "label": "222",
+      "name": "Üst Tribün · 222"
+    },
+    {
+      "id": "b358",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1950,
+      "y": -1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": 152.2509,
+      "aEnd": 177.7491,
+      "color": "#3E7FBF",
+      "label": "223",
+      "name": "Üst Tribün · 223"
+    },
+    {
+      "id": "b359",
+      "rot": 150,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,15": {
+          "rm": true
+        },
+        "15,16": {
+          "rm": true
+        },
+        "15,17": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1950,
+      "y": -1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": 152.2509,
+      "aEnd": 177.7491,
+      "color": "#3E7FBF",
+      "label": "224",
+      "name": "Üst Tribün · 224"
+    },
+    {
+      "id": "b360",
+      "rot": 120,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel"
+        },
+        "15,3": {
+          "at": "comp"
+        },
+        "15,4": {
+          "at": "wheel"
+        },
+        "15,5": {
+          "at": "comp"
+        },
+        "15,6": {
+          "at": "wheel"
+        },
+        "15,7": {
+          "at": "comp"
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "15,10": {
+          "at": "wheel"
+        },
+        "15,11": {
+          "at": "comp"
+        },
+        "15,12": {
+          "at": "wheel"
+        },
+        "15,13": {
+          "at": "comp"
+        },
+        "15,14": {
+          "at": "wheel"
+        },
+        "15,15": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,16": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,17": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,15": {
+          "rm": true
+        },
+        "13,16": {
+          "rm": true
+        },
+        "13,17": {
+          "rm": true
+        },
+        "13,18": {
+          "rm": true
+        },
+        "13,19": {
+          "rm": true
+        },
+        "13,20": {
+          "rm": true
+        },
+        "14,15": {
+          "rm": true
+        },
+        "14,16": {
+          "rm": true
+        },
+        "14,17": {
+          "rm": true
+        },
+        "14,18": {
+          "rm": true
+        },
+        "14,19": {
+          "rm": true
+        },
+        "14,20": {
+          "rm": true
+        },
+        "15,18": {
+          "rm": true
+        },
+        "15,19": {
+          "rm": true
+        },
+        "15,20": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "fan",
+      "mode": "span",
+      "x": -1950,
+      "y": -1100,
+      "r0": 2800,
+      "rows": 16,
+      "aStart": 152.2509,
+      "aEnd": 177.7491,
+      "color": "#3E7FBF",
+      "label": "225",
+      "name": "Üst Tribün · 225"
+    },
+    {
+      "id": "b361",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,2": {
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "14,2": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "15,2": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -4750,
+      "y": -733.3333,
+      "rows": 16,
+      "cols": 10,
+      "color": "#6E7787",
+      "label": "226",
+      "name": "Üst Tribün · 226"
+    },
+    {
+      "id": "b362",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "15,0": {
+          "at": "wheel"
+        },
+        "15,1": {
+          "at": "comp"
+        },
+        "15,2": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "15,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "15,8": {
+          "at": "wheel"
+        },
+        "15,9": {
+          "at": "comp"
+        },
+        "14,0": {
+          "at": "wheel"
+        },
+        "14,1": {
+          "at": "comp"
+        },
+        "14,2": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,3": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,4": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,5": {
+          "at": "comp",
+          "rm": true
+        },
+        "14,6": {
+          "at": "wheel",
+          "rm": true
+        },
+        "14,7": {
+          "at": "comp",
+          "rm": true
+        },
+        "13,2": {
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -4750,
+      "y": 0,
+      "rows": 16,
+      "cols": 10,
+      "color": "#6E7787",
+      "label": "227",
+      "name": "Üst Tribün · 227"
+    },
+    {
+      "id": "b363",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "13,2": {
+          "rm": true
+        },
+        "13,3": {
+          "rm": true
+        },
+        "13,4": {
+          "rm": true
+        },
+        "13,5": {
+          "rm": true
+        },
+        "13,6": {
+          "rm": true
+        },
+        "13,7": {
+          "rm": true
+        },
+        "14,2": {
+          "rm": true
+        },
+        "14,3": {
+          "rm": true
+        },
+        "14,4": {
+          "rm": true
+        },
+        "14,5": {
+          "rm": true
+        },
+        "14,6": {
+          "rm": true
+        },
+        "14,7": {
+          "rm": true
+        },
+        "15,2": {
+          "rm": true
+        },
+        "15,3": {
+          "rm": true
+        },
+        "15,4": {
+          "rm": true
+        },
+        "15,5": {
+          "rm": true
+        },
+        "15,6": {
+          "rm": true
+        },
+        "15,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Üst Tribün",
+      "pad": 70,
+      "kind": "grid",
+      "x": -4750,
+      "y": 733.3334,
+      "rows": 16,
+      "cols": 10,
+      "color": "#6E7787",
+      "label": "228",
+      "name": "Üst Tribün · 228"
+    }
+  ]
+}

@@ -1,0 +1,606 @@
+{
+  "key": "akm",
+  "name": "AKM · Türk Telekom Opera Salonu",
+  "unit": "cm",
+  "home": {
+    "x": -2950,
+    "y": -3550,
+    "w": 5900,
+    "h": 3900
+  },
+  "underlay": null,
+  "shapes": [
+    {
+      "id": "s481",
+      "kind": "rect",
+      "type": "stage",
+      "x": 0,
+      "y": -450,
+      "w": 1200,
+      "h": 350,
+      "rot": 0,
+      "label": "SAHNE",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s482",
+      "kind": "rect",
+      "type": "wall",
+      "x": 0,
+      "y": -1600,
+      "w": 5700,
+      "h": 3800,
+      "rot": 0,
+      "label": "DUVAR",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s483",
+      "kind": "rect",
+      "type": "door",
+      "x": -1893,
+      "y": -166,
+      "w": 200,
+      "h": 200,
+      "rot": 0,
+      "label": "KAPI 1",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b489",
+        "b491"
+      ]
+    },
+    {
+      "id": "s484",
+      "kind": "rect",
+      "type": "door",
+      "x": 1893,
+      "y": -166,
+      "w": 200,
+      "h": 200,
+      "rot": 0,
+      "label": "KAPI 2",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b489",
+        "b492"
+      ]
+    },
+    {
+      "id": "s485",
+      "kind": "rect",
+      "type": "door",
+      "x": -1543,
+      "y": -1839,
+      "w": 200,
+      "h": 200,
+      "rot": 0,
+      "label": "KAPI 3",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b489",
+        "b490",
+        "b491",
+        "b493",
+        "b494",
+        "b496",
+        "b497"
+      ]
+    },
+    {
+      "id": "s486",
+      "kind": "rect",
+      "type": "door",
+      "x": 1543,
+      "y": -1839,
+      "w": 200,
+      "h": 200,
+      "rot": 0,
+      "label": "KAPI 4",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b490",
+        "b492",
+        "b493",
+        "b495",
+        "b496",
+        "b498"
+      ]
+    },
+    {
+      "id": "s487",
+      "kind": "rect",
+      "type": "door",
+      "x": -2155,
+      "y": -1940,
+      "w": 200,
+      "h": 200,
+      "rot": 0,
+      "label": "KAPI 5",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b490",
+        "b493",
+        "b496",
+        "b497"
+      ]
+    },
+    {
+      "id": "s488",
+      "kind": "rect",
+      "type": "door",
+      "x": 2155,
+      "y": -1940,
+      "w": 200,
+      "h": 200,
+      "rot": 0,
+      "label": "KAPI 6",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b498"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b489",
+      "kind": "fan",
+      "name": "",
+      "level": "Parter",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 48,
+      "rowGap": 85,
+      "aStart": -78,
+      "aEnd": 78,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "4,8": {
+          "at": "wheel"
+        },
+        "4,9": {
+          "at": "wheel"
+        },
+        "4,10": {
+          "at": "wheel"
+        },
+        "4,11": {
+          "at": "wheel"
+        },
+        "4,12": {
+          "at": "wheel"
+        },
+        "4,13": {
+          "at": "wheel"
+        },
+        "4,14": {
+          "at": "wheel"
+        },
+        "4,15": {
+          "at": "wheel"
+        },
+        "4,16": {
+          "at": "wheel"
+        },
+        "4,17": {
+          "at": "wheel"
+        },
+        "3,8": {
+          "at": "comp"
+        },
+        "3,9": {
+          "at": "comp"
+        },
+        "3,10": {
+          "at": "comp"
+        },
+        "3,11": {
+          "at": "comp"
+        },
+        "3,12": {
+          "at": "comp"
+        },
+        "3,13": {
+          "at": "comp"
+        },
+        "3,14": {
+          "at": "comp"
+        },
+        "3,15": {
+          "at": "comp"
+        },
+        "3,16": {
+          "at": "comp"
+        },
+        "3,17": {
+          "at": "comp"
+        }
+      },
+      "label": "P.ON",
+      "x": 0,
+      "y": 0,
+      "r0": 200,
+      "rows": 5
+    },
+    {
+      "id": "b490",
+      "kind": "fan",
+      "name": "",
+      "level": "Parter",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 50,
+      "rowGap": 88,
+      "aStart": -22,
+      "aEnd": 22,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "P.ORTA-2",
+      "x": 0,
+      "y": 0,
+      "r0": 825,
+      "rows": 13
+    },
+    {
+      "id": "b491",
+      "kind": "fan",
+      "name": "",
+      "level": "Parter",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 50,
+      "rowGap": 88,
+      "aStart": -86,
+      "aEnd": -37,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "P.ÇİFT-2",
+      "x": 0,
+      "y": 0,
+      "r0": 825,
+      "rows": 13
+    },
+    {
+      "id": "b492",
+      "kind": "fan",
+      "name": "",
+      "level": "Parter",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 50,
+      "rowGap": 88,
+      "aStart": 37,
+      "aEnd": 86,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "P.TEK-2",
+      "x": 0,
+      "y": 0,
+      "r0": 825,
+      "rows": 13
+    },
+    {
+      "id": "b493",
+      "kind": "fan",
+      "name": "",
+      "level": "1. Balkon",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 52,
+      "rowGap": 88,
+      "aStart": -16,
+      "aEnd": 16,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "6,8": {
+          "at": "wheel"
+        },
+        "6,9": {
+          "at": "wheel"
+        },
+        "6,10": {
+          "at": "wheel"
+        },
+        "6,11": {
+          "at": "wheel"
+        },
+        "6,12": {
+          "at": "wheel"
+        },
+        "6,13": {
+          "at": "wheel"
+        },
+        "6,14": {
+          "at": "wheel"
+        },
+        "6,15": {
+          "at": "wheel"
+        },
+        "5,8": {
+          "at": "comp"
+        },
+        "5,9": {
+          "at": "comp"
+        },
+        "5,10": {
+          "at": "comp"
+        },
+        "5,11": {
+          "at": "comp"
+        },
+        "5,12": {
+          "at": "comp"
+        },
+        "5,13": {
+          "at": "comp"
+        },
+        "5,14": {
+          "at": "comp"
+        },
+        "5,15": {
+          "at": "comp"
+        }
+      },
+      "label": "1B.ORTA",
+      "x": 0,
+      "y": 0,
+      "r0": 2150,
+      "rows": 7
+    },
+    {
+      "id": "b494",
+      "kind": "fan",
+      "name": "",
+      "level": "1. Balkon",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 52,
+      "rowGap": 88,
+      "aStart": -43,
+      "aEnd": -22,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "1B.ÇİFT",
+      "x": 0,
+      "y": 0,
+      "r0": 2150,
+      "rows": 7
+    },
+    {
+      "id": "b495",
+      "kind": "fan",
+      "name": "",
+      "level": "1. Balkon",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 52,
+      "rowGap": 88,
+      "aStart": 22,
+      "aEnd": 43,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "1B.TEK",
+      "x": 0,
+      "y": 0,
+      "r0": 2150,
+      "rows": 7
+    },
+    {
+      "id": "b496",
+      "kind": "fan",
+      "name": "",
+      "level": "2. Balkon",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 52,
+      "rowGap": 88,
+      "aStart": -21,
+      "aEnd": 21,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "2B.ORTA",
+      "x": 0,
+      "y": 0,
+      "r0": 2950,
+      "rows": 5
+    },
+    {
+      "id": "b497",
+      "kind": "fan",
+      "name": "",
+      "level": "2. Balkon",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 52,
+      "rowGap": 88,
+      "aStart": -52,
+      "aEnd": -27,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "2B.ÇİFT",
+      "x": 0,
+      "y": 0,
+      "r0": 2950,
+      "rows": 5
+    },
+    {
+      "id": "b498",
+      "kind": "fan",
+      "name": "",
+      "level": "2. Balkon",
+      "rot": 0,
+      "mode": "span",
+      "seatGap": 52,
+      "rowGap": 88,
+      "aStart": 27,
+      "aEnd": 52,
+      "aCenter": 0,
+      "counts": "",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "2B.TEK",
+      "x": 0,
+      "y": 0,
+      "r0": 2950,
+      "rows": 5
+    }
+  ]
+}
