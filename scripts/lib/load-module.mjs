@@ -18,7 +18,10 @@ export async function loadModule() {
   const src = await readFile(srcPath, "utf8");
   const patched = `${src}\nexport { ${EXTRA_EXPORTS.join(", ")} };\n`;
   const { code } = await transform(patched, { loader: "jsx", format: "esm", target: "node18" });
-  const tmpPath = path.join(root, `.tmp-planeditor-test-${process.pid}.mjs`);
+  /* src/ içine yazılıyor: PlanEditor.jsx artık ./core/*.js'i relative import
+     ediyor, o yüzden geçici dosya da PlanEditor.jsx ile AYNI dizinde olmalı
+     (kök dizinde olsaydı ./core/... kökte aranırdı). */
+  const tmpPath = path.join(root, "src", `.tmp-planeditor-test-${process.pid}.mjs`);
   await writeFile(tmpPath, code);
   try {
     return await import(pathToFileURL(tmpPath).href);

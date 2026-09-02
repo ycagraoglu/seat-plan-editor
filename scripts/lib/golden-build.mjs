@@ -3,49 +3,28 @@
    KARŞILAŞTIRIR — üretim mantığı tek yerde, ikisi asla birbirinden sapmaz. */
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { buildSeatsPayload } from "../../src/core/export.js";
 
 function polyPts(poly) {
   return poly.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
 }
 
 /* seats.json — src/PlanEditor.jsx içindeki exportSeats() ("seats.json" düğmesi)
-   ile AYNI veri şeklini üretir. exportSeats'i birebir çağıramıyoruz: PlanEditor
-   bileşeninin kapanışı içinde tanımlı ve indirme için tarayıcıya özgü
-   Blob/URL.createObjectURL/document.createElement kullanıyor — Node'da yok.
-   Bu yüzden yalnızca veri-şekillendirme adımları, exportSeats ile BİREBİR AYNI
-   sırayla ve aynı dışa-açılmış saf fonksiyonlarla (buildMeta/buildSeats/
-   gateMap) kopyalandı. Tek girdi farkı: React state'indeki "plan" yerine ham
-   salon sabiti kullanılıyor. Aradaki tek alan farkı runtime'da stampVer()'in
-   eklediği "srcVer" — exportSeats o alanı hiç okumuyor, dolayısıyla çıktı
-   birebir aynı kalıyor (bkz. görev raporu). */
+   ile AYNI veri şekli: ikisi de artık src/core/export.js'teki tek saf
+   fonksiyonu (buildSeatsPayload) çağırıyor, tek kaynak. Burada yalnızca o
+   fonksiyonun girdileri (metas/levelCounts/gates) React state yerine ham
+   salon sabitinden hazırlanıyor. Aradaki tek alan farkı runtime'da
+   stampVer()'in eklediği "srcVer" — exportSeats o alanı hiç okumuyor,
+   dolayısıyla çıktı birebir aynı kalıyor (bkz. görev raporu). */
 function buildSeatsData(venue, mod) {
-  const { buildMeta, buildSeats, gateMap } = mod;
+  const { buildMeta, gateMap } = mod;
   const metas = venue.blocks.map((b) => ({ b, m: buildMeta(b) }));
   const levelCounts = {};
   metas.forEach(({ b, m }) => {
     levelCounts[b.level || "—"] = (levelCounts[b.level || "—"] || 0) + m.seatCount;
   });
   const gm = gateMap(venue);
-  const all = [];
-  metas.forEach(({ b, m }) => buildSeats(b, m, venue.idTemplate).seats.forEach((s) => {
-    if (!s.gap) all.push({ ...s, gate: (gm.get(b.id) || [])[0] || null });
-  }));
-  const at = {};
-  all.forEach((s) => { if (s.at) at[s.at] = (at[s.at] || 0) + 1; });
-  return {
-    venue: venue.name, unit: "cm", version: venue.published || null,
-    seatCount: all.length, sellableCount: all.length - (at.tech || 0),
-    levels: levelCounts, attributes: at,
-    gates: venue.shapes.filter((s) => s.type === "door").map((d) => ({
-      label: d.label,
-      blocks: (d.blocks || []).map((i) => venue.blocks.find((b) => b.id === i)?.label).filter(Boolean),
-    })),
-    seats: all.map((s) => ({
-      id: s.id, level: s.level, block: s.block, row: s.row, seat: s.num,
-      gate: s.gate, x: +s.x.toFixed(1), y: +s.y.toFixed(1), rot: +s.rot.toFixed(1),
-      attribute: s.at || null, sellable: s.at !== "tech",
-    })),
-  };
+  return buildSeatsPayload(venue, metas, levelCounts, gm);
 }
 
 /* render.svg — react-dom/server ile GERÇEKTEN başsız render edilir, ama tüm
