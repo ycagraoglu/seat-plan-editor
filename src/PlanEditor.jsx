@@ -295,27 +295,52 @@ function buildMeta(b) {
     const [a, z] = rowEnds(b, r, P);
     le.push({ x: a.x, y: a.y }); re.push({ x: z.x, y: z.y });
   }
-  const smooth = (arr) => arr.map((p, i, A) => {
-    const q = A[Math.max(0, i - 1)], w = A[Math.min(A.length - 1, i + 1)];
-    return { x: (q.x + 2 * p.x + w.x) / 4, y: (q.y + 2 * p.y + w.y) / 4 };
-  });
-  /* Yumuşatma yalnızca testere dişini silmeli. Sapma bir koltuk
-     aralığını aşamaz; yoksa gerçek basamakları da yutup (Zorlu'nun
-     oyuklu son sırası gibi) koltukları dışarıda bırakıyor. */
-  const clamp = (sm, orig) => sm.map((p, i) => {
-    const o = orig[i], dx = p.x - o.x, dy = p.y - o.y;
-    const d = Math.hypot(dx, dy), lim = b.seatGap * 0.55;
-    return d <= lim ? p : { x: o.x + (dx / d) * lim, y: o.y + (dy / d) * lim };
-  });
-  const ls = clamp(smooth(smooth(smooth(le))), le);
-  const rs = clamp(smooth(smooth(smooth(re))), re);
-  const rightEdge = [], leftEdge = [];
-  for (let r = 1; r < rows - 1; r++) { rightEdge.push(W(rs[r])); leftEdge.push(W(ls[r])); }
+  /* Eski çözüm 3 geçişli ortalama + sapma sınırıydı. Basamağı tam
+     yutamadığı için kenar kırıklı kalıyordu (Zorlu ORK-C'de görüldü:
+     sağ uç 50cm'lik basamaklarla iniyor, yumuşatma sınırı 27,5cm).
+     Yerine DIŞBÜKEY ZİNCİR: bir nokta, komşularını birleştiren doğrunun
+     içinde kalıyorsa atılır; dışında kalıyorsa korunur. Sonuç parça parça
+     DÜZ bir kenar ve — kritik olan — hat hiçbir zaman içeri kesmez, yani
+     koltuk taban dışında kalamaz. Ortalama alan eski yöntem içeri
+     kesebiliyordu, sapma sınırı da tam bunun içindi.
+     Yalnız testere dişi ölçeğindeki sapmalar atılır (≤ bir koltuk
+     aralığı); gerçek daralma, oyuk ve kavis olduğu gibi korunur. */
+  let ox = 0, oy = 0;
+  for (let r = 0; r < rows; r++) { ox += re[r].x - le[r].x; oy += re[r].y - le[r].y; }
+  const olen = Math.hypot(ox, oy) || 1;
+  const outR = { x: ox / olen, y: oy / olen };
+  const chainEdge = (pts, out) => {
+    if (pts.length < 3) return pts;
+    const st = [];
+    for (const p of pts) {
+      while (st.length >= 2) {
+        const a = st[st.length - 2], q = st[st.length - 1];
+        let nx = -(p.y - a.y), ny = p.x - a.x;
+        const nl = Math.hypot(nx, ny) || 1;
+        nx /= nl; ny /= nl;
+        if (nx * out.x + ny * out.y < 0) { nx = -nx; ny = -ny; }
+        const d = (q.x - a.x) * nx + (q.y - a.y) * ny;   // q'nun dışa sapması
+        if (d > 0) break;                 // dışarı taşıyor → köşe gerçek, koru
+        if (-d > b.seatGap) break;        // derin oyuk → gerçek geometri, koru
+        st.pop();                         // testere dişi → at
+      }
+      st.push(p);
+    }
+    return st;
+  };
+  const rs = chainEdge(re, outR);
+  const ls = chainEdge(le, { x: -outR.x, y: -outR.y });
+  const rightEdge = rs.slice(1, -1).map(W);
+  const leftEdge = ls.slice(1, -1).map(W);
   const ring = [...front, ...rightEdge, ...back, ...leftEdge.reverse()];
 
-  /* Pay = kullanıcı payı + koltuğun yarısı + testere dişi genliği.
-     Yumuşatma kenarı içeri çekebildiği için sıçrama payı da eklenmeli,
-     yoksa koltuklar tabanın dışında kalıyor. */
+  /* Pay = kullanıcı payı + koltuğun yarısı + yarım koltuk aralığı.
+     Son terim eskiden yumuşatmanın kenarı içeri çekmesini telafi ediyordu;
+     dışbükey zincir artık içeri kesmediği için o gerekçe kalktı. Yine de
+     duruyor: koltuk gövdesi ile komşu bloğun kenarı arasında nefes payı
+     bırakıyor ve salonların taban aralıkları bu değere göre ayarlandı
+     (GS/Ülker/AKM kademe boşlukları). Kaldırmak tüm salonların çakışma
+     dengesini bozar — ayrı bir iş. */
   const pad = b.pad != null ? b.pad : 55;
   const auto = offsetPoly(ring, pad + Math.max(DEF.seatW, DEF.seatH) / 2 + b.seatGap / 2);
 
