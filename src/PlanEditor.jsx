@@ -1238,6 +1238,47 @@ function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
   return [...half, ...radialArray(half, { count: 2, cx: 0, cy: 0, step: 180 })];
 }
 
+/** bowl()'un ürettiği her komşu blok çifti arasına, gerçek bir stadyumda
+ *  olduğu gibi bir merdiven/kapı (vomitorium) koyar. Blokların kendisine
+ *  dokunmuyor — sadece aralarındaki en dış (sahadan en uzak) köşe
+ *  noktalarının ortasına, biraz daha dışarı itilmiş bir kapı işareti
+ *  ekliyor. Hangi iki bloğun beslediği zaten autoGates ile mesafeye göre
+ *  otomatik çözülüyor, burada elle atamaya gerek yok. */
+function bowlGates(blocks, first) {
+  const outerCorner = (m) => [[m.bbox.x0, m.bbox.y0], [m.bbox.x1, m.bbox.y0],
+    [m.bbox.x0, m.bbox.y1], [m.bbox.x1, m.bbox.y1]]
+    .reduce((a, c) => (Math.hypot(...c) > Math.hypot(...a) ? c : a));
+  const pts = blocks.map((b) => outerCorner(buildMeta(b)));
+  const n = blocks.length;
+  return blocks.map((b, i) => {
+    const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % n];
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    const d = Math.hypot(mx, my) || 1;
+    return { id: nid("s"), kind: "rect", type: "door",
+      x: Math.round(mx + (mx / d) * 250), y: Math.round(my + (my / d) * 250),
+      w: 260, h: 260, rot: 0, label: `KAPI ${first + i}`, capacity: 0, fs: 130, blocks: [] };
+  });
+}
+
+/* Gerçek Türk Telekom Stadyumu'nda her tribün bloğunun kendi merdiven/kapı
+   çıkışı var — komşu bloklar arasındaki bu boşluklar koltuk dizilimini
+   doğrudan belirliyor (bkz. kullanıcının paylaştığı saha fotoğrafı). Önceden
+   burada bloklardan tamamen kopuk, dış bir çembere dizilmiş 12 kapı vardı;
+   artık her kattaki HER blok-arası boşluğa bowlGates() ile gerçek bir kapı
+   konuyor, hangi blokları beslediği autoGates ile mesafeye göre çözülüyor. */
+const gsAlt = bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
+  first: 100, level: "Alt Tribün", aisle: 240, pad: 80,
+  colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } });
+const gsOrta = bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
+  first: 200, level: "Orta Tribün", aisle: 260, pad: 80,
+  colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } });
+const gsUst = bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
+  first: 400, level: "Üst Tribün", aisle: 280, pad: 80,
+  colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
+  .map((b) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
+    "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
+    ? withAccessible([b], [b.label], 9)[0] : b));
+
 const GS = {
   key: "gs", name: "Galatasaray · Türk Telekom Stadyumu", unit: "cm",
   home: { x: -14000, y: -12000, w: 28000, h: 24000 }, underlay: null,
@@ -1247,27 +1288,11 @@ const GS = {
     { id: nid("s"), kind: "rect", type: "note", x: 0, y: 11600, w: 10, h: 10, rot: 0, label: "BATI / WEST", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: -13100, y: 0, w: 10, h: 10, rot: 90, label: "KUZEY / NORTH", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: 13100, y: 0, w: 10, h: 10, rot: -90, label: "GÜNEY / SOUTH", capacity: 0, fs: 600 },
-    ...Array.from({ length: 12 }, (_, i) => {
-      const a = (i / 12) * Math.PI * 2;
-      return { id: nid("s"), kind: "rect", type: "door",
-        x: Math.round(11800 * Math.sin(a)), y: Math.round(-10600 * Math.cos(a)),
-        w: 420, h: 420, rot: 0, label: `KAPI ${i + 1}`, capacity: 0, fs: 150, blocks: [] };
-    }),
+    ...bowlGates(gsAlt, 1),
+    ...bowlGates(gsOrta, 1 + gsAlt.length),
+    ...bowlGates(gsUst, 1 + gsAlt.length + gsOrta.length),
   ],
-  blocks: [
-    ...bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-      first: 100, level: "Alt Tribün", aisle: 240, pad: 80,
-      colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } }),
-    ...bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-      first: 200, level: "Orta Tribün", aisle: 260, pad: 80,
-      colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } }),
-    ...bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-      first: 400, level: "Üst Tribün", aisle: 280, pad: 80,
-      colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
-      .map((b, i, all) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
-        "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
-        ? withAccessible([b], [b.label], 9)[0] : b)),
-  ],
+  blocks: [...gsAlt, ...gsOrta, ...gsUst],
 };
 GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
 
