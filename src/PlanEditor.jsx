@@ -606,29 +606,43 @@ const Icon = ({ n }) => (
    merdiven, asansör, büfe, ilk yardım…
    ───────────────────────────────────────────────────────────────────── */
 
+/* İşaret ikonları. İki kaynak bir arada:
+   · img → public/poi/*.png (kullanıcının verdiği icons8 seti). Siyah çizgi
+     PNG'ler; koyu temada görünmez olmasınlar diye ham gösterilmiyorlar —
+     tuvalde SVG filtresi (feFlood + feComposite, alfayı koruyup rengi
+     temadan alır), palette CSS mask ile boyanıyorlar. Böylece vektör
+     ikonlarla aynı tema/seçim davranışını gösteriyorlar.
+   · p → gömülü SVG çizgileri (Tabler). Yeni sette karşılığı OLMAYAN
+     türler bunlarla kalıyor: tuvaletler, satış, ilk yardım, ışık.
+     Tuvalet bir mekânda en kritik işaret, ikonu yok diye türü silmek
+     doğru olmazdı. */
 const POI = {
   wc: { label: "Tuvalet", p: [{d:"M10 16v5",s:0.62,dx:-3.4,dy:4.6},{d:"M14 16v5",s:0.62,dx:-3.4,dy:4.6},{d:"M9 9h6l-1 7h-4l-1 -7",s:0.62,dx:-3.4,dy:4.6},{d:"M5 11c1.333 -1.333 2.667 -2 4 -2",s:0.62,dx:-3.4,dy:4.6},{d:"M19 11c-1.333 -1.333 -2.667 -2 -4 -2",s:0.62,dx:-3.4,dy:4.6},{d:"M10 4a2 2 0 1 0 4 0a2 2 0 1 0 -4 0",s:0.62,dx:-3.4,dy:4.6},{d:"M10 16v5",s:0.62,dx:6.5,dy:4.6},{d:"M14 16v5",s:0.62,dx:6.5,dy:4.6},{d:"M8 16h8l-2 -7h-4l-2 7",s:0.62,dx:6.5,dy:4.6},{d:"M5 11c1.667 -1.333 3.333 -2 5 -2",s:0.62,dx:6.5,dy:4.6},{d:"M19 11c-1.667 -1.333 -3.333 -2 -5 -2",s:0.62,dx:6.5,dy:4.6},{d:"M10 4a2 2 0 1 0 4 0a2 2 0 1 0 -4 0",s:0.62,dx:6.5,dy:4.6}] },
   wcMen: { label: "Erkek WC", p: [{d:"M10 16v5"},{d:"M14 16v5"},{d:"M9 9h6l-1 7h-4l-1 -7"},{d:"M5 11c1.333 -1.333 2.667 -2 4 -2"},{d:"M19 11c-1.333 -1.333 -2.667 -2 -4 -2"},{d:"M10 4a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"}] },
   wcWomen: { label: "Kadın WC", p: [{d:"M10 16v5"},{d:"M14 16v5"},{d:"M8 16h8l-2 -7h-4l-2 7"},{d:"M5 11c1.667 -1.333 3.333 -2 5 -2"},{d:"M19 11c-1.667 -1.333 -3.333 -2 -5 -2"},{d:"M10 4a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"}] },
-  entrance: { label: "Giriş", p: [{d:"M13 12v.01"},{d:"M3 21h18"},{d:"M5 21v-16a2 2 0 0 1 2 -2h6m4 10.5v7.5"},{d:"M21 7h-7m3 -3l-3 3l3 3"}] },
-  exit: { label: "Acil çıkış", p: [{d:"M13 12v.01"},{d:"M3 21h18"},{d:"M5 21v-16a2 2 0 0 1 2 -2h7.5m2.5 10.5v7.5"},{d:"M14 7h7m-3 -3l3 3l-3 3"}] },
-  stairs: { label: "Merdiven", p: [{d:"M22 5h-5v5h-5v5h-5v5h-5"}] },
-  elevator: { label: "Asansör", p: [{d:"M5 5a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -14"},{d:"M10 10l2 -2l2 2"},{d:"M10 14l2 2l2 -2"}] },
-  escal: { label: "Yürüyen merdiven", p: [{d:"M19.5 5h-2.672a2 2 0 0 0 -1.414 .586l-8.414 8.414h-2.5a2.5 2.5 0 1 0 0 5h3.672a2 2 0 0 0 1.414 -.586l8.414 -8.414h1.5a2.5 2.5 0 0 0 0 -5"}] },
-  food: { label: "Restoran", p: [{d:"M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3"}] },
-  bar: { label: "Bar", p: [{d:"M8 21h8"},{d:"M12 15v6"},{d:"M5 5a7 2 0 1 0 14 0a7 2 0 1 0 -14 0"},{d:"M5 5v.388c0 .432 .126 .853 .362 1.206l5 7.509c.633 .951 1.88 1.183 2.785 .517c.191 -.141 .358 -.316 .491 -.517l5 -7.509c.236 -.353 .362 -.774 .362 -1.206v-.388"}] },
-  beer: { label: "Büfe", p: [{d:"M9 21h6a1 1 0 0 0 1 -1v-3.625c0 -1.397 .29 -2.775 .845 -4.025l.31 -.7c.556 -1.25 .845 -2.253 .845 -3.65v-4a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v4c0 1.397 .29 2.4 .845 3.65l.31 .7a9.931 9.931 0 0 1 .845 4.025v3.625a1 1 0 0 0 1 1"},{d:"M6 8h12"}] },
-  cafe: { label: "Kafe", p: [{d:"M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1"},{d:"M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"},{d:"M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"},{d:"M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5"},{d:"M16.746 16.726a3 3 0 1 0 .252 -5.555"}] },
+  entrance: { label: "Giriş", img: "enter", p: [{d:"M13 12v.01"},{d:"M3 21h18"},{d:"M5 21v-16a2 2 0 0 1 2 -2h6m4 10.5v7.5"},{d:"M21 7h-7m3 -3l-3 3l3 3"}] },
+  exit: { label: "Acil çıkış", img: "emergency-exit", p: [{d:"M13 12v.01"},{d:"M3 21h18"},{d:"M5 21v-16a2 2 0 0 1 2 -2h7.5m2.5 10.5v7.5"},{d:"M14 7h7m-3 -3l3 3l-3 3"}] },
+  stairs: { label: "Merdiven", img: "stairs-up", p: [{d:"M22 5h-5v5h-5v5h-5v5h-5"}] },
+  elevator: { label: "Asansör", img: "elevator", p: [{d:"M5 5a1 1 0 0 1 1 -1h12a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-12a1 1 0 0 1 -1 -1l0 -14"},{d:"M10 10l2 -2l2 2"},{d:"M10 14l2 2l2 -2"}] },
+  escal: { label: "Yürüyen merdiven", img: "escalator", p: [{d:"M19.5 5h-2.672a2 2 0 0 0 -1.414 .586l-8.414 8.414h-2.5a2.5 2.5 0 1 0 0 5h3.672a2 2 0 0 0 1.414 -.586l8.414 -8.414h1.5a2.5 2.5 0 0 0 0 -5"}] },
+  food: { label: "Restoran", img: "restaurant", p: [{d:"M19 3v12h-5c-.023 -3.681 .184 -7.406 5 -12m0 12v6h-1v-3m-10 -14v17m-3 -17v3a3 3 0 1 0 6 0v-3"}] },
+  bar: { label: "Bar", img: "cocktail", p: [{d:"M8 21h8"},{d:"M12 15v6"},{d:"M5 5a7 2 0 1 0 14 0a7 2 0 1 0 -14 0"},{d:"M5 5v.388c0 .432 .126 .853 .362 1.206l5 7.509c.633 .951 1.88 1.183 2.785 .517c.191 -.141 .358 -.316 .491 -.517l5 -7.509c.236 -.353 .362 -.774 .362 -1.206v-.388"}] },
+  beer: { label: "Büfe", img: "beer", p: [{d:"M9 21h6a1 1 0 0 0 1 -1v-3.625c0 -1.397 .29 -2.775 .845 -4.025l.31 -.7c.556 -1.25 .845 -2.253 .845 -3.65v-4a1 1 0 0 0 -1 -1h-10a1 1 0 0 0 -1 1v4c0 1.397 .29 2.4 .845 3.65l.31 .7a9.931 9.931 0 0 1 .845 4.025v3.625a1 1 0 0 0 1 1"},{d:"M6 8h12"}] },
+  cafe: { label: "Kafe", img: "cafe", p: [{d:"M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1"},{d:"M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"},{d:"M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"},{d:"M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5"},{d:"M16.746 16.726a3 3 0 1 0 .252 -5.555"}] },
   shop: { label: "Satış", p: [{d:"M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304"},{d:"M9 11v-5a3 3 0 0 1 6 0v5"}] },
   aid: { label: "İlk yardım", p: [{d:"M8 8v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2"},{d:"M4 10a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -8"},{d:"M10 14h4"},{d:"M12 12v4"}] },
-  access: { label: "Engelli erişimi", p: [{d:"M3 16a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"},{d:"M17 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"},{d:"M19 17a3 3 0 0 0 -3 -3h-3.4"},{d:"M3 3h1a2 2 0 0 1 2 2v6"},{d:"M6 8h11"},{d:"M15 8v6"}] },
-  info: { label: "Danışma", p: [{d:"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"},{d:"M12 9h.01"},{d:"M11 12h1v4h1"}] },
-  ticket: { label: "Bilet", p: [{d:"M15 5l0 2"},{d:"M15 11l0 2"},{d:"M15 17l0 2"},{d:"M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-3a2 2 0 0 0 0 -4v-3a2 2 0 0 1 2 -2"}] },
-  cloak: { label: "Vestiyer", p: [{d:"M14 6a2 2 0 1 0 -4 0c0 1.667 .67 3 2 4h-.008l7.971 4.428a2 2 0 0 1 1.029 1.749v.823a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-.823a2 2 0 0 1 1.029 -1.749l7.971 -4.428"}] },
-  warn: { label: "Uyarı", p: [{d:"M12 9v4"},{d:"M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0"},{d:"M12 16h.01"}] },
+  access: { label: "Engelli erişimi", img: "wheelchair", p: [{d:"M3 16a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"},{d:"M17 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"},{d:"M19 17a3 3 0 0 0 -3 -3h-3.4"},{d:"M3 3h1a2 2 0 0 1 2 2v6"},{d:"M6 8h11"},{d:"M15 8v6"}] },
+  info: { label: "Danışma", img: "info", p: [{d:"M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"},{d:"M12 9h.01"},{d:"M11 12h1v4h1"}] },
+  ticket: { label: "Bilet", img: "ticket", p: [{d:"M15 5l0 2"},{d:"M15 11l0 2"},{d:"M15 17l0 2"},{d:"M5 5h14a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-3a2 2 0 0 0 0 -4v-3a2 2 0 0 1 2 -2"}] },
+  cloak: { label: "Vestiyer", img: "hanger", p: [{d:"M14 6a2 2 0 1 0 -4 0c0 1.667 .67 3 2 4h-.008l7.971 4.428a2 2 0 0 1 1.029 1.749v.823a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-.823a2 2 0 0 1 1.029 -1.749l7.971 -4.428"}] },
+  warn: { label: "Uyarı", img: "error", p: [{d:"M12 9v4"},{d:"M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0"},{d:"M12 16h.01"}] },
   spot: { label: "Işık", p: [{d:"M5 21h9"},{d:"M10 21l-7 -8l8.5 -5.5"},{d:"M13 14c-2.148 -2.148 -2.148 -5.852 0 -8c2.088 -2.088 5.842 -1.972 8 0l-8 8"},{d:"M11.742 7.574l-1.156 -1.156a2 2 0 0 1 2.828 -2.829l1.144 1.144"},{d:"M15.5 12l.208 .274a2.527 2.527 0 0 0 3.556 0c.939 -.933 .98 -2.42 .122 -3.4l-.366 -.369"}] },
-  smoke: { label: "Sigara alanı", p: [{d:"M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235"}] },
-  parking: { label: "Otopark", p: [{d:"M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14"},{d:"M10 16v-8h2.667c.736 0 1.333 .895 1.333 2s-.597 2 -1.333 2h-2.667"}] },
+  smoke: { label: "Sigara alanı", img: "smoking", p: [{d:"M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235"}] },
+  parking: { label: "Otopark", img: "parking", p: [{d:"M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14"},{d:"M10 16v-8h2.667c.736 0 1.333 .895 1.333 2s-.597 2 -1.333 2h-2.667"}] },
+  wifi: { label: "Wi-Fi", img: "wi-fi", p: [] },
+  nursery: { label: "Emzirme odası", img: "mother-room", p: [] },
+  lounge: { label: "Oturma alanı", img: "restaurant-table", p: [] },
+  show: { label: "Gösteri / sahne", img: "theatre-mask", p: [] },
 };
 
 /* ─────────────────────────  KOLTUK NİTELİKLERİ  ─────────────────────────
@@ -3553,7 +3567,9 @@ export default function PlanEditor() {
               {Object.entries(POI).map(([k, v]) => (
                 <button key={k} className={poiKind === k ? "on" : ""} title={v.label}
                   onClick={() => setPoiKind(k)}>
-                  <svg viewBox="0 0 24 24" fill="none"><IconParts parts={v.p || []} /></svg>
+                  {v.img
+                    ? <i className="pic" style={{ "--u": `url(${import.meta.env.BASE_URL}poi/${v.img}.png)` }} />
+                    : <svg viewBox="0 0 24 24" fill="none"><IconParts parts={v.p || []} /></svg>}
                 </button>
               ))}
             </div>
@@ -3617,6 +3633,18 @@ export default function PlanEditor() {
             onContextMenu={(e) => e.preventDefault()}
             onDoubleClick={() => { if (footDraft) footFinish(); else if (poly) finishPoly(); }}
             onPointerLeave={() => { drag.current = null; setGuides([]); }}>
+
+            {/* İşaret PNG'leri siyah çizgi; alfayı koruyup rengi temadan
+                alıyoruz, yoksa koyu temada görünmezler. flood-color CSS'ten
+                (--bone / --sel) geliyor, tema ve seçim ile birlikte döner. */}
+            <defs>
+              <filter id="poiTint" colorInterpolationFilters="sRGB">
+                <feFlood result="c" /><feComposite in="c" in2="SourceAlpha" operator="in" />
+              </filter>
+              <filter id="poiTintSel" colorInterpolationFilters="sRGB">
+                <feFlood result="c" /><feComposite in="c" in2="SourceAlpha" operator="in" />
+              </filter>
+            </defs>
 
             {plan.underlay && plan.underlay.src && (
               <image href={plan.underlay.src} x={plan.underlay.x} y={plan.underlay.y}
@@ -4314,9 +4342,13 @@ function Poi({ s, selected, U }) {
   return (
     <g className={selected ? "poi on" : "poi"} transform={`translate(${s.x} ${s.y}) rotate(${s.rot || 0})`}>
       <circle data-s={s.id} r={R} strokeWidth={1.6 * U} />
-      <g transform={`translate(${-12 * k} ${-12 * k}) scale(${k})`} strokeWidth={1.9}>
-        <IconParts parts={ic.p || []} />
-      </g>
+      {ic.img
+        ? <image href={`${import.meta.env.BASE_URL}poi/${ic.img}.png`}
+            x={-R * 0.62} y={-R * 0.62} width={R * 1.24} height={R * 1.24}
+            filter={selected ? "url(#poiTintSel)" : "url(#poiTint)"} />
+        : <g transform={`translate(${-12 * k} ${-12 * k}) scale(${k})`} strokeWidth={1.9}>
+            <IconParts parts={ic.p || []} />
+          </g>}
       {s.label && <text y={R * 2.05} style={{ fontSize: R * 0.68 }}>{s.label}</text>}
     </g>
   );
@@ -4527,7 +4559,9 @@ function ShapePanel({ s, blocks, metas, onChange, onDelete, onAuto }) {
             {Object.entries(POI).map(([k, v]) => (
               <button key={k} className={s.icon === k ? "on" : ""} title={v.label}
                 onClick={() => onChange({ icon: k, label: s.label === (POI[s.icon] || {}).label ? v.label : s.label })}>
-                <svg viewBox="0 0 24 24" fill="none"><IconParts parts={v.p || []} /></svg>
+                {v.img
+                  ? <i className="pic" style={{ "--u": `url(${import.meta.env.BASE_URL}poi/${v.img}.png)` }} />
+                  : <svg viewBox="0 0 24 24" fill="none"><IconParts parts={v.p || []} /></svg>}
               </button>
             ))}
           </div>
@@ -5029,6 +5063,13 @@ svg.t-foot{ cursor:crosshair; }
 .poigrid svg{ width:72%; height:72%; stroke:var(--dim); stroke-width:1.8;
   stroke-linecap:round; stroke-linejoin:round; }
 .poigrid button.on svg{ stroke:var(--acc); }
+/* PNG işaret ikonları: maske olarak kullanılıp zeminden renk alıyorlar,
+   böylece vektör ikonlarla aynı tema/seçim davranışını gösteriyorlar. */
+.poigrid i.pic{ width:72%; height:72%; background:var(--dim);
+  -webkit-mask:var(--u) center/contain no-repeat; mask:var(--u) center/contain no-repeat; }
+.poigrid button.on i.pic{ background:var(--acc); }
+#poiTint feFlood{ flood-color:var(--bone); }
+#poiTintSel feFlood{ flood-color:var(--sel); }
 .breach{ fill:rgba(229,72,77,.12); stroke:var(--err); stroke-dasharray:26 18; pointer-events:none; }
 .collide{ fill:rgba(229,72,77,.16); stroke:var(--err); stroke-dasharray:10 10; pointer-events:none; }
 .status .alert{ color:var(--err); font-weight:600; }
