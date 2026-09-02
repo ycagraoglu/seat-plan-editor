@@ -2085,8 +2085,24 @@ export default function PlanEditor() {
     if (plan === snapshot) return;
     setPast((p) => [...p.slice(-39), snapshot]); setFuture([]); setRev((r) => r + 1);
   }, [plan]);
-  const patchBlock = (id, patch) =>
-    commit({ ...plan, blocks: plan.blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)) });
+  /* Sıra/açı/koltuk-aralığı gibi alanlar sıra başına koltuk sayısını
+     değiştirebilir; var olan koltuk düzeltmeleri/nitelikleri "r,c" anahtarıyla
+     saklandığından, artık var olmayan bir sütuna işaret eden kayıtlar sessizce
+     ölü veri olarak kalıyordu (bkz. Aspendos denemesi). Geometri gerçekten
+     değişmeden önce kaç tanesinin geçersiz kalacağını uyar. */
+  const GEOM_KEYS = ["rows", "counts", "r0", "rowGap", "aStart", "aEnd", "seatGap", "cols", "taper", "mode"];
+  const patchBlock = (id, patch) => {
+    const b = plan.blocks.find((x) => x.id === id);
+    if (b?.ov && Object.keys(b.ov).length && GEOM_KEYS.some((k) => k in patch)) {
+      const newCounts = prep({ ...b, ...patch }).counts;
+      const orphaned = Object.keys(b.ov).filter((k) => {
+        const [r, c] = k.split(",").map(Number);
+        return r >= newCounts.length || c >= (newCounts[r] || 0);
+      });
+      if (orphaned.length) setErr(`${orphaned.length} koltuk düzeltmesi/niteliği artık geçersiz aralıkta kaldı`);
+    }
+    commit({ ...plan, blocks: plan.blocks.map((x) => (x.id === id ? { ...x, ...patch } : x)) });
+  };
   const patchSelected = (patch) =>
     commit({ ...plan, blocks: plan.blocks.map((b) => (selIds.includes(b.id) ? { ...b, ...patch } : b)) });
   const patchShape = (id, patch) =>
@@ -4230,6 +4246,10 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
           <Row label="Kat / kuşak">
             <input list="lv2" placeholder="değiştirme" onBlur={(e) => e.target.value && onSet({ level: e.target.value })} />
             <datalist id="lv2">{levels.map((l) => <option key={l} value={l} />)}</datalist>
+          </Row>
+          <Row label="Taban payı (cm)">
+            <input type="number" min="0" step="5" placeholder="değiştirme"
+              onBlur={(e) => e.target.value !== "" && onSet({ pad: Math.max(0, +e.target.value) })} />
           </Row>
         </div>
         <Row label="Varsayılan nitelik">
