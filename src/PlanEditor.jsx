@@ -1238,71 +1238,81 @@ function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
   return [...half, ...radialArray(half, { count: 2, cx: 0, cy: 0, step: 180 })];
 }
 
-/** bowl()'un ürettiği komşu blok çiftleri arasındaki boşluğa, gerçek bir
- *  stadyumdaki gibi bir merdiven/kapı (vomitorium) koyar. KRİTİK: kapı
- *  koltuk olmayan yere denk gelmeli. Bunu garanti etmek için bbox köşesi
- *  gibi kaba bir tahmin DEĞİL, blokların gerçek taban çokgeni (outline,
- *  dönmeyi de hesaba katar) kullanılıyor:
- *    - Her bloğun outline'ının ORTA bandı (radyal yüksekliğin %30–%75'i)
- *      alınıyor — böylece kapı ne sahaya (iç uç) ne de bir üst kademenin
- *      ön sırasına (dış uç) düşüyor.
- *    - İki komşu bloğun bu orta-bant noktaları arasındaki EN YAKIN çiftin
- *      orta noktası = aradaki merdiven boşluğunun tam ortası, iki blok
- *      koltuklarına da eşit uzaklıkta.
- *    - Boşluk 9m'den genişse çift aslında komşu değildir (kase dizisinin
- *      sarma noktası) — kapı konmaz.
- *  Etiket dışarıda toplu atanıyor; hangi bloğu beslediği autoGates ile
- *  mesafeye göre çözülüyor. */
-function bowlGates(blocks) {
-  const rad = (p) => Math.hypot(p.x, p.y);
-  /* Tabanın ORTA bandını al (radyal yüksekliğin %30–%75'i): iç uç sahaya,
-     dış uç bir üst kademenin ön sıralarına düşürüyordu (kademeler iç içe
-     geçebiliyor). Orta bant ikisinden de uzak — üstelik gerçek
-     vomitoriumlar da tribünün orta yüksekliğinde. */
-  const midBand = (m) => {
-    const rs = m.outline.map(rad);
-    const lo = Math.min(...rs), hi = Math.max(...rs), span = hi - lo || 1;
-    const band = m.outline.filter((p) => {
-      const t = (rad(p) - lo) / span;
-      return t >= 0.30 && t <= 0.75;
-    });
-    return band.length ? band : m.outline;
-  };
-  const outers = blocks.map((b) => midBand(buildMeta(b)));
-  const n = blocks.length, out = [];
-  for (let i = 0; i < n; i++) {
-    const A = outers[i], B = outers[(i + 1) % n];
-    let best = Infinity, mx = 0, my = 0;
-    for (const a of A) for (const b of B) {
-      const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (d < best) { best = d; mx = (a.x + b.x) / 2; my = (a.y + b.y) / 2; }
+/** Gerçek stadyumda vomitorium tribünün İÇİNE oyulur: o dikdörtgende koltuk
+ *  YOKTUR, merdiven konkorstan oraya çıkar — sıralar tünelin iki yanından
+ *  devam eder (bkz. kullanıcının Türk Telekom Stadyumu fotoğrafı). Kapıyı
+ *  bloklar arasındaki koridora koymak bu yüzden yanlıştı: kapı, koltuk
+ *  dizilimini fiilen bozan mimari bir boşluk olmalı.
+ *
+ *  Bu fonksiyon her bloğun ARKA sıralarından (sahadan uzak, konkorsun
+ *  olduğu taraf) ortada bir dikdörtgen koltuk kümesini `ov.rm` ile siler ve
+ *  tam o boşluğa, tünel yönüne hizalanmış kapı şeklini üretir.
+ *
+ *  Ölçüler bilerek boşluktan bir koltuk/sıra dar tutuluyor: kapı
+ *  dikdörtgeninin kenarı ile kalan en yakın koltuğun merkezi arasında tam
+ *  bir seatGap/rowGap kalıyor, yani kapı hiçbir koltuğa değmiyor. */
+function cutVomitories(blocks, { depth = 3, width = 6 } = {}) {
+  const doors = [];
+  const cut = blocks.map((b) => {
+    const P = prep(b);
+    const nRows = P.counts.length;
+    if (nRows < depth + 2) return b;            // sığ blokta tünel açılmaz
+    const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
+    const ov = { ...(b.ov || {}) };
+    const centers = [];
+    /* Dar sıralarda kesim istenenden az koltuk olabiliyor; kapı boyutu
+       İSTENEN değil GERÇEKLEŞEN en dar kesime göre hesaplanmalı, yoksa
+       dikdörtgen kesilmemiş koltukların üstüne taşıyor. */
+    let minCut = Infinity;
+    for (let r = nRows - depth; r < nRows; r++) {
+      const n = P.counts[r];
+      const w = Math.min(width, n - 2);         // iki yanda en az birer koltuk kalsın
+      if (w < 2) continue;
+      minCut = Math.min(minCut, w);
+      const c0 = Math.round((n - w) / 2);
+      const pts = rowPts(b, r, P);
+      const world = [];
+      for (let c = c0; c < c0 + w; c++) {
+        ov[`${r},${c}`] = { ...(ov[`${r},${c}`] || {}), rm: true };
+        world.push(toWorld(b, pts[c], cos, sin));
+      }
+      centers.push({ x: world.reduce((a, p) => a + p.x, 0) / world.length,
+                     y: world.reduce((a, p) => a + p.y, 0) / world.length });
     }
-    if (best > 900) continue;
-    out.push({ id: nid("s"), kind: "rect", type: "door", x: Math.round(mx), y: Math.round(my),
-      w: 160, h: 160, rot: 0, capacity: 0, fs: 110, blocks: [] });
-  }
-  return out;
+    if (centers.length < 2) return b;
+    const inner = centers[0], outer = centers[centers.length - 1];
+    doors.push({ id: nid("s"), kind: "rect", type: "door",
+      x: Math.round((inner.x + outer.x) / 2), y: Math.round((inner.y + outer.y) / 2),
+      w: Math.round((centers.length - 1) * b.rowGap), h: Math.round((minCut - 1) * b.seatGap),
+      rot: Math.round((Math.atan2(outer.y - inner.y, outer.x - inner.x) * 180) / Math.PI),
+      capacity: 0, fs: 120, blocks: [] });
+    return { ...b, ov };
+  });
+  return [cut, doors];
 }
 const labelGates = (gates) => gates.map((d, i) => ({ ...d, label: `KAPI ${i + 1}` }));
 
-/* Gerçek Türk Telekom Stadyumu'nda her tribün bloğunun kendi merdiven/kapı
-   çıkışı var — komşu bloklar arasındaki bu boşluklar koltuk dizilimini
-   doğrudan belirliyor (bkz. kullanıcının paylaştığı saha fotoğrafı). Önceden
-   burada bloklardan tamamen kopuk, dış bir çembere dizilmiş 12 kapı vardı;
-   artık her kattaki HER blok-arası boşluğa bowlGates() ile gerçek bir kapı
-   konuyor, hangi blokları beslediği autoGates ile mesafeye göre çözülüyor. */
-const gsAlt = bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 100, level: "Alt Tribün", aisle: 350, pad: 80,
-  colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } });
-const gsOrta = bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 200, level: "Orta Tribün", aisle: 370, pad: 80,
-  colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } });
-const gsUst = bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 400, level: "Üst Tribün", aisle: 390, pad: 80,
+/* Gerçek Türk Telekom Stadyumu'nda her tribün bloğunun kendi merdiven/tünel
+   çıkışı (vomitorium) var ve bu tüneller tribünün İÇİNE oyulmuş: o
+   dikdörtgende koltuk yok, sıralar tünelin iki yanından devam ediyor
+   (bkz. kullanıcının paylaştığı saha fotoğrafı). Kapı bu yüzden bloklar
+   arası koridora konan bir işaret değil, cutVomitories() ile her bloğun
+   arka sıralarından koltuk silen mimari bir boşluk. Bloklar arası koridor
+   (aisle) yine gerçek merdivendir ama kapıyı barındırmadığı için orijinal
+   genişliğinde bırakıldı. Kapının hangi bloğu beslediği autoGates ile
+   mesafeye göre çözülüyor. */
+const [gsAlt, gsAltDoors] = cutVomitories(bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
+  first: 100, level: "Alt Tribün", aisle: 240, pad: 80,
+  colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } }));
+const [gsOrta, gsOrtaDoors] = cutVomitories(bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
+  first: 200, level: "Orta Tribün", aisle: 260, pad: 80,
+  colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } }));
+const [gsUst, gsUstDoors] = cutVomitories(bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
+  first: 400, level: "Üst Tribün", aisle: 280, pad: 80,
   colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
   .map((b) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
     "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
-    ? withAccessible([b], [b.label], 9)[0] : b));
+    ? withAccessible([b], [b.label], 9)[0] : b)));
 
 const GS = {
   key: "gs", name: "Galatasaray · Türk Telekom Stadyumu", unit: "cm",
@@ -1313,7 +1323,7 @@ const GS = {
     { id: nid("s"), kind: "rect", type: "note", x: 0, y: 11600, w: 10, h: 10, rot: 0, label: "BATI / WEST", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: -13100, y: 0, w: 10, h: 10, rot: 90, label: "KUZEY / NORTH", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: 13100, y: 0, w: 10, h: 10, rot: -90, label: "GÜNEY / SOUTH", capacity: 0, fs: 600 },
-    ...labelGates([...bowlGates(gsAlt), ...bowlGates(gsOrta), ...bowlGates(gsUst)]),
+    ...labelGates([...gsAltDoors, ...gsOrtaDoors, ...gsUstDoors]),
   ],
   blocks: [...gsAlt, ...gsOrta, ...gsUst],
 };
@@ -1322,23 +1332,16 @@ GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
 /* ══════════════  SALON 4 · ÖRNEK BASKETBOL ARENA  ══════════════
    Gerçek bir mekân değil, şablon: FIBA sahası (28 × 15 m) çevresinde
    iki kuşaklı kase. Kase yine bowl() ile, yani tohum blok + dizi işlemiyle.
-   Kapılar GS'deki gibi bowlGates() ile her blok-arası boşluğa oturuyor
-   (bkz. GS'nin yorumu) — burada da hangi blokları beslediği autoGates ile
-   mesafeye göre otomatik çözülüyor.
-
-   aisle genişliği ICC 300 (ABD tribün/vomitorium standardı) egress
-   kapasite kuralına göre kabaca kalibre edildi — bir kaçış merdiveni
-   "kişi başına 0,3 inç (≈0,76cm)" gerektirir; bloklar arası boşluk bu
-   minimumun belirgin şekilde üzerinde tutuldu (küçük bir arenada bile
-   çıplak minimumla merdiven konforsuz olurdu), ama GS'ye göre daha küçük
-   ölçekli bir salon olduğu için oradan daha dar. */
-const arenaAlt = bowl({ W: 4000, H: 3200, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
-  nLong: 5, nShort: 3, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 300, pad: 70,
-  colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } });
-const arenaUst = withAccessible(bowl({ W: 5600, H: 4850, Rc: 3200, rows: 20, rowGap: 85, seatGap: 50,
-  nLong: 6, nShort: 4, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 320, pad: 70,
+   Kapılar GS'deki gibi cutVomitories() ile tribünün içine oyuluyor: arka
+   sıralardan koltuk silinip tünel o boşluğa konuyor (bkz. GS'nin yorumu).
+   Hangi blokları beslediği autoGates ile mesafeye göre çözülüyor. */
+const [arenaAlt, arenaAltDoors] = cutVomitories(bowl({ W: 4000, H: 3200, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
+  nLong: 5, nShort: 3, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
+  colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
+const [arenaUst, arenaUstDoors] = cutVomitories(withAccessible(bowl({ W: 5600, H: 4850, Rc: 3200, rows: 20, rowGap: 85, seatGap: 50,
+  nLong: 6, nShort: 4, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
   colors: { long: "#5F9142", short: "#6E7787", corner: "#B79A32" } }),
-  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9);
+  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9));
 
 const ARENA = {
   key: "arena", name: "Örnek Basketbol Arena (FIBA)", unit: "cm",
@@ -1346,7 +1349,7 @@ const ARENA = {
   shapes: [
     { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
       w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
-    ...labelGates([...bowlGates(arenaAlt), ...bowlGates(arenaUst)]),
+    ...labelGates([...arenaAltDoors, ...arenaUstDoors]),
   ],
   blocks: [
     /* Parket kenarı — sahaya paralel iki tek sıra */
@@ -2061,10 +2064,22 @@ const HANDLE_HINT = {
   rows: "Sıra sayısı", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
 };
 
+/* Salt-okunur örnek salonların kaynak (kod) sürümü. Kod değişince bunu
+   artır — kullanıcının localStorage'ındaki ESKİ otomatik-kayıt kopyası
+   kaynağı gölgelemesin. Yoksa bir kez açılan örnek salon sonsuza dek eski
+   halinde takılı kalıyor, koddaki düzeltmeler kullanıcıya hiç ulaşmıyor. */
+const SRC_VER = 6;
+const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, arena: ARENA, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
+/* Sürüm kapısı yalnızca şablonlara uygulanır; empty ve p-* anahtarları
+   kullanıcının kendi işini tutar (örn. empty üstüne kurulan Aspendos), asla
+   atılmaz. */
+const SAMPLE_KEYS = new Set(["sureyya", "aylak", "harbiye", "gs", "arena", "zorlu", "cso", "akm", "yenikapi"]);
+const stampVer = (obj) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, { ...v, srcVer: SRC_VER }]));
+
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
 
 export default function PlanEditor() {
-  const [venues, setVenues] = useState({ sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, arena: ARENA, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY });
+  const [venues, setVenues] = useState(stampVer(BUILTINS));
   const [vk, setVk] = useState("gs");
   const plan = venues[vk];
 
@@ -2459,7 +2474,12 @@ export default function PlanEditor() {
       const loaded = {};
       for (const k of keys) {
         const p = await Store.load(k);
-        if (p?.blocks) loaded[k] = absorbIds(p);
+        if (!p?.blocks) continue;
+        /* Şablonun kaynak sürümü değiştiyse eski kayıtlı kopyayı yükleme —
+           koddaki düzeltme kazansın. Kullanıcı planlarına (empty, p-*)
+           dokunulmaz. */
+        if (SAMPLE_KEYS.has(k) && p.srcVer !== SRC_VER) continue;
+        loaded[k] = absorbIds(p);
       }
       if (!dead && Object.keys(loaded).length) {
         setVenues((v) => ({ ...v, ...loaded }));
@@ -3538,17 +3558,23 @@ export default function PlanEditor() {
               if (s.type === "pitch") return <Pitch key={s.id} s={s} selected={selShapeId === s.id} />;
               if (s.type === "door") {
                 const on = selShapeId === s.id;
+                const num = String(s.label).replace(/\D+/g, "") || "?";
+                /* Kapı, gerçek bir vomitorium gibi DİKDÖRTGEN bir açıklık —
+                   yuvarlak rozet değil. Tribüne oyulmuş tünel ağzını temsil
+                   eder; rot ile tünelin radyal yönüne hizalanır. Numara dik
+                   (döndürülmemiş) yazılır. */
+                const fs = Math.min(s.fs || 95, Math.min(s.w, s.h) * 0.66);
                 return (
                   <g key={s.id} className={on ? "dr on" : "dr"}>
                     {on && (s.blocks || []).map((bid) => {
                       const m = metaById.get(bid);
                       return m ? <line key={bid} x1={s.x} y1={s.y} x2={m.cx} y2={m.cy} /> : null;
                     })}
-                    <circle data-s={s.id} cx={s.x} cy={s.y} r={s.w / 2} fill={st.fill} stroke={st.stroke} />
-                    <text x={s.x} y={s.y - (s.fs || 95) * 0.12} style={{ fontSize: (s.fs || 95) * 0.62 }}>KAPI</text>
-                    <text x={s.x} y={s.y + (s.fs || 95) * 0.55} className="dv" style={{ fontSize: s.fs || 95 }}>
-                      {String(s.label).replace(/\D+/g, "") || "?"}
-                    </text>
+                    <g transform={`translate(${s.x} ${s.y}) rotate(${s.rot || 0})`}>
+                      <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h}
+                        rx={14} fill={st.fill} stroke={st.stroke} strokeWidth={6} />
+                    </g>
+                    <text x={s.x} y={s.y + fs * 0.35} className="dv" style={{ fontSize: fs }}>{num}</text>
                   </g>
                 );
               }
@@ -4815,7 +4841,7 @@ svg.t-seatAdd, svg.t-cal, svg.t-attr, svg.t-table{ cursor:crosshair; }
 .shp.on polygon, .shp.on rect{ stroke:var(--sel); }
 .pit rect{ cursor:pointer; }
 .pit.on > rect:first-child{ stroke:var(--sel); }
-.dr circle{ cursor:pointer; stroke-width:6; }
+.dr rect{ cursor:pointer; stroke-width:6; }
 .dr text{ fill:var(--onacc); opacity:.75; text-anchor:middle; pointer-events:none; letter-spacing:.1em; }
 .dr .dv{ fill:var(--onacc); opacity:1; font-weight:700; letter-spacing:0; font-family:var(--mono); }
 .dr line{ stroke:var(--acc); stroke-width:6; stroke-dasharray:26 20; opacity:.6; }
