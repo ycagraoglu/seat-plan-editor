@@ -20,7 +20,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const srcPath = path.join(root, "src/PlanEditor.jsx");
 const tmpPath = path.join(root, `.tmp-planeditor-test-${process.pid}.mjs`);
 
-const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ARENA", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI",
+const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI",
   "validate", "buildMeta", "buildSeats", "boundaryPolys", "gateMap", "inPoly", "ATTRS"];
 
 async function loadModule() {
@@ -93,7 +93,7 @@ function overlapArea(polyA, polyB) {
 
 const mod = await loadModule();
 const { validate, buildMeta, buildSeats, boundaryPolys, gateMap, inPoly, ATTRS } = mod;
-const VENUES = { CSO: mod.CSO, ZORLU: mod.ZORLU, GS: mod.GS, ARENA: mod.ARENA,
+const VENUES = { CSO: mod.CSO, ZORLU: mod.ZORLU, GS: mod.GS, ULKER: mod.ULKER,
   HARBIYE: mod.HARBIYE, AYLAK: mod.AYLAK, SUREYYA: mod.SUREYYA, AKM: mod.AKM, YENIKAPI: mod.YENIKAPI };
 
 console.log("── 4. Gerçek render testi ──");

@@ -1329,51 +1329,65 @@ const GS = {
 };
 GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
 
-/* ══════════════  SALON 4 · ÖRNEK BASKETBOL ARENA  ══════════════
-   Gerçek bir mekân değil, şablon: FIBA sahası (28 × 15 m) çevresinde
-   iki kuşaklı kase. Kase yine bowl() ile, yani tohum blok + dizi işlemiyle.
-   Kapılar GS'deki gibi cutVomitories() ile tribünün içine oyuluyor: arka
-   sıralardan koltuk silinip tünel o boşluğa konuyor (bkz. GS'nin yorumu).
-   Hangi blokları beslediği autoGates ile mesafeye göre çözülüyor.
+/* ══════  SALON 4 · ÜLKER SPOR VE ETKİNLİK SALONU (Fenerbahçe Beko)  ══════
+   Gerçek mekân. Ataşehir/İstanbul, 2012 açılışlı, Ömerler Mimarlık.
+   Doğrulanan veriler:
+     · basketbol kapasitesi 13.500 (konserde 15.000)
+     · iki kademeli kase — üst kademede 360° LED bant
+     · iki kademe arasında 44 loca
+     · alt kademe blokları 1xx numaralı; 118 ve 119 "pota arkası" bloklar
+   FIBA sahası 28 × 15 m.
 
-   Kase ölçüleri sahaya göre: eskiden W/H 4000/3200 idi, yani saha kenarı
-   ile ilk sıra arasında 26 m / 24,5 m boşluk kalıyordu — saha kocaman bir
-   boşluğun ortasında minicik görünüyordu. Gerçek bir arenada bu pay
-   skorer masası, yedek kulübeleri, basın ve yürüme yolu için 5-8 m'dir.
-   Alt kase artık kenar çizgisine 7 m, dip çizgisine 8 m uzakta. Kase
-   küçülünce çevresi de kısaldığı için blok sayıları orantılı azaltıldı;
-   yoksa bloklar birkaç koltukluk şeritlere dönüşüyordu. */
-const [arenaAlt, arenaAltDoors] = cutVomitories(bowl({ W: 2200, H: 1450, Rc: 900, rows: 16, rowGap: 85, seatGap: 50,
-  nLong: 4, nShort: 2, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
+   Kase ölçüsü sahaya göre kuruldu: kenar çizgisine ~6,5 m, dip çizgisine
+   ~8,5 m. Bu pay skorer masası, yedek kulübeleri, basın ve yürüme yolu
+   içindir — önceki sahte "Örnek Arena"da bu 24-26 m'ye kadar açılmış,
+   saha kocaman bir boşluğun ortasında kalmıştı.
+
+   Loca katı 44 bloktan oluşuyor: bowl() blok sayısı
+   2*(2*nCorner + nLong + nShort) olduğundan 2*(2*8 + 4 + 2) = 44 ile
+   her blok bir locaya karşılık geliyor. Blokların çoğu köşelerde çünkü
+   düz kenarlarda 44'ü paylaştırmak locaları birbirine geçirtiyordu
+   (test "taban çakışma" ile yakaladı). İki sıralı ve geniş koltuk
+   aralıklı — gerçek locada da iki sıra koltuk olur; ayrıca tek sıralı
+   yelpaze blokta taban hesabı kavisi takip etmediğinden koltuklar
+   tabanın dışında kalıyordu (test "koltuk-içerme" ile yakaladı).
+
+   Kapılar GS'deki gibi cutVomitories() ile tribünün içine oyuluyor.
+   Loca sığ olduğu için tünel açılmaz (fonksiyon sığ blokları atlar). */
+const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: 2250, H: 1400, Rc: 900, rows: 20, rowGap: 85, seatGap: 50,
+  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
   colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
-const [arenaUst, arenaUstDoors] = cutVomitories(withAccessible(bowl({ W: 3700, H: 2950, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
-  nLong: 5, nShort: 2, nCorner: 4, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
-  colors: { long: "#5F9142", short: "#6E7787", corner: "#B79A32" } }),
-  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9));
+const ulkerLoca = bowl({ W: 4100, H: 3250, Rc: 2600, rows: 2, rowGap: 90, seatGap: 90,
+  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: 60,
+  colors: { long: "#B79A32", short: "#B79A32", corner: "#B79A32" } });
+const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: 4450, H: 3600, Rc: 2800, rows: 18, rowGap: 85, seatGap: 50,
+  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
+  colors: { long: "#5F9142", short: "#6E7787", corner: "#3E7FBF" } }),
+  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
 
-const ARENA = {
-  key: "arena", name: "Örnek Basketbol Arena (FIBA)", unit: "cm",
-  home: { x: -6000, y: -5200, w: 12000, h: 10400 }, underlay: null,
+const ULKER = {
+  key: "ulker", name: "Ülker Spor ve Etkinlik Salonu · Fenerbahçe Beko", unit: "cm",
+  home: { x: -6600, y: -5700, w: 13200, h: 11400 }, underlay: null,
   shapes: [
     { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
       w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
-    ...labelGates([...arenaAltDoors, ...arenaUstDoors]),
+    ...labelGates([...ulkerAltDoors, ...ulkerUstDoors]),
   ],
   blocks: [
-    /* Parket kenarı — sahaya paralel iki tek sıra */
+    /* Parket kenarı — sahaya paralel iki tek sıra (courtside) */
     { id: nid(), kind: "grid", label: "P1", name: "Parket Kenarı · P1", level: "Parket Kenarı",
-      x: 0, y: 1000, rot: 0, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
+      x: 0, y: 950, rot: 0, cols: 30, rows: 2, counts: "", align: "center",
+      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
       num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
     { id: nid(), kind: "grid", label: "P2", name: "Parket Kenarı · P2", level: "Parket Kenarı",
-      x: 0, y: -1000, rot: 180, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
+      x: 0, y: -950, rot: 180, cols: 30, rows: 2, counts: "", align: "center",
+      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
       num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
 
-    ...arenaAlt, ...arenaUst,
+    ...ulkerAlt, ...ulkerLoca, ...ulkerUst,
   ],
 };
-ARENA.shapes = autoGates(ARENA, ARENA.blocks.map((b) => ({ b, m: buildMeta(b) })));
+ULKER.shapes = autoGates(ULKER, ULKER.blocks.map((b) => ({ b, m: buildMeta(b) })));
 
 /* ══════════════  SALON 5 · HARBİYE CEMİL TOPUZLU AÇIKHAVA  ══════════════
    180°'lik amfi. Üç kademe, harfle adlandırılmış radyal bloklar,
@@ -2076,12 +2090,12 @@ const HANDLE_HINT = {
    artır — kullanıcının localStorage'ındaki ESKİ otomatik-kayıt kopyası
    kaynağı gölgelemesin. Yoksa bir kez açılan örnek salon sonsuza dek eski
    halinde takılı kalıyor, koddaki düzeltmeler kullanıcıya hiç ulaşmıyor. */
-const SRC_VER = 7;
-const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, arena: ARENA, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
+const SRC_VER = 8;
+const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, ulker: ULKER, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
 /* Sürüm kapısı yalnızca şablonlara uygulanır; empty ve p-* anahtarları
    kullanıcının kendi işini tutar (örn. empty üstüne kurulan Aspendos), asla
    atılmaz. */
-const SAMPLE_KEYS = new Set(["sureyya", "aylak", "harbiye", "gs", "arena", "zorlu", "cso", "akm", "yenikapi"]);
+const SAMPLE_KEYS = new Set(["sureyya", "aylak", "harbiye", "gs", "ulker", "zorlu", "cso", "akm", "yenikapi"]);
 const stampVer = (obj) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, { ...v, srcVer: SRC_VER }]));
 
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
