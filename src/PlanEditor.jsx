@@ -1238,27 +1238,52 @@ function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
   return [...half, ...radialArray(half, { count: 2, cx: 0, cy: 0, step: 180 })];
 }
 
-/** bowl()'un ürettiği her komşu blok çifti arasına, gerçek bir stadyumda
- *  olduğu gibi bir merdiven/kapı (vomitorium) koyar. Blokların kendisine
- *  dokunmuyor — sadece aralarındaki en dış (sahadan en uzak) köşe
- *  noktalarının ortasına, biraz daha dışarı itilmiş bir kapı işareti
- *  ekliyor. Hangi iki bloğun beslediği zaten autoGates ile mesafeye göre
- *  otomatik çözülüyor, burada elle atamaya gerek yok. */
-function bowlGates(blocks, first) {
-  const outerCorner = (m) => [[m.bbox.x0, m.bbox.y0], [m.bbox.x1, m.bbox.y0],
-    [m.bbox.x0, m.bbox.y1], [m.bbox.x1, m.bbox.y1]]
-    .reduce((a, c) => (Math.hypot(...c) > Math.hypot(...a) ? c : a));
-  const pts = blocks.map((b) => outerCorner(buildMeta(b)));
-  const n = blocks.length;
-  return blocks.map((b, i) => {
-    const [x1, y1] = pts[i], [x2, y2] = pts[(i + 1) % n];
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-    const d = Math.hypot(mx, my) || 1;
-    return { id: nid("s"), kind: "rect", type: "door",
-      x: Math.round(mx + (mx / d) * 250), y: Math.round(my + (my / d) * 250),
-      w: 160, h: 160, rot: 0, label: `KAPI ${first + i}`, capacity: 0, fs: 110, blocks: [] };
-  });
+/** bowl()'un ürettiği komşu blok çiftleri arasındaki boşluğa, gerçek bir
+ *  stadyumdaki gibi bir merdiven/kapı (vomitorium) koyar. KRİTİK: kapı
+ *  koltuk olmayan yere denk gelmeli. Bunu garanti etmek için bbox köşesi
+ *  gibi kaba bir tahmin DEĞİL, blokların gerçek taban çokgeni (outline,
+ *  dönmeyi de hesaba katar) kullanılıyor:
+ *    - Her bloğun outline'ının ORTA bandı (radyal yüksekliğin %30–%75'i)
+ *      alınıyor — böylece kapı ne sahaya (iç uç) ne de bir üst kademenin
+ *      ön sırasına (dış uç) düşüyor.
+ *    - İki komşu bloğun bu orta-bant noktaları arasındaki EN YAKIN çiftin
+ *      orta noktası = aradaki merdiven boşluğunun tam ortası, iki blok
+ *      koltuklarına da eşit uzaklıkta.
+ *    - Boşluk 9m'den genişse çift aslında komşu değildir (kase dizisinin
+ *      sarma noktası) — kapı konmaz.
+ *  Etiket dışarıda toplu atanıyor; hangi bloğu beslediği autoGates ile
+ *  mesafeye göre çözülüyor. */
+function bowlGates(blocks) {
+  const rad = (p) => Math.hypot(p.x, p.y);
+  /* Tabanın ORTA bandını al (radyal yüksekliğin %30–%75'i): iç uç sahaya,
+     dış uç bir üst kademenin ön sıralarına düşürüyordu (kademeler iç içe
+     geçebiliyor). Orta bant ikisinden de uzak — üstelik gerçek
+     vomitoriumlar da tribünün orta yüksekliğinde. */
+  const midBand = (m) => {
+    const rs = m.outline.map(rad);
+    const lo = Math.min(...rs), hi = Math.max(...rs), span = hi - lo || 1;
+    const band = m.outline.filter((p) => {
+      const t = (rad(p) - lo) / span;
+      return t >= 0.30 && t <= 0.75;
+    });
+    return band.length ? band : m.outline;
+  };
+  const outers = blocks.map((b) => midBand(buildMeta(b)));
+  const n = blocks.length, out = [];
+  for (let i = 0; i < n; i++) {
+    const A = outers[i], B = outers[(i + 1) % n];
+    let best = Infinity, mx = 0, my = 0;
+    for (const a of A) for (const b of B) {
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < best) { best = d; mx = (a.x + b.x) / 2; my = (a.y + b.y) / 2; }
+    }
+    if (best > 900) continue;
+    out.push({ id: nid("s"), kind: "rect", type: "door", x: Math.round(mx), y: Math.round(my),
+      w: 160, h: 160, rot: 0, capacity: 0, fs: 110, blocks: [] });
+  }
+  return out;
 }
+const labelGates = (gates) => gates.map((d, i) => ({ ...d, label: `KAPI ${i + 1}` }));
 
 /* Gerçek Türk Telekom Stadyumu'nda her tribün bloğunun kendi merdiven/kapı
    çıkışı var — komşu bloklar arasındaki bu boşluklar koltuk dizilimini
@@ -1288,9 +1313,7 @@ const GS = {
     { id: nid("s"), kind: "rect", type: "note", x: 0, y: 11600, w: 10, h: 10, rot: 0, label: "BATI / WEST", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: -13100, y: 0, w: 10, h: 10, rot: 90, label: "KUZEY / NORTH", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: 13100, y: 0, w: 10, h: 10, rot: -90, label: "GÜNEY / SOUTH", capacity: 0, fs: 600 },
-    ...bowlGates(gsAlt, 1),
-    ...bowlGates(gsOrta, 1 + gsAlt.length),
-    ...bowlGates(gsUst, 1 + gsAlt.length + gsOrta.length),
+    ...labelGates([...bowlGates(gsAlt), ...bowlGates(gsOrta), ...bowlGates(gsUst)]),
   ],
   blocks: [...gsAlt, ...gsOrta, ...gsUst],
 };
@@ -1299,9 +1322,23 @@ GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
 /* ══════════════  SALON 4 · ÖRNEK BASKETBOL ARENA  ══════════════
    Gerçek bir mekân değil, şablon: FIBA sahası (28 × 15 m) çevresinde
    iki kuşaklı kase. Kase yine bowl() ile, yani tohum blok + dizi işlemiyle.
-   Kapılara blok atanmamış — sağdaki kapı panelinden "Tüm blokları en yakın
-   kapıya ata" ile tek tıkta bağlanır.
-   ══════════════════════════════════════════════════════════════════ */
+   Kapılar GS'deki gibi bowlGates() ile her blok-arası boşluğa oturuyor
+   (bkz. GS'nin yorumu) — burada da hangi blokları beslediği autoGates ile
+   mesafeye göre otomatik çözülüyor.
+
+   aisle genişliği ICC 300 (ABD tribün/vomitorium standardı) egress
+   kapasite kuralına göre kabaca kalibre edildi — bir kaçış merdiveni
+   "kişi başına 0,3 inç (≈0,76cm)" gerektirir; bloklar arası boşluk bu
+   minimumun belirgin şekilde üzerinde tutuldu (küçük bir arenada bile
+   çıplak minimumla merdiven konforsuz olurdu), ama GS'ye göre daha küçük
+   ölçekli bir salon olduğu için oradan daha dar. */
+const arenaAlt = bowl({ W: 4000, H: 3200, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
+  nLong: 5, nShort: 3, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 300, pad: 70,
+  colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } });
+const arenaUst = withAccessible(bowl({ W: 5600, H: 4850, Rc: 3200, rows: 20, rowGap: 85, seatGap: 50,
+  nLong: 6, nShort: 4, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 320, pad: 70,
+  colors: { long: "#5F9142", short: "#6E7787", corner: "#B79A32" } }),
+  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9);
 
 const ARENA = {
   key: "arena", name: "Örnek Basketbol Arena (FIBA)", unit: "cm",
@@ -1309,12 +1346,7 @@ const ARENA = {
   shapes: [
     { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
       w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
-    ...[[1, 0, 5500], [2, 3400, 4200], [3, 5900, 0], [4, 3400, -4200],
-        [5, 0, -5500], [6, -3400, -4200], [7, -5900, 0], [8, -3400, 4200]]
-      .map(([n, x, y]) => ({
-        id: nid("s"), kind: "rect", type: "door", x, y, w: 320, h: 320, rot: 0,
-        label: `KAPI ${n}`, capacity: 0, fs: 105, blocks: [],
-      })),
+    ...labelGates([...bowlGates(arenaAlt), ...bowlGates(arenaUst)]),
   ],
   blocks: [
     /* Parket kenarı — sahaya paralel iki tek sıra */
@@ -1327,13 +1359,7 @@ const ARENA = {
       seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
       num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
 
-    ...bowl({ W: 4000, H: 3200, Rc: 2400, rows: 18, rowGap: 85, seatGap: 50,
-      nLong: 5, nShort: 3, nCorner: 3, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
-      colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }),
-    ...withAccessible(bowl({ W: 5600, H: 4850, Rc: 3200, rows: 20, rowGap: 85, seatGap: 50,
-      nLong: 6, nShort: 4, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
-      colors: { long: "#5F9142", short: "#6E7787", corner: "#B79A32" } }),
-      ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227", "229"], 9),
+    ...arenaAlt, ...arenaUst,
   ],
 };
 ARENA.shapes = autoGates(ARENA, ARENA.blocks.map((b) => ({ b, m: buildMeta(b) })));
