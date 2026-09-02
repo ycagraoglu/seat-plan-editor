@@ -3442,6 +3442,29 @@ export default function PlanEditor() {
                 : <line key={`M${i}`} x1={view.x} y1={v} x2={view.x + view.w} y2={v} />)}
             </g>
 
+            {/* fill:none olan şekiller (duvar, not) SVG'de sadece kenardan
+                tıklanır — görünmez ama tıklamayı yakalayan bir ikinci hedef
+                gerekiyor. Bu hedef, asıl şekillerle AYNI geçişte, kendi
+                sırasında çizilirse; bir duvar dizinin başka bir yerinde
+                (kapsayıcı) ise üstüne gelen her şeklin (ör. ayakta alan)
+                tıklamasını çalar — SVG'de tıklama en üstteki elemana gider.
+                Bu yüzden görünmez hedefler HEP en altta, ayrı bir ön geçişte
+                çizilir; üstlerine gelen gerçek şekiller tıklamayı önce onlar
+                yakalar. */}
+            {plan.shapes.map((s) => {
+              const st = SHAPES[s.type];
+              if (st?.fill !== "none") return null;
+              return (
+                <g key={`ht${s.id}`} transform={`translate(${s.x} ${s.y}) rotate(${s.rot})`}>
+                  {s.kind === "rect"
+                    ? <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h}
+                        fill="transparent" stroke="none" />
+                    : <polygon data-s={s.id} points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                        fill="transparent" stroke="none" />}
+                </g>
+              );
+            })}
+
             {plan.shapes.map((s) => {
               const st = SHAPES[s.type];
               if (s.type === "icon") return null;
@@ -3466,26 +3489,13 @@ export default function PlanEditor() {
                 <g key={s.id} className={selShapeId === s.id ? "shp on" : "shp"}
                   transform={`translate(${s.x} ${s.y}) rotate(${s.rot})`}>
                   {s.kind === "rect"
-                    ? <>
-                        <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h} rx={s.type === "pitch" ? 10 : 20}
-                          fill={st.fill} stroke={s.type === "note" && s.w < 50 ? "none" : st.stroke}
-                          strokeWidth={s.type === "pitch" ? 14 : 6}
-                          strokeDasharray={s.type === "standing" ? "40 26" : ""} />
-                        {/* fill:none olan tipler (duvar, not) SVG'de sadece kenardan
-                            tıklanır — görünmez ama tıklamayı yakalayan bir ikinci
-                            hedef ekleniyor. "transparent" bilerek: "none" tıklamayı
-                            hiç yakalamaz, "transparent" görünmez ama yakalar. */}
-                        {st.fill === "none" && <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2}
-                          width={s.w} height={s.h} fill="transparent" stroke="none" />}
-                      </>
-                    : <>
-                        <polygon data-s={s.id} points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
-                          fill={st.fill} stroke={st.stroke} strokeWidth={6}
-                          strokeDasharray={s.type === "standing" ? "40 26" : ""} />
-                        {st.fill === "none" && <polygon data-s={s.id}
-                          points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
-                          fill="transparent" stroke="none" />}
-                      </>}
+                    ? <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h} rx={s.type === "pitch" ? 10 : 20}
+                        fill={st.fill} stroke={s.type === "note" && s.w < 50 ? "none" : st.stroke}
+                        strokeWidth={s.type === "pitch" ? 14 : 6}
+                        strokeDasharray={s.type === "standing" ? "40 26" : ""} />
+                    : <polygon data-s={s.id} points={s.pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                        fill={st.fill} stroke={st.stroke} strokeWidth={6}
+                        strokeDasharray={s.type === "standing" ? "40 26" : ""} />}
                   {s.label && (() => {
                     const txt = s.label + (s.type === "standing" && s.capacity ? ` · ${s.capacity} kişi` : "");
                     const w = s.kind === "rect" ? s.w
