@@ -1256,7 +1256,7 @@ function bowlGates(blocks, first) {
     const d = Math.hypot(mx, my) || 1;
     return { id: nid("s"), kind: "rect", type: "door",
       x: Math.round(mx + (mx / d) * 250), y: Math.round(my + (my / d) * 250),
-      w: 260, h: 260, rot: 0, label: `KAPI ${first + i}`, capacity: 0, fs: 130, blocks: [] };
+      w: 160, h: 160, rot: 0, label: `KAPI ${first + i}`, capacity: 0, fs: 110, blocks: [] };
   });
 }
 
@@ -1267,13 +1267,13 @@ function bowlGates(blocks, first) {
    artık her kattaki HER blok-arası boşluğa bowlGates() ile gerçek bir kapı
    konuyor, hangi blokları beslediği autoGates ile mesafeye göre çözülüyor. */
 const gsAlt = bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 100, level: "Alt Tribün", aisle: 240, pad: 80,
+  first: 100, level: "Alt Tribün", aisle: 350, pad: 80,
   colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } });
 const gsOrta = bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 200, level: "Orta Tribün", aisle: 260, pad: 80,
+  first: 200, level: "Orta Tribün", aisle: 370, pad: 80,
   colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } });
 const gsUst = bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 400, level: "Üst Tribün", aisle: 280, pad: 80,
+  first: 400, level: "Üst Tribün", aisle: 390, pad: 80,
   colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
   .map((b) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
     "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
