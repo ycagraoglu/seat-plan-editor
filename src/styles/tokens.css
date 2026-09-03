@@ -1,0 +1,63 @@
+/* ══════════════════════════════════════════════════════════════════════
+   TASARIM TOKEN'LARI — Biletera tasarım sisteminin bu projedeki karşılığı.
+   Bu dosya KENDİ BAŞINA taşınabilir: app.css'e ya da bu depoya hiçbir
+   bağımlılığı yok; başka bir Biletera projesine olduğu gibi kopyalanabilir.
+
+   BILETERA TASARIM SİSTEMİ
+   Kaynak: biletone-design-system-a49308b5 (zip dosya adı) · tokens/*.css + Geliştirici
+   Spesifikasyonu. Marka kırmızısı #E30613 yalnızca üç yerde: aksiyon,
+   seçili durum, fiyat — dekoratif kullanılmaz (spesifikasyon kuralı).
+   Tipografi tek aile: Poppins. Boşluk 8pt ızgara. Ev yarıçapı 24px.
+
+   Uyarlama notu: tasarım sistemi 390px mobil referansıyla yazılmış
+   (buton 52px, dokunma alanı 48px). Bu editör masaüstü yoğunluğunda bir
+   çizim aleti olduğundan ölçüler DS'in KENDİ ölçeğinden bir-iki kademe
+   aşağıdan seçildi (radius-xs/sm, caption/label tipografi). Renk,
+   tipografi ailesi, hareket ve koltuk paleti birebir DS değeridir.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Poppins — marka tipografisi (DS tokens/fonts.css ile aynı kaynak) */
+@font-face{font-family:"Poppins";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDz8Z1xlFd2JQEk.woff2) format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecnFHGPc.woff2) format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9Z1xlFd2JQEk.woff2) format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFd2JQEk.woff2) format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2) format("woff2")}
+
+/* Koyu tema — DS "OLED dark scale (product)". Ürünün varsayılan teması. */
+.ed.dark{
+  --ink:#090909; --panel:#151515; --panel2:#1C1C1C; --ovl:rgba(21,21,21,.94);
+  --line:rgba(255,255,255,.08); --bone:#FFFFFF; --dim:#A5A5A5; --mut:#6E6E70;
+  --acc:#E30613; --accrgb:227,6,19; --accline:rgba(227,6,19,.12); --onacc:#FFFFFF;
+  --canvas:#090909; --grid:rgba(255,255,255,.04); --grid2:rgba(255,255,255,.09); --rowlab:#6E6E70;
+  --sel:#E30613; --marqfill:rgba(227,6,19,.12);
+  --ok:#2FD07A; --okline:rgba(47,208,122,.16); --err:#FF453A; --warn:#F5A623;
+  --shapefill:#1C1C1C; --shapeline:rgba(255,255,255,.12); --seatoff:#2E2E2E;
+  --doorfill:#FFFFFF; --doorink:#111111;   /* DS surface-inverse / text-on-inverse */
+  --shadow:0 8px 28px rgba(0,0,0,.44);
+}
+/* Açık tema — DS Geliştirici Spesifikasyonu "Açık tema" bölümü.
+   Anlamsal renkler (ok/err/warn) DS'te tek takım verilmiş; açık zeminde
+   okunmadıkları için aynı tonun koyu karşılıkları kullanıldı — DS'i
+   genişlettiğim tek yer, spesifikasyonun kendi metin renklerini temaya
+   göre ayırma mantığını izliyor. */
+.ed.light{
+  --ink:#F7F7F5; --panel:#FFFFFF; --panel2:#F1F1EE; --ovl:rgba(255,255,255,.96);
+  --line:rgba(17,17,17,.08); --bone:#111111; --dim:#3C3C43; --mut:#6B6B73;
+  --acc:#E30613; --accrgb:227,6,19; --accline:rgba(227,6,19,.12); --onacc:#FFFFFF;
+  --canvas:#F7F7F5; --grid:rgba(17,17,17,.05); --grid2:rgba(17,17,17,.10); --rowlab:#6B6B73;
+  --sel:#E30613; --marqfill:rgba(227,6,19,.12);
+  --ok:#1F9A57; --okline:rgba(31,154,87,.16); --err:#C42B22; --warn:#8A5D06;
+  --shapefill:#E4E4E0; --shapeline:#C2C2BD; --seatoff:#E4E4E0;
+  --doorfill:#111111; --doorink:#FFFFFF;   /* DS bt-black / bt-white */
+  --shadow:0 2px 8px rgba(17,17,17,.10);
+}
+
+.ed{
+  /* DS tipografi ailesi — tek aile, rakamlar da Poppins (--font-numeric) */
+  --font-core:"Poppins","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"Poppins","SF Mono",ui-monospace,monospace;
+  /* DS yarıçap ölçeği — yoğun masaüstü için alt kademeler */
+  --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-pill:999px;
+  /* DS hareket */
+  --ease:cubic-bezier(.32,.72,0,1); --dur-fast:160ms; --dur-base:240ms;
+}
