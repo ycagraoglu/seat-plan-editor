@@ -407,6 +407,16 @@ const PALETTE = ["#C2415A", "#C1743C", "#B79A32", "#5F9142",
                  "#3E7FBF", "#6E7787", "#7C5BA8", "#3E9092"];
 const LEVEL_COLORS = ["#3E7FBF", "#5F9142", "#C1743C", "#7C5BA8", "#3E9092", "#C2415A"];
 
+/* A6.4: tek renk kanalı. Aktif kanal (colorChan) DIŞINDAKİ her kaynak bu
+   nötr griye düşer — LEVEL_COLORS/PALETTE/ATTRS/kapı renklerinin hiçbiriyle
+   çakışmayan, iki temada da okunan ayrı bir ton. Amaç: ekranda her an TEK
+   bir soru cevaplansın (bkz. görev raporu — yedi renk kaynağı yarışıyordu). */
+const NEUTRAL = "#8E8E93";
+/* Kanal seçici + lejant başlığı TEK sözlükten besleniyor (SHAPES/ATTRS/POI
+   ile aynı üslup) — ikisi ayrı yazılırsa isim er geç sürüklenir. */
+const COLOR_CHANS = { level: "Kat", attr: "Nitelik", gate: "Kapı", valid: "Doğrulama" };
+const CHAN_TITLE = { level: "Katlar", attr: "Nitelikler", gate: "Kapılar", valid: "Doğrulama" };
+
 
 /** Bir zemin renginin üstünde okunacak yazı rengi — parlaklığa göre.
  *  Temaya bağlamak yanlış olurdu: soluk sarı blok koyu temada da açık
@@ -735,6 +745,10 @@ export default function PlanEditor() {
     lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
     wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
     toolsOpen: true, propsOpen: true,
+    /* A6.4: tek renk kanalı — "level" (Kat) varsayılan, bugünkü davranış.
+       toolPrefs'te yaşıyor çünkü belgeden bağımsız bir görünüm tercihi,
+       tıpkı legend/plates/theme gibi (bkz. dosya başı gerekçesi). */
+    colorChan: "level",
     /* blok panelindeki katlanır bölümlerin açık/kapalı durumu — bkz.
        BlockPanel. Burada tutulduğu için (BlockPanel'in kendi state'i
        DEĞİL) bir bloktan diğerine geçmek sıfırlamaz: kullanıcı "Gelişmiş"i
@@ -743,7 +757,7 @@ export default function PlanEditor() {
   });
   const {
     tool, shapeType, sport, brush, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
-    toolsOpen, propsOpen, footOpen, numOpen, advOpen,
+    toolsOpen, propsOpen, footOpen, numOpen, advOpen, colorChan,
   } = toolPrefs;
   const setToolPref = useCallback((key, v) =>
     setToolPrefs((p) => ({ ...p, [key]: typeof v === "function" ? v(p[key]) : v })), []);
@@ -759,6 +773,7 @@ export default function PlanEditor() {
   const setWheelPref = useCallback((v) => setToolPref("wheelPref", v), [setToolPref]);
   const setTheme = useCallback((v) => setToolPref("theme", v), [setToolPref]);
   const setLegend = useCallback((v) => setToolPref("legend", v), [setToolPref]);
+  const setColorChan = useCallback((v) => setToolPref("colorChan", v), [setToolPref]);
   const setPlates = useCallback((v) => setToolPref("plates", v), [setToolPref]);
   const setQ = useCallback((v) => setToolPref("q", v), [setToolPref]);
   const setToolsOpen = useCallback((v) => setToolPref("toolsOpen", v), [setToolPref]);
@@ -925,6 +940,26 @@ export default function PlanEditor() {
     Math.max(0, levels.indexOf(b.level || "")) % LEVEL_COLORS.length], [levels]);
   const gates = useMemo(() => gateMap(plan), [plan.shapes]);
 
+  /* ── A6.4: tek renk kanalı ────────────────────────────────────────
+     Kat, blok rengi, nitelik, kapı — dördü de aynı anda çizilince hangi
+     rengin ne anlattığı ayırt edilemiyordu (bkz. görev raporu). chanColor
+     TEK kapı: aktif kanal "level" değilse blok/koltuk zemini NEUTRAL'a
+     düşer, kanalın kendi sinyali (nitelik kanalında koltuk kenarlığı,
+     kapı kanalında blok/kapı rengi) ayrı yerde devreye girer. Seçim
+     vurgusu (.blk.on rect / .sel — CSS stroke override) ve canlı
+     breach/collide bundan ETKİLENMEZ, chanColor'dan hiç geçmiyorlar. */
+  const gateShapes = useMemo(() => plan.shapes.filter((s) => s.type === "door"), [plan.shapes]);
+  const gateColor = useCallback((label) => {
+    if (!label) return NEUTRAL;
+    const i = gateShapes.findIndex((d) => d.label === label);
+    return PALETTE[(i < 0 ? 0 : i) % PALETTE.length];
+  }, [gateShapes]);
+  const chanColor = useCallback((b) => {
+    if (colorChan === "gate") return gateColor(gates.get(b.id)?.[0]);
+    if (colorChan !== "level") return NEUTRAL; // "attr" / "valid": blok rengi bu sorunun cevabı değil
+    return cc(b);
+  }, [colorChan, cc, gateColor, gates]);
+
   /* Sınır taşması VE aynı kat çakışması canlı izleniyor — ikisi de artık
      core/rules.js'teki AYNI runRules() motorundan geliyor (liveOnly: true):
      Doğrula raporuyla ayrı bir kopya değil, tek kaynak. bbox ön elemesi
@@ -950,6 +985,25 @@ export default function PlanEditor() {
     liveFindings.find((f) => f.id === "footprint-overlap-same-level")?.ids || [],
     [liveFindings]);
   const collideSet = useMemo(() => new Set(collide), [collide]);
+
+  /* "Doğrulama" kanalı canlı breach/collide'ı (yukarıda, HER kanalda zaten
+     görünür) "vurgular": kanalın kendisi doğrulamaysa, son Doğrula
+     raporundaki TÜM bulgular (dar açıklık, kat-arası çakışma, yinelenen
+     kimlik gibi live:false kurallar dahil) aynı dış hat vurgusuyla eklenir.
+     Rapor hiç çalıştırılmamışsa (report=null) sadece canlı ikisi görünür —
+     eksik değil, kullanıcı henüz Doğrula'ya basmadı. */
+  const reportMarks = useMemo(() => {
+    if (colorChan !== "valid" || !report) return { err: [], warn: [] };
+    const err = new Set(), warn = new Set();
+    report.list.forEach((f) => {
+      if (f.t === "err") (f.ids || []).forEach((id) => err.add(id));
+      else if (f.t === "warn") (f.ids || []).forEach((id) => warn.add(id));
+    });
+    breach.forEach((id) => err.delete(id));
+    collide.forEach((id) => err.delete(id));
+    err.forEach((id) => warn.delete(id));
+    return { err: [...err], warn: [...warn] };
+  }, [colorChan, report, breach, collide]);
 
   const attrTotals = useMemo(() => {
     const t = {};
@@ -1855,9 +1909,22 @@ export default function PlanEditor() {
       }
       if (e.key === "Enter" && footDraft) { footFinish(); return; }
       if (e.key === "Enter" && poly) { finishPoly(); return; }
-      if (e.key === "Escape") { setPoly(null); setDraft(null); setCalib(null); setReport(null); setSetOpen(false);
+      /* A6.4: Esc, "normal olmayan" altı durumun (arrPrev, levelFilter,
+         calib, footDraft, poly, match — bkz. modeChips'in üstündeki not)
+         HEPSİNDEN tutarlı çıkış yolu. Önceden yalnız poly/calib/footDraft
+         kapanıyordu, arrPrev/levelFilter/match AÇIK KALIYORDU — kullanıcı
+         Esc'e basıp "temizlendi" sanırken üçü sessizce aktif kalabiliyordu.
+         footDraft ve poly kendi taslaklarını iptal ederken seçili bloğu
+         KORUR (o taslağı hangi blok için çizdiğini unutturmamak için) —
+         bu yüzden ikisi de erken return ile genel seçim temizliğini atlar. */
+      if (e.key === "Escape") {
+        setDraft(null); setCalib(null); setReport(null); setSetOpen(false);
+        setArrPrev(null); setMatch(null);
+        if (levelFilter !== "*") setLevelFilter("*");
         if (footDraft) { setFootDraft(null); setTool("select"); return; }
-        setSelIds([]); setSelShapeId(null); setSelSeat(null); setSelSeats(new Set()); return; }
+        if (poly) { setPoly(null); setTool("select"); return; }
+        setSelIds([]); setSelShapeId(null); setSelSeat(null); setSelSeats(new Set()); return;
+      }
 
       /* ok tuşları: varsayılan 1 cm, Shift 10×, Alt ızgara adımı */
       const ARR = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
@@ -2016,6 +2083,36 @@ export default function PlanEditor() {
     prev: arrPrev, setPrev: setArrPrev };
   const selSeatTotal = selBlocks.reduce((a, b) => a + (metaById.get(b.id)?.seatCount || 0), 0);
 
+  /* ── A6.4: mod şeridi ─────────────────────────────────────────────
+     Adaylar (görev tanımındaki altısı): arrPrev, levelFilter, calib,
+     footDraft, poly, match. Ölçüt: bu durum aktifken uygulama kullanıcının
+     beklediğinden farklı davranıyor mu, VE bunu ekranda panel/rayın açık
+     olmasına bakmadan HER ZAMAN okuyabiliyor mu?
+       - levelFilter: seçici sol rayda (toolsOpen kapalıyken hiç görünmez);
+         filtre bloğu SİLMİYOR ama öyle hissettiriyor ("bloklarımı yuttu").
+       - arrPrev: paneli (BlockPanel → ArraySection) sağ rayda (propsOpen
+         kapalıyken hiç görünmez) VE seçim değişince de panelden düşmüyor;
+         hayalet bloklar ekranda kalırken kapatacak kontrol kayboluyor
+         ("diziden çıkamadım").
+       - poly: tek göstergesi sol raydaki "Poligonu kapat" düğmesi
+         (yine toolsOpen'a bağımlı) — footDraft'ın aksine tuval üstünde
+         sabit bir ipucu YOK.
+     calib ve footDraft BİLEREK dışarıda bırakıldı: ikisi de rayın açık/
+     kapalı olmasından bağımsız, tuval üstünde HER ZAMAN görünen kendi
+     şeridine sahip (.calbar / .tip) ve ikisi de zaten "Esc ile çık"ı
+     söylüyor — ikinci bir şerit eklemek aynı bilgiyi tekrarlar. match da
+     dışarıda: kendi geniş panelinde ("Koltuk listesi eşleştirme") zaten
+     her zaman görünür ve açık bir "kapat" bağlantısı taşıyor; tek eksiği
+     Esc'ti, o aşağıda düzeltildi — ayrıca bir şerit rozeti eklemek
+     gürültü olurdu. */
+  const modeChips = [];
+  if (levelFilter !== "*") modeChips.push({ k: "lf",
+    label: `Kat süzgeci: ${levelFilter}`, x: () => setLevelFilter("*") });
+  if (arrPrev) modeChips.push({ k: "ap",
+    label: `Dizi önizleme: ${arrPrev === "lin" ? "doğrusal" : "radyal"}`, x: () => setArrPrev(null) });
+  if (poly) modeChips.push({ k: "pg",
+    label: `Çokgen çiziliyor · ${poly.pts.length} nokta`, x: () => { setPoly(null); setTool("select"); } });
+
   return (
     <div className={`ed ${dark ? "dark" : "light"}`}>
       <style>{CSS}</style>
@@ -2038,6 +2135,13 @@ export default function PlanEditor() {
         <span className={dirty ? "pub dirty" : "pub"}>
           {published ? `v${published.v}` : "taslak"}{dirty ? " · değişiklik var" : " · yayında"}
         </span>
+        <span className="tsep" />
+        <label className="chk" title="Tuvalde tek bir soru cevaplansın diye seçili kanal dışındaki her şey griye düşer">
+          Renklendir
+          <select className="mini" value={colorChan} onChange={(e) => setColorChan(e.target.value)}>
+            {Object.entries(COLOR_CHANS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+          </select>
+        </label>
 
         <div className="grow" />
 
@@ -2055,6 +2159,21 @@ export default function PlanEditor() {
         <button onClick={exportPlan}>plan.json</button>
         <button className="pri" onClick={exportSeats}>seats.json</button>
       </header>
+
+      {/* Mod şeridi: ray/panel kapalıyken de HER ZAMAN görünür — hangi
+          "normal olmayan" durumun aktif olduğunu tahmin ettirmez, tek
+          tıkla (ya da Esc ile) çıkış verir. Gerekçe için modeChips'in
+          üstündeki not. */}
+      {modeChips.length > 0 && (
+        <div className="modestrip">
+          {modeChips.map((c) => (
+            <span key={c.k} className="chip">
+              {c.label}
+              <button onClick={c.x} title="Çık (Esc)">×</button>
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className={`body${toolsOpen ? "" : " tc"}${propsOpen ? "" : " pc"}`}>
         <nav className={`tools${toolsOpen ? "" : " closed"}`}>
@@ -2230,6 +2349,12 @@ export default function PlanEditor() {
                    eder; rot ile tünelin radyal yönüne hizalanır. Numara dik
                    (döndürülmemiş) yazılır. */
                 const fs = Math.min(s.fs || 95, Math.min(s.w, s.h) * 0.66);
+                /* "Kapı" kanalı dışında işaret nötr griye düşer — bugüne
+                   kadar sabit --doorfill (tema tersi, hep beyaz/siyah)
+                   diğer üç kanalda da aynı canlılıkta kalıyor, greylenmiş
+                   bloklar arasında yersiz göze batıyordu. Kanal "Kapı"
+                   ise kapının kendi rengiyle (bloklarıyla AYNI) boyanır. */
+                const dcol = colorChan === "gate" ? gateColor(s.label) : st.fill;
                 return (
                   <g key={s.id} className={on ? "dr on" : "dr"}>
                     {on && (s.blocks || []).map((bid) => {
@@ -2238,7 +2363,7 @@ export default function PlanEditor() {
                     })}
                     <g transform={`translate(${s.x} ${s.y}) rotate(${s.rot || 0})`}>
                       <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h}
-                        rx={14} fill={st.fill} stroke={st.stroke} strokeWidth={6} />
+                        rx={14} fill={dcol} stroke={dcol} strokeWidth={6} />
                     </g>
                     <text x={s.x} y={s.y + fs * 0.35} className="dv" style={{ fontSize: fs }}>{num}</text>
                   </g>
@@ -2291,7 +2416,7 @@ export default function PlanEditor() {
             )}
 
             {!seatMode && shown.map(({ b, m }) => {
-              const col = cc(b);
+              const col = chanColor(b);
               const bw = lodFont * (String(b.label).length * 0.62 + 0.7);
               return (
                 <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
@@ -2312,15 +2437,15 @@ export default function PlanEditor() {
               <g key={`t${b.id}`} className="tbl"
                 transform={`translate(${b.x} ${b.y}) rotate(${b.rot})`}>
                 {(b.tShape || "round") === "round"
-                  ? <circle r={(b.tW || 90) / 2} fill={cc(b)} stroke={cc(b)} />
+                  ? <circle r={(b.tW || 90) / 2} fill={chanColor(b)} stroke={chanColor(b)} />
                   : <rect x={-(b.tW || 160) / 2} y={-(b.tH || 90) / 2}
                       width={b.tW || 160} height={b.tH || 90} rx={12}
-                      fill={cc(b)} stroke={cc(b)} />}
+                      fill={chanColor(b)} stroke={chanColor(b)} />}
                 {(() => {
                   const f = Math.min((b.tW || 90) * 0.42, 13 * U);
                   return f / U < 7 ? null : (
                     <text className="tlab" y={f * 0.35} style={{ fontSize: f }}
-                      fill={onColor(cc(b))}>{b.label}</text>
+                      fill={onColor(chanColor(b))}>{b.label}</text>
                   );
                 })()}
               </g>
@@ -2329,7 +2454,7 @@ export default function PlanEditor() {
             {seatMode && plates && drawn.filter(({ b }) => b.kind !== "table").map(({ b, m }) => (
               <polygon key={`pl${b.id}`} className="plate"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
-                fill={cc(b)} stroke={cc(b)}
+                fill={chanColor(b)} stroke={chanColor(b)}
                 fillOpacity={dark ? 0.16 : 0.13} strokeOpacity={dark ? 0.5 : 0.6}
                 strokeWidth={Math.max(2, 1.6 / (pxPerCm || 0.01))} />
             ))}
@@ -2350,7 +2475,7 @@ export default function PlanEditor() {
               return (
                 <g key={`sb${b.id}`} className="stick">
                   <rect x={(vx0 + vx1) / 2 - bw / 2} y={by}
-                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(cc(b))} />
+                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(chanColor(b))} />
                   <text x={(vx0 + vx1) / 2} y={by + f * 1.04}
                     style={{ fontSize: f }}>{b.label}</text>
                 </g>
@@ -2371,27 +2496,29 @@ export default function PlanEditor() {
                       ? { strokeWidth: (isSel ? 2.6 : 1.4) * U } : undefined}
                       transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
                       fill={s.gap ? "none" : s.at === "tech" ? "var(--seatoff)"
-                        : A?.wide ? "none" : cc(b)}
+                        : A?.wide ? "none" : chanColor(b)}
                       fillOpacity={A?.wide ? 0 : 1}
-                      stroke={s.gap ? "var(--mut)" : A ? A.color : s.tweak ? "var(--acc)" : "none"}
+                      stroke={s.gap ? "var(--mut)" : A ? (colorChan === "attr" ? A.color : NEUTRAL) : s.tweak ? "var(--acc)" : "none"}
                       strokeWidth={s.gap ? 1.1 * U : A ? 1.8 * U : 1.2 * U}
                       strokeDasharray={s.gap ? `${3 * U} ${2.4 * U}` : ""} />
                   );
                 })}
                 {seats.filter((s) => ATTRS[s.at]?.wide && !s.gap).map((s) => (
                   <rect key={`w${s.key}`} x={-43} y={-DEF.seatH / 2 - 3} width={86}
-                    height={DEF.seatH + 6} rx={6} fill={ATTRS[s.at].color} fillOpacity={0.14}
+                    height={DEF.seatH + 6} rx={6}
+                    fill={colorChan === "attr" ? ATTRS[s.at].color : NEUTRAL} fillOpacity={0.14}
                     transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
                     pointerEvents="none" />
                 ))}
                 {seatNums && seats.filter((s) => s.at && !s.gap).map((s) => (
                   <text key={`a${s.key}`} className="atg" x={s.x} y={s.y + 3.4 * U}
-                    style={{ fontSize: 9.5 * U }} fill={ATTRS[s.at].color}>{ATTRS[s.at].glyph}</text>
+                    style={{ fontSize: 9.5 * U }}
+                    fill={colorChan === "attr" ? ATTRS[s.at].color : NEUTRAL}>{ATTRS[s.at].glyph}</text>
                 ))}
                 {seatNums && seats.filter((s) => !s.gap && !s.at &&
                   s.x > view.x && s.x < view.x + view.w && s.y > view.y && s.y < view.y + view.h)
                   .map((s) => (
-                    <text key={`n${s.key}`} className="snum" fill={onColor(cc(b))}
+                    <text key={`n${s.key}`} className="snum" fill={onColor(chanColor(b))}
                       x={s.x} y={s.y + 3.1 * U} style={{ fontSize: 8.6 * U }}>{s.num}</text>
                   ))}
                 {pxPerCm * b.rowGap > 22 && labels.map((l) => (
@@ -2426,6 +2553,20 @@ export default function PlanEditor() {
 
             {collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
               <polygon key={`co${b.id}`} className="collide"
+                points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
+            ))}
+
+            {/* "Doğrulama" kanalının vurgusu: son rapordaki canlı-olmayan
+                bulgular da (bkz. reportMarks) breach/collide ile aynı dış
+                hat dilinde işaretlenir — err kırmızı kesik, warn amber. */}
+            {reportMarks.err.length > 0 && metas.filter(({ b }) => reportMarks.err.includes(b.id)).map(({ b, m }) => (
+              <polygon key={`rfe${b.id}`} className="breach"
+                points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
+            ))}
+            {reportMarks.warn.length > 0 && metas.filter(({ b }) => reportMarks.warn.includes(b.id)).map(({ b, m }) => (
+              <polygon key={`rfw${b.id}`} className="rfwarn"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
@@ -2482,23 +2623,61 @@ export default function PlanEditor() {
             <div className="cempty">Sol menüden bir araç seçip çizmeye başlayın, ya da yukarıdan bir örnek salon açın.</div>
           )}
 
+          {/* Lejant aktif kanala göre değişir — gri şeylerin lejantta yeri
+              yok (bkz. chanColor gerekçesi). "Kat" dışındaki üç kanalda
+              blok/kat rengi zaten görünmüyor, o yüzden lejant da onu
+              göstermiyor. */}
           {legend && (
             <div className="lgnd">
-              <p>Katlar<button className="link" onClick={() => setLegend(false)}>gizle</button></p>
-              {levels.map((l, i) => (
+              <p>{CHAN_TITLE[colorChan]}<button className="link" onClick={() => setLegend(false)}>gizle</button></p>
+
+              {colorChan === "level" && levels.map((l, i) => (
                 <div key={l}>
                   <i style={{ background: LEVEL_COLORS[i % LEVEL_COLORS.length] }} />
                   <span>{l}</span>
                   <b className="n">{(levelCounts[l] || 0).toLocaleString("tr-TR")}</b>
                 </div>
               ))}
-              {Object.entries(attrTotals).filter(([k]) => ATTRS[k]).map(([k, v]) => (
+
+              {colorChan === "attr" && Object.entries(attrTotals).filter(([k]) => ATTRS[k]).map(([k, v]) => (
                 <div key={k} className="at">
                   <i style={{ background: "transparent", border: `2px solid ${ATTRS[k].color}` }} />
                   <span>{ATTRS[k].short}</span>
                   <b className="n">{v.toLocaleString("tr-TR")}</b>
                 </div>
               ))}
+              {colorChan === "attr" && !Object.keys(attrTotals).length && (
+                <p className="mut sm">Hiç nitelik atanmamış</p>
+              )}
+
+              {colorChan === "gate" && gateShapes.map((d) => (
+                <div key={d.id}>
+                  <i style={{ background: gateColor(d.label) }} />
+                  <span>{d.label}</span>
+                  <b className="n">{(d.blocks || []).length}</b>
+                </div>
+              ))}
+              {colorChan === "gate" && !gateShapes.length && (
+                <p className="mut sm">Hiç kapı tanımlanmamış</p>
+              )}
+              {colorChan === "gate" && gateShapes.length > 0 && (() => {
+                const assigned = new Set(gateShapes.flatMap((d) => d.blocks || []));
+                const n = metas.filter(({ b }) => !assigned.has(b.id)).length;
+                return n > 0 ? (
+                  <div><i style={{ background: NEUTRAL }} /><span>Kapı atanmamış</span><b className="n">{n}</b></div>
+                ) : null;
+              })()}
+
+              {colorChan === "valid" && (<>
+                <div><i style={{ background: "var(--err)" }} /><span>Sınır ihlali (canlı)</span>
+                  <b className="n">{breach.length}</b></div>
+                <div><i style={{ background: "var(--err)" }} /><span>Taban çakışması (canlı)</span>
+                  <b className="n">{collide.length}</b></div>
+                {report
+                  ? <div><i style={{ background: "var(--warn)" }} /><span>Diğer bulgular (Doğrula)</span>
+                      <b className="n">{reportMarks.err.length + reportMarks.warn.length}</b></div>
+                  : <p className="mut sm">Diğer bulgular için Doğrula'yı çalıştır</p>}
+              </>)}
             </div>
           )}
 
@@ -3559,9 +3738,22 @@ const CSS = `
 .body.pc{ grid-template-columns:190px 1fr 34px; }
 .body.tc.pc{ grid-template-columns:34px 1fr 34px; }
 
+/* ── mod şeridi (A6.4) ──
+   arrPrev/levelFilter/poly ray ve panel durumundan BAĞIMSIZ, her zaman
+   görünür — calbar/tip'teki --acc dilini izliyor (bkz. modeChips
+   gerekçesi): "aktif, dikkat" durumu, hata değil. */
+.modestrip{ display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+  padding:7px 12px; background:var(--accline); border-bottom:1px solid var(--line); flex:none; }
+.modestrip .chip{ display:flex; align-items:center; font-size:11.5px; font-weight:600;
+  color:var(--acc); background:var(--panel); border:1px solid var(--acc); border-radius:var(--r-pill);
+  padding:4px 2px 4px 11px; }
+.modestrip .chip button{ background:none; border:0; color:inherit; cursor:pointer;
+  font:14px var(--mono); line-height:1; padding:2px 8px; }
+.modestrip .chip button:hover{ opacity:.6; }
+
 .gate{ display:none; }
 @media (max-width:1023px){
-  .ed > .top, .ed > .body{ display:none; }
+  .ed > .top, .ed > .body, .ed > .modestrip{ display:none; }
   .gate{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
     background:var(--ink); padding:32px; text-align:center; }
   .gate p{ max-width:320px; color:var(--bone); font-size:14px; line-height:1.6; }
@@ -3679,6 +3871,9 @@ svg.t-foot{ cursor:crosshair; }
 #poiTintSel feFlood{ flood-color:var(--sel); }
 .breach{ fill:rgba(229,72,77,.12); stroke:var(--err); stroke-dasharray:26 18; pointer-events:none; }
 .collide{ fill:rgba(229,72,77,.16); stroke:var(--err); stroke-dasharray:10 10; pointer-events:none; }
+/* "Doğrulama" kanalının canlı-olmayan bulgu vurgusu (bkz. reportMarks) —
+   collide ile aynı çizgi dili, warn rengiyle. */
+.rfwarn{ fill:rgba(245,166,35,.14); stroke:var(--warn); stroke-dasharray:10 10; pointer-events:none; }
 .status .alert{ color:var(--err); font-weight:600; }
 .status .alert:hover{ background:rgba(229,72,77,.12); color:var(--err); }
 .stop{ margin:0 0 9px; padding:8px 10px; border:1px solid var(--err); border-radius:var(--r-sm);
