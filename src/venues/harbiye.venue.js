@@ -25,6 +25,23 @@ const [T_PR, T_ALT, T_ORTA, T_UST, T_ERI] = solveRadialTiers([
   { id: "eri", rows: 2, rowGap: 130, seatGap: 62, pad: 60, gapFromPrev: 88 },
 ]);
 
+/* Üst Kademe'nin M ve Q uç bloklarında KAPI 1/2'nin tam altına düşen
+   koltuklar — bkz. blocks[] içindeki A5 notu. */
+const UST_KAPI_OV = {
+  M: {
+    "0,26": { rm: true }, "0,27": { rm: true }, "0,28": { rm: true }, "0,29": { rm: true }, "0,30": { rm: true },
+    "0,31": { rm: true }, "0,32": { rm: true }, "0,33": { rm: true }, "0,34": { rm: true },
+    "1,28": { rm: true }, "1,29": { rm: true }, "1,30": { rm: true }, "1,31": { rm: true }, "1,32": { rm: true }, "1,33": { rm: true },
+    "2,31": { rm: true }, "2,32": { rm: true }, "2,33": { rm: true },
+  },
+  Q: {
+    "0,2": { rm: true }, "0,3": { rm: true }, "0,4": { rm: true }, "0,5": { rm: true }, "0,6": { rm: true },
+    "0,7": { rm: true }, "0,8": { rm: true }, "0,9": { rm: true }, "0,10": { rm: true },
+    "1,4": { rm: true }, "1,5": { rm: true }, "1,6": { rm: true }, "1,7": { rm: true }, "1,8": { rm: true }, "1,9": { rm: true },
+    "2,5": { rm: true }, "2,6": { rm: true }, "2,7": { rm: true },
+  },
+};
+
 const wallArc = [
   ...Array.from({ length: 40 }, (_, i) => {
     const a = (-96 + (192 * i) / 39) * RAD;
@@ -60,8 +77,18 @@ export const HARBIYE = {
       first: "A", level: "Alt Kademe", color: "#3E7FBF", aisle: 150, pad: T_ALT.pad }),
     ...tier({ r0: T_ORTA.r0, rows: T_ORTA.rows, rowGap: T_ORTA.rowGap, span: 30, count: 6,
       first: "F", level: "Orta Kademe", color: "#5F9142", aisle: 160, pad: T_ORTA.pad }),
+    /* KAPI 1/2, Orta↔Üst Kademe arasındaki 39cm'lik boşluğa (bkz. dosya
+       başı r0 notu) sığmayacak kadar büyük (300cm) — hangi yöne
+       kaydırılsa bir kademenin koltuklarına giriyor (ölçüldü, bkz. görev
+       raporu). Kapı konumu DEĞİŞMEDİ; bunun yerine M/Q'nun (kapıların
+       hizasına denk gelen) ön 3 sırasından, kapının tam altına düşen 18'er
+       koltuk `ov.rm` ile oyuldu — GS/Ülker'deki cutVomitories() ile AYNI
+       fikir (tribüne oyulmuş gerçek boşluk), ama M/Q simetrik bir dizinin
+       İKİ UCU olduğundan (o fonksiyon TEK ortalanmış boşluk varsayıyor)
+       burada tier()'ın çıktısına hedefe özel `ov` ile sonradan eklendi. */
     ...tier({ r0: T_UST.r0, rows: T_UST.rows, rowGap: T_UST.rowGap, span: 30, count: 5,
-      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: T_UST.pad }),
+      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: T_UST.pad })
+      .map((b) => ({ ...b, ov: { ...b.ov, ...(UST_KAPI_OV[b.label] || {}) } })),
 
     /* Erişilebilir platformlar — üst kademenin arkasındaki düz alan.
        Tekerlekli sandalye ve refakatçi yerleri sırayla dizili. */

@@ -877,7 +877,62 @@
       "color": "#C1743C",
       "pad": 60,
       "level": "Üst Kademe",
-      "ov": {},
+      "ov": {
+        "0,26": {
+          "rm": true
+        },
+        "0,27": {
+          "rm": true
+        },
+        "0,28": {
+          "rm": true
+        },
+        "0,29": {
+          "rm": true
+        },
+        "0,30": {
+          "rm": true
+        },
+        "0,31": {
+          "rm": true
+        },
+        "0,32": {
+          "rm": true
+        },
+        "0,33": {
+          "rm": true
+        },
+        "0,34": {
+          "rm": true
+        },
+        "1,28": {
+          "rm": true
+        },
+        "1,29": {
+          "rm": true
+        },
+        "1,30": {
+          "rm": true
+        },
+        "1,31": {
+          "rm": true
+        },
+        "1,32": {
+          "rm": true
+        },
+        "1,33": {
+          "rm": true
+        },
+        "2,31": {
+          "rm": true
+        },
+        "2,32": {
+          "rm": true
+        },
+        "2,33": {
+          "rm": true
+        }
+      },
       "num": {
         "rowScheme": "number",
         "rowStart": 1,
@@ -1017,7 +1072,62 @@
       "color": "#C1743C",
       "pad": 60,
       "level": "Üst Kademe",
-      "ov": {},
+      "ov": {
+        "0,2": {
+          "rm": true
+        },
+        "0,3": {
+          "rm": true
+        },
+        "0,4": {
+          "rm": true
+        },
+        "0,5": {
+          "rm": true
+        },
+        "0,6": {
+          "rm": true
+        },
+        "0,7": {
+          "rm": true
+        },
+        "0,8": {
+          "rm": true
+        },
+        "0,9": {
+          "rm": true
+        },
+        "0,10": {
+          "rm": true
+        },
+        "1,4": {
+          "rm": true
+        },
+        "1,5": {
+          "rm": true
+        },
+        "1,6": {
+          "rm": true
+        },
+        "1,7": {
+          "rm": true
+        },
+        "1,8": {
+          "rm": true
+        },
+        "1,9": {
+          "rm": true
+        },
+        "2,5": {
+          "rm": true
+        },
+        "2,6": {
+          "rm": true
+        },
+        "2,7": {
+          "rm": true
+        }
+      },
       "num": {
         "rowScheme": "number",
         "rowStart": 1,

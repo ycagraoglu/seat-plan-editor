@@ -10,7 +10,20 @@ const wallPts = Array.from({ length: 44 }, (_, i) => {
 
 const csoBlocks = [
   fanB({ label: "A", x: 0, y: 6020, r0: 6545, rows: 12, rowGap: 105, aCenter: 0, counts: "39..48", color: "#3E7FBF" }),
-  fanB({ label: "B", x: 0, y: 6020, r0: 8176, rows: 7, rowGap: 107, aCenter: 0, counts: "58..52", color: "#C1743C" }),
+  /* KAPI 4 ve KAPI 5 bu bloğun arka sıralarına simetrik iki yandan
+     giriyor (300cm'lik kapı, 44 satırlık aralıkta) — GS/Ülker'deki
+     cutVomitories()'in yaptığının aynısı, ama TEK blokta İKİ ayrı kapı
+     olduğundan (o fonksiyon tek/merkezi bir boşluk varsayıyor) burada
+     hedefe özel `ov` kullanıldı. Kapı konumları DEĞİŞMEDİ — A5'in
+     invariant testinin bulduğu 16 çakışan koltuk (r=4,5,6) oyuldu
+     (bkz. görev raporu). */
+  fanB({ label: "B", x: 0, y: 6020, r0: 8176, rows: 7, rowGap: 107, aCenter: 0, counts: "58..52", color: "#C1743C",
+    ov: {
+      "5,50": { rm: true }, "5,51": { rm: true }, "5,52": { rm: true }, "6,50": { rm: true }, "6,51": { rm: true },
+      "4,0": { rm: true }, "4,1": { rm: true }, "4,2": { rm: true }, "4,3": { rm: true },
+      "5,0": { rm: true }, "5,1": { rm: true }, "5,2": { rm: true }, "5,3": { rm: true },
+      "6,0": { rm: true }, "6,1": { rm: true }, "6,2": { rm: true },
+    } }),
   fanB({ label: "C", x: 0, y: 6020, r0: 9016, rows: 9, rowGap: 105, aCenter: 0, counts: "34..26", color: "#3E9092" }),
   /* Sahne arkası koro balkonu — tamamı görüş kısıtlı */
   fanB({ label: "D", x: 0, y: -5180, r0: 6384, rows: 7, rowGap: 105, aCenter: 180, counts: "38..44", color: "#3E9092", attr: "obstr" }),
@@ -50,8 +63,11 @@ export const CSO = {
   blocks: csoBlocksA,
 };
 
+/* WC işaretleri G/H bloklarının birer koltuğuna değiyordu (A5 invariant
+   testi) — sadece 20cm dışarı (daha negatif y) kaydırıldı, mimari bir
+   anlamı olmayan basit bir işaret olduğu için koltuk silinmedi. */
 CSO.shapes = [...CSO.shapes,
-  ...[["wc", -2280, -1900, "WC"], ["wc", 2280, -1900, "WC"],
+  ...[["wc", -2280, -1920, "WC"], ["wc", 2280, -1920, "WC"],
       ["bar", -2180, 380, "Fuaye Bar"], ["bar", 2180, 380, "Fuaye Bar"],
       ["cloak", -1750, 2450, "Vestiyer"], ["aid", 1750, 2450, "İlk yardım"],
       ["access", 0, 3050, "Engelli erişimi"]]

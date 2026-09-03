@@ -22,8 +22,13 @@ export const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPo
  *  MERKEZİ değil gerçek dikdörtgeni kullanır: merkez tabanın içinde kalıp
  *  köşe dışarı taşabilir (geniş/tekerlekli sandalye koltuklarında olduğu
  *  gibi — bu yüzden `wide` genişliği ATTRS'ten çağıran tarafından gelir,
- *  rules.js kendi görünüm/etiket sabitlerini bilmez). */
-function seatCorners(s, wide) {
+ *  rules.js kendi görünüm/etiket sabitlerini bilmez).
+ *  A5'te dışa açıldı: kapı/işaret-koltuk çakışma invariant'ı (test/invariants)
+ *  koltuğun GERÇEK dikdörtgenine ihtiyaç duyuyor — ikinci bir kopyası
+ *  yazılırsa tam da bu dosyanın başındaki notta anlatılan hata sınıfı
+ *  (aynı geometri iki ayrı yerde iki ayrı kodla, sessizce sapabilir)
+ *  tekrarlanır. Davranış DEĞİŞMEDİ, sadece görünürlük. */
+export function seatCorners(s, wide) {
   const w = (wide ? 86 : DEF.seatW) / 2, h = DEF.seatH / 2;
   const rad = (s.rot * Math.PI) / 180;
   const cos = Math.cos(rad), sin = Math.sin(rad);

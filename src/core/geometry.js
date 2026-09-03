@@ -238,7 +238,12 @@ export function buildMeta(b) {
   const ls = chainEdge(le, { x: -outR.x, y: -outR.y });
   const rightEdge = rs.slice(1, -1).map(W);
   const leftEdge = ls.slice(1, -1).map(W);
-  const ring = [...front, ...rightEdge, ...back, ...leftEdge.reverse()];
+  /* ring, sol kenarı halkanın dolaşım yönüne uydurmak için TERS sırada
+     ister — ama Array.reverse() YERİNDE çalışır, leftEdge'i kalıcı
+     tersine çevirir. Kopya üstünde tersliyoruz ki dışa aktarılan leftEdge
+     rightEdge ile AYNI yönde (ön→arka sıra) kalsın — kenar düzgünlüğü
+     testi (test/invariants) ikisini de bu ortak sırayla okuyor. */
+  const ring = [...front, ...rightEdge, ...back, ...[...leftEdge].reverse()];
 
   /* Pay = kullanıcı payı + koltuğun yarısı + yarım koltuk aralığı.
      Son terim eskiden yumuşatmanın kenarı içeri çekmesini telafi ediyordu;
@@ -285,7 +290,16 @@ export function buildMeta(b) {
   const cx = outline.reduce((a, p) => a + p.x, 0) / outline.length;
   const cy = outline.reduce((a, p) => a + p.y, 0) / outline.length;
   const xs = outline.map((p) => p.x), ys = outline.map((p) => p.y);
-  return { P, seatCount, attrs, outline, auto, manual, cx, cy, rows,
+  /* leftEdge/rightEdge dışa aktarılıyor: A5'teki kenar-düzgünlüğü testi
+     (test/invariants) bu ikisini OKUR, kendi kopyasını üretmez — dışbükey
+     zincirin TEK kaynağı burası, yoksa test ile buildMeta'nın kenar
+     hesabı zamanla birbirinden sapabilir (bkz. rules.js dosya başı notu:
+     tam bu yüzden A2'de kural motoru tek kaynağa indirildi). `manual`
+     true olduğunda (elle çizilmiş taban) bu ikisi koltuk sırasından
+     türetilmiş ama KULLANILMAYAN yardımcı veridir — test bu durumda
+     onları yok saymalı, çünkü gerçek dış hat b.foot'tur ve kasıtlı
+     köşeli olabilir (sütun, merdiven boşluğu). */
+  return { P, seatCount, attrs, outline, auto, manual, cx, cy, rows, leftEdge, rightEdge,
     bbox: { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) } };
 }
 
