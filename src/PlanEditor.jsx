@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
 import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
 import { incLabel, reLabel, relabelPatch, DEF_NUM } from "./core/labels.js";
@@ -9,8 +9,10 @@ import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
 import { buildCtx, runRules } from "./core/rules.js";
-import { BUILTINS, EMPTY, GS } from "./venues/index.js";
+import { BUILTINS, EMPTY } from "./venues/index.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
+import { reducer, initialState } from "./ui/state/reducer.js";
+import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks } from "./ui/state/selectors.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -567,52 +569,90 @@ const HANDLE_HINT = {
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
 
 export default function PlanEditor() {
-  const [venues, setVenues] = useState(BUILTINS);
-  const [vk, setVk] = useState("gs");
-  const plan = venues[vk];
+  /* ── belge durumu: reducer (bkz. ui/state/reducer.js) ────────────
+     venues, vk, past/future/rev, seçim, görünüm, kat süzgeci,
+     doğrulama/kalibrasyon/eşleştirme, kayıt durumu — doğruluğu birden
+     fazla alanı ilgilendiren HER ŞEY tek bir saf reducer'da. Okuma
+     tarafı aşağıda düz const'lara açılıyor, geri kalan ~3000 satır
+     bu isimleri DEĞİŞMEDEN okumaya devam ediyor. */
+  const [state, dispatch] = useReducer(reducer, initialState(BUILTINS, "gs"));
+  const {
+    venues, vk, past, future, rev,
+    selIds, selShapeId, selSeat, selSeats,
+    view, levelFilter, report, calib, match, saveState,
+  } = state;
+  const plan = selectPlan(state);
 
-  const [past, setPast] = useState([]);
-  const [future, setFuture] = useState([]);
-  const [tool, setTool] = useState("select");
-  const [selIds, setSelIds] = useState([]);
-  const [selShapeId, setSelShapeId] = useState(null);
-  const [selSeat, setSelSeat] = useState(null);
-  const [selSeats, setSelSeats] = useState(new Set());
-  const [view, setView] = useState(GS.home);
-  const [levelFilter, setLevelFilter] = useState("*");
+  /* value-veya-updater sarmalayıcıları: useState'in fonksiyonel setState
+     sözleşmesiyle AYNI (setSelIds(x), setView((v) => ({...v,...})) gibi
+     var olan onlarca çağrı noktası bunu bekliyor) — gövdeleri artık
+     reducer'a tek tip {type,payload} eylemi gönderiyor. dispatch kararlı
+     olduğundan ([]) bunlar da eski useState setter'ları gibi kararlı. */
+  const setVenues = useCallback((v) => dispatch({ type: "venues/set", payload: v }), []);
+  const setVk = useCallback((v) => dispatch({ type: "vk/set", payload: v }), []);
+  const setPast = useCallback((v) => dispatch({ type: "past/set", payload: v }), []);
+  const setFuture = useCallback((v) => dispatch({ type: "future/set", payload: v }), []);
+  const setRev = useCallback((v) => dispatch({ type: "rev/set", payload: v }), []);
+  const setSelIds = useCallback((v) => dispatch({ type: "selectBlocks", payload: v }), []);
+  const setSelShapeId = useCallback((v) => dispatch({ type: "selectShape", payload: v }), []);
+  const setSelSeat = useCallback((v) => dispatch({ type: "selectSeat", payload: v }), []);
+  const setSelSeats = useCallback((v) => dispatch({ type: "selectSeats", payload: v }), []);
+  const setView = useCallback((v) => dispatch({ type: "setView", payload: v }), []);
+  const setLevelFilter = useCallback((v) => dispatch({ type: "setLevelFilter", payload: v }), []);
+  const setReport = useCallback((v) => dispatch({ type: "setReport", payload: v }), []);
+  const setCalib = useCallback((v) => dispatch({ type: "setCalib", payload: v }), []);
+  const setMatch = useCallback((v) => dispatch({ type: "setMatch", payload: v }), []);
+  const setSaveState = useCallback((v) => dispatch({ type: "setSaveState", payload: v }), []);
+
+  /* ── araç tercihleri: TEK useState nesnesi ───────────────────────
+     Belgeden bağımsız (hangi salon/plan açık olursa olsun aynı kalır),
+     birbirine bağlı değil — reducer'a GİRMİYORLAR. Okuma tarafı yine
+     düz const'lara açılıyor ki aşağıdaki kod DEĞİŞMEDEN çalışsın. */
+  const [toolPrefs, setToolPrefs] = useState({
+    tool: "select", shapeType: "stage", sport: "football", brush: "wheel", poiKind: "wc",
+    snapOn: true, gridStep: 50,
+    lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
+    wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
+  });
+  const {
+    tool, shapeType, sport, brush, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
+  } = toolPrefs;
+  const setToolPref = useCallback((key, v) =>
+    setToolPrefs((p) => ({ ...p, [key]: typeof v === "function" ? v(p[key]) : v })), []);
+  const setTool = useCallback((v) => setToolPref("tool", v), [setToolPref]);
+  const setShapeType = useCallback((v) => setToolPref("shapeType", v), [setToolPref]);
+  const setSport = useCallback((v) => setToolPref("sport", v), [setToolPref]);
+  const setBrush = useCallback((v) => setToolPref("brush", v), [setToolPref]);
+  const setPoiKind = useCallback((v) => setToolPref("poiKind", v), [setToolPref]);
+  const setSnapOn = useCallback((v) => setToolPref("snapOn", v), [setToolPref]);
+  const setGridStep = useCallback((v) => setToolPref("gridStep", v), [setToolPref]);
+  const setLin = useCallback((v) => setToolPref("lin", v), [setToolPref]);
+  const setRad = useCallback((v) => setToolPref("rad", v), [setToolPref]);
+  const setWheelPref = useCallback((v) => setToolPref("wheelPref", v), [setToolPref]);
+  const setTheme = useCallback((v) => setToolPref("theme", v), [setToolPref]);
+  const setLegend = useCallback((v) => setToolPref("legend", v), [setToolPref]);
+  const setPlates = useCallback((v) => setToolPref("plates", v), [setToolPref]);
+  const setQ = useCallback((v) => setToolPref("q", v), [setToolPref]);
+
+  /* ── geçici / yüksek frekanslı / pencere durumu ──────────────────
+     Saniyede 60 kez değişebilen imleç/sürükleme/önizleme durumu ve
+     salt bu oturuma ait pencere/panel durumu — reducer'a BİLEREK
+     SOKULMUYOR (bkz. ui/state/reducer.js dosya başı gerekçesi). */
   const [draft, setDraft] = useState(null);
   const [marq, setMarq] = useState(null);
   const [poly, setPoly] = useState(null);
-  const [calib, setCalib] = useState(null);
-  const [report, setReport] = useState(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
-  const [snapOn, setSnapOn] = useState(true);
-  const [gridStep, setGridStep] = useState(50);
-  const [shapeType, setShapeType] = useState("stage");
-  const [sport, setSport] = useState("football");
-  const [brush, setBrush] = useState("wheel");
-  const [lin, setLin] = useState({ count: 6, dx: 1500, dy: 0 });
-  const [rad, setRad] = useState({ count: 3, cx: 0, cy: 0, step: -30 });
   const [arrPrev, setArrPrev] = useState(null);
   const [verOpen, setVerOpen] = useState(false);
   const [diff, setDiff] = useState(null);
   const [pubNote, setPubNote] = useState("");
-  const [match, setMatch] = useState(null);
-  const [rev, setRev] = useState(0);
-  const [saveState, setSaveState] = useState("idle");
   const [saved, setSaved] = useState([]);
   const [canvasSize, setCanvasSize] = useState({ w: 1000, h: 700 });
   const [spaceDown, setSpaceDown] = useState(false);
   const [guides, setGuides] = useState([]);
   const [hoverId, setHoverId] = useState("");
   const [setOpen, setSetOpen] = useState(false);
-  const [theme, setTheme] = useState("system");
-  const [legend, setLegend] = useState(false);
-  const [plates, setPlates] = useState(true);
   const [footDraft, setFootDraft] = useState(null);
-  const [poiKind, setPoiKind] = useState("wc");
-  const [wheelPref, setWheelPref] = useState("auto");
-  const [q, setQ] = useState("");
   const [sysDark, setSysDark] = useState(true);
   const [msg, setMsgOk] = useState("");
   const [msgErr, setMsgErr] = useState(false);
@@ -626,19 +666,19 @@ export default function PlanEditor() {
   const pinch = useRef(null);
 
   const setPlan = useCallback((p) => setVenues((v) => ({ ...v, [vk]: p })), [vk]);
-  const commit = useCallback((next) => {
-    setPast((p) => [...p.slice(-39), plan]); setFuture([]); setPlan(next);
-    setRev((r) => r + 1);
-  }, [plan, setPlan]);
+  /* commit/finalizeDrag/undo/redo/switchVenue: TEK dispatch, TEK geçiş.
+     Eskiden undo/redo setPast'in updater'ı İÇİNDE setFuture+setPlan
+     çağırıyordu — React updater'ı saf olmak zorunda, StrictMode'da iki
+     kez koşunca future'a çift kayıt giriyordu. Reducer'da bu tanım
+     gereği yok: her biri saf, tek bir {type,payload} geçişi (bkz.
+     ui/state/reducer.js ve test/unit/reducer.test.js). */
+  const commit = useCallback((next) => dispatch({ type: "commit", payload: next }), []);
   /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
    *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
    *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
    *  paint) ayrı ayrı unutmasın. Gerçekten değişiklik yoksa (salt tıklama)
    *  no-op — geri-al/kayıt boş yere kirlenmesin. */
-  const finalizeDrag = useCallback((snapshot) => {
-    if (plan === snapshot) return;
-    setPast((p) => [...p.slice(-39), snapshot]); setFuture([]); setRev((r) => r + 1);
-  }, [plan]);
+  const finalizeDrag = useCallback((snapshot) => dispatch({ type: "finalizeDrag", payload: snapshot }), []);
   /* Sıra/açı/koltuk-aralığı gibi alanlar sıra başına koltuk sayısını
      değiştirebilir; var olan koltuk düzeltmeleri/nitelikleri "r,c" anahtarıyla
      saklandığından, artık var olmayan bir sütuna işaret eden kayıtlar sessizce
@@ -661,33 +701,20 @@ export default function PlanEditor() {
     commit({ ...plan, blocks: plan.blocks.map((b) => (selIds.includes(b.id) ? { ...b, ...patch } : b)) });
   const patchShape = (id, patch) =>
     commit({ ...plan, shapes: plan.shapes.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
-  const undo = () => setPast((p) => {
-    if (!p.length) return p;
-    setFuture((f) => [plan, ...f]); setPlan(p[p.length - 1]); return p.slice(0, -1);
-  });
-  const redo = () => setFuture((f) => {
-    if (!f.length) return f;
-    setPast((p) => [...p, plan]); setPlan(f[0]); return f.slice(1);
-  });
-  const switchVenue = (k) => {
-    setVk(k); setPast([]); setFuture([]); setSelIds([]); setSelShapeId(null);
-    setSelSeat(null); setSelSeats(new Set()); setLevelFilter("*"); setView(venues[k].home);
-    setReport(null); setCalib(null); setMatch(null);
-  };
+  const undo = () => dispatch({ type: "undo" });
+  const redo = () => dispatch({ type: "redo" });
+  const switchVenue = (k) => dispatch({ type: "switchVenue", payload: k });
 
+  /* metas/metaById: buildMeta AĞIR (geometri türetimi) — bu yüzden
+     PlanEditor.jsx'te useMemo olarak kalıyor (bkz. ui/state/selectors.js
+     dosya başı gerekçesi). levels/levelCounts/totalSeats SADECE reducer
+     durumuna bağlı saf hesap — mantık ui/state/selectors.js'e taşındı,
+     burada sadece useMemo sınırı ve girdiler kaldı. */
   const metas = useMemo(() => plan.blocks.map((b) => ({ b, m: buildMeta(b) })), [plan.blocks]);
   const metaById = useMemo(() => new Map(metas.map((x) => [x.b.id, x.m])), [metas]);
-  const totalSeats = useMemo(() => metas.reduce((a, x) => a + x.m.seatCount, 0), [metas]);
-  const levels = useMemo(() => {
-    const s = [];
-    plan.blocks.forEach((b) => { if (b.level && !s.includes(b.level)) s.push(b.level); });
-    return s;
-  }, [plan.blocks]);
-  const levelCounts = useMemo(() => {
-    const m = {};
-    metas.forEach(({ b, m: mm }) => { m[b.level || "—"] = (m[b.level || "—"] || 0) + mm.seatCount; });
-    return m;
-  }, [metas]);
+  const totalSeats = useMemo(() => selectTotalSeats(metas), [metas]);
+  const levels = useMemo(() => selectLevels(plan), [plan.blocks]);
+  const levelCounts = useMemo(() => selectLevelCounts(metas), [metas]);
 
   const shown = useMemo(() => {
     const pad = view.w * 0.08;
@@ -745,7 +772,7 @@ export default function PlanEditor() {
     return hit ? hit.seats.find((x) => x.r === selSeat.r && x.c === selSeat.c) : null;
   }, [selSeat, drawn]);
 
-  const selBlocks = useMemo(() => plan.blocks.filter((b) => selIds.includes(b.id)), [plan.blocks, selIds]);
+  const selBlocks = useMemo(() => selectSelectedBlocks(plan, selIds), [plan.blocks, selIds]);
   const selBlock = selBlocks.length === 1 ? selBlocks[0] : null;
   const selShape = plan.shapes.find((s) => s.id === selShapeId) || null;
   const handles = useMemo(() => {
@@ -1151,7 +1178,11 @@ export default function PlanEditor() {
   const nudge = (dx, dy) => {
     const fresh = Date.now() - lastNudge.current > 800;
     lastNudge.current = Date.now();
-    const push = (next) => { if (fresh) setPast((p) => [...p.slice(-39), plan]); setPlan(next); setRev((r) => r + 1); };
+    /* checkpoint: fresh — 800ms'lik pencere içindeki art arda basışlar TEK
+       geri-al kaydına düşsün. commit'in aksine elle setPast/setFuture/setRev
+       yazmıyoruz — future'ı unutmayan TEK yer artık reducer (bkz. nudgeCommit,
+       ui/state/reducer.js). */
+    const push = (next) => dispatch({ type: "nudgeCommit", payload: { plan: next, checkpoint: fresh } });
     if (selSeats.size) {
       const byB = new Map();
       selSeats.forEach((k) => { const [bid, rc] = k.split("|");
