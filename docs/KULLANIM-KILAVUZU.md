@@ -52,6 +52,11 @@ Ekran 4 ana bölgeye ayrılır:
 - **Sağ panel**: Hiçbir şey seçili değilse plan geneli ile ilgili bilgiler
   (kat filtresi, blok listesi) gösterir. Bir blok/şekil/koltuk seçildiğinde
   o seçime özel düzenleme alanları burada belirir.
+- **Sol araç çubuğu** ve **sağ panel** ayrı ayrı **daraltılabilir**: her
+  ikisinin üst kenarındaki `‹`/`›` okuna tıklamak paneli dikey yazılı ince
+  bir şeride indirir, tuval alanı buna karşılık büyür; tekrar tıklamak
+  içeriği kaldığı yerden geri getirir (hiçbir ayar/seçim kaybolmaz).
+  Tercih oturum boyunca hatırlanır, açık plandan bağımsızdır.
 - Her değişiklik **otomatik kaydedilir** (üst bardaki "otomatik kayıt"
   yazısı). Dosya menüsünden "Kaydet" aramanıza gerek yok.
 
@@ -66,6 +71,7 @@ Soldan sağa:
 | **Salon seçici** (açılır liste) | Hangi salon planı üzerinde çalıştığınızı seçer. Hazır örnek salonlar (stadyum, opera, bar vb.) ve sizin kaydettiğiniz planlar burada listelenir. "Yeni plan" boş bir tuval açar. |
 | **"otomatik kayıt" / "kaydediliyor" / "kaydedildi" / "kaydedilemedi"** | Şu an yapılan değişikliğin kayıt durumu. Kırmızı "kaydedilemedi" görürseniz tarayıcının depolama alanı dolu ya da engellenmiş olabilir. |
 | **"taslak" / "v3 · yayında"** | Planın **yayın durumu**. Yeni açılan bir plan hep "taslak"tır. "Sürümler" penceresinden bir sürüm yayınlarsanız burada "v1 · yayında" gibi görünür. "· değişiklik var" ibaresi, son yayından beri plan üzerinde değişiklik yaptığınızı, henüz yayınlanmadığını anlatır. |
+| **Renklendir** (açılır liste: Kat · Nitelik · Kapı · Doğrulama) | Tuvaldeki rengin hangi soruyu cevapladığını seçer. Seçili kanal DIŞINDAKİ her şey nötr griye düşer. Ayrıntı için hemen altındaki "Renklendir kanalları" bölümüne bakın. |
 | **↶ Geri al** (⌘Z) | Son işlemi geri alır. Devre dışıysa (soluk görünüyorsa) geri alınacak işlem yok demektir. |
 | **↷ Yinele** (⇧⌘Z) | Geri aldığınız işlemi tekrar uygular. |
 | **Ayarlar** | Plan adı, koltuk kimlik şablonu, tema (açık/koyu), fare/trackpad davranışı, CSV/SVG dışa aktarma gibi plan-geneli ayarları açar. Bkz. [§12](#12-ayarlar-penceresi). |
@@ -74,6 +80,47 @@ Soldan sağa:
 | **Aç** | Bilgisayarınızdan bir `plan.json` dosyası yükler (daha önce bu editörden dışa aktarılmış bir plan). Yeni bir salon olarak listeye eklenir. |
 | **plan.json** | Şu an açık planın **tamamını** (geometri + ayarlar + sürüm geçmişi) bir dosyaya indirir. Yedek almak ya da başka bir bilgisayarda devam etmek için kullanılır. Altlık görseli dosyaya dahil edilmez (sadece konumu kalır, görselin kendisi değil). |
 | **seats.json** | Sadece **koltuk listesini** (her koltuğun kimliği, bloğu, sırası, numarası, niteliği) indirir. Biletleme sistemine verilecek olan dosya budur. |
+
+**Renklendir kanalları** — tuvalde aynı anda kat, blok, nitelik, kapı,
+sınır ihlali, taban çakışması ve seçim rengi yarışmasın diye, ekran her an
+TEK bir soruyu cevaplar:
+
+| Kanal | Tuvalde ne gösterir |
+|---|---|
+| **Kat** *(varsayılan)* | Her blok kendi kat/kuşağının rengini alır — alışılmış görünüm. |
+| **Nitelik** | Bloklar griye düşer; sadece nitelik atanmış koltuklar (tekerlekli/refakatçi/görüş kısıtlı/kapalı) kendi rengini gösterir. |
+| **Kapı** | Bloklar besledikleri kapının rengini alır; hiçbir kapıya atanmamış bloklar griye düşer. |
+| **Doğrulama** | Her şey griye düşer; sadece canlı **sınır ihlali** ve **taban çakışması** kırmızıyla vurgulanır (en son çalıştırdığınız Doğrulama taramasının diğer bulguları varsa onlar da eklenir). |
+
+**Lejant** düğmesi (bkz. [§9](#9-alt-durum-çubuğu)) da seçili kanala göre
+değişen bir liste gösterir — griye düşen şeylerin lejantta yeri yoktur.
+
+Seçim vurgusu ile canlı **sınır ihlali** / **taban çakışması** işaretleri
+kanaldan BAĞIMSIZDIR: hangi kanalı seçerseniz seçin her zaman görünür
+kalırlar — bunlar bir renk tercihi değil, gözden kaçırılmaması gereken bir
+uyarıdır. Bu ikisinden biri varken plan **yayınlanamaz** (bkz.
+[§13](#13-sürümler-penceresi-yayınlama)).
+
+> Bir bloğa panelden atadığınız **Görünüm rengi** (bkz.
+> [§5](#5-sağ-panel--bir-blok-seçiliyken)) sadece `Kat` kanalında görünür;
+> başka bir kanaldayken geçici olarak griye düşer — ayarınız kaybolmaz,
+> sadece o an ekranda gösterilmez.
+
+**Mod şeridi** — üst çubuğun hemen altında, aşağıdaki üç durumdan biri
+aktifken bir şerit belirir (birden fazlası aynı anda aktifse hepsi yan
+yana listelenir):
+
+- **Kat süzgeci: \<ad\>** — sol paneldeki kat/kuşak süzgeci "Tümü" dışında
+  bir değere ayarlı.
+- **Dizi önizleme: doğrusal/radyal** — bir bloğun Doğrusal ya da Radyal
+  dizi bölümü açık, tuvalde hayalet-kopya önizlemesi gösteriliyor.
+- **Çokgen çiziliyor · N nokta** — Poligon aracıyla bir şekil çiziminin
+  ortasındasınız.
+
+Şeritteki **×** düğmesi (ya da `Esc`) o durumdan tek tıkla çıkar.
+Kalibrasyon, dış hat elle çizimi ve CSV koltuk eşleştirmesi bu şeride
+girmez — üçünün de tuval üzerinde zaten her zaman görünen kendi
+göstergesi/çıkış yolu vardır.
 
 ---
 
@@ -212,11 +259,13 @@ belirir:
 | **Kimlik ön eki** | Bloğun kısa etiketi (örn. "A", "12", "Sol"). Koltuk kimliklerinin içine girer. Bunu değiştirmek, eğer blok adını hiç elle düzenlemediyseniz, blok adını da otomatik günceller. |
 | **Kat / kuşak** | Bloğun ait olduğu kat/tribün/bölge adı (örn. "Alt Tribün", "Balkon"). Aynı ismi birden fazla blokta kullanırsanız hepsi aynı renk grubunda sayılır ve kat filtresinde birlikte görünürler. |
 | **Yandan erişim** | İşaretliyse, bu bloğa bir koridordan (yandan) girilebildiği varsayılır. İşareti kaldırırsanız ("Kapalı (loca gibi)") blok bir loca gibi ele alınır — koltuklar arasında yürüme payı denetimi gevşer. |
-| **Görünüm rengi** | Bloğun tuvaldeki rengi. "A" harfli düğme, kat/kuşağın varsayılan rengini kullanır; renk paletindeki bir kareye tıklayarak bloğa özel bir renk atayabilirsiniz. |
+| **Görünüm rengi** | Bloğun tuvaldeki rengi. "A" harfli düğme, kat/kuşağın varsayılan rengini kullanır; renk paletindeki bir kareye tıklayarak bloğa özel bir renk atayabilirsiniz. *(Yalnız üst çubuktaki `Renklendir` kanalı "Kat" iken görünür — başka bir kanaldayken blok geçici olarak griye düşer, bkz. [§2](#2-üst-bar).)* |
 | **Varsayılan nitelik** | Bu bloktaki **tüm koltukların** varsayılan niteliğini toptan belirler (örn. tüm blok "Görüş kısıtlı"). Tek tek koltuk istisnaları "Nitelik boya" aracıyla üstüne yazılabilir. |
 
-X/Y konumu ve döndürme burada **değil**, aşağıdaki **Gelişmiş** bölümündedir
-— bkz. altta.
+X/Y konumu burada **değil**, aşağıdaki **Gelişmiş** bölümündedir — bkz.
+altta. Döndürme de ızgara/yelpazede aynı şekilde Gelişmiş'tedir; Masa ve
+serbest bloklarda ise **Döndür °** tam burada, Temel bilgiler içinde kalır
+(bu iki tipte tuvalde karşılık gelen bir tutamaç yoktur, bkz. altta).
 
 **Masa bloğu için ek alanlar** *(sadece Masa aracıyla oluşturulan bloklarda)*:
 Biçim (Yuvarlak/Dikdörtgen), Kişi sayısı, Çap/Genişlik, Derinlik, Başlangıç
@@ -241,26 +290,62 @@ yukarıdaki Koltuk/± değerleri geçerli olur. **Hizalama**, sıralar farklı
 uzunluktaysa (± veya elle liste kullanıldığında) kısa sıraların bloğun
 neresine (ortaya/sola/sağa) yaslanacağını belirler.
 
+**Tutamaçlar** *(tuvalde doğrudan sürükleme, panelden ayrı)*: Bir ızgara ya
+da yelpaze bloğu seçtiğinizde tuvalde bloğun üstünde/kenarlarında küçük
+daireler belirir — bunlar sürüklenerek geometri panele hiç girmeden
+değiştirilir. Üstüne (tıklamadan, sadece fareyle) gelince Türkçe bir ipucu
+çıkar.
+
+| Blok tipi | Tutamaçlar |
+|---|---|
+| **Izgara** | Döndür (üstte, döner ok simgesi) · Kavis (ön kenar ortası, iki yöne bükülebilir) · Koltuk sayısı ± (sağ kenar ortası) · Sıra sayısı ± (alt kenar ortası) |
+| **Yelpaze** | Döndür (dıştan, ortalama açıda) · İlk yarıçap (iç kenar ortası) · Sıra sayısı ± (dış kenar ortası) · Başlangıç/Bitiş açısı (yalnız Mod "Sabit açı dilimi"nde, iki uçta) |
+| **Masa, Serbest** | Yok — bu iki tipte hiç tutamaç üretilmez, **Döndür °** Temel bilgiler'de kalır (yukarıya bakın). |
+
+Birkaç kural:
+- **3 pikselden az** bir hareket (bir tutamaca tıklayıp hemen bırakmak
+  dahil) hiçbir değişiklik uygulamaz. Salon verisinde küsuratlı değerler
+  bulunabilir (çözücünün ürettiği `rot=84,9622` gibi); bu eşik olmasa
+  tutamaca sadece dokunmak bile o değeri yuvarlardı.
+- **Koltuk sayısı ±** tutamacı, o blokta elle **Sıra başına koltuk**
+  (`counts`, aşağıdaki Geometri bölümünde) girilmişse ya da **Sıra başına
+  ±** (`taper`) sıfırdan farklıysa hiç GÖSTERİLMEZ. Sebep: böyle bir
+  blokta tutamacın durduğu yer ile değiştireceği taban **Koltuk** sayısı
+  farklı büyüklüğe karşılık gelir — tutamaç orada ne yazdığını temsil
+  edemeyeceği için yanıltmak yerine gizlenir. Diğer tutamaçlar bundan
+  etkilenmez.
+- Yelpazede **Merkez açı** (Mod "Sabit koltuk aralığı"nda kullanılan alan)
+  hiçbir zaman tutamaç almaz, sadece Geometri bölümünden sayı olarak
+  girilir.
+- Bir bloğun dış hattını **"Elle çiz"** ile kendiniz çizdiyseniz (bkz.
+  altta), yukarıdaki tutamaçların yerini dış hattın her köşesinde bir
+  tutamaç alır — köşeleri tek tek sürükleyerek şekli düzeltirsiniz.
+
 **Gelişmiş** *(açılır/kapanır bölüm, varsayılan kapalı)*: **X (cm)**, **Y
-(cm)**, **Döndür °** — ve ızgarada ayrıca **Sıra**, **Koltuk**, **Kavis**
-(sıraları yay gibi büker — stadyum/amfi hissi verir), yelpazede ayrıca
-**Sıra**, **İlk yarıçap**, Mod "Sabit açı dilimi" ise de **Başlangıç/Bitiş
-açısı**. Bunların hepsi artık seçili bloğun üstünde beliren tutamaçlarla
-tuvalde doğrudan ayarlanabildiği için (bkz.
-[§10](#10-fare-ve-klavye-davranışı)) panelde ikinci kez göstermek zorunlu
-değil; buradaki alanlar klavyeden tam sayı girmek isteyenler içindir.
-Bölüm kapalıyken de bir bloğun döndürülmüş ya da kavisli olduğunu fark
-edebilesiniz diye, varsayılandan (0) farklı bir değer varsa başlıkta kısaca
-belirtilir (örn. "15° döndürülmüş"). Açık/kapalı durumu oturum boyunca
-hatırlanır — bir blokta açtıysanız başka bir blok seçtiğinizde de açık
-kalır.
+(cm)** — her blok tipinde burada. Izgara ve yelpazede ayrıca **Döndür °**
+ve yukarıdaki tutamaçların sayısal karşılıkları: **Sıra**, **Koltuk**,
+**Kavis** (ızgara) / **Sıra**, **İlk yarıçap**, Mod "Sabit açı dilimi" ise
+de **Başlangıç/Bitiş açısı** (yelpaze). Yukarıdaki tutamaçlarla tuvalde
+zaten ayarlanabildikleri için panelde ikinci kez tam genişlikte göstermek
+zorunlu değil; buradaki alanlar klavyeden tam sayı girmek isteyenler
+içindir. Masa ve serbest bloklarda **Döndür °** burada değildir (yukarıya
+bakın). Bölüm kapalıyken de bir bloğun döndürülmüş ya da kavisli olduğunu
+fark edebilesiniz diye, ızgara/yelpazede varsayılandan (0) farklı bir
+değer varsa başlıkta kısaca belirtilir (örn. "15° döndürülmüş"). Açık/
+kapalı durumu oturum boyunca hatırlanır — bir blokta açtıysanız başka bir
+blok seçtiğinizde de açık kalır.
 
 **Dış hat** *(açılır/kapanır bölüm)*: Bloğun altındaki fiziksel platform
 sınırını gösterir/düzenler. Varsayılan olarak dış hat, koltuklardan otomatik
 türetilir (etrafına bir pay bırakılır — **Dış hat payı** alanından
-ayarlanır). Salonda gerçek bir sütun, merdiven boşluğu ya da düzensiz kenar
-varsa **"Elle çiz"** ile tuvalde köşe köşe tıklayarak kendi dış hattınızı
-çizebilir, "Otomatiğe dön" ile otomatik hale geri dönebilirsiniz.
+ayarlanır); bu durumda iki düğme sunulur: **"Elle çiz"** sıfırdan boş bir
+çizimle başlar, **"Otomatikten başla"** otomatik hattın kendi köşelerini
+önerip onları düzeltmenize izin verir — salonda gerçek bir sütun, merdiven
+boşluğu ya da düzensiz kenar varsa ikisinden biriyle kendi dış hattınızı
+çizersiniz. Elle çizilmiş bir dış hat varsa düğmeler **"Yeniden çiz"**
+(baştan başlar) ve **"Otomatiğe dön"** (elle çizileni atıp otomatik hesaba
+döner) olur; köşeler ayrıca doğrudan tuvaldeki tutamaçlarla sürüklenebilir
+(yukarıdaki Tutamaçlar bölümüne bakın).
 
 **Doğrusal dizi / Radyal dizi** *(açılır/kapanır bölümler)*: Seçili
 bloğun **kopyalarını** düzenli bir örüntüyle çoğaltır. Bölümü açtığınız an
@@ -387,14 +472,15 @@ Soldan sağa (her şey aynı anda görünmez, duruma göre belirir/kaybolur):
 |---|---|
 | Seçim özeti | "N blok · N koltuk seçili" gibi bir özet. |
 | "koltuk görünümü" / "blok görünümü · yakınlaş" | Şu an tek tek koltukları mı yoksa sadeleştirilmiş blok dikdörtgenlerini mi gördüğünüzü söyler. Çok büyük bir salonda uzaktan bakarken performans için bloklar sadeleştirilir; yakınlaştıkça (özellikle görünen alandaki koltuk sayısı azaldıkça) otomatik olarak tek tek koltuklara geçilir. Elle açılıp kapanan bir anahtar değildir. |
-| Kırmızı "N blok salon sınırı dışında" uyarısı | Bir veya daha fazla blok, salonun `home` sınırlarının dışına taşmış. Tıklarsanız o blokları seçer, böylece kolayca bulup içeri çekebilirsiniz. Bu uyarı varken plan **yayınlanamaz**. |
+| Kırmızı "N blok salon sınırı dışında" uyarısı | Bir veya daha fazla blok, salonun `home` sınırlarının dışına taşmış (sınır ihlali). Tıklarsanız o blokları seçer, böylece kolayca bulup içeri çekebilirsiniz. |
+| Kırmızı "N blok birbirinin alanına giriyor" uyarısı | Aynı kattaki iki veya daha fazla blok tabanı üst üste biniyor (taban çakışması). Tıklarsanız o blokları seçer. |
 | Mesaj alanı | Son işlemin sonucu (örn. "24 koltuk boyandı") ya da bir hata mesajı (kırmızı, kalın) burada kısaca belirir. |
 | **Yapış** kutucuğu + adım seçici (10cm/25cm/50cm/1m) | İşaretliyken, blokları sürüklerken/ok tuşlarıyla kaydırırken konum bu adıma yuvarlanır — elle santim santim hizalamak yerine düzenli bir ızgaraya "yapışır". `Y` tuşuyla açıp kapatabilirsiniz. |
 | Fare altındaki koltuk kimliği | Fareniz bir koltuğun üzerindeyken o koltuğun kimliğini gösterir. |
 | Koordinat | Farenin tuval üzerindeki konumunu metre cinsinden gösterir. |
 | Ölçek çubuğu | Ekrandaki bir çizginin gerçekte kaç metre olduğunu gösterir (yakınlaştıkça/uzaklaştıkça otomatik güncellenir). |
 | **Dış hatlar** düğmesi | Tüm bloklarının altına, renkli yarı saydam bir dış hat/platform anahatı çizer — blokların gerçek fiziksel sınırlarını topluca görmek için. Bloğun kendi panelindeki "Dış hat" bölümüyle aynı geometriyi gösterir, sadece topluca ve sadece görünürlük anahtarı olarak (hiçbir şeyi düzenlemez). |
-| **Lejant** düğmesi | Tuvalin üzerine, kat/kuşak renklerini ve tekerlekli/refakatçi koltuk sayılarını özetleyen küçük bir kutu açar/kapatır. Varsayılan olarak kapalıdır (gereksiz yer kaplamasın diye); gerektiğinde açıp tekrar kapatabilirsiniz. |
+| **Lejant** düğmesi | Tuvalin üzerine küçük bir kutu açar/kapatır; içeriği üstteki `Renklendir` kanalına göre değişir (bkz. [§2](#2-üst-bar)) — Kat'ta kat/kuşak renkleri ve koltuk sayıları, Nitelik'te nitelik başına koltuk sayısı, Kapı'da kapı başına blok sayısı, Doğrulama'da sınır ihlali/taban çakışması sayıları. Varsayılan olarak kapalıdır (gereksiz yer kaplamasın diye); gerektiğinde açıp tekrar kapatabilirsiniz. |
 | **− / yüzde / +** | Uzaklaştır / yakınlaştır düğmeleri ve aradaki **zum yüzdesi**. Yüzde, salonun kendi varsayılan (Sığdır) görünümüne göre hesaplanır — %100, "bu salon tamamen ekrana sığmış" demektir; salonun fiziksel büyüklüğüyle ilgisi yoktur (47 koltuklu bir barla 50.000 koltuklu bir stadyum aynı anda %100 gösterebilir). Yüzdeye **tıklamak** görünümü tam %100'e (Sığdır ile aynı sonuca) sıfırlar. |
 | **Sığdır / Seçime zumla** | Tek bir düğme: bir seçiminiz varsa sadece ona yakınlaşır ve düğme "Seçime zumla" yazar; seçim yoksa tüm plana (kenarlarda biraz boşluk bırakarak) oturtur ve "Sığdır" yazar. Kaybolan/ekran dışına taşmış bir bloğu bulmanın en hızlı yolu, seçimi temizleyip buna basmaktır. |
 
@@ -410,9 +496,12 @@ Soldan sağa (her şey aynı anda görünmez, duruma göre belirir/kaybolur):
   bir noktadan** başlarsa bunun yerine bir **seçim dikdörtgeni (marquee)**
   açar; bıraktığınızda dikdörtgenin **tamamen içinde kalan** bloklar
   seçilir (kısmen kesişenler seçilmez).
-- Bir blok seçiliyken üstünde beliren **döner ok simgesi** onu
-  döndürmenizi, köşesindeki **küçük daire** boyutunu (sıra/koltuk
-  sayısını) değiştirmenizi sağlar — sürükleyerek kullanılır.
+- Bir ızgara/yelpaze bloğu seçiliyken üstünde/kenarlarında beliren küçük
+  daireler — **tutamaçlar** — geometriyi panele hiç girmeden değiştirir
+  (döndürme, kavis, sıra/koltuk sayısı, yelpazede yarıçap ve açılar);
+  sürükleyerek kullanılır. Hangi tutamacın ne yaptığı ve hangi blok
+  tipinde tutamaç bulunduğu için bkz.
+  [§5](#5-sağ-panel--bir-blok-seçiliyken).
 - Sürüklerken yakındaki başka bloklarla hizalanınca kısa **kırmızı
   kılavuz çizgileri** belirir (kenar/merkez hizası) — bunlara "yapışarak"
   bırakırsanız tam hizalı kalır.
@@ -452,7 +541,7 @@ Soldan sağa (her şey aynı anda görünmez, duruma göre belirir/kaybolur):
 | `Alt` + Ok | O anki ızgara adımı kadar kaydırır |
 | `Delete` / `Backspace` | Seçili bloğu/şekli siler; seçili tek bir koltuksa onu "sil" olarak işaretler |
 | `Enter` | Çizilmekte olan bir dış hat/poligonu tamamlar |
-| `Esc` | O an süren çizimi iptal eder; hiçbir şey çizilmiyorsa seçimi temizler, açık pencereleri (Doğrulama raporu, Ayarlar) kapatır |
+| `Esc` | Tek tuşla çıkış: açık **Doğrulama raporu**nu ve **Ayarlar**ı kapatır, kat süzgecini "Tümü"ne döndürür, dizi önizlemesini ve **koltuk listesi eşleştirme** panelini kapatır, süren bir çizim/ölçüm varsa (ızgara/yelpaze/şekil taslağı, poligon, dış hat, kalibrasyon) iptal eder — dış hat/poligon iptalinde seçili blok korunur; hiçbir şey çizilmiyorsa kalan seçimi de temizler |
 
 > Bu kısayollar bir metin kutusuna yazı yazarken **çalışmaz** (harfleriniz
 > normal şekilde kutuya girer).
@@ -502,8 +591,9 @@ yapabilirsiniz (buna **taslak** denir); bir noktada "artık bu hali
 kesinleşti, biletleme sistemine bu gitsin" dediğinizde bir **sürüm**
 oluşturursunuz. Geçmiş sürümler asla değişmez, hep geri dönülebilir.
 
-- Üstte, salonun sınır dışı bloğu varsa kırmızı bir uyarı çıkar ve
-  **Yayınla** düğmesi bu düzeltilene kadar devre dışı kalır.
+- Üstte, salonun sınır dışı bloğu ve/veya birbiriyle çakışan blok tabanı
+  varsa ayrı ayrı kırmızı birer uyarı çıkar; **Yayınla** düğmesi ikisi de
+  düzelene kadar devre dışı kalır (bkz. [§9](#9-alt-durum-çubuğu)).
 - **Sürüm notu** kutusuna kısa bir açıklama yazıp (örn. "yan localar
   eklendi") **Yayınla**'ya basarsınız; bu, o andaki tüm planın bir
   "fotoğrafını" alır ve `v1`, `v2`… diye numaralandırır.
