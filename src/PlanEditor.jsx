@@ -539,9 +539,15 @@ function handlesFor(b, m) {
   const L = (p, k) => ({ k, ...toWorld(b, p, cos, sin) });
   if (b.kind === "grid") {
     const halfW = ((m.P.maxN - 1) / 2) * b.seatGap;
+    const backY = (b.rows - 1) * b.rowGap;
     return [
       L({ x: 0, y: -b.rowGap * 1.4 }, "rot"),
-      L({ x: halfW + b.seatGap * 0.9, y: (b.rows - 1) * b.rowGap + b.rowGap * 0.5 }, "size"),
+      /* kavis: ön sıranın orta noktasının hemen ÖNÜNDE, kavis değeri kadar
+         dıştan başlıyor — r0/rows tutamaklarıyla AYNI dil (tutamacın
+         dinlenme konumu düzenlediği alanın GÜNCEL değerini taşır). */
+      L({ x: 0, y: -b.rowGap * 0.6 - (b.curve || 0) }, "curve"),
+      L({ x: halfW + b.seatGap * 0.9, y: backY / 2 }, "cols"),
+      L({ x: 0, y: backY + b.rowGap * 0.9 }, "rows"),
     ];
   }
   if (b.kind === "fan") {
@@ -549,6 +555,10 @@ function handlesFor(b, m) {
     const am = span ? (b.aStart + b.aEnd) / 2 : b.aCenter;
     const rOut = b.r0 + (b.rows - 1) * b.rowGap;
     const hs = [
+      /* "rows" tutamacından (+0.75) belirgin biçimde ayrı dursun diye +2.4 —
+         ikisi de dıştan, aynı açıda; çok sıralı/dar yelpazelerde 0.65 katı
+         fark ekranda iç içe geçiyordu (bkz. görev raporu, GS köşe bloğu). */
+      L(polarPt(rOut + b.rowGap * 2.4, am), "rot"),
       L(polarPt(b.r0 - b.rowGap * 0.75, am), "r0"),
       L(polarPt(rOut + b.rowGap * 0.75, am), "rows"),
     ];
@@ -562,8 +572,8 @@ function handlesFor(b, m) {
 }
 
 const HANDLE_HINT = {
-  rot: "Döndür", size: "Sıra ve koltuk sayısı", r0: "İlk yarıçap",
-  rows: "Sıra sayısı", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
+  rot: "Döndür", cols: "Koltuk sayısı (±)", rows: "Sıra sayısı (±)", curve: "Kavis",
+  r0: "İlk yarıçap", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
 };
 
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
@@ -613,9 +623,11 @@ export default function PlanEditor() {
     snapOn: true, gridStep: 50,
     lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
     wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
+    toolsOpen: true, propsOpen: true,
   });
   const {
     tool, shapeType, sport, brush, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
+    toolsOpen, propsOpen,
   } = toolPrefs;
   const setToolPref = useCallback((key, v) =>
     setToolPrefs((p) => ({ ...p, [key]: typeof v === "function" ? v(p[key]) : v })), []);
@@ -633,6 +645,8 @@ export default function PlanEditor() {
   const setLegend = useCallback((v) => setToolPref("legend", v), [setToolPref]);
   const setPlates = useCallback((v) => setToolPref("plates", v), [setToolPref]);
   const setQ = useCallback((v) => setToolPref("q", v), [setToolPref]);
+  const setToolsOpen = useCallback((v) => setToolPref("toolsOpen", v), [setToolPref]);
+  const setPropsOpen = useCallback((v) => setToolPref("propsOpen", v), [setToolPref]);
 
   /* ── geçici / yüksek frekanslı / pencere durumu ──────────────────
      Saniyede 60 kez değişebilen imleç/sürükleme/önizleme durumu ve
@@ -1477,13 +1491,19 @@ export default function PlanEditor() {
       if (d.h === "rot") {
         const ang = Math.atan2(raw.y - b0.y, raw.x - b0.x) / RAD;
         patch = { rot: Math.round(b0.rot + (ang - d.startAng)) };
-      } else if (d.h === "size") {
-        patch = { cols: Math.max(1, Math.round((Math.abs(lx) * 2) / b0.seatGap)),
-                  rows: Math.max(1, Math.round(ly / b0.rowGap) + 1) };
+      } else if (d.h === "cols") {
+        patch = { cols: Math.max(1, Math.round((Math.abs(lx) * 2) / b0.seatGap)) };
+      } else if (d.h === "rows") {
+        /* aynı tutamaç adı iki blok türünde: fan'da yarıçap boyunca (mevcut
+           davranış, DEĞİŞMEDİ), grid'de dikey — eskiden "size" tutamacının
+           yaptığı hesabın YARISI (bkz. "cols"), artık ayrı sürüklenebiliyor. */
+        patch = b0.kind === "fan"
+          ? { rows: Math.max(1, Math.round((dist - b0.r0) / b0.rowGap) + 1) }
+          : { rows: Math.max(1, Math.round(ly / b0.rowGap) + 1) };
+      } else if (d.h === "curve") {
+        patch = { curve: Math.round((-b0.rowGap * 0.6 - ly) / 10) * 10 };
       } else if (d.h === "r0") {
         patch = { r0: Math.max(50, Math.round(dist / 10) * 10) };
-      } else if (d.h === "rows") {
-        patch = { rows: Math.max(1, Math.round((dist - b0.r0) / b0.rowGap) + 1) };
       } else if (d.h === "aStart" || d.h === "aEnd") {
         patch = { [d.h]: Math.round(Math.atan2(lx, -ly) / RAD) };
       }
@@ -1942,8 +1962,13 @@ export default function PlanEditor() {
         <button className="pri" onClick={exportSeats}>seats.json</button>
       </header>
 
-      <div className="body">
-        <nav className="tools">
+      <div className={`body${toolsOpen ? "" : " tc"}${propsOpen ? "" : " pc"}`}>
+        <nav className={`tools${toolsOpen ? "" : " closed"}`}>
+          <button className="pcol" onClick={() => setToolsOpen(!toolsOpen)}
+            title={toolsOpen ? "Araç rayını daralt" : "Araç rayını genişlet"}>
+            <span className="chev">{toolsOpen ? "‹" : "›"}</span><em>Araçlar</em>
+          </button>
+          {toolsOpen && <>
           {TOOL_GROUPS.map(([g, list]) => (
             <div className="grp" key={g || "main"}>
               {g && <p className="glab">{g}</p>}
@@ -2035,6 +2060,7 @@ export default function PlanEditor() {
             ))}
             {!plan.blocks.length && !plan.shapes.length && <li className="mut">Boş tuval</li>}
           </ul>
+          </>}
         </nav>
 
         <main className="canvas">
@@ -2286,10 +2312,14 @@ export default function PlanEditor() {
                 points={g.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")} />
             ))}
 
-            {/* tutamaklar */}
+            {/* tutamaklar — HANDLE_HINT'teki Türkçe etiket, tarayıcının
+                yerleşik <title> ipucuyla üstüne gelince görünür (ayrı bir
+                tooltip bileşeni gerekmiyor). */}
             {handles.map((hd) => (
               <g key={hd.k} className="hnd">
-                <circle data-h={hd.k} cx={hd.x} cy={hd.y} r={hSize} />
+                <circle data-h={hd.k} cx={hd.x} cy={hd.y} r={hSize}>
+                  <title>{hd.k.startsWith("foot:") ? "Taban köşesi" : (HANDLE_HINT[hd.k] || hd.k)}</title>
+                </circle>
                 {hd.k === "rot" && <text x={hd.x} y={hd.y + hSize * 0.4} style={{ fontSize: hSize * 1.2 }}>↻</text>}
               </g>
             ))}
@@ -2584,8 +2614,13 @@ export default function PlanEditor() {
           )}
         </main>
 
-        <aside className="props">
-          {selSeats.size > 1 ? (
+        <aside className={`props${propsOpen ? "" : " closed"}`}>
+          <button className="pcol" onClick={() => setPropsOpen(!propsOpen)}
+            title={propsOpen ? "Özellik panelini daralt" : "Özellik panelini genişlet"}>
+            <span className="chev">{propsOpen ? "›" : "‹"}</span><em>Özellikler</em>
+          </button>
+          {propsOpen && (
+          selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
           ) : selSeat && seatOv ? (
@@ -2609,6 +2644,7 @@ export default function PlanEditor() {
               onDelete={() => { commit({ ...plan, blocks: plan.blocks.filter((x) => x.id !== selBlock.id) }); setSelIds([]); }} />
           ) : (
             <div className="empty">Bir blok, koltuk veya şekil seç</div>
+          )
           )}
         </aside>
       </div>
@@ -3376,6 +3412,11 @@ const CSS = `
 .pub.dirty{ color:var(--acc); }
 
 .body{ flex:1; display:grid; grid-template-columns:190px 1fr 292px; min-height:0; }
+/* daraltılmış yan paneller — tuvale (.canvas, orta 1fr sütun) alan bırakır.
+   Tercih toolPrefs'te (oturum boyunca kalıcı, belgeden bağımsız). */
+.body.tc{ grid-template-columns:34px 1fr 292px; }
+.body.pc{ grid-template-columns:190px 1fr 34px; }
+.body.tc.pc{ grid-template-columns:34px 1fr 34px; }
 
 .gate{ display:none; }
 @media (max-width:1023px){
@@ -3388,6 +3429,19 @@ const CSS = `
 
 /* ── araç rayı ── */
 .tools{ border-right:1px solid var(--line); padding:8px; overflow:auto; }
+/* daralt/aç düğmesi — açıkken ince bir başlık şeridi, kapalıyken tek
+   başına kalıp rayın ne olduğunu dikey yazıyla hatırlatır. */
+.pcol{ display:flex; align-items:center; gap:6px; width:100%; height:28px; flex:none;
+  padding:0 9px; margin-bottom:6px; background:none; border:0; border-radius:var(--r-xs);
+  color:var(--mut); cursor:pointer; font-size:11px; }
+.pcol:hover{ background:var(--panel2); color:var(--bone); }
+.pcol .chev{ font-size:14px; line-height:1; flex:none; }
+.pcol em{ font-style:normal; }
+.tools.closed, .props.closed{ display:flex; flex-direction:column; align-items:center;
+  padding:8px 0; overflow:hidden; }
+.tools.closed .pcol, .props.closed .pcol{ width:auto; height:auto; flex-direction:column;
+  gap:8px; margin-bottom:0; padding:8px 4px; }
+.tools.closed .pcol em, .props.closed .pcol em{ writing-mode:vertical-rl; letter-spacing:.06em; }
 .grp{ padding-bottom:6px; margin-bottom:6px; border-bottom:1px solid var(--line); }
 .grp:last-of-type{ border-bottom:0; }
 .glab{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--mut);
