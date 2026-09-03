@@ -735,10 +735,15 @@ export default function PlanEditor() {
     lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
     wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
     toolsOpen: true, propsOpen: true,
+    /* blok panelindeki katlanır bölümlerin açık/kapalı durumu — bkz.
+       BlockPanel. Burada tutulduğu için (BlockPanel'in kendi state'i
+       DEĞİL) bir bloktan diğerine geçmek sıfırlamaz: kullanıcı "Gelişmiş"i
+       bir kez açtıysa oturum boyunca açık kalır. */
+    footOpen: false, numOpen: false, advOpen: false,
   });
   const {
     tool, shapeType, sport, brush, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
-    toolsOpen, propsOpen,
+    toolsOpen, propsOpen, footOpen, numOpen, advOpen,
   } = toolPrefs;
   const setToolPref = useCallback((key, v) =>
     setToolPrefs((p) => ({ ...p, [key]: typeof v === "function" ? v(p[key]) : v })), []);
@@ -758,6 +763,9 @@ export default function PlanEditor() {
   const setQ = useCallback((v) => setToolPref("q", v), [setToolPref]);
   const setToolsOpen = useCallback((v) => setToolPref("toolsOpen", v), [setToolPref]);
   const setPropsOpen = useCallback((v) => setToolPref("propsOpen", v), [setToolPref]);
+  const setFootOpen = useCallback((v) => setToolPref("footOpen", v), [setToolPref]);
+  const setNumOpen = useCallback((v) => setToolPref("numOpen", v), [setToolPref]);
+  const setAdvOpen = useCallback((v) => setToolPref("advOpen", v), [setToolPref]);
 
   /* ── geçici / yüksek frekanslı / pencere durumu ──────────────────
      Saniyede 60 kez değişebilen imleç/sürükleme/önizleme durumu ve
@@ -2404,7 +2412,7 @@ export default function PlanEditor() {
             {handles.map((hd) => (
               <g key={hd.k} className="hnd">
                 <circle data-h={hd.k} cx={hd.x} cy={hd.y} r={hSize}>
-                  <title>{hd.k.startsWith("foot:") ? "Taban köşesi" : (HANDLE_HINT[hd.k] || hd.k)}</title>
+                  <title>{hd.k.startsWith("foot:") ? "Dış hat köşesi" : (HANDLE_HINT[hd.k] || hd.k)}</title>
                 </circle>
                 {hd.k === "rot" && <text x={hd.x} y={hd.y + hSize * 0.4} style={{ fontSize: hSize * 1.2 }}>↻</text>}
               </g>
@@ -2536,20 +2544,23 @@ export default function PlanEditor() {
               <span className="n">{scaleBar.label}</span>
             </div>
             <span className="tsep" />
-            <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Taban</button>
+            <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Dış hatlar</button>
             <button className={legend ? "on" : ""} onClick={() => setLegend(!legend)}>Lejant</button>
             <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
             <span className="n zoompct" title="%100'e sıfırla" onClick={zoomToAll}>
               {zoomPct}%
             </span>
             <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
-            <button onClick={zoomToAll}>Sığdır</button>
-            <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "İçeriğe zumla"}</button>
+            {/* Eskiden "Sığdır" ve "İçeriğe zumla" ayrı düğmelerdi; seçim
+                yokken zoomToSelection zaten zoomToAll'a düşüyordu (bkz.
+                yukarısı) — yani hiçbir şey seçili değilken birebir aynı
+                düğmeydi. Tek düğme: seçim varsa ona odaklan, yoksa Sığdır. */}
+            <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "Sığdır"}</button>
           </div>
 
           {footDraft && (
             <div className="tip">
-              Tabanın köşelerini tıkla · <b>Enter</b> veya çift tık ile kapat · <b>Esc</b> iptal
+              Dış hattın köşelerini tıkla · <b>Enter</b> veya çift tık ile kapat · <b>Esc</b> iptal
               {footDraft.length > 0 && ` · ${footDraft.length} nokta`}
             </div>
           )}
@@ -2724,6 +2735,9 @@ export default function PlanEditor() {
             <BlockPanel b={selBlock} levels={levels} meta={metaById.get(selBlock.id)} arr={arrProps}
               doors={gates.get(selBlock.id)}
               onFootDraw={footStart} onFootSeed={footSeed} onFootClear={footClear}
+              footOpen={footOpen} setFootOpen={setFootOpen}
+              numOpen={numOpen} setNumOpen={setNumOpen}
+              advOpen={advOpen} setAdvOpen={setAdvOpen}
               onZoom={() => zoomTo(metaById.get(selBlock.id))}
               onChange={(p) => patchBlock(selBlock.id, p)} onMirror={mirror}
               onDup={() => { const cp = { ...selBlock, id: nid(), x: selBlock.x + 300, y: selBlock.y + 300 }; commit({ ...plan, blocks: [...plan.blocks, cp] }); setSelIds([cp.id]); }}
@@ -3012,7 +3026,7 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
             <input list="lv2" placeholder="değiştirme" onBlur={(e) => e.target.value && onSet({ level: e.target.value })} />
             <datalist id="lv2">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
-          <Row label="Taban payı (cm)">
+          <Row label="Dış hat payı (cm)">
             <input type="number" min="0" step="5" placeholder="değiştirme"
               onBlur={(e) => e.target.value !== "" && onSet({ pad: Math.max(0, +e.target.value) })} />
           </Row>
@@ -3170,11 +3184,30 @@ function ShapePanel({ s, blocks, metas, onChange, onDelete, onAuto }) {
   );
 }
 
-function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFootClear, onChange, onMirror, onDup, onDelete, onZoom }) {
+function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFootClear, onChange, onMirror, onDup, onDelete, onZoom,
+  footOpen, setFootOpen, numOpen, setNumOpen, advOpen, setAdvOpen }) {
   const n = b.num;
   const setNum = (p) => onChange({ num: { ...n, ...p } });
   const kindLabel = b.kind === "fan" ? "Yelpaze" : b.kind === "free" ? "Serbest"
     : b.kind === "table" ? "Masa" : "Izgara";
+  /* A6.2'den beri rot/cols/rows/curve/r0/aStart/aEnd tuvaldeki tutamaçla
+     doğrudan ayarlanabiliyor (bkz. handlesFor) — panelde ikinci kez tam
+     genişlikte sunulmaları artık zorunlu değil, "Gelişmiş" altına inerler.
+     Yine de klavye/hassas giriş için kalıyorlar, sadece varsayılan olarak
+     kapalılar. Etkisi tuvalde her zaman görünür olsa da (rotasyon/kavis
+     gözle fark edilir) kullanıcı panel kapalıyken HANGİ bloğun bu tür bir
+     özel değere sahip olduğunu göremez — bu yüzden varsayılandan (0)
+     farklıysa özet satırında belirtiliyor. X/Y'nin "varsayılanı" yok
+     (her blok bir yerde durur), o yüzden onlar için rozet yok.
+     Masa/Serbest'te ise handlesFor HİÇ tutamaç üretmiyor (grid/fan
+     dalları dışında düz []) — Döndür°'ü oralarda "Gelişmiş"e atmak
+     ölçütün ("tutamacın karşılığı var mı?") kendisini çiğnerdi, o yüzden
+     bu iki kind'da çekirdekte kalıyor; rozet de sadece gerçekten
+     Gelişmiş'te gizliyken anlamlı. */
+  const rotInAdv = b.kind === "grid" || b.kind === "fan";
+  const advBits = [];
+  if (rotInAdv && Math.round(b.rot) % 360 !== 0) advBits.push(`${Math.round(b.rot)}° döndürülmüş`);
+  if (b.kind === "grid" && b.curve) advBits.push("kavisli");
   return (
     <div className="panel">
       <div className="phead">
@@ -3198,9 +3231,9 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
             <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange({ level: e.target.value })} />
             <datalist id="lv">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
-          <Row label="X (cm)"><Num v={Math.round(b.x)} on={(v) => onChange({ x: v })} step={10} /></Row>
-          <Row label="Y (cm)"><Num v={Math.round(b.y)} on={(v) => onChange({ y: v })} step={10} /></Row>
-          <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>
+          {!rotInAdv && (
+            <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>
+          )}
           <Row label="Yandan erişim">
             <label className="chk" style={{ height: 32 }}>
               <input type="checkbox" checked={!b.noAisle}
@@ -3267,11 +3300,8 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
           <p className="lab">Geometri (cm)</p>
           {b.kind === "grid" ? (
             <div className="g2">
-              <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
-              <Row label="Koltuk"><Num v={b.cols} on={(v) => onChange({ cols: Math.max(1, v) })} min={1} /></Row>
               <Row label="Koltuk aralığı"><Num v={b.seatGap} on={(v) => onChange({ seatGap: Math.max(20, v) })} step={5} /></Row>
               <Row label="Sıra aralığı"><Num v={b.rowGap} on={(v) => onChange({ rowGap: Math.max(20, v) })} step={5} /></Row>
-              <Row label="Kavis"><Num v={b.curve} on={(v) => onChange({ curve: v })} step={10} /></Row>
               <Row label="Sıra başına ±"><Num v={b.taper} on={(v) => onChange({ taper: v })} /></Row>
             </div>
           ) : (
@@ -3283,14 +3313,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
                 </select>
               </Row>
               <div className="g2" style={{ marginTop: 8 }}>
-                <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
-                <Row label="İlk yarıçap"><Num v={Math.round(b.r0)} on={(v) => onChange({ r0: Math.max(50, v) })} step={10} /></Row>
-                {(b.mode || "span") === "pitch" ? (
-                  <Row label="Merkez açı °"><Num v={b.aCenter} on={(v) => onChange({ aCenter: v })} /></Row>
-                ) : (<>
-                  <Row label="Başlangıç °"><Num v={b.aStart} on={(v) => onChange({ aStart: v })} /></Row>
-                  <Row label="Bitiş °"><Num v={b.aEnd} on={(v) => onChange({ aEnd: v })} /></Row>
-                </>)}
+                {/* aCenter'ın tutamacı YOK (handlesFor sadece span modunda
+                    aStart/aEnd ekliyor) — o yüzden rot/r0/rows/aStart/aEnd
+                    "Gelişmiş"e inerken bu burada, çekirdekte kalıyor. */}
+                {(b.mode || "span") === "pitch" &&
+                  <Row label="Merkez açı °"><Num v={b.aCenter} on={(v) => onChange({ aCenter: v })} /></Row>}
                 <Row label="Sıra aralığı"><Num v={b.rowGap} on={(v) => onChange({ rowGap: Math.max(20, v) })} step={5} /></Row>
                 <Row label="Koltuk aralığı"><Num v={b.seatGap} on={(v) => onChange({ seatGap: Math.max(20, v) })} step={5} /></Row>
               </div>
@@ -3309,9 +3336,36 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
         </section>
       )}
 
+      <details className="sec" open={advOpen} onToggle={(e) => setAdvOpen(e.target.open)}>
+        <summary className="lab">Gelişmiş{advBits.length > 0 && <em>{advBits.join(" · ")}</em>}</summary>
+        <p className="mut sm">
+          Konum ve şekil artık tuvalde bloğun üstündeki tutamaçlarla doğrudan
+          ayarlanabiliyor — buradakiler klavye veya tam sayı girişi içindir.
+        </p>
+        <div className="g2">
+          <Row label="X (cm)"><Num v={Math.round(b.x)} on={(v) => onChange({ x: v })} step={10} /></Row>
+          <Row label="Y (cm)"><Num v={Math.round(b.y)} on={(v) => onChange({ y: v })} step={10} /></Row>
+          {rotInAdv &&
+            <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>}
+          {b.kind === "grid" && <>
+            <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
+            <Row label="Koltuk"><Num v={b.cols} on={(v) => onChange({ cols: Math.max(1, v) })} min={1} /></Row>
+            <Row label="Kavis"><Num v={b.curve} on={(v) => onChange({ curve: v })} step={10} /></Row>
+          </>}
+          {b.kind === "fan" && <>
+            <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
+            <Row label="İlk yarıçap"><Num v={Math.round(b.r0)} on={(v) => onChange({ r0: Math.max(50, v) })} step={10} /></Row>
+            {(b.mode || "span") === "span" && <>
+              <Row label="Başlangıç °"><Num v={b.aStart} on={(v) => onChange({ aStart: v })} /></Row>
+              <Row label="Bitiş °"><Num v={b.aEnd} on={(v) => onChange({ aEnd: v })} /></Row>
+            </>}
+          </>}
+        </div>
+      </details>
+
       {b.kind !== "free" && (
-        <details className="sec">
-          <summary className="lab">Taban{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</summary>
+        <details className="sec" open={footOpen} onToggle={(e) => setFootOpen(e.target.open)}>
+          <summary className="lab">Dış hat{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</summary>
           {b.foot && b.foot.length >= 3 ? (<>
             <p className="mut sm">
               {b.foot.length} nokta. Köşeleri tuvalde sürükleyerek düzeltebilirsin.
@@ -3321,11 +3375,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <button onClick={onFootClear}>Otomatiğe dön</button>
             </div>
           </>) : (<>
-            <Row label="Taban payı (cm)">
+            <Row label="Dış hat payı (cm)">
               <Num v={b.pad != null ? b.pad : 55} on={(v) => onChange({ pad: Math.max(0, v) })} step={5} />
             </Row>
             <p className="mut sm">
-              Taban koltuklardan türetiliyor. Sütun, merdiven boşluğu veya düzensiz
+              Dış hat koltuklardan türetiliyor. Sütun, merdiven boşluğu veya düzensiz
               kenar varsa elle çiz.
             </p>
             <div className="acts">
@@ -3338,8 +3392,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
 
       <ArraySection {...arr} />
 
-      <details className="sec">
-        <summary className="lab">Sıra etiketi</summary>
+      {/* Eskiden iki ayrı katlanır bölümdü (Sıra etiketi / Koltuk numarası)
+          — numaralandırma tek bir alt konu, tek bir aç/kapa yeter. */}
+      <details className="sec" open={numOpen} onToggle={(e) => setNumOpen(e.target.open)}>
+        <summary className="lab">Numaralandırma</summary>
+        <p className="lab">Sıra etiketi</p>
         <div className="g2">
           <Row label="Şema">
             <select value={n.rowScheme} onChange={(e) => setNum({ rowScheme: e.target.value })}>
@@ -3348,7 +3405,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <option value="custom">Özel liste</option>
             </select>
           </Row>
-          <Row label="Başlangıç"><Num v={n.rowStart} on={(v) => setNum({ rowStart: v })} /></Row>
+          <Row label="Sıra başlangıcı"><Num v={n.rowStart} on={(v) => setNum({ rowStart: v })} /></Row>
         </div>
         {n.rowScheme === "custom" && (
           <Row label="Liste"><input value={n.rowCustom} onChange={(e) => setNum({ rowCustom: e.target.value })} /></Row>
@@ -3358,10 +3415,8 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
           {n.rowScheme === "letter" &&
             <label><input type="checkbox" checked={n.skipAmbig} onChange={(e) => setNum({ skipAmbig: e.target.checked })} />I, O, Q atla</label>}
         </div>
-      </details>
 
-      <details className="sec">
-        <summary className="lab">Koltuk numarası</summary>
+        <p className="lab" style={{ marginTop: 10 }}>Koltuk numarası</p>
         <div className="g2">
           <Row label="Şema">
             <select value={n.seatScheme} onChange={(e) => setNum({ seatScheme: e.target.value })}>
@@ -3376,7 +3431,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <option value="ltr">Soldan sağa</option><option value="rtl">Sağdan sola</option>
             </select>
           </Row>
-          <Row label="Başlangıç"><Num v={n.seatStart} on={(v) => setNum({ seatStart: v })} /></Row>
+          <Row label="Koltuk başlangıcı"><Num v={n.seatStart} on={(v) => setNum({ seatStart: v })} /></Row>
           <Row label="Atlanacak"><input value={n.skip} placeholder="13, 4" onChange={(e) => setNum({ skip: e.target.value })} /></Row>
         </div>
         <Row label="Numara bağlama">

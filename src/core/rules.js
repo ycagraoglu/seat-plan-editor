@@ -170,7 +170,7 @@ export const RULES = [
     check(ctx) {
       const outBlocks = ctx.blockBreaches;
       if (!outBlocks.length) return [];
-      return [{ t: "err", m: `${outBlocks.length} bloğun tabanı salon sınırına taşıyor`,
+      return [{ t: "err", m: `${outBlocks.length} bloğun dış hattı salon sınırına taşıyor`,
         d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", "),
         ids: outBlocks.map(({ b }) => b.id) }];
     },
@@ -180,7 +180,7 @@ export const RULES = [
     check(ctx) {
       if (!ctx.bounds.length) return [];
       if (ctx.blockBreaches.length || ctx.seatBoundaryBreach.outCount) return [];
-      return [{ t: "ok", m: "Tüm koltuklar ve blok tabanları salon sınırı içinde" }];
+      return [{ t: "ok", m: "Tüm koltuklar ve blok dış hatları salon sınırı içinde" }];
     },
   },
   /* Taban-taban çakışma: aynı kattaki iki bloğun dış hattı (koltukların
@@ -206,7 +206,7 @@ export const RULES = [
             }
           }
       if (!pairs.length) return [];
-      return [{ t: "err", m: `${pairs.length} blok tabanı başka bir bloğun tabanıyla çakışıyor`,
+      return [{ t: "err", m: `${pairs.length} blok dış hattı başka bir bloğun dış hattıyla çakışıyor`,
         d: pairs.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
         ids: [...hit] }];
     },
@@ -233,7 +233,7 @@ export const RULES = [
               }
             }
       if (!crossPairs.length) return [];
-      return [{ t: "warn", m: `${crossPairs.length} blok tabanı farklı kattaki bir blokla çakışıyor`,
+      return [{ t: "warn", m: `${crossPairs.length} blok dış hattı farklı kattaki bir blokla çakışıyor`,
         d: `${crossPairs.slice(0, 6).join(" · ")} · balkon sarkması olabilir, ama planda üst üste binerler`,
         ids: [...crossIds] }];
     },
@@ -394,7 +394,7 @@ export const RULES = [
         if (corners.some((c) => !inPoly(c.x, c.y, s.outline))) bad.add(s.bid);
       });
       if (!bad.size) return [];
-      return [{ t: "err", m: `${bad.size} bloğun koltuğu kendi taban hattının dışına taşıyor`, ids: [...bad] }];
+      return [{ t: "err", m: `${bad.size} bloğun koltuğu kendi dış hattının dışına taşıyor`, ids: [...bad] }];
     },
   },
   {
