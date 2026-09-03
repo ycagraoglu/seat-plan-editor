@@ -26,6 +26,18 @@ export function countAt(spec, r, rows, fb) {
 export const offsetFor = (align, maxN, n) =>
   align === "left" ? 0 : align === "right" ? maxN - n : Math.round((maxN - n) / 2);
 
+/** Blok tabanının koltuklardan ne kadar dışarı taştığı — kullanıcı payı +
+ *  koltuğun yarısı + yarım koltuk aralığı (bkz. buildMeta içindeki uzun not).
+ *  A4'ten önce bu toplam yalnız buildMeta'nın içinde yaşıyordu, salon
+ *  dosyalarını yazanlar için GÖRÜNMEZDİ; kademeler arası açıklığı elle
+ *  ayarlarken bu payı unutmak AKM ve Ülker'de gerçek çakışmaya yol açtı
+ *  (bkz. src/core/solve.js). O yüzden buraya, PAYLAŞILAN bir fonksiyona
+ *  çıkarıldı: buildMeta ve solve.js AYNI hesabı çağırır, kopya tutmaz. */
+export function footprintPad(b) {
+  const pad = b.pad != null ? b.pad : 55;
+  return pad + Math.max(DEF.seatW, DEF.seatH) / 2 + b.seatGap / 2;
+}
+
 /* ─────────────────────────  GEOMETRİ ÇEKİRDEĞİ  ───────────────────────── */
 
 export function prep(b) {
@@ -235,8 +247,7 @@ export function buildMeta(b) {
      bırakıyor ve salonların taban aralıkları bu değere göre ayarlandı
      (GS/Ülker/AKM kademe boşlukları). Kaldırmak tüm salonların çakışma
      dengesini bozar — ayrı bir iş. */
-  const pad = b.pad != null ? b.pad : 55;
-  const auto = offsetPoly(ring, pad + Math.max(DEF.seatW, DEF.seatH) / 2 + b.seatGap / 2);
+  const auto = offsetPoly(ring, footprintPad(b));
 
   /* Elle çizilmiş taban varsa o kazanır — sütun, merdiven boşluğu ve
      düzensiz kenarlar koltuklardan türetilemez. */

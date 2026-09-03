@@ -9,6 +9,21 @@ import { reLabel, DEF_NUM } from "../core/labels.js";
 import { tier, locaWing, withAccessible } from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { RAD, buildMeta } from "../core/geometry.js";
+import { solveRadialTiers } from "../core/solve.js";
+
+/* Kademe zinciri: Protokol → Alt → Orta → Üst Kademe → Erişilebilir Platform,
+   merkezden dışa beş bant. r0 artık ELLE değil bu zincirden geliyor — her
+   bant bir öncekinin taban payı (footprintPad) bitince `gapFromPrev` kadar
+   sonra başlar. Açıklıklar (59/39/39/88) bugünkü r0 değerlerinden
+   (1150/1500/2700/3900/4680) BİR KEZ geriye türetildi (bkz. A4 görev
+   raporu) — r0 SONUÇ, girdi rows/rowGap/seatGap + bu açıklıklar. */
+const [T_PR, T_ALT, T_ORTA, T_UST, T_ERI] = solveRadialTiers([
+  { id: "pr", rows: 2, rowGap: 95, seatGap: 50, pad: 45, r0: 1150 },
+  { id: "alt", rows: 11, rowGap: 95, seatGap: 50, pad: 60, gapFromPrev: 59 },
+  { id: "orta", rows: 11, rowGap: 95, seatGap: 50, pad: 60, gapFromPrev: 39 },
+  { id: "ust", rows: 6, rowGap: 95, seatGap: 50, pad: 60, gapFromPrev: 39 },
+  { id: "eri", rows: 2, rowGap: 130, seatGap: 62, pad: 60, gapFromPrev: 88 },
+]);
 
 const wallArc = [
   ...Array.from({ length: 40 }, (_, i) => {
@@ -37,23 +52,23 @@ export const HARBIYE = {
   blocks: [
     /* Protokol locası — sahnenin hemen önünde, iki sıra */
     reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 1150, rows: 2, rowGap: 95, seatGap: 50, counts: "15,15", align: "center",
-      aStart: -20, aEnd: 20, aCenter: 0, color: "#B79A32", pad: 45,
+      r0: T_PR.r0, rows: T_PR.rows, rowGap: T_PR.rowGap, seatGap: T_PR.seatGap, counts: "15,15", align: "center",
+      aStart: -20, aEnd: 20, aCenter: 0, color: "#B79A32", pad: T_PR.pad,
       level: "Protokol", ov: {}, num: { ...DEF_NUM } }, "PR"),
 
-    ...tier({ r0: 1500, rows: 11, rowGap: 95, span: 35, count: 5,
-      first: "A", level: "Alt Kademe", color: "#3E7FBF", aisle: 150, pad: 60 }),
-    ...tier({ r0: 2700, rows: 11, rowGap: 95, span: 30, count: 6,
-      first: "F", level: "Orta Kademe", color: "#5F9142", aisle: 160, pad: 60 }),
-    ...tier({ r0: 3900, rows: 6, rowGap: 95, span: 30, count: 5,
-      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: 60 }),
+    ...tier({ r0: T_ALT.r0, rows: T_ALT.rows, rowGap: T_ALT.rowGap, span: 35, count: 5,
+      first: "A", level: "Alt Kademe", color: "#3E7FBF", aisle: 150, pad: T_ALT.pad }),
+    ...tier({ r0: T_ORTA.r0, rows: T_ORTA.rows, rowGap: T_ORTA.rowGap, span: 30, count: 6,
+      first: "F", level: "Orta Kademe", color: "#5F9142", aisle: 160, pad: T_ORTA.pad }),
+    ...tier({ r0: T_UST.r0, rows: T_UST.rows, rowGap: T_UST.rowGap, span: 30, count: 5,
+      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: T_UST.pad }),
 
     /* Erişilebilir platformlar — üst kademenin arkasındaki düz alan.
        Tekerlekli sandalye ve refakatçi yerleri sırayla dizili. */
     ...[-1, 1].map((sd, k) => reLabel({
       id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: sd * 52,
-      r0: 4680, rows: 2, rowGap: 130, seatGap: 62, counts: "18,18", align: "center",
-      aStart: -13, aEnd: 13, aCenter: 0, color: "#3E9092", pad: 60,
+      r0: T_ERI.r0, rows: T_ERI.rows, rowGap: T_ERI.rowGap, seatGap: T_ERI.seatGap, counts: "18,18", align: "center",
+      aStart: -13, aEnd: 13, aCenter: 0, color: "#3E9092", pad: T_ERI.pad,
       level: "Erişilebilir Platform",
       ov: Object.fromEntries(Array.from({ length: 36 }, (_, i) =>
         [`${Math.floor(i / 18)},${i % 18}`, { at: i % 2 === 0 ? "wheel" : "comp" }])),

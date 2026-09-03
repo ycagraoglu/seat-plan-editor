@@ -29,15 +29,31 @@ import { DEF_NUM } from "../core/labels.js";
 import { bowl, cutVomitories, labelGates, withAccessible } from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
+import { solveBowlTiers } from "../core/solve.js";
 
-const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: 2250, H: 1400, Rc: 900, rows: 20, rowGap: 85, seatGap: 50,
-  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
+/* Kademe zinciri: Alt Tribün → Loca → Üst Tribün, sahadan dışa üç kase.
+   W/H artık ELLE değil bu zincirden geliyor — commit cb64478'te tam bu
+   ikisi arasında ~3.000cm² gerçek çakışma çıkmıştı (Loca W/H 4100/3250,
+   üst kase 4450/3600 — taban payı hiç hesaba katılmadan). Fix o zaman
+   W/H'yi elle 4300/3450 ve 4750/3900'e açmıştı; şimdi aynı sayılar bu
+   zincirden ÇIKIYOR, elle yazılmıyor. Rc (köşe yarıçapı) ayrı bir tasarım
+   kararı — o düzeltmede de hiç değişmemişti, zincire girmiyor, olduğu gibi
+   kalıyor. Açıklıklar (194/119) bugünkü W/H değerlerinden BİR KEZ geriye
+   türetildi (bkz. A4 görev raporu). */
+const [T_ALT, T_LOCA, T_UST] = solveBowlTiers([
+  { id: "alt", rows: 20, rowGap: 85, seatGap: 50, pad: 70, W: 2250, H: 1400 },
+  { id: "loca", rows: 2, rowGap: 90, seatGap: 90, pad: 60, gapFromPrev: 194 },
+  { id: "ust", rows: 16, rowGap: 85, seatGap: 50, pad: 70, gapFromPrev: 119 },
+]);
+
+const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: T_ALT.W, H: T_ALT.H, Rc: 900, rows: T_ALT.rows, rowGap: T_ALT.rowGap, seatGap: T_ALT.seatGap,
+  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: T_ALT.pad,
   colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
-const ulkerLoca = bowl({ W: 4300, H: 3450, Rc: 2600, rows: 2, rowGap: 90, seatGap: 90,
-  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: 60,
+const ulkerLoca = bowl({ W: T_LOCA.W, H: T_LOCA.H, Rc: 2600, rows: T_LOCA.rows, rowGap: T_LOCA.rowGap, seatGap: T_LOCA.seatGap,
+  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: T_LOCA.pad,
   colors: { long: "#B79A32", short: "#B79A32", corner: "#B79A32" } });
-const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: 4750, H: 3900, Rc: 2800, rows: 16, rowGap: 85, seatGap: 50,
-  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
+const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: T_UST.W, H: T_UST.H, Rc: 2800, rows: T_UST.rows, rowGap: T_UST.rowGap, seatGap: T_UST.seatGap,
+  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: T_UST.pad,
   colors: { long: "#5F9142", short: "#6E7787", corner: "#3E7FBF" } }),
   ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
 

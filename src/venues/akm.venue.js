@@ -22,6 +22,23 @@ import { nid } from "../core/ids.js";
 import { fanB, akmDoor } from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
+import { solveRadialTiers } from "../core/solve.js";
+
+/* Kademe zinciri: P.ON → Parter(825) → 1. Balkon → 2. Balkon, merkezden dışa
+   dört bant. r0 artık ELLE değil bu zincirden geliyor — her bant bir
+   öncekinin taban payı (footprintPad) bitince `gapFromPrev` kadar sonra
+   başlar. Açıklıklar (85/67/69) bugünkü r0 değerlerinden (200/825/2150/2950)
+   BİR KEZ geriye türetildi (bkz. A4 görev raporu); commit cb64478'te elle
+   2069→2150 ve 2697→2950 diye deneme-yanılmayla bulunan sayılar artık
+   burada değil — r0 SONUÇ, girdi rows/rowGap/seatGap + bu açıklıklar. Bir
+   bandın rows'u değişirse sonraki bant otomatik dışarı kayar, çakışma
+   sessizce oluşamaz. */
+const [T_ON, T_PARTER, T_B1, T_B2] = solveRadialTiers([
+  { id: "on", rows: 5, rowGap: 85, seatGap: 48, pad: 55, r0: 200 },
+  { id: "parter", rows: 13, rowGap: 88, seatGap: 50, pad: 55, gapFromPrev: 85 },
+  { id: "b1", rows: 7, rowGap: 88, seatGap: 52, pad: 55, gapFromPrev: 67 },
+  { id: "b2", rows: 5, rowGap: 88, seatGap: 52, pad: 55, gapFromPrev: 69 },
+]);
 
 export const AKM = {
   key: "akm", name: "AKM · Türk Telekom Opera Salonu", unit: "cm",
@@ -39,7 +56,7 @@ export const AKM = {
     /* Sahneye en yakın küçük ön bant — tek parça (ÇİFT/TEK ayrımı bu
        yarıçapta ≥26°'lik bir koridor açısı ister, gereksiz daralma). */
     fanB({ label: "P.ON", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 200, rows: 5, rowGap: 85, aStart: -78, aEnd: 78, seatGap: 48, color: "#3E7FBF",
+      r0: T_ON.r0, rows: T_ON.rows, rowGap: T_ON.rowGap, aStart: -78, aEnd: 78, seatGap: T_ON.seatGap, color: "#3E7FBF",
       ov: {
         "4,8": { at: "wheel" }, "4,9": { at: "wheel" }, "4,10": { at: "wheel" },
         "4,11": { at: "wheel" }, "4,12": { at: "wheel" }, "4,13": { at: "wheel" },
@@ -49,13 +66,13 @@ export const AKM = {
         "3,14": { at: "comp" }, "3,15": { at: "comp" }, "3,16": { at: "comp" }, "3,17": { at: "comp" },
       } }),
     fanB({ label: "P.ORTA-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: -22, aEnd: 22, seatGap: 50, color: "#3E7FBF" }),
+      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: -22, aEnd: 22, seatGap: T_PARTER.seatGap, color: "#3E7FBF" }),
     fanB({ label: "P.ÇİFT-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: -86, aEnd: -37, seatGap: 50, color: "#3E7FBF" }),
+      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: -86, aEnd: -37, seatGap: T_PARTER.seatGap, color: "#3E7FBF" }),
     fanB({ label: "P.TEK-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: 37, aEnd: 86, seatGap: 50, color: "#3E7FBF" }),
+      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: 37, aEnd: 86, seatGap: T_PARTER.seatGap, color: "#3E7FBF" }),
     fanB({ label: "1B.ORTA", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: -16, aEnd: 16, seatGap: 52, color: "#3E7FBF",
+      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: -16, aEnd: 16, seatGap: T_B1.seatGap, color: "#3E7FBF",
       ov: {
         "6,8": { at: "wheel" }, "6,9": { at: "wheel" }, "6,10": { at: "wheel" }, "6,11": { at: "wheel" },
         "6,12": { at: "wheel" }, "6,13": { at: "wheel" }, "6,14": { at: "wheel" }, "6,15": { at: "wheel" },
@@ -63,15 +80,15 @@ export const AKM = {
         "5,12": { at: "comp" }, "5,13": { at: "comp" }, "5,14": { at: "comp" }, "5,15": { at: "comp" },
       } }),
     fanB({ label: "1B.ÇİFT", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: -43, aEnd: -22, seatGap: 52, color: "#3E7FBF" }),
+      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: -43, aEnd: -22, seatGap: T_B1.seatGap, color: "#3E7FBF" }),
     fanB({ label: "1B.TEK", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: 22, aEnd: 43, seatGap: 52, color: "#3E7FBF" }),
+      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: 22, aEnd: 43, seatGap: T_B1.seatGap, color: "#3E7FBF" }),
     fanB({ label: "2B.ORTA", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: -21, aEnd: 21, seatGap: 52, color: "#3E7FBF" }),
+      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: -21, aEnd: 21, seatGap: T_B2.seatGap, color: "#3E7FBF" }),
     fanB({ label: "2B.ÇİFT", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: -52, aEnd: -27, seatGap: 52, color: "#3E7FBF" }),
+      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: -52, aEnd: -27, seatGap: T_B2.seatGap, color: "#3E7FBF" }),
     fanB({ label: "2B.TEK", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: 27, aEnd: 52, seatGap: 52, color: "#3E7FBF" }),
+      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: 27, aEnd: 52, seatGap: T_B2.seatGap, color: "#3E7FBF" }),
   ],
 };
 
