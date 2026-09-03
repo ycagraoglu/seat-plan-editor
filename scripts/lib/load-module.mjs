@@ -11,16 +11,16 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const root = path.resolve(here, "..", "..");
 const srcPath = path.join(root, "src/PlanEditor.jsx");
 
-/* Yalnız PlanEditor.jsx'e GERÇEKTEN özgü isimler: salon sabitleri, validate()
-   (orada tanımlı), ATTRS (görünüm sabiti, orada tanımlı). Geometri
-   yardımcıları (buildMeta, gateMap, boundaryPolys, inPoly, buildSeats, ...)
-   artık PlanEditor.jsx'in kendisi de src/core/*.js'ten import ediyor — o
-   isimleri PlanEditor.jsx modülünden yeniden dışa aktarmaya gerek yok,
-   ihtiyacı olan script core/'dan DOĞRUDAN import eder (core/ düz JS,
-   esbuild'e gerek duymaz). Buraya PlanEditor.jsx'te artık import EDİLMEYEN
+/* Yalnız PlanEditor.jsx'e GERÇEKTEN özgü isimler: validate() ve ATTRS
+   (görünüm sabiti), ikisi de orada tanımlı. Salon sabitleri A3'te
+   src/venues/*.venue.js'e taşındı (bkz. aşağıda) — düz JS oldukları için
+   esbuild'e hiç gerek yok. Geometri yardımcıları (buildMeta, gateMap,
+   boundaryPolys, inPoly, buildSeats, ...) da PlanEditor.jsx'in kendisi
+   src/core/*.js'ten import ediyor — o isimleri PlanEditor.jsx modülünden
+   yeniden dışa aktarmaya gerek yok, ihtiyacı olan script core/'dan
+   DOĞRUDAN import eder. Buraya PlanEditor.jsx'te artık import EDİLMEYEN
    bir isim eklersen esbuild "is not declared in this file" ile patlar. */
-const EXTRA_EXPORTS = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI",
-  "validate", "ATTRS"];
+const EXTRA_EXPORTS = ["validate", "ATTRS"];
 
 export async function loadModule() {
   const src = await readFile(srcPath, "utf8");
@@ -31,14 +31,26 @@ export async function loadModule() {
      (kök dizinde olsaydı ./core/... kökte aranırdı). */
   const tmpPath = path.join(root, "src", `.tmp-planeditor-test-${process.pid}.mjs`);
   await writeFile(tmpPath, code);
+  let mod;
   try {
-    return await import(pathToFileURL(tmpPath).href);
+    mod = await import(pathToFileURL(tmpPath).href);
   } finally {
     await rm(tmpPath, { force: true });
   }
+  /* Salon sabitleri (CSO, ZORLU, ...) artık src/venues/index.js'te — düz
+     JS, esbuild'e gerek yok, doğrudan import edilir. Eskiyle AYNI mod.CSO /
+     mod.GS / ... şekline erişilebilsin diye tek nesnede birleştiriliyor;
+     böylece check-golden.mjs / snapshot-golden.mjs / validate-venues.mjs
+     hiç değişmeden çalışmaya devam ediyor. Import SIRASI burada değil,
+     venues/index.js'in kendi import satırlarında belirleniyor (bkz. o
+     dosyadaki id-sırası uyarısı) — bu satır o modülü sadece BİR KEZ, zaten
+     belirlenmiş sırayla değerlendirir. */
+  const venuesUrl = pathToFileURL(path.join(root, "src/venues/index.js")).href;
+  const venues = await import(venuesUrl);
+  return { ...mod, ...venues };
 }
 
-/* 9 örnek salon: dosya-adı anahtarı → src/PlanEditor.jsx'teki export adı.
+/* 9 örnek salon: dosya-adı anahtarı → src/venues/index.js'teki export adı.
    snapshot-golden.mjs ve check-golden.mjs aynı listeyi, aynı sırayla kullanır. */
 export const VENUE_KEYS = {
   cso: "CSO", zorlu: "ZORLU", gs: "GS", ulker: "ULKER", harbiye: "HARBIYE",

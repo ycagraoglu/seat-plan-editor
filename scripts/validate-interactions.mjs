@@ -15,14 +15,23 @@
       gölgelemesinin regresyon testi).
    3. relabelPatch — blok etiketi değişince ad, özelleştirilmemişse
       otomatik takip ediyor mu; özelleştirilmişse eziliyor mu.
+   4. core/schema.js migrate() — schemaVersion'sız (A3 öncesi) bir kayıt
+      yüklenince migrations[] zincirinden sırayla geçip güncel sürüme
+      çıkıyor mu, eksik alanlar tamamlanırken var olanlar korunuyor mu.
+   5. core/schema.js mergeSavedVenues()/isProtectedSample() — bir örnek
+      salonun (ör. "gs") localStorage'daki eski/bozuk kopyası, KOD
+      tanımını gölgeleyebiliyor mu (gölgelemiyor olması gerekir — A3'ün
+      SRC_VER yerine koyduğu asıl garanti bu).
 
    PlanEditor.jsx JSX içerdiği için Node onu doğrudan import edemez;
    esbuild ile geçici bir modüle derlenip iş bitince silinir — aynı
-   yöntem validate-venues.mjs'de de kullanılıyor. */
+   yöntem validate-venues.mjs'de de kullanılıyor. core/schema.js düz JS
+   olduğu için (React/DOM'a bağımlı değil) doğrudan import ediliyor. */
 import { transform } from "esbuild";
 import { readFile, writeFile, rm } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
+import { migrate, CURRENT_SCHEMA_VERSION, mergeSavedVenues, isProtectedSample, forkSample } from "../src/core/schema.js";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const srcPath = path.join(root, "src/PlanEditor.jsx");
@@ -153,6 +162,71 @@ console.log("── relabelPatch (ad/etiket senkronu) ──");
   const p2 = relabelPatch(customized, "218Y");
   check("özel ad korunur (ezilmez)", p2.name === undefined, JSON.stringify(p2));
   check("etiket yine de değişir", p2.label === "218Y");
+}
+
+console.log("── Şema göçü (core/schema.js migrate) ──");
+{
+  /* A3 öncesi bir kayıt taklidi: schemaVersion hiç yok, num'un SONRADAN
+     eklenen bir alanı (anchor) ve attr eksik — tam da migrations[0]'ın
+     düzelttiği eksiklik. rowScheme gibi VAR OLAN bir alan da bilerek
+     DEF_NUM'dan farklı bırakıldı, migrate'in onu EZMEDİĞİNİ kanıtlamak için. */
+  const legacy = {
+    key: "p1", name: "Eski kayıt", unit: "cm", home: { x: 0, y: 0, w: 100, h: 100 },
+    blocks: [{ id: "b1", kind: "grid", label: "A", num: { rowScheme: "letter", seatStart: 5 } }],
+    shapes: [],
+  };
+  const migrated = migrate(legacy);
+  check("schemaVersion güncel sürüme çıktı", migrated.schemaVersion === CURRENT_SCHEMA_VERSION,
+    `schemaVersion=${migrated.schemaVersion}`);
+  check("num'un eksik alanı (anchor) DEF_NUM ile tamamlandı", migrated.blocks[0].num.anchor === "order");
+  check("num'un VAR OLAN alanı korundu (ezilmedi)",
+    migrated.blocks[0].num.rowScheme === "letter" && migrated.blocks[0].num.seatStart === 5);
+  check("eksik attr boşla tamamlandı", migrated.blocks[0].attr === "");
+  check("blok kimliği ve diğer alanlar bozulmadı",
+    migrated.blocks[0].id === "b1" && migrated.name === "Eski kayıt" && migrated.key === "p1");
+
+  /* Zincir sadece EKSİK adımları çalıştırmalı: zaten güncel bir kayıt
+     (schemaVersion === CURRENT) migrate'ten değişmeden çıkmalı. */
+  const fresh = { ...migrated };
+  check("güncel kayıt migrate'ten değişmeden çıkar", JSON.stringify(migrate(fresh)) === JSON.stringify(fresh));
+}
+
+console.log("── Örnek salon gölgeleme koruması (core/schema.js) ──");
+{
+  /* Gerçek BUILTINS'i taklit eden küçük bir sözlük — testin amacı
+     venues/index.js'in içeriğini değil, koruma MANTIĞINI doğrulamak. */
+  const BUILTINS = {
+    gs: { key: "gs", name: "Galatasaray · Türk Telekom Stadyumu", blocks: [{ id: "orig" }], home: {} },
+    empty: { key: "empty", name: "Yeni plan", blocks: [], home: {} },
+  };
+  check("örnek anahtar korumalı", isProtectedSample("gs", BUILTINS));
+  check("\"empty\" korumasız (kullanıcı planlarının başlangıcı)", !isProtectedSample("empty", BUILTINS));
+  check("bilinmeyen (kullanıcı) anahtar korumasız", !isProtectedSample("p123", BUILTINS));
+
+  /* Asıl senaryo: localStorage'da "gs" adına ESKİ/BOZUK bir kopya var —
+     SRC_VER'in çözmeye çalıştığı, bazen çözemediği durum. */
+  const staleGs = { key: "gs", name: "BOZUK ESKİ GS", blocks: [{ id: "corrupt" }], home: {} };
+  const userPlan = { key: "p1", name: "Kullanıcının kendi planı", blocks: [{ id: "y" }], home: {} };
+  const entries = [["gs", staleGs], ["p1", userPlan], ["bos-kayit", null], ["p2", { key: "p2" }]];
+  const merged = mergeSavedVenues(BUILTINS, entries);
+
+  check("örnek salonun localStorage kopyası YOK SAYILDI (koddaki kazanır)", !("gs" in merged));
+  check("kullanıcının kendi planı normal yüklendi", merged.p1?.name === "Kullanıcının kendi planı");
+  check("blocks alanı olmayan/null kayıt sessizce atlandı",
+    !("bos-kayit" in merged) && !("p2" in merged));
+  check("yüklenen kullanıcı planı da migrate edildi (schemaVersion damgalı)",
+    merged.p1?.schemaVersion === CURRENT_SCHEMA_VERSION);
+
+  /* forkSample: kullanıcı bir örneği düzenlediğinde emeğin gittiği yer.
+     Id'ler bilerek DEĞİŞMEMELİ (aktif seçim/sürükleme kopmasın), sadece
+     anahtar/ad/yayın geçmişi yeni bir kullanıcı planı gibi sıfırlanmalı. */
+  const editedGs = { key: "gs", name: "Galatasaray · Türk Telekom Stadyumu",
+    blocks: [{ id: "b42", color: "#FF0000" }], home: {}, published: { v: 3 } };
+  const forked = forkSample(editedGs, "pforked1");
+  check("çatal yeni anahtarı taşır", forked.key === "pforked1");
+  check("çatal adı düzenlendiğini belli eder", forked.name.includes("düzenlendi"));
+  check("çatalda BLOK İÇERİĞİ (id dahil) DEĞİŞMEDİ", forked.blocks[0].id === "b42" && forked.blocks[0].color === "#FF0000");
+  check("çatal kendi yayın geçmişiyle başlar", forked.published === null && Array.isArray(forked.versions) && forked.versions.length === 0);
 }
 
 console.log("");

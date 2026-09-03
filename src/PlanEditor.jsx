@@ -1,14 +1,16 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
-import { incLabel, reLabel, relabelPatch } from "./core/labels.js";
+import { incLabel, reLabel, relabelPatch, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
 import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
 import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
 import { gateMap, autoGates } from "./core/gates.js";
-import { absorbIds, nid } from "./core/ids.js";
+import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
 import { buildCtx, runRules } from "./core/rules.js";
+import { BUILTINS, EMPTY, GS } from "./venues/index.js";
+import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -450,11 +452,6 @@ const SHAPES = {
   standing: { label: "Ayakta alan", fill: "rgba(90,130,102,.16)", stroke: "#5B8266" },
   note:     { label: "Not",         fill: "none",             stroke: "var(--mut)" },
 };
-const DEF_NUM = {
-  rowScheme: "number", rowStart: 1, rowRev: false, rowCustom: "", skipAmbig: true,
-  seatScheme: "seq", seatDir: "ltr", seatStart: 1, skip: "", anchor: "order",
-};
-
 const newGrid = (x, y, cols, rows) => ({
   id: nid(), label: "A", name: "", level: "", kind: "grid", x, y, rot: 0,
   cols, rows, counts: "", align: "center", seatGap: DEF.seatGap, rowGap: DEF.rowGap,
@@ -478,684 +475,6 @@ const newFree = (x, y) => ({
   seatGap: DEF.seatGap, counts: "", align: "center", color: "#3E7FBF", attr: "",
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
-
-/* ══════════════  SALON 1 · CSO ADA ANKARA  ══════════════ */
-
-const fanB = (o) => ({
-  id: nid(), kind: "fan", name: "", level: "Ana Salon", rot: 0, mode: "pitch",
-  seatGap: 50, rowGap: 105, aStart: -40, aEnd: 40, aCenter: 0, counts: "",
-  align: "center", color: "#3E7FBF", num: { ...DEF_NUM }, ov: {}, ...o,
-});
-const wallPts = Array.from({ length: 44 }, (_, i) => {
-  const t = (i / 44) * Math.PI * 2;
-  return { x: Math.round(3170 * Math.sin(t)), y: Math.round(4030 * Math.cos(t)) };
-});
-const csoBlocks = [
-  fanB({ label: "A", x: 0, y: 6020, r0: 6545, rows: 12, rowGap: 105, aCenter: 0, counts: "39..48", color: "#3E7FBF" }),
-  fanB({ label: "B", x: 0, y: 6020, r0: 8176, rows: 7, rowGap: 107, aCenter: 0, counts: "58..52", color: "#C1743C" }),
-  fanB({ label: "C", x: 0, y: 6020, r0: 9016, rows: 9, rowGap: 105, aCenter: 0, counts: "34..26", color: "#3E9092" }),
-  /* Sahne arkası koro balkonu — tamamı görüş kısıtlı */
-  fanB({ label: "D", x: 0, y: -5180, r0: 6384, rows: 7, rowGap: 105, aCenter: 180, counts: "38..44", color: "#3E9092", attr: "obstr" }),
-  fanB({ label: "J", x: 0, y: -980, r0: 2460, rows: 8, rowGap: 105, aCenter: -39, counts: "9..12", color: "#C1743C" }),
-  fanB({ label: "G", x: 0, y: -980, r0: 1900, rows: 6, rowGap: 105, aCenter: -72, counts: "10..12", color: "#C1743C" }),
-  /* Yan kanat son sırası — tekerlekli sandalye alanı + refakatçi */
-  fanB({ label: "E", x: 0, y: -980, r0: 1300, rows: 13, rowGap: 105, aCenter: -112, counts: "8..12", color: "#3E9092",
-  }),
-  fanB({ label: "K", x: 0, y: -980, r0: 2460, rows: 8, rowGap: 105, aCenter: 39, counts: "9..12", color: "#C1743C" }),
-  fanB({ label: "H", x: 0, y: -980, r0: 1900, rows: 6, rowGap: 105, aCenter: 72, counts: "10..12", color: "#C1743C" }),
-  fanB({ label: "F", x: 0, y: -980, r0: 1300, rows: 13, rowGap: 105, aCenter: 112, counts: "8..12", color: "#3E9092",
-  }),
-];
-const csoBlocksA = withAccessible(csoBlocks, ["E", "F"], 9);
-const csoIds = (...labels) => csoBlocksA.filter((b) => labels.includes(b.label)).map((b) => b.id);
-
-/* Plandaki lejant: KAPI 1-2 A · 3 D-F-H · 4-5 B · 6 D-E-G · 7 C-K · 8 C-J */
-const CSO_DOORS = [
-  [1, 1435, -1680, ["A"]], [2, -1365, -1645, ["A"]],
-  [3, 2440, -945, ["D", "F", "H"]], [4, 1344, -2674, ["B"]],
-  [5, -1295, -2646, ["B"]], [6, -2400, -980, ["D", "E", "G"]],
-  [7, 980, -3400, ["C", "K"]], [8, -966, -3400, ["C", "J"]],
-];
-
-const CSO = {
-  key: "cso", name: "CSO Ada Ankara · Ziraat Bankası Ana Salon", unit: "cm",
-  home: { x: -2900, y: -4600, w: 5800, h: 7700 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "poly", type: "wall", x: 0, y: -700, rot: 0, pts: wallPts, label: "", capacity: 0, fs: 60, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: 250, w: 2150, h: 1200, rot: 0, label: "SAHNE", capacity: 0, fs: 240, blocks: [] },
-    ...CSO_DOORS.map(([n, x, y, bl]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 300, h: 300, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 95, blocks: csoIds(...bl),
-    })),
-  ],
-  blocks: csoBlocksA,
-};
-CSO.shapes = [...CSO.shapes,
-  ...[["wc", -2280, -1900, "WC"], ["wc", 2280, -1900, "WC"],
-      ["bar", -2180, 380, "Fuaye Bar"], ["bar", 2180, 380, "Fuaye Bar"],
-      ["cloak", -1750, 2450, "Vestiyer"], ["aid", 1750, 2450, "İlk yardım"],
-      ["access", 0, 3050, "Engelli erişimi"]]
-    .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-      x, y, rot: 0, size: 34, w: 200, h: 200, label, capacity: 0, fs: 100, blocks: [] }))];
-
-/* ══════════════  SALON 2 · ZORLU PSM  ══════════════ */
-
-const gr = (o) => ({
-  id: nid(), kind: "grid", name: "", rot: 0, cols: 10, taper: 0, curve: 0,
-  seatGap: 50, rowGap: 90, counts: "", align: "center", color: "#3E7FBF",
-  num: { ...DEF_NUM }, ov: {}, ...o,
-});
-const nOrta = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: rows, seatScheme: "seq", seatDir: "rtl", seatStart: 1, anchor: "order" });
-const nCift = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: rows, seatScheme: "even", seatDir: "rtl", seatStart: 102, anchor: "column" });
-const nTek  = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: rows, seatScheme: "odd", seatDir: "ltr", seatStart: 101, anchor: "column" });
-const ORK_MID = "CC,DD,EE,FF,GG,HH,A,B,C,D,E,F,G,H,I";
-const ORK_BACK = "J,K,L,M,N,O,P,Q,R,S,T,U,V,W";
-const ORK_SIDE = "J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
-const B1R = "A,B,C,D,E,F,G,H,I,J,K,L,M", B2R = "A,B,C,D,E,F,G,H,I";
-
-const ZORLU = {
-  key: "zorlu", name: "Zorlu PSM · Turkcell Sahnesi", unit: "cm",
-  home: { x: -2950, y: -1500, w: 5900, h: 9200 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -700, w: 2800, h: 900, rot: 0, label: "SAHNE", capacity: 0, fs: 220 },
-    { id: nid("s"), kind: "rect", type: "note", x: -2130, y: 1700, w: 10, h: 10, rot: 0, label: "ORKESTRA", capacity: 0, fs: 108 },
-    { id: nid("s"), kind: "rect", type: "note", x: -2130, y: 4780, w: 10, h: 10, rot: 0, label: "1. BALKON", capacity: 0, fs: 108 },
-    { id: nid("s"), kind: "rect", type: "note", x: -2130, y: 6600, w: 10, h: 10, rot: 0, label: "2. BALKON", capacity: 0, fs: 108 },
-    ...[[1, -1900, 1400], [2, 1900, 1400], [3, -1900, 4900], [4, 1900, 4900],
-        [5, -1750, 6900], [6, 1750, 6900]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 260, h: 260, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 90, blocks: [],
-    })),
-  ],
-  blocks: [
-    gr({ label: "ORK-O", name: "Orkestra Orta (ön)", level: "Orkestra", x: 0, y: 200, rows: 2, counts: "18..20", color: "#3E7FBF", num: nOrta("AA,BB") }),
-    gr({ label: "ORK-O", name: "Orkestra Orta", level: "Orkestra", x: 0, y: 560, rows: 15, counts: "21..15", color: "#3E7FBF", num: nOrta(ORK_MID),
-         ov: { "14,6": { rm: true }, "14,7": { rm: true }, "14,8": { rm: true } } }),
-    gr({ label: "ORK-O", name: "Orkestra Orta (arka)", level: "Orkestra", x: 0, y: 2140, rows: 14, counts: "19..28", color: "#C1743C", num: nOrta(ORK_BACK),
-    }),
-    gr({ label: "ORK-C", name: "Orkestra Çift (ön)", level: "Orkestra", x: -1000, y: 290, rows: 2, counts: "5,5", color: "#3E7FBF", num: nCift("BB,CC") }),
-    gr({ label: "ORK-C", name: "Orkestra Çift", level: "Orkestra", x: -1000, y: 650, rows: 3, counts: "5..6", color: "#3E7FBF", num: nCift("DD,EE,FF") }),
-    gr({ label: "ORK-C", name: "Orkestra Çift (yan)", level: "Orkestra", x: -880, y: 1040, rows: 7, counts: "4..3", color: "#3E7FBF", num: nCift("A,B,C,D,E,F,G") }),
-    gr({ label: "ORK-C", name: "Orkestra Çift (arka)", level: "Orkestra", x: -1300, y: 2140, rows: 17, counts: "17..11", color: "#C1743C", align: "left", num: nCift(ORK_SIDE) }),
-    gr({ label: "ORK-T", name: "Orkestra Tek (ön)", level: "Orkestra", x: 1000, y: 290, rows: 2, counts: "5,5", color: "#3E7FBF", num: nTek("BB,CC") }),
-    gr({ label: "ORK-T", name: "Orkestra Tek", level: "Orkestra", x: 1000, y: 650, rows: 3, counts: "5..6", color: "#3E7FBF", num: nTek("DD,EE,FF") }),
-    gr({ label: "ORK-T", name: "Orkestra Tek (yan)", level: "Orkestra", x: 880, y: 1040, rows: 7, counts: "4..3", color: "#3E7FBF", num: nTek("A,B,C,D,E,F,G") }),
-    gr({ label: "ORK-T", name: "Orkestra Tek (arka)", level: "Orkestra", x: 1300, y: 2140, rows: 17, counts: "17..11", color: "#C1743C", align: "right", num: nTek(ORK_SIDE) }),
-    gr({ label: "B1-O", name: "1. Balkon Orta", level: "1. Balkon", x: 0, y: 4200, rows: 13,
-         counts: "20,21,21,22,22,22,23,23,23,23,23,23,8", color: "#C1743C", num: nOrta(B1R),
-         ov: { "12,2": { gap: true }, "12,3": { gap: true }, "12,4": { gap: true }, "12,5": { gap: true } } }),
-    gr({ label: "B1-C", name: "1. Balkon Çift", level: "1. Balkon", x: -1200, y: 4200, rows: 12, counts: "19..5", color: "#3E9092", num: nCift(B1R) }),
-    gr({ label: "B1-T", name: "1. Balkon Tek", level: "1. Balkon", x: 1200, y: 4200, rows: 12, counts: "19..5", color: "#3E9092", num: nTek(B1R) }),
-    gr({ label: "B2-O", name: "2. Balkon Orta", level: "2. Balkon", x: 0, y: 6200, rows: 7, counts: "21..23", color: "#3E9092", num: nOrta("A,B,C,D,E,F,G") }),
-    gr({ label: "B2-C", name: "2. Balkon Çift", level: "2. Balkon", x: -1150, y: 6200, rows: 9, counts: "17..5", color: "#5F9142", num: nCift(B2R) }),
-    gr({ label: "B2-T", name: "2. Balkon Tek", level: "2. Balkon", x: 1150, y: 6200, rows: 9, counts: "17..5", color: "#5F9142", num: nTek(B2R) }),
-  ],
-};
-
-/* ══════════════  SALON 3 · GALATASARAY STADYUMU  ══════════════ */
-
-/* Koridor payları santimetre cinsinden veriliyor, açı cinsinden değil.
-   Yarıçap büyüdükçe aynı açı metrelerce boşluk demek; oysa insanın
-   geçmesi için gereken şey sabit bir genişlik. */
-function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
-                first, level, colors, aisle = 240, pad = 80 }) {
-  const along = W - Rc, aside = H - Rc;
-  const seg = (2 * along) / nLong, segS = (2 * aside) / nShort;
-  const cStep = 90 / nCorner;
-  const cAisle = (aisle / Rc) / RAD;              // koridorun açı karşılığı
-  const base = { rot: 0, counts: "", align: "center", curve: 0, taper: 0,
-    seatGap, rowGap, ov: {}, num: { ...DEF_NUM }, level, pad };
-  const L = (k) => String(first + k);
-  const seed = (o, l) => reLabel({ id: nid(), ...base, ...o }, l);
-  /* Düz kenarda blok genişliği: dilim eksi koridor */
-  const colsFor = (s) => Math.max(3, Math.floor((s - aisle) / seatGap));
-
-  const c1 = seed({ kind: "fan", mode: "span", x: -along, y: aside, r0: Rc, rows,
-    aStart: -90 - cStep + cAisle / 2, aEnd: -90 - cAisle / 2, color: colors.corner }, L(0));
-  const g1 = [c1, ...radialArray([c1], { count: nCorner, cx: -along, cy: aside, step: -cStep })];
-
-  const s1 = seed({ kind: "grid", x: -along + seg / 2, y: H, rows,
-    cols: colsFor(seg), color: colors.long }, L(nCorner));
-  const g2 = [s1, ...linearArray([s1], { count: nLong, dx: seg, dy: 0 })];
-
-  const c2 = seed({ kind: "fan", mode: "span", x: along, y: aside, r0: Rc, rows,
-    aStart: 180 - cStep + cAisle / 2, aEnd: 180 - cAisle / 2, color: colors.corner }, L(nCorner + nLong));
-  const g3 = [c2, ...radialArray([c2], { count: nCorner, cx: along, cy: aside, step: -cStep })];
-
-  const s2 = seed({ kind: "grid", x: W, y: aside - segS / 2, rot: -90, rows,
-    cols: colsFor(segS), color: colors.short }, L(2 * nCorner + nLong));
-  const g4 = [s2, ...linearArray([s2], { count: nShort, dx: 0, dy: -segS })];
-
-  const half = [...g1, ...g2, ...g3, ...g4];
-  return [...half, ...radialArray(half, { count: 2, cx: 0, cy: 0, step: 180 })];
-}
-
-/** Gerçek stadyumda vomitorium tribünün İÇİNE oyulur: o dikdörtgende koltuk
- *  YOKTUR, merdiven konkorstan oraya çıkar — sıralar tünelin iki yanından
- *  devam eder (bkz. kullanıcının Türk Telekom Stadyumu fotoğrafı). Kapıyı
- *  bloklar arasındaki koridora koymak bu yüzden yanlıştı: kapı, koltuk
- *  dizilimini fiilen bozan mimari bir boşluk olmalı.
- *
- *  Bu fonksiyon her bloğun ARKA sıralarından (sahadan uzak, konkorsun
- *  olduğu taraf) ortada bir dikdörtgen koltuk kümesini `ov.rm` ile siler ve
- *  tam o boşluğa, tünel yönüne hizalanmış kapı şeklini üretir.
- *
- *  Ölçüler bilerek boşluktan bir koltuk/sıra dar tutuluyor: kapı
- *  dikdörtgeninin kenarı ile kalan en yakın koltuğun merkezi arasında tam
- *  bir seatGap/rowGap kalıyor, yani kapı hiçbir koltuğa değmiyor. */
-function cutVomitories(blocks, { depth = 3, width = 6 } = {}) {
-  const doors = [];
-  const cut = blocks.map((b) => {
-    const P = prep(b);
-    const nRows = P.counts.length;
-    if (nRows < depth + 2) return b;            // sığ blokta tünel açılmaz
-    const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
-    const ov = { ...(b.ov || {}) };
-    const centers = [];
-    /* Dar sıralarda kesim istenenden az koltuk olabiliyor; kapı boyutu
-       İSTENEN değil GERÇEKLEŞEN en dar kesime göre hesaplanmalı, yoksa
-       dikdörtgen kesilmemiş koltukların üstüne taşıyor. */
-    let minCut = Infinity;
-    for (let r = nRows - depth; r < nRows; r++) {
-      const n = P.counts[r];
-      const w = Math.min(width, n - 2);         // iki yanda en az birer koltuk kalsın
-      if (w < 2) continue;
-      minCut = Math.min(minCut, w);
-      const c0 = Math.round((n - w) / 2);
-      const pts = rowPts(b, r, P);
-      const world = [];
-      for (let c = c0; c < c0 + w; c++) {
-        ov[`${r},${c}`] = { ...(ov[`${r},${c}`] || {}), rm: true };
-        world.push(toWorld(b, pts[c], cos, sin));
-      }
-      centers.push({ x: world.reduce((a, p) => a + p.x, 0) / world.length,
-                     y: world.reduce((a, p) => a + p.y, 0) / world.length });
-    }
-    if (centers.length < 2) return b;
-    const inner = centers[0], outer = centers[centers.length - 1];
-    doors.push({ id: nid("s"), kind: "rect", type: "door",
-      x: Math.round((inner.x + outer.x) / 2), y: Math.round((inner.y + outer.y) / 2),
-      w: Math.round((centers.length - 1) * b.rowGap), h: Math.round((minCut - 1) * b.seatGap),
-      rot: Math.round((Math.atan2(outer.y - inner.y, outer.x - inner.x) * 180) / Math.PI),
-      capacity: 0, fs: 120, blocks: [] });
-    return { ...b, ov };
-  });
-  return [cut, doors];
-}
-const labelGates = (gates) => gates.map((d, i) => ({ ...d, label: `KAPI ${i + 1}` }));
-
-/* Gerçek Türk Telekom Stadyumu'nda her tribün bloğunun kendi merdiven/tünel
-   çıkışı (vomitorium) var ve bu tüneller tribünün İÇİNE oyulmuş: o
-   dikdörtgende koltuk yok, sıralar tünelin iki yanından devam ediyor
-   (bkz. kullanıcının paylaştığı saha fotoğrafı). Kapı bu yüzden bloklar
-   arası koridora konan bir işaret değil, cutVomitories() ile her bloğun
-   arka sıralarından koltuk silen mimari bir boşluk. Bloklar arası koridor
-   (aisle) yine gerçek merdivendir ama kapıyı barındırmadığı için orijinal
-   genişliğinde bırakıldı. Kapının hangi bloğu beslediği autoGates ile
-   mesafeye göre çözülüyor. */
-const [gsAlt, gsAltDoors] = cutVomitories(bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 100, level: "Alt Tribün", aisle: 240, pad: 80,
-  colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } }));
-const [gsOrta, gsOrtaDoors] = cutVomitories(bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 200, level: "Orta Tribün", aisle: 260, pad: 80,
-  colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } }));
-const [gsUst, gsUstDoors] = cutVomitories(bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 400, level: "Üst Tribün", aisle: 280, pad: 80,
-  colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
-  .map((b) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
-    "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
-    ? withAccessible([b], [b.label], 9)[0] : b)));
-
-const GS = {
-  key: "gs", name: "Galatasaray · Türk Telekom Stadyumu", unit: "cm",
-  home: { x: -14000, y: -12000, w: 28000, h: 24000 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "pitch", sport: "football", x: 0, y: 0, w: 10500, h: 6800, rot: 0, label: "Futbol sahası", capacity: 0, fs: 300, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "note", x: 0, y: -11400, w: 10, h: 10, rot: 0, label: "DOĞU / EAST", capacity: 0, fs: 600 },
-    { id: nid("s"), kind: "rect", type: "note", x: 0, y: 11600, w: 10, h: 10, rot: 0, label: "BATI / WEST", capacity: 0, fs: 600 },
-    { id: nid("s"), kind: "rect", type: "note", x: -13100, y: 0, w: 10, h: 10, rot: 90, label: "KUZEY / NORTH", capacity: 0, fs: 600 },
-    { id: nid("s"), kind: "rect", type: "note", x: 13100, y: 0, w: 10, h: 10, rot: -90, label: "GÜNEY / SOUTH", capacity: 0, fs: 600 },
-    ...labelGates([...gsAltDoors, ...gsOrtaDoors, ...gsUstDoors]),
-  ],
-  blocks: [...gsAlt, ...gsOrta, ...gsUst],
-};
-GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════  SALON 4 · ÜLKER SPOR VE ETKİNLİK SALONU (Fenerbahçe Beko)  ══════
-   Gerçek mekân. Ataşehir/İstanbul, 2012 açılışlı, Ömerler Mimarlık.
-   Doğrulanan veriler:
-     · basketbol kapasitesi 13.500 (konserde 15.000)
-     · iki kademeli kase — üst kademede 360° LED bant
-     · iki kademe arasında 44 loca
-     · alt kademe blokları 1xx numaralı; 118 ve 119 "pota arkası" bloklar
-   FIBA sahası 28 × 15 m.
-
-   Kase ölçüsü sahaya göre kuruldu: kenar çizgisine ~6,5 m, dip çizgisine
-   ~8,5 m. Bu pay skorer masası, yedek kulübeleri, basın ve yürüme yolu
-   içindir — önceki sahte "Örnek Arena"da bu 24-26 m'ye kadar açılmış,
-   saha kocaman bir boşluğun ortasında kalmıştı.
-
-   Loca katı 44 bloktan oluşuyor: bowl() blok sayısı
-   2*(2*nCorner + nLong + nShort) olduğundan 2*(2*8 + 4 + 2) = 44 ile
-   her blok bir locaya karşılık geliyor. Blokların çoğu köşelerde çünkü
-   düz kenarlarda 44'ü paylaştırmak locaları birbirine geçirtiyordu
-   (test "taban çakışma" ile yakaladı). İki sıralı ve geniş koltuk
-   aralıklı — gerçek locada da iki sıra koltuk olur; ayrıca tek sıralı
-   yelpaze blokta taban hesabı kavisi takip etmediğinden koltuklar
-   tabanın dışında kalıyordu (test "koltuk-içerme" ile yakaladı).
-
-   Kapılar GS'deki gibi cutVomitories() ile tribünün içine oyuluyor.
-   Loca sığ olduğu için tünel açılmaz (fonksiyon sığ blokları atlar). */
-const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: 2250, H: 1400, Rc: 900, rows: 20, rowGap: 85, seatGap: 50,
-  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
-  colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
-const ulkerLoca = bowl({ W: 4300, H: 3450, Rc: 2600, rows: 2, rowGap: 90, seatGap: 90,
-  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: 60,
-  colors: { long: "#B79A32", short: "#B79A32", corner: "#B79A32" } });
-const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: 4750, H: 3900, Rc: 2800, rows: 16, rowGap: 85, seatGap: 50,
-  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
-  colors: { long: "#5F9142", short: "#6E7787", corner: "#3E7FBF" } }),
-  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
-
-const ULKER = {
-  key: "ulker", name: "Ülker Spor ve Etkinlik Salonu · Fenerbahçe Beko", unit: "cm",
-  home: { x: -6600, y: -5700, w: 13200, h: 11400 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
-      w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
-    ...labelGates([...ulkerAltDoors, ...ulkerUstDoors]),
-  ],
-  blocks: [
-    /* Parket kenarı — sahaya paralel iki tek sıra (courtside) */
-    { id: nid(), kind: "grid", label: "P1", name: "Parket Kenarı · P1", level: "Parket Kenarı",
-      x: 0, y: 950, rot: 0, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
-      num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
-    { id: nid(), kind: "grid", label: "P2", name: "Parket Kenarı · P2", level: "Parket Kenarı",
-      x: 0, y: -950, rot: 180, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
-      num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
-
-    ...ulkerAlt, ...ulkerLoca, ...ulkerUst,
-  ],
-};
-ULKER.shapes = autoGates(ULKER, ULKER.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 5 · HARBİYE CEMİL TOPUZLU AÇIKHAVA  ══════════════
-   180°'lik amfi. Üç kademe, harfle adlandırılmış radyal bloklar,
-   önde protokol locası, sahne ile seyirci arasında orkestra çukuru.
-   Her kademe tek tohum blok + radyal diziyle kuruluyor.
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/** Amfi kademesi: eşit açı adımlarıyla radyal dizi, soldan sağa harflenir. */
-function tier({ r0, rows, rowGap, span, count, first, level, color, aisle = 160, pad = 60 }) {
-  /* Koridor cm olarak verilir; ilk sıranın yarıçapında açıya çevrilir.
-     Kademe geriye gittikçe koridor açısal olarak daralmaz, genişler —
-     gerçekte de merdiven yukarı doğru açılır. */
-  const aDeg = (aisle / r0) / RAD;
-  const step = span;
-  const start = (-step * (count - 1)) / 2;
-  return Array.from({ length: count }, (_, i) => reLabel({
-    id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: start + step * i,
-    r0, rows, rowGap, seatGap: 50, counts: "", align: "center",
-    aStart: -(span - aDeg) / 2, aEnd: (span - aDeg) / 2, aCenter: 0,
-    color, pad, level, ov: {}, num: { ...DEF_NUM },
-  }, incLabel(first, i)));
-}
-
-/** Loca kanadı: paylaşılan odağa bakan küçük yelpaze kutular, iki yanda
- *  simetrik. Kutular ana bloğun (parter/balkon) kapladığı açısal aralığın
- *  DIŞINDA başlamalı — aynı yarıçapta aynı açıya konursa localar parterin
- *  üstüne biner, koltuklar birebir çakışır. fromDeg ana bloğun kenar açısı
- *  (+ pay), toDeg localarının gidebileceği en uç açı. */
-function locaWing({ r0, rows, rowGap, seatGap, perRow, gap, countPerSide,
-                    first, level, color, pad = 40, fromDeg, toDeg }) {
-  /* Kutu genişliğini TAHMİN etmek güvenilmezdi: offsetPoly'nin köşe
-     gönyesi ve koltuğun kendi fiziksel genişliği hesaba katılmayınca
-     tahmin gerçek genişlikten dar çıkıyordu (ölçünce 11,6° vs tahmin
-     9,1°) — komşu kutular birbirine giriyordu. Şimdi örnek bir kutu
-     gerçekten inşa edilip dış hattından ÖLÇÜLÜYOR, tahmin yok. */
-  const counts = Array.from({ length: rows }, () => perRow).join(",");
-  const probe = { id: nid(), kind: "fan", mode: "pitch", x: 0, y: 0, rot: 0,
-    r0, rows, rowGap, seatGap, counts, align: "center",
-    aStart: -40, aEnd: 40, aCenter: 0, color, pad, level, ov: {}, num: { ...DEF_NUM } };
-  const pm = buildMeta(probe);
-  const measuredDeg = (Math.atan2((pm.bbox.x1 - pm.bbox.x0) / 2, r0) / RAD) * 2;
-  const gapDeg = (gap / r0) / RAD;
-  const step = measuredDeg + gapDeg;
-  const fit = Math.floor((toDeg - fromDeg) / step);
-  const n = Math.min(countPerSide, Math.max(1, fit));
-  const seed = (a, i) => reLabel({ ...probe, id: nid(), rot: a, noAisle: true }, incLabel(first, i));
-  const out = [];
-  for (let i = 0; i < n; i++) {
-    const a = fromDeg + step / 2 + step * i;
-    out.push(seed(-a, i));
-    out.push(seed(a, n + i));
-  }
-  return out;
-}
-
-const wallArc = [
-  ...Array.from({ length: 40 }, (_, i) => {
-    const a = (-96 + (192 * i) / 39) * RAD;
-    return { x: Math.round(5750 * Math.sin(a)), y: Math.round(-5750 * Math.cos(a)) };
-  }),
-  { x: 3200, y: 2200 }, { x: -3200, y: 2200 },
-];
-
-ZORLU.blocks = withAccessible(ZORLU.blocks,
-  (b) => ["Orkestra Orta (arka)", "1. Balkon Orta"].includes(b.name), 9);
-ZORLU.shapes = autoGates(ZORLU, ZORLU.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-const HARBIYE = {
-  key: "harbiye", name: "Harbiye Cemil Topuzlu Açıkhava Tiyatrosu", unit: "cm",
-  home: { x: -6400, y: -6400, w: 12800, h: 9600 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "poly", type: "wall", x: 0, y: 0, rot: 0, pts: wallArc,
-      label: "", capacity: 0, fs: 80, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: 700, w: 2600, h: 1300, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 210, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "screen", x: 0, y: -180, w: 2200, h: 420, rot: 0,
-      label: "ORKESTRA ÇUKURU", capacity: 0, fs: 105, blocks: [] },
-    ...[[1, -3050, -2450], [2, 3050, -2450], [3, -4550, -1500], [4, 4550, -1500],
-        [5, 0, -5980]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 300, h: 300, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 100, blocks: [],
-    })),
-  ],
-  blocks: [
-    /* Protokol locası — sahnenin hemen önünde, iki sıra */
-    reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 1150, rows: 2, rowGap: 95, seatGap: 50, counts: "15,15", align: "center",
-      aStart: -20, aEnd: 20, aCenter: 0, color: "#B79A32", pad: 45,
-      level: "Protokol", ov: {}, num: { ...DEF_NUM } }, "PR"),
-
-    ...tier({ r0: 1500, rows: 11, rowGap: 95, span: 35, count: 5,
-      first: "A", level: "Alt Kademe", color: "#3E7FBF", aisle: 150, pad: 60 }),
-    ...tier({ r0: 2700, rows: 11, rowGap: 95, span: 30, count: 6,
-      first: "F", level: "Orta Kademe", color: "#5F9142", aisle: 160, pad: 60 }),
-    ...tier({ r0: 3900, rows: 6, rowGap: 95, span: 30, count: 5,
-      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: 60 }),
-
-    /* Erişilebilir platformlar — üst kademenin arkasındaki düz alan.
-       Tekerlekli sandalye ve refakatçi yerleri sırayla dizili. */
-    ...[-1, 1].map((sd, k) => reLabel({
-      id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: sd * 52,
-      r0: 4680, rows: 2, rowGap: 130, seatGap: 62, counts: "18,18", align: "center",
-      aStart: -13, aEnd: 13, aCenter: 0, color: "#3E9092", pad: 60,
-      level: "Erişilebilir Platform",
-      ov: Object.fromEntries(Array.from({ length: 36 }, (_, i) =>
-        [`${Math.floor(i / 18)},${i % 18}`, { at: i % 2 === 0 ? "wheel" : "comp" }])),
-      num: { ...DEF_NUM },
-    }, `E${k + 1}`)),
-  ],
-};
-
-/* Kapılar en yakın bloklara atanıyor — editördeki düğmenin yaptığı işlem. */
-HARBIYE.shapes = autoGates(HARBIYE, HARBIYE.blocks.map((b) => ({ b, m: buildMeta(b) })));
-HARBIYE.shapes = [...HARBIYE.shapes,
-  ...[["wc", -5150, -2350, "WC"], ["wc", 5150, -2350, "WC"],
-      ["beer", -4300, -4100, "Büfe"], ["beer", 4300, -4100, "Büfe"],
-      ["stairs", -2450, -5250, "Merdiven"], ["stairs", 2450, -5250, "Merdiven"],
-      ["aid", 0, 1750, "İlk yardım"]]
-    .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-      x, y, rot: 0, size: 34, w: 200, h: 200, label, capacity: 0, fs: 100, blocks: [] }))];
-
-/** Son sıralardan başlayarak tekerlekli sandalye + refakatçi çiftleri açar.
- *  Çifti bölmez: sıra kısaysa bir öncekine taşar. Önceden sıranın sonuna
- *  denk gelen çiftin refakatçisi düşüyordu, sayılar tutmuyordu. */
-function withAccessible(blocks, match, pairs = 2) {
-  const hit = typeof match === "function" ? match : (b) => match.includes(b.label);
-  return blocks.map((b) => {
-    if (!hit(b)) return b;
-    const P = prep(b);
-    const ov = { ...b.ov };
-    let placed = 0;
-    for (let r = P.counts.length - 1; r >= 0 && placed < pairs; r--) {
-      const n = P.counts[r];
-      for (let i = 0; i + 1 < n && placed < pairs; i += 2) {
-        ov[`${r},${i}`] = { at: "wheel" };
-        ov[`${r},${i + 1}`] = { at: "comp" };
-        placed++;
-      }
-    }
-    return { ...b, ov };
-  });
-}
-
-/* ══════════════  SALON 6 · AYLAK BAR KADIKÖY  ══════════════
-   Stand-up gecesi düzeni. Sıra yok, masa var: 2 ve 4 kişilik yuvarlak
-   masalar, bar tezgâhı boyunca tabure, arkada ayakta alan.
-   Tellalzade Sk. No:13, Caferağa — küçük bir bar, düzensiz plan.
-   ═══════════════════════════════════════════════════════════ */
-
-const tbl = (label, x, y, seats, tW, a0, color) => reLabel({
-  id: nid(), kind: "table", x, y, rot: 0, tShape: "round",
-  tW, tH: tW, seats, a0, clear: 12, pad: 10, color, level: "Salon",
-  cols: 1, rows: 1, counts: "", align: "center", curve: 0, taper: 0,
-  seatGap: 50, rowGap: 90, attr: "", ov: {},
-  num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" },
-}, label);
-
-const AYLAK = {
-  key: "aylak", name: "Aylak Bar Kadıköy · Stand-up düzeni", unit: "cm",
-  home: { x: -900, y: -800, w: 1900, h: 1560 },
-  idTemplate: "{block}-{seat}", underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "wall", x: 130, y: -60, w: 1560, h: 1120, rot: 0,
-      label: "", capacity: 0, fs: 40, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -470, w: 420, h: 180, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 70, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "screen", x: -490, y: -25, w: 140, h: 550, rot: 0,
-      label: "BAR TEZGÂHI", capacity: 0, fs: 52, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 150, y: 455, w: 900, h: 130, rot: 0,
-      label: "Ayakta alan", capacity: 40, fs: 44, blocks: [] },
-    ...[[1, -640, 250], [2, 640, 250]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 90, h: 90, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 36, blocks: [] })),
-    ...[["entrance", -545, 405, "Giriş"], ["wc", 555, 405, "WC"],
-        ["aid", 555, -520, "İlk yardım"], ["cafe", -545, -520, "Bar"]]
-      .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-        x, y, rot: 0, size: 32, w: 120, h: 120, label, capacity: 0, fs: 100, blocks: [] })),
-  ],
-  blocks: [
-    /* Sahne önü — iki kişilik masalar */
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 1}`, x, -250, 2, 65, 0, "#C2415A")),
-    /* Salon — dört kişilik masalar, iki sıra */
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 5}`, x, -20, 4, 90, 45, "#3E7FBF")),
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 9}`, x, 210, 4, 90, 45, "#3E7FBF")),
-    /* Bar tezgâhı taburesi — tek sıra, tezgâha dönük */
-    reLabel({ id: nid(), kind: "grid", x: -370, y: -25, rot: -90,
-      cols: 7, rows: 1, counts: "", align: "center", seatGap: 72, rowGap: 90,
-      curve: 0, taper: 0, color: "#B79A32", pad: 30, level: "Bar", attr: "", ov: {},
-      num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "B", seatStart: 1 } }, "BAR"),
-  ],
-};
-/* Erişilebilir masalar — girişe ve geçiş aksına yakın */
-AYLAK.blocks = withAccessible(AYLAK.blocks, ["M1", "M4", "M9", "M12"], 1);
-AYLAK.shapes = autoGates(AYLAK, AYLAK.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 7 · SÜREYYA OPERASI (KADIKÖY)  ══════════════
-   1927'de sinema olarak açılan, 2007'de operaya dönüştürülen tarihi bina.
-   570 kişilik, at nalı (horseshoe) formda: parter + zemin loca + 1. kat
-   (açık balkon + loca) + 2. kat (sadece loca). Odak sahnenin hemen önünde;
-   localar paylaşılan bu odağa bakan küçük yelpaze kutular olarak kuruluyor.
-   ═══════════════════════════════════════════════════════════════════ */
-
-const SUREYYA = {
-  key: "sureyya", name: "Süreyya Operası · Kadıköy", unit: "cm",
-  home: { x: -1150, y: -900, w: 2300, h: 2000 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: 620, w: 1500, h: 750, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 90, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "screen", x: 0, y: 140, w: 950, h: 220, rot: 0,
-      label: "ORKESTRA ÇUKURU", capacity: 0, fs: 46, blocks: [] },
-    ...[["cloak", -980, 950, "Vestiyer"], ["wc", 980, 950, "WC"],
-        ["entrance", 0, 980, "Giriş"], ["info", -980, -820, "Danışma"]]
-      .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-        x, y, rot: 0, size: 30, w: 120, h: 120, label, capacity: 0, fs: 100, blocks: [] })),
-    ...[[1, -700, 940], [2, 700, 940]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 90, h: 90, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 34, blocks: [] })),
-  ],
-  blocks: [
-    /* Parter — sahne önü, hafif açılan taban, sabit değil doğal taper */
-    reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 320, rows: 7, rowGap: 82, seatGap: 47, counts: "", align: "center",
-      aStart: -54, aEnd: 54, aCenter: 0, color: "#3E7FBF", pad: 45,
-      level: "Parter", ov: {}, num: { ...DEF_NUM } }, "P"),
-
-    /* Zemin kat locaları — parterin iki yanında, sahneye yakın kutular.
-       6 sıra × 2'şer koltuk, ön sahneden başlayıp arkaya doğru sayılı. */
-    ...locaWing({ r0: 460, rows: 2, rowGap: 78, seatGap: 46, perRow: 3, gap: 14,
-      countPerSide: 8, first: "ZL1", level: "Zemin Loca", color: "#C2415A", pad: 26,
-      fromDeg: 70, toDeg: 104 }),
-
-    /* 1. kat — orta kesim açık balkon, yanlarda loca */
-    reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 930, rows: 5, rowGap: 62, seatGap: 48, counts: "", align: "center",
-      aStart: -34, aEnd: 34, aCenter: 0, color: "#5F9142", pad: 45,
-      level: "1. Kat", ov: {}, num: { ...DEF_NUM, rowScheme: "letter" } }, "A"),
-    ...locaWing({ r0: 930, rows: 2, rowGap: 78, seatGap: 46, perRow: 3, gap: 18,
-      countPerSide: 5, first: "1L1", level: "1. Kat Loca", color: "#B79A32", pad: 26,
-      fromDeg: 60, toDeg: 92 }),
-
-    /* 2. kat — sadece loca, sahneyi görmek için öne eğilmek gerekiyor */
-    ...locaWing({ r0: 1280, rows: 2, rowGap: 70, seatGap: 46, perRow: 3, gap: 14,
-      countPerSide: 9, first: "2L1", level: "2. Kat Loca", color: "#7C5BA8", pad: 26,
-      fromDeg: 40, toDeg: 100 }),
-  ],
-};
-/* Erişilebilir yer — zemin kat locasının en uç, en kolay ulaşılan kutusu */
-SUREYYA.blocks = withAccessible(SUREYYA.blocks, (b) => b.level === "Zemin Loca" || b.label === "P", 2);
-SUREYYA.shapes = autoGates(SUREYYA, SUREYYA.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 8 · AKM TÜRK TELEKOM OPERA SALONU  ══════════════
-   Taksim, at nalı (horseshoe) formlu opera salonu — parter + 2 balkon,
-   her biri ORTA/ÇİFT/TEK üçlüsü. Passo'nun yayınladığı gerçek oturma
-   planından (akmistanbul.gov.tr / passo.com.tr) çıkarıldı: 2040 koltuk,
-   85 kişilik orkestra çukuru, 3 kattan 16 kapı. Burada 1.829 koltuk ve
-   6 kapıya sadeleştirildi — gerçek planın 4 derinlik-bandı (fiyat
-   kategorisine göre) 2'ye indirildi, tam sayı hedeflenmedi.
-   ─────────────────────────────────────────────────────────────────────
-   Parter'ın iki bandı (ön/arka) ve 1./2. Balkon aynı yarıçapta DEĞİL —
-   Süreyya'daki kat ilkesiyle aynı: her kat kendi halkasında oturur,
-   halkalar yarıçapça çakışmaz. Fiziksel olarak balkon parterin üstünde
-   çıkıntı yapar ama bu düzlemsel planda katları çakıştırırsak
-   validate() "koltuk çifti üst üste biniyor" der — kat ayrımı yalnızca
-   yürüme payı kontrolünde var, ham çakışma kontrolünde yok.
-   ORTA ile ÇİFT/TEK arasındaki açı boşluğu (Parter'da 44°, balkonlarda
-   ~6-8°) taban payının (~100cm) çakışmaması için — dar tutulursa
-   Sutherland-Hodgman testi gizli bir taban çakışması buluyor (ilk
-   denemede P.ORTA-2 ↔ ÇİFT-2/TEK-2 arasında ~5.500cm² çıkmıştı).
-   ═══════════════════════════════════════════════════════════════════ */
-
-const akmDoor = (n, x, y) => ({
-  id: nid("s"), kind: "rect", type: "door", x, y, w: 200, h: 200, rot: 0,
-  label: `KAPI ${n}`, capacity: 0, fs: 150, blocks: [],
-});
-
-const AKM = {
-  key: "akm", name: "AKM · Türk Telekom Opera Salonu", unit: "cm",
-  home: { x: -2950, y: -3550, w: 5900, h: 3900 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -450, w: 1200, h: 350, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 100, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "wall", x: 0, y: -1600, w: 5700, h: 3800, rot: 0,
-      label: "DUVAR", capacity: 0, fs: 100, blocks: [] },
-    akmDoor(1, -1893, -166), akmDoor(2, 1893, -166),
-    akmDoor(3, -1543, -1839), akmDoor(4, 1543, -1839),
-    akmDoor(5, -2155, -1940), akmDoor(6, 2155, -1940),
-  ],
-  blocks: [
-    /* Sahneye en yakın küçük ön bant — tek parça (ÇİFT/TEK ayrımı bu
-       yarıçapta ≥26°'lik bir koridor açısı ister, gereksiz daralma). */
-    fanB({ label: "P.ON", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 200, rows: 5, rowGap: 85, aStart: -78, aEnd: 78, seatGap: 48, color: "#3E7FBF",
-      ov: {
-        "4,8": { at: "wheel" }, "4,9": { at: "wheel" }, "4,10": { at: "wheel" },
-        "4,11": { at: "wheel" }, "4,12": { at: "wheel" }, "4,13": { at: "wheel" },
-        "4,14": { at: "wheel" }, "4,15": { at: "wheel" }, "4,16": { at: "wheel" }, "4,17": { at: "wheel" },
-        "3,8": { at: "comp" }, "3,9": { at: "comp" }, "3,10": { at: "comp" },
-        "3,11": { at: "comp" }, "3,12": { at: "comp" }, "3,13": { at: "comp" },
-        "3,14": { at: "comp" }, "3,15": { at: "comp" }, "3,16": { at: "comp" }, "3,17": { at: "comp" },
-      } }),
-    fanB({ label: "P.ORTA-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: -22, aEnd: 22, seatGap: 50, color: "#3E7FBF" }),
-    fanB({ label: "P.ÇİFT-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: -86, aEnd: -37, seatGap: 50, color: "#3E7FBF" }),
-    fanB({ label: "P.TEK-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: 37, aEnd: 86, seatGap: 50, color: "#3E7FBF" }),
-    fanB({ label: "1B.ORTA", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: -16, aEnd: 16, seatGap: 52, color: "#3E7FBF",
-      ov: {
-        "6,8": { at: "wheel" }, "6,9": { at: "wheel" }, "6,10": { at: "wheel" }, "6,11": { at: "wheel" },
-        "6,12": { at: "wheel" }, "6,13": { at: "wheel" }, "6,14": { at: "wheel" }, "6,15": { at: "wheel" },
-        "5,8": { at: "comp" }, "5,9": { at: "comp" }, "5,10": { at: "comp" }, "5,11": { at: "comp" },
-        "5,12": { at: "comp" }, "5,13": { at: "comp" }, "5,14": { at: "comp" }, "5,15": { at: "comp" },
-      } }),
-    fanB({ label: "1B.ÇİFT", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: -43, aEnd: -22, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "1B.TEK", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: 22, aEnd: 43, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "2B.ORTA", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: -21, aEnd: 21, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "2B.ÇİFT", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: -52, aEnd: -27, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "2B.TEK", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: 27, aEnd: 52, seatGap: 52, color: "#3E7FBF" }),
-  ],
-};
-AKM.shapes = autoGates(AKM, AKM.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 9 · FESTIVAL PARK YENİKAPI  ══════════════
-   Büyük ölçekli açık hava — koltuk yerine çoğunlukla ayakta alan
-   (standing shape) modelledi. Sahneden uzaklaştıkça genişleyen üç
-   ayakta bant (Sahne Önü A/B, Genel Giriş) + ayrı bir VIP cebi +
-   tek gerçek oturan blok (LOCA, ızgara). Toplam 40.000 — Şebnem
-   Ferah'ın buradaki konserinin gerçek rakamı; bant içi dağılım
-   editöryel tahmin (kaynakta tek tek bilet kategorisi kırılımı yok).
-   ══════════════════════════════════════════════════════════════ */
-
-const YENIKAPI = {
-  key: "yenikapi", name: "Festival Park Yenikapı · Ayakta Konser Alanı", unit: "cm",
-  home: { x: -10500, y: -2200, w: 19000, h: 20400 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -750, w: 4000, h: 1500, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 300, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 0, y: 1600, w: 5000, h: 3000, rot: 0,
-      label: "Sahne Önü A", capacity: 7000, fs: 110, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 0, y: 5200, w: 8000, h: 4000, rot: 0,
-      label: "Sahne Önü B", capacity: 11200, fs: 130, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 0, y: 11350, w: 13000, h: 8000, rot: 0,
-      label: "Genel Giriş", capacity: 20100, fs: 160, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: -7500, y: 4450, w: 3000, h: 2500, rot: 0,
-      label: "VIP Alan", capacity: 1200, fs: 100, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "wall", x: -1250, y: 8000, w: 16500, h: 19600, rot: 0,
-      label: "", capacity: 0, fs: 100, blocks: [] },
-    ...[[1, -9500, 6000], [2, 7000, 6000], [3, -9500, 14000], [4, 7000, 14000],
-        [5, -3000, 17600], [6, 2000, 17600]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 400, h: 400, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 160, blocks: [],
-    })),
-  ],
-  blocks: [
-    { id: nid(), kind: "grid", label: "LOCA", name: "LOCA", level: "Loca",
-      x: 0, y: 15650, rot: 0, cols: 25, rows: 20, counts: "", align: "center",
-      seatGap: 50, rowGap: 90, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
-      num: { ...DEF_NUM },
-      ov: {
-        "19,0": { at: "wheel" }, "19,1": { at: "wheel" }, "19,2": { at: "wheel" },
-        "19,3": { at: "wheel" }, "19,4": { at: "wheel" }, "19,5": { at: "wheel" },
-        "19,6": { at: "comp" }, "19,7": { at: "comp" }, "19,8": { at: "comp" },
-        "19,9": { at: "comp" }, "19,10": { at: "comp" }, "19,11": { at: "comp" },
-      } },
-  ],
-};
-YENIKAPI.shapes = autoGates(YENIKAPI, YENIKAPI.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-const EMPTY = { key: "empty", name: "Yeni plan", unit: "cm",
-  home: { x: -2000, y: -1500, w: 4000, h: 3000 }, underlay: null, blocks: [], shapes: [] };
 
 /* ─────────────────────────  İÇE AKTARMA  ─────────────────────────
    Dış dosyadaki kimlikler oturumdaki sayaçla çakışabilir; hepsi
@@ -1245,22 +564,10 @@ const HANDLE_HINT = {
   rows: "Sıra sayısı", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
 };
 
-/* Salt-okunur örnek salonların kaynak (kod) sürümü. Kod değişince bunu
-   artır — kullanıcının localStorage'ındaki ESKİ otomatik-kayıt kopyası
-   kaynağı gölgelemesin. Yoksa bir kez açılan örnek salon sonsuza dek eski
-   halinde takılı kalıyor, koddaki düzeltmeler kullanıcıya hiç ulaşmıyor. */
-const SRC_VER = 10;
-const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, ulker: ULKER, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
-/* Sürüm kapısı yalnızca şablonlara uygulanır; empty ve p-* anahtarları
-   kullanıcının kendi işini tutar (örn. empty üstüne kurulan Aspendos), asla
-   atılmaz. */
-const SAMPLE_KEYS = new Set(["sureyya", "aylak", "harbiye", "gs", "ulker", "zorlu", "cso", "akm", "yenikapi"]);
-const stampVer = (obj) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, { ...v, srcVer: SRC_VER }]));
-
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
 
 export default function PlanEditor() {
-  const [venues, setVenues] = useState(stampVer(BUILTINS));
+  const [venues, setVenues] = useState(BUILTINS);
   const [vk, setVk] = useState("gs");
   const plan = venues[vk];
 
@@ -1668,16 +975,13 @@ export default function PlanEditor() {
     (async () => {
       const keys = await Store.list();
       if (dead || !keys.length) { setSaved(keys); return; }
-      const loaded = {};
-      for (const k of keys) {
-        const p = await Store.load(k);
-        if (!p?.blocks) continue;
-        /* Şablonun kaynak sürümü değiştiyse eski kayıtlı kopyayı yükleme —
-           koddaki düzeltme kazansın. Kullanıcı planlarına (empty, p-*)
-           dokunulmaz. */
-        if (SAMPLE_KEYS.has(k) && p.srcVer !== SRC_VER) continue;
-        loaded[k] = absorbIds(p);
-      }
+      /* Örnek salonlar (BUILTINS'teki empty dışı anahtarlar) burada asla
+         kabul edilmez — kod her zaman kazanır (bkz. core/schema.js
+         isProtectedSample). Geri kalanı göç ettirip id sayacını ileri
+         sarma da aynı saf fonksiyonda (mergeSavedVenues). */
+      const entries = [];
+      for (const k of keys) entries.push([k, await Store.load(k)]);
+      const loaded = mergeSavedVenues(BUILTINS, entries);
       if (!dead && Object.keys(loaded).length) {
         setVenues((v) => ({ ...v, ...loaded }));
         setSaved(keys);
@@ -1691,7 +995,24 @@ export default function PlanEditor() {
     if (!rev) return;
     setSaveState("saving");
     const t = setTimeout(async () => {
-      const ok = await Store.save(vk, plan);
+      /* plan !== BUILTINS[vk]: sadece venues[vk] BUILTINS'teki taze
+         referanstan FARKLI bir nesneyse (yani gerçekten düzenlendiyse)
+         çatalla. Salt görüntülemek için başka bir örneğe geçmek plan
+         referansını değiştirmez, bu yüzden burada YANLIŞLIKLA tetiklenmez
+         (bkz. görev raporu — id/seçim/sürükleme kopmasın diye çatalda
+         id'ler bilerek değişmiyor). */
+      if (isProtectedSample(vk, BUILTINS) && plan !== BUILTINS[vk]) {
+        const fk = `p${Date.now().toString(36)}`;
+        const forked = forkSample(plan, fk);
+        setVenues((v) => ({ ...v, [vk]: BUILTINS[vk], [fk]: forked }));
+        setVk(fk);
+        setSaved((s) => (s.includes(fk) ? s : [...s, fk]));
+        setMsg(`Örnek salon salt okunur — değişiklikleriniz "${forked.name}" olarak ayrı kaydedildi`);
+        const ok = await Store.save(fk, stampSchema(forked));
+        setSaveState(ok ? "saved" : "error");
+        return;
+      }
+      const ok = await Store.save(vk, stampSchema(plan));
       setSaveState(ok ? "saved" : "error");
       setSaved((s) => (s.includes(vk) ? s : [...s, vk]));
     }, 1000);

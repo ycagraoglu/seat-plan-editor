@@ -5,6 +5,17 @@ const R4 = (n) => Math.round(n * 10000) / 10000;
 
 /* ─────────────────────────  NUMARALANDIRMA  ───────────────────────── */
 
+/* numberRow/rowLabel'ın "num" parametresi için varsayılan şema. Salon
+   üreteçleri (src/venues/builders.js) ve tuvale yeni blok ekleyen araçlar
+   (src/PlanEditor.jsx) bunu `{ ...DEF_NUM, ... }` ile genişletir — A3
+   öncesi PlanEditor.jsx içinde tanımlıydı, iki taraf da kullandığı için
+   bu numaralandırma modülüne taşındı (venues/ core/'a bağımlı olmalı,
+   tersi değil). */
+export const DEF_NUM = {
+  rowScheme: "number", rowStart: 1, rowRev: false, rowCustom: "", skipAmbig: true,
+  seatScheme: "seq", seatDir: "ltr", seatStart: 1, skip: "", anchor: "order",
+};
+
 export const AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 export const AMBIG = new Set(["I", "O", "Q"]);
 export function letterLabel(i, skipAmbig) {
