@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   INVARIANT: görünüm varlıkları (Biletone tasarım token'ları + POI
+   INVARIANT: görünüm varlıkları (Biletera tasarım token'ları + POI
    ikonları) korunuyor.
 
    Gerekçe: bu depoda 9 salonun GEOMETRİSİ altın dosyalar + 148 testle
@@ -54,9 +54,9 @@ function locateToken(needle, files = SOURCE_FILES) {
   return hit ? hit.rel : null;
 }
 
-describe("invariant: Biletone tasarım token'ları src/ kaynaklarında yerinde (konumdan bağımsız)", () => {
+describe("invariant: Biletera tasarım token'ları src/ kaynaklarında yerinde (konumdan bağımsız)", () => {
   const TOKENS = [
-    ["#E30613", "Biletone vurgu kırmızısı"],
+    ["#E30613", "Biletera vurgu kırmızısı"],
     ["#090909", "OLED koyu zemin"],
     ["Poppins", "yazı ailesi"],
   ];
@@ -72,7 +72,7 @@ describe("invariant: Biletone tasarım token'ları src/ kaynaklarında yerinde (
 
   /* ── boş koltuk token'ı ────────────────────────────────────────────
      Görev tanımı bu token'ı "--seat-free" diye adlandırıyor — ama bu,
-     Biletone'un KENDİ (harici) design system'indeki isim. Uygulamanın
+     Biletera'nın KENDİ (harici) design system'indeki isim. Uygulamanın
      GERÇEKTEN yüklediği CSS'te (const CSS → .ed.dark/.ed.light) bu
      token --seatoff olarak tanımlı ve satır ~2276'da koltuk rengi için
      fiilen kullanılıyor. Kanıt, PlanEditor.jsx'in kendi yorumu (satır
@@ -92,7 +92,7 @@ describe("invariant: Biletone tasarım token'ları src/ kaynaklarında yerinde (
   });
 
   it("testin testi: token listesine var olmayan bir değer eklenince KIRMIZI döner", () => {
-    const where = locateToken("#TOTALLY-FAKE-BILETONE-TOKEN-000");
+    const where = locateToken("#TOTALLY-FAKE-BILETERA-TOKEN-000");
     expect(where).toBeNull();
   });
 });

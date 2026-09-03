@@ -141,7 +141,7 @@ const POI = {
    fiyatı ona bağlar). Nitelik = koltuğun fiziksel gerçeği.
    ───────────────────────────────────────────────────────────────────── */
 
-/* Renkler Biletone tasarım sisteminin anlamsal paletinden (tokens/colors.css):
+/* Renkler Biletera tasarım sisteminin anlamsal paletinden (tokens/colors.css):
    info · success · warning · ink-3. DS'in --seat-selected'ı seçim rengimiz
    (--sel), --seat-free ise --seatoff. DS'te ayrıca --seat-taken ve
    --seat-premium var; ikisi de biletleme durumu ve fiyat kategorisi demek,
@@ -530,17 +530,18 @@ function validate(plan, metas, gates) {
 
 /* ─────────────────────────  TUTAMAKLAR  ───────────────────────── */
 
-function handlesFor(b, m) {
+export function handlesFor(b, m) {
   if (b.foot && b.foot.length >= 3) {
     const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
     return b.foot.map((p, i) => ({ k: `foot:${i}`, ...toWorld(b, p, cos, sin) }));
   }
   const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
   const L = (p, k) => ({ k, ...toWorld(b, p, cos, sin) });
+  let hs = [];
   if (b.kind === "grid") {
     const halfW = ((m.P.maxN - 1) / 2) * b.seatGap;
     const backY = (b.rows - 1) * b.rowGap;
-    return [
+    hs = [
       L({ x: 0, y: -b.rowGap * 1.4 }, "rot"),
       /* kavis: ön sıranın orta noktasının hemen ÖNÜNDE, kavis değeri kadar
          dıştan başlıyor — r0/rows tutamaklarıyla AYNI dil (tutamacın
@@ -549,12 +550,11 @@ function handlesFor(b, m) {
       L({ x: halfW + b.seatGap * 0.9, y: backY / 2 }, "cols"),
       L({ x: 0, y: backY + b.rowGap * 0.9 }, "rows"),
     ];
-  }
-  if (b.kind === "fan") {
+  } else if (b.kind === "fan") {
     const span = (b.mode || "span") === "span";
     const am = span ? (b.aStart + b.aEnd) / 2 : b.aCenter;
     const rOut = b.r0 + (b.rows - 1) * b.rowGap;
-    const hs = [
+    hs = [
       /* "rows" tutamacından (+0.75) belirgin biçimde ayrı dursun diye +2.4 —
          ikisi de dıştan, aynı açıda; çok sıralı/dar yelpazelerde 0.65 katı
          fark ekranda iç içe geçiyordu (bkz. görev raporu, GS köşe bloğu). */
@@ -566,15 +566,126 @@ function handlesFor(b, m) {
       hs.push(L(polarPt(rOut, b.aStart), "aStart"));
       hs.push(L(polarPt(rOut, b.aEnd), "aEnd"));
     }
-    return hs;
   }
-  return [];
+  /* SADECE "cols": duruş noktası m.P.maxN'den (counts/taper varsa b.cols'tan
+     FARKLI bir genişlik) türerken handlePatch b.cols'u yazıyor — tutamaç
+     durduğu yerle YAZDIĞI alan ayrı BÜYÜKLÜK olabiliyor (bkz. ZORLU,
+     counts="19..28" iken cols=10 kalıyor). Bu SEMANTİK bir hata: tutamaç
+     orada ne gösterdiğini yazmıyor, round-trip'i ne kadar gevşetirsen
+     gevşet düzelmez — gizlemekten başka çare yok (bkz. GATED_HANDLES).
+     rot/r0/curve/aStart/aEnd BURAYA GİRMEZ: onlar kendi formüllerinde
+     bilerek bir hassasiyete (derece / 10cm) yuvarlıyor ama duruş noktası
+     ile yazdığı alan HER ZAMAN aynı büyüklük — sadece kaba. O kabalık
+     HANDLE_DRAG_PX eşiğiyle (bkz. onMove) zaten çözülüyor; onları da
+     burada gizlemek 255 tutamacın (SÜREYYA/HARBIYE/GS/ULKER'deki çözücü-
+     üretimi yelpazelerin çoğu) editörden kaybolması demekti — çözülmüş
+     bir sorun için asıl aracı (tutamacın kendisini) çöpe atmak olurdu. */
+  return hs.filter((h) => !GATED_HANDLES.has(h.k) || canRoundTrip(b, h));
+}
+
+/* Round-trip'i handlesFor'da DOĞRULAMADAN gösterilmeyecek tutamaçların
+   sınıfı — bugün tek üye "cols" (yukarıdaki not). Yarın aynı sınıfa
+   (duruş NOKTASI ile YAZILAN alan ayrı büyüklük) giren başka bir tutamaç
+   çıkarsa buraya eklenir; rot/r0/curve/aStart/aEnd gibi "aynı büyüklük,
+   sadece yuvarlanmış" tutamaçlar asla buraya girmez. */
+const GATED_HANDLES = new Set(["cols"]);
+
+/* Tolerans 1e-9: sin/cos/atan2 tersine sarınca kalan kayan-nokta gürültüsü
+   (~1e-13, bkz. handlePatch'teki rnd() notu) bunun çok altında, gerçek bir
+   uyuşmazlık (18 koltuk, bkz. görev raporu) çok üstünde — ikisini
+   karıştırmaz. GATED_HANDLES'taki tutamaçlar için formülün kendisi
+   İNŞAEN kesin (yuvarlama YOK, bkz. "cols"un handlePatch dalı) — o yüzden
+   burada gevşek bir kuantum toleransı YOK, tek sayı yeterli. */
+function canRoundTrip(b, h) {
+  const startAng = h.k === "rot" ? Math.atan2(h.y - b.y, h.x - b.x) / RAD : undefined;
+  const patch = handlePatch(b, h.k, h, startAng);
+  return Object.keys(patch).every((f) => Math.abs(patch[f] - b[f]) < 1e-9);
+}
+
+/** Bir tutamacın YENİ dünya konumundan (raw) o bloğun alanlarına giden TEK
+ *  hesap — onMove ("handle" kipi), handlesFor'un kendi canRoundTrip kontrolü
+ *  (yalnız GATED_HANDLES için) ve test/invariants/handle-roundtrip.test.js
+ *  ÜÇÜ DE bunu çağırır, kopyası yok. Her sabit (0.8/0.9/0.75/0.6…)
+ *  handlesFor'daki duruş konumu sabitinin TAM TERSİ olacak şekilde
+ *  seçildi: tutamacı hiç sürüklemeden (raw = kendi duruş konumu) bırakmak
+ *  no-op olmalı — aksi hâlde tıklamak bile değer kaydırır (bkz. görev
+ *  raporu, eski "size" tutamacının +1 kusuru).
+ *
+ *  r0/curve/aStart/aEnd/rot BİLEREK bir hassasiyet sınırına (derece /
+ *  10cm) yuvarlıyor — gerçek bir sürüklemede kullanıcı temiz sayı ister,
+ *  bu yuvarlama giderilmiyor. Alan zaten o hassasiyette DEĞİLSE (çözücünün
+ *  ürettiği SÜREYYA rot=84,9622 gibi ince değerler) round-trip TAM olamaz
+ *  ama bu bir HATA değil — tutamaç YİNE DE gösterilir (handlesFor onu
+ *  GİZLEMEZ, bkz. GATED_HANDLES): kabalık, bilgi kaybı değil. "Sürüklemeden
+ *  bırakmak no-op" garantisi bu tutamaçlar için handlesFor'da değil,
+ *  onMove'da duruyor — işaretçi mousedown'dan beri birkaç EKRAN pikseli
+ *  hareket etmeden bu fonksiyon hiç ÇAĞRILMIYOR (bkz. HANDLE_DRAG_PX).
+ *  Yani "tam üstüne denk gelmeyen bir tıklama" sorunu YUVARLAMAYI
+ *  gevşeterek ya da tutamacı gizleyerek değil, patch'i hiç UYGULAMAYARAK
+ *  çözülüyor — bir kez 3px'i aşan GERÇEK bir sürüklemede bu yuvarlama
+ *  aynen uygulanır, temiz sayı üretir. */
+export function handlePatch(b0, h, raw, startAng) {
+  const a = -b0.rot * RAD;
+  const gx = raw.x - b0.x, gy = raw.y - b0.y;
+  const lx = gx * Math.cos(a) - gy * Math.sin(a);
+  const ly = gx * Math.sin(a) + gy * Math.cos(a);
+  const dist = Math.hypot(lx, ly);
+  /* sin/cos tersine sarınca üretilen ~1e-13 mertebeli kayan-nokta gürültüsü,
+     bir değer TAM ORTADA (ör. r0=825 → 82,5) durduğunda round()'u yanlış
+     tarafa yuvarlatabiliyordu (AKM'de görüldü: 825 → 820, olması gereken
+     830). Yuvarlamadan önceki bu minik pay onu gideriyor — gerçek bir
+     sürüklemede (cm/derece mertebesinde hareket) hissedilmez. */
+  const rnd = (v) => Math.round(v + 1e-6);
+  if (h.startsWith("foot:")) {
+    const k = +h.slice(5);
+    return { foot: (b0.foot || []).map((q, j) => j === k ? { x: rnd(lx), y: rnd(ly) } : q) };
+  }
+  if (h === "rot") {
+    const ang = Math.atan2(raw.y - b0.y, raw.x - b0.x) / RAD;
+    return { rot: rnd(b0.rot + (ang - startAng)) };
+  }
+  if (h === "cols") {
+    // duruş: x = halfW + 0,9·seatGap = (maxN-1)/2·seatGap + 0,9·seatGap → ters çevirince -0,8
+    return { cols: Math.max(1, rnd((Math.abs(lx) * 2) / b0.seatGap - 0.8)) };
+  }
+  if (h === "rows") {
+    return b0.kind === "fan"
+      // duruş: dist = rOut + 0,75·rowGap
+      ? { rows: Math.max(1, rnd((dist - b0.r0) / b0.rowGap - 0.75) + 1) }
+      // duruş: y = backY + 0,9·rowGap
+      : { rows: Math.max(1, rnd(ly / b0.rowGap - 0.9) + 1) };
+  }
+  if (h === "curve") {
+    // duruş: y = -0,6·rowGap - kavis → ters formül zaten kavisi geri veriyor
+    return { curve: rnd((-b0.rowGap * 0.6 - ly) / 10) * 10 };
+  }
+  if (h === "r0") {
+    // duruş: dist = r0 - 0,75·rowGap → 0,75·rowGap geri eklenir
+    return { r0: Math.max(50, rnd((dist + b0.rowGap * 0.75) / 10) * 10) };
+  }
+  if (h === "aStart" || h === "aEnd") {
+    return { [h]: rnd(Math.atan2(lx, -ly) / RAD) };
+  }
+  return {};
 }
 
 const HANDLE_HINT = {
   rot: "Döndür", cols: "Koltuk sayısı (±)", rows: "Sıra sayısı (±)", curve: "Kavis",
   r0: "İlk yarıçap", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
 };
+
+/* Bir tutamacı tıklayıp bırakmak (fare hiç hareket etmeden de olsa) her
+   zaman bir mousemove karesi üretir; o kare handlePatch'e verilirse
+   rot/r0/aStart/aEnd'in BİLEREK yuvarlaması (bkz. handlePatch) tek başına
+   bunu no-op sanamaz — el titremesi ya da tutamacın geniş dokunma alanı
+   yüzünden matematiksel duruş noktasının birkaç piksel dışına düşen bir
+   tıklama, yuvarlama sınırını aşıp değeri bir birim kaydırabilir. Eşik
+   EKRAN pikselinde: dünya biriminde (cm) olsaydı yakınlaştırma seviyesine
+   göre "birkaç piksel"in karşılığı değişir, aynı jest bazen no-op bazen
+   gerçek bir sürükleme sayılırdı. 3px — fare/dokunmatik el titremesini
+   (tipik 1-2px) yutacak, gerçek bir sürüklemeyi geciktirmeyecek kadar
+   küçük; tarayıcıların kendi sürükleme-başlatma eşikleriyle aynı mertebe. */
+const HANDLE_DRAG_PX = 3;
 
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
 
@@ -1362,6 +1473,7 @@ export default function PlanEditor() {
     }
     if (t?.h && selBlock) {
       drag.current = { mode: "handle", h: t.h, b: selBlock, snapshot: plan,
+        sx: e.clientX, sy: e.clientY,
         startAng: Math.atan2(raw.y - selBlock.y, raw.x - selBlock.x) / RAD };
       return;
     }
@@ -1475,39 +1587,13 @@ export default function PlanEditor() {
       return;
     }
     if (d.mode === "handle") {
-      const b0 = d.b;
-      const a = -b0.rot * RAD;
-      const gx = raw.x - b0.x, gy = raw.y - b0.y;
-      const lx = gx * Math.cos(a) - gy * Math.sin(a);
-      const ly = gx * Math.sin(a) + gy * Math.cos(a);
-      const dist = Math.hypot(lx, ly);
-      let patch = {};
-      if (d.h.startsWith("foot:")) {
-        const k = +d.h.slice(5);
-        patch = { foot: (b0.foot || []).map((q, j) => j === k ? { x: Math.round(lx), y: Math.round(ly) } : q) };
-        setPlan({ ...plan, blocks: plan.blocks.map((x) => (x.id === b0.id ? { ...x, ...patch } : x)) });
-        return;
-      }
-      if (d.h === "rot") {
-        const ang = Math.atan2(raw.y - b0.y, raw.x - b0.x) / RAD;
-        patch = { rot: Math.round(b0.rot + (ang - d.startAng)) };
-      } else if (d.h === "cols") {
-        patch = { cols: Math.max(1, Math.round((Math.abs(lx) * 2) / b0.seatGap)) };
-      } else if (d.h === "rows") {
-        /* aynı tutamaç adı iki blok türünde: fan'da yarıçap boyunca (mevcut
-           davranış, DEĞİŞMEDİ), grid'de dikey — eskiden "size" tutamacının
-           yaptığı hesabın YARISI (bkz. "cols"), artık ayrı sürüklenebiliyor. */
-        patch = b0.kind === "fan"
-          ? { rows: Math.max(1, Math.round((dist - b0.r0) / b0.rowGap) + 1) }
-          : { rows: Math.max(1, Math.round(ly / b0.rowGap) + 1) };
-      } else if (d.h === "curve") {
-        patch = { curve: Math.round((-b0.rowGap * 0.6 - ly) / 10) * 10 };
-      } else if (d.h === "r0") {
-        patch = { r0: Math.max(50, Math.round(dist / 10) * 10) };
-      } else if (d.h === "aStart" || d.h === "aEnd") {
-        patch = { [d.h]: Math.round(Math.atan2(lx, -ly) / RAD) };
-      }
-      setPlan({ ...plan, blocks: plan.blocks.map((x) => (x.id === b0.id ? { ...x, ...patch } : x)) });
+      /* İşaretçi mousedown'dan beri anlamlı bir mesafe hareket etmediyse
+         (bkz. HANDLE_DRAG_PX) hiçbir patch uygulama — salt tıklama, blok
+         snapshot'tan bir bit bile ayrılmamalı (finalizeDrag'ın referans
+         eşitliğiyle no-op sayması da BUNA dayanıyor, bkz. reducer.js). */
+      if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < HANDLE_DRAG_PX) return;
+      const patch = handlePatch(d.b, d.h, raw, d.startAng);
+      setPlan({ ...plan, blocks: plan.blocks.map((x) => (x.id === d.b.id ? { ...x, ...patch } : x)) });
       return;
     }
     if (d.mode === "marq" || d.mode === "seatMarq") { setMarq((q) => ({ ...q, x1: raw.x, y1: raw.y })); return; }
@@ -3318,8 +3404,8 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
 
 const CSS = `
 /* ══════════════════════════════════════════════════════════════════════
-   BILETONE / BILETERA TASARIM SİSTEMİ
-   Kaynak: biletone-design-system-a49308b5 · tokens/*.css + Geliştirici
+   BILETERA TASARIM SİSTEMİ
+   Kaynak: biletone-design-system-a49308b5 (zip dosya adı) · tokens/*.css + Geliştirici
    Spesifikasyonu. Marka kırmızısı #E30613 yalnızca üç yerde: aksiyon,
    seçili durum, fiyat — dekoratif kullanılmaz (spesifikasyon kuralı).
    Tipografi tek aile: Poppins. Boşluk 8pt ızgara. Ev yarıçapı 24px.
