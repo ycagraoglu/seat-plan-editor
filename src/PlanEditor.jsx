@@ -1523,6 +1523,59 @@ export default function PlanEditor({ cssText = "" } = {}) {
     }) });
   };
 
+  /* ── koltuk grupları: elle gruplama ───────────────────────────────
+     Model 50fac97'de geldi (plan.groups + ov.groupId); masa blokları
+     otomatik gruplanıyor. Burası elle gruplanması gerekenler için:
+     loca, love-seat çifti, tekerlekli+refakatçi ikilisi. seatOps yalnız
+     ov'a dokunduğu için ayrı duruyor — grup KAYDI plan.groups'a, koltuk
+     ATFI ov'a gidiyor ve ikisi TEK commit'te olmalı, yoksa geri-al
+     yarım bir durum bırakır. */
+  const GROUP_KINDS = { box: "Loca", loveseat: "Love-seat çifti",
+    pod: "Kapsül", companion_group: "Tekerlekli + refakatçi" };
+
+  const groupSelected = (kind) => {
+    if (!selSeats.size) return;
+    const id = nid("g");
+    const mevcut = (plan.groups || []).filter((g) => g.kind === kind).length + 1;
+    const kod = `${kind.toUpperCase().slice(0, 3)}-${mevcut}`;
+    const byB = new Map();
+    selSeats.forEach((k) => { const [bid, rc] = k.split("|");
+      if (!byB.has(bid)) byB.set(bid, []); byB.get(bid).push(rc); });
+    commit({ ...plan,
+      groups: [...(plan.groups || []), { id, code: kod, name: GROUP_KINDS[kind], kind }],
+      blocks: plan.blocks.map((b) => {
+        const list = byB.get(b.id); if (!list) return b;
+        const ov = { ...b.ov };
+        list.forEach((rc) => { ov[rc] = { ...(ov[rc] || {}), groupId: id }; });
+        return { ...b, ov };
+      }) });
+    setMsg(`${selSeats.size} koltuk "${kod}" grubuna alındı`);
+  };
+
+  /* Gruptan çıkarma grubun KAYDINI silmez — başka koltukları kalmış
+     olabilir. Kimsesi kalmayan grup kaydı zararsız (dışa aktarımda
+     üyesiz görünür) ama biriktirmemek için burada temizleniyor. */
+  const ungroupSelected = () => {
+    if (!selSeats.size) return;
+    const byB = new Map();
+    selSeats.forEach((k) => { const [bid, rc] = k.split("|");
+      if (!byB.has(bid)) byB.set(bid, []); byB.get(bid).push(rc); });
+    const blocks = plan.blocks.map((b) => {
+      const list = byB.get(b.id); if (!list) return b;
+      const ov = { ...b.ov };
+      list.forEach((rc) => {
+        if (!ov[rc]) return;
+        const o = { ...ov[rc] }; delete o.groupId;
+        if (Object.keys(o).length) ov[rc] = o; else delete ov[rc];
+      });
+      return { ...b, ov };
+    });
+    const kullanilan = new Set();
+    blocks.forEach((b) => Object.values(b.ov || {}).forEach((o) => o.groupId && kullanilan.add(o.groupId)));
+    commit({ ...plan, blocks,
+      groups: (plan.groups || []).filter((g) => kullanilan.has(g.id)) });
+  };
+
   /* ── ok tuşlarıyla ince taşıma ────────────────────────────────── */
   const lastNudge = useRef(0);
   const nudge = (dx, dy) => {
@@ -3117,7 +3170,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
           </button>
           {propsOpen && (
           selSeats.size > 1 ? (
-            <MultiSeatPanel n={selSeats.size} onOps={seatOps}
+            <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
+              onGroup={groupSelected} onUngroup={ungroupSelected}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
           ) : selSeat && seatOv ? (
             <SeatPanel sel={selSeat} info={selSeatInfo} ov={seatOv} eff={seatEffAttr} onToggle={(k) => toggleOv(selSeat, k)}
@@ -3160,13 +3214,29 @@ export default function PlanEditor({ cssText = "" } = {}) {
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
 
 /** Dikdörtgen seçimle işaretlenmiş koltuklara toplu işlem. */
-function MultiSeatPanel({ n, onOps, onClear }) {
+function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {
   return (
     <div className="panel">
       <div className="phead">
         <span className="plabel wide">{n.toLocaleString("tr-TR")} koltuk seçili</span>
         <button className="link" onClick={onClear}>bırak</button>
       </div>
+
+      {/* Grup = hangi koltuklar birlikte (masa, loca, love-seat çifti,
+          tekerlekli+refakatçi). Masa blokları KODDA otomatik gruplanıyor,
+          burası elle gruplananlar için. Satış politikası (whole_group,
+          contiguous vb.) BU UYGULAMANIN KONUSU DEĞİL — o biletleme
+          tarafının işi; editör yalnız kim kiminle bilgisini taşır. */}
+      <section>
+        <p className="lab">Grupla</p>
+        <select className="full" defaultValue="_"
+          onChange={(e) => { if (e.target.value === "_") return;
+            onGroup(e.target.value); e.target.value = "_"; }}>
+          <option value="_">seç…</option>
+          {Object.entries(groupKinds).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+        </select>
+        <button className="wide" onClick={onUngroup}>Gruptan çıkar</button>
+      </section>
 
       {/* İki AYRI toplu eylem, iki AYRI eksen (bkz. görev tanımı): tür
           BLOK VARSAYILANINA döner ya da belli bir türe SABİTLENİR (eskiden
