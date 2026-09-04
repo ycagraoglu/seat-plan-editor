@@ -1,0 +1,966 @@
+{
+  "key": "cso",
+  "name": "CSO Ada Ankara · Ziraat Bankası Ana Salon",
+  "unit": "cm",
+  "home": {
+    "x": -2900,
+    "y": -4600,
+    "w": 5800,
+    "h": 7700
+  },
+  "underlay": null,
+  "shapes": [
+    {
+      "id": "s11",
+      "kind": "poly",
+      "type": "wall",
+      "x": 0,
+      "y": -700,
+      "rot": 0,
+      "pts": [
+        {
+          "x": 0,
+          "y": 4030
+        },
+        {
+          "x": 451,
+          "y": 3989
+        },
+        {
+          "x": 893,
+          "y": 3867
+        },
+        {
+          "x": 1317,
+          "y": 3666
+        },
+        {
+          "x": 1714,
+          "y": 3390
+        },
+        {
+          "x": 2076,
+          "y": 3046
+        },
+        {
+          "x": 2396,
+          "y": 2639
+        },
+        {
+          "x": 2667,
+          "y": 2179
+        },
+        {
+          "x": 2884,
+          "y": 1674
+        },
+        {
+          "x": 3042,
+          "y": 1135
+        },
+        {
+          "x": 3138,
+          "y": 574
+        },
+        {
+          "x": 3170,
+          "y": 0
+        },
+        {
+          "x": 3138,
+          "y": -574
+        },
+        {
+          "x": 3042,
+          "y": -1135
+        },
+        {
+          "x": 2884,
+          "y": -1674
+        },
+        {
+          "x": 2667,
+          "y": -2179
+        },
+        {
+          "x": 2396,
+          "y": -2639
+        },
+        {
+          "x": 2076,
+          "y": -3046
+        },
+        {
+          "x": 1714,
+          "y": -3390
+        },
+        {
+          "x": 1317,
+          "y": -3666
+        },
+        {
+          "x": 893,
+          "y": -3867
+        },
+        {
+          "x": 451,
+          "y": -3989
+        },
+        {
+          "x": 0,
+          "y": -4030
+        },
+        {
+          "x": -451,
+          "y": -3989
+        },
+        {
+          "x": -893,
+          "y": -3867
+        },
+        {
+          "x": -1317,
+          "y": -3666
+        },
+        {
+          "x": -1714,
+          "y": -3390
+        },
+        {
+          "x": -2076,
+          "y": -3046
+        },
+        {
+          "x": -2396,
+          "y": -2639
+        },
+        {
+          "x": -2667,
+          "y": -2179
+        },
+        {
+          "x": -2884,
+          "y": -1674
+        },
+        {
+          "x": -3042,
+          "y": -1135
+        },
+        {
+          "x": -3138,
+          "y": -574
+        },
+        {
+          "x": -3170,
+          "y": 0
+        },
+        {
+          "x": -3138,
+          "y": 574
+        },
+        {
+          "x": -3042,
+          "y": 1135
+        },
+        {
+          "x": -2884,
+          "y": 1674
+        },
+        {
+          "x": -2667,
+          "y": 2179
+        },
+        {
+          "x": -2396,
+          "y": 2639
+        },
+        {
+          "x": -2076,
+          "y": 3046
+        },
+        {
+          "x": -1714,
+          "y": 3390
+        },
+        {
+          "x": -1317,
+          "y": 3666
+        },
+        {
+          "x": -893,
+          "y": 3867
+        },
+        {
+          "x": -451,
+          "y": 3989
+        }
+      ],
+      "label": "",
+      "capacity": 0,
+      "fs": 60,
+      "blocks": []
+    },
+    {
+      "id": "s12",
+      "kind": "rect",
+      "type": "stage",
+      "x": 0,
+      "y": 250,
+      "w": 2150,
+      "h": 1200,
+      "rot": 0,
+      "label": "SAHNE",
+      "capacity": 0,
+      "fs": 240,
+      "blocks": []
+    },
+    {
+      "id": "s13",
+      "kind": "rect",
+      "type": "door",
+      "x": 1435,
+      "y": -1680,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 1",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b1"
+      ]
+    },
+    {
+      "id": "s14",
+      "kind": "rect",
+      "type": "door",
+      "x": -1365,
+      "y": -1645,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 2",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b1"
+      ]
+    },
+    {
+      "id": "s15",
+      "kind": "rect",
+      "type": "door",
+      "x": 2440,
+      "y": -945,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 3",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b4",
+        "b9",
+        "b10"
+      ]
+    },
+    {
+      "id": "s16",
+      "kind": "rect",
+      "type": "door",
+      "x": 1344,
+      "y": -2674,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 4",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b2"
+      ]
+    },
+    {
+      "id": "s17",
+      "kind": "rect",
+      "type": "door",
+      "x": -1295,
+      "y": -2646,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 5",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b2"
+      ]
+    },
+    {
+      "id": "s18",
+      "kind": "rect",
+      "type": "door",
+      "x": -2400,
+      "y": -980,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 6",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b4",
+        "b6",
+        "b7"
+      ]
+    },
+    {
+      "id": "s19",
+      "kind": "rect",
+      "type": "door",
+      "x": 980,
+      "y": -3400,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 7",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b3",
+        "b8"
+      ]
+    },
+    {
+      "id": "s20",
+      "kind": "rect",
+      "type": "door",
+      "x": -966,
+      "y": -3400,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 8",
+      "capacity": 0,
+      "fs": 95,
+      "blocks": [
+        "b3",
+        "b5"
+      ]
+    },
+    {
+      "id": "s21",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "wc",
+      "x": -2280,
+      "y": -1920,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "WC",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s22",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "wc",
+      "x": 2280,
+      "y": -1920,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "WC",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s23",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "bar",
+      "x": -2180,
+      "y": 380,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Fuaye Bar",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s24",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "bar",
+      "x": 2180,
+      "y": 380,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Fuaye Bar",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s25",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "cloak",
+      "x": -1750,
+      "y": 2450,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Vestiyer",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s26",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "aid",
+      "x": 1750,
+      "y": 2450,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "İlk yardım",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s27",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "access",
+      "x": 0,
+      "y": 3050,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Engelli erişimi",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b1",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 0,
+      "counts": "39..48",
+      "align": "center",
+      "color": "#3E7FBF",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "A",
+      "x": 0,
+      "y": 6020,
+      "r0": 6545,
+      "rows": 12
+    },
+    {
+      "id": "b2",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 107,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 0,
+      "counts": "58..52",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "5,50": {
+          "rm": true
+        },
+        "5,51": {
+          "rm": true
+        },
+        "5,52": {
+          "rm": true
+        },
+        "6,50": {
+          "rm": true
+        },
+        "6,51": {
+          "rm": true
+        },
+        "4,0": {
+          "rm": true
+        },
+        "4,1": {
+          "rm": true
+        },
+        "4,2": {
+          "rm": true
+        },
+        "4,3": {
+          "rm": true
+        },
+        "5,0": {
+          "rm": true
+        },
+        "5,1": {
+          "rm": true
+        },
+        "5,2": {
+          "rm": true
+        },
+        "5,3": {
+          "rm": true
+        },
+        "6,0": {
+          "rm": true
+        },
+        "6,1": {
+          "rm": true
+        },
+        "6,2": {
+          "rm": true
+        }
+      },
+      "label": "B",
+      "x": 0,
+      "y": 6020,
+      "r0": 8176,
+      "rows": 7
+    },
+    {
+      "id": "b3",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 0,
+      "counts": "34..26",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "C",
+      "x": 0,
+      "y": 6020,
+      "r0": 9016,
+      "rows": 9
+    },
+    {
+      "id": "b4",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 180,
+      "counts": "38..44",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "D",
+      "x": 0,
+      "y": -5180,
+      "r0": 6384,
+      "rows": 7,
+      "attr": "obstr"
+    },
+    {
+      "id": "b5",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": -39,
+      "counts": "9..12",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "J",
+      "x": 0,
+      "y": -980,
+      "r0": 2460,
+      "rows": 8
+    },
+    {
+      "id": "b6",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": -72,
+      "counts": "10..12",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "G",
+      "x": 0,
+      "y": -980,
+      "r0": 1900,
+      "rows": 6
+    },
+    {
+      "id": "b7",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": -112,
+      "counts": "8..12",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "12,0": {
+          "at": "wheel"
+        },
+        "12,1": {
+          "at": "comp"
+        },
+        "12,2": {
+          "at": "wheel"
+        },
+        "12,3": {
+          "at": "comp"
+        },
+        "12,4": {
+          "at": "wheel"
+        },
+        "12,5": {
+          "at": "comp"
+        },
+        "12,6": {
+          "at": "wheel"
+        },
+        "12,7": {
+          "at": "comp"
+        },
+        "12,8": {
+          "at": "wheel"
+        },
+        "12,9": {
+          "at": "comp"
+        },
+        "12,10": {
+          "at": "wheel"
+        },
+        "12,11": {
+          "at": "comp"
+        },
+        "11,0": {
+          "at": "wheel"
+        },
+        "11,1": {
+          "at": "comp"
+        },
+        "11,2": {
+          "at": "wheel"
+        },
+        "11,3": {
+          "at": "comp"
+        },
+        "11,4": {
+          "at": "wheel"
+        },
+        "11,5": {
+          "at": "comp"
+        }
+      },
+      "label": "E",
+      "x": 0,
+      "y": -980,
+      "r0": 1300,
+      "rows": 13
+    },
+    {
+      "id": "b8",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 39,
+      "counts": "9..12",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "K",
+      "x": 0,
+      "y": -980,
+      "r0": 2460,
+      "rows": 8
+    },
+    {
+      "id": "b9",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 72,
+      "counts": "10..12",
+      "align": "center",
+      "color": "#C1743C",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "H",
+      "x": 0,
+      "y": -980,
+      "r0": 1900,
+      "rows": 6
+    },
+    {
+      "id": "b10",
+      "kind": "fan",
+      "name": "",
+      "level": "Ana Salon",
+      "rot": 0,
+      "mode": "pitch",
+      "seatGap": 50,
+      "rowGap": 105,
+      "aStart": -40,
+      "aEnd": 40,
+      "aCenter": 112,
+      "counts": "8..12",
+      "align": "center",
+      "color": "#3E9092",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "12,0": {
+          "at": "wheel"
+        },
+        "12,1": {
+          "at": "comp"
+        },
+        "12,2": {
+          "at": "wheel"
+        },
+        "12,3": {
+          "at": "comp"
+        },
+        "12,4": {
+          "at": "wheel"
+        },
+        "12,5": {
+          "at": "comp"
+        },
+        "12,6": {
+          "at": "wheel"
+        },
+        "12,7": {
+          "at": "comp"
+        },
+        "12,8": {
+          "at": "wheel"
+        },
+        "12,9": {
+          "at": "comp"
+        },
+        "12,10": {
+          "at": "wheel"
+        },
+        "12,11": {
+          "at": "comp"
+        },
+        "11,0": {
+          "at": "wheel"
+        },
+        "11,1": {
+          "at": "comp"
+        },
+        "11,2": {
+          "at": "wheel"
+        },
+        "11,3": {
+          "at": "comp"
+        },
+        "11,4": {
+          "at": "wheel"
+        },
+        "11,5": {
+          "at": "comp"
+        }
+      },
+      "label": "F",
+      "x": 0,
+      "y": -980,
+      "r0": 1300,
+      "rows": 13
+    }
+  ]
+}

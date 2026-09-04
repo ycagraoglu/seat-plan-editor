@@ -1,0 +1,1416 @@
+{
+  "key": "harbiye",
+  "name": "Harbiye Cemil Topuzlu Açıkhava Tiyatrosu",
+  "unit": "cm",
+  "home": {
+    "x": -6400,
+    "y": -6400,
+    "w": 12800,
+    "h": 9600
+  },
+  "underlay": null,
+  "shapes": [
+    {
+      "id": "s395",
+      "kind": "poly",
+      "type": "wall",
+      "x": 0,
+      "y": 0,
+      "rot": 0,
+      "pts": [
+        {
+          "x": -5719,
+          "y": 601
+        },
+        {
+          "x": -5749,
+          "y": 108
+        },
+        {
+          "x": -5737,
+          "y": -386
+        },
+        {
+          "x": -5683,
+          "y": -877
+        },
+        {
+          "x": -5587,
+          "y": -1361
+        },
+        {
+          "x": -5449,
+          "y": -1835
+        },
+        {
+          "x": -5272,
+          "y": -2296
+        },
+        {
+          "x": -5055,
+          "y": -2740
+        },
+        {
+          "x": -4801,
+          "y": -3164
+        },
+        {
+          "x": -4512,
+          "y": -3564
+        },
+        {
+          "x": -4189,
+          "y": -3938
+        },
+        {
+          "x": -3836,
+          "y": -4283
+        },
+        {
+          "x": -3454,
+          "y": -4597
+        },
+        {
+          "x": -3047,
+          "y": -4876
+        },
+        {
+          "x": -2617,
+          "y": -5120
+        },
+        {
+          "x": -2168,
+          "y": -5326
+        },
+        {
+          "x": -1703,
+          "y": -5492
+        },
+        {
+          "x": -1226,
+          "y": -5618
+        },
+        {
+          "x": -739,
+          "y": -5702
+        },
+        {
+          "x": -247,
+          "y": -5745
+        },
+        {
+          "x": 247,
+          "y": -5745
+        },
+        {
+          "x": 739,
+          "y": -5702
+        },
+        {
+          "x": 1226,
+          "y": -5618
+        },
+        {
+          "x": 1703,
+          "y": -5492
+        },
+        {
+          "x": 2168,
+          "y": -5326
+        },
+        {
+          "x": 2617,
+          "y": -5120
+        },
+        {
+          "x": 3047,
+          "y": -4876
+        },
+        {
+          "x": 3454,
+          "y": -4597
+        },
+        {
+          "x": 3836,
+          "y": -4283
+        },
+        {
+          "x": 4189,
+          "y": -3938
+        },
+        {
+          "x": 4512,
+          "y": -3564
+        },
+        {
+          "x": 4801,
+          "y": -3164
+        },
+        {
+          "x": 5055,
+          "y": -2740
+        },
+        {
+          "x": 5272,
+          "y": -2296
+        },
+        {
+          "x": 5449,
+          "y": -1835
+        },
+        {
+          "x": 5587,
+          "y": -1361
+        },
+        {
+          "x": 5683,
+          "y": -877
+        },
+        {
+          "x": 5737,
+          "y": -386
+        },
+        {
+          "x": 5749,
+          "y": 108
+        },
+        {
+          "x": 5719,
+          "y": 601
+        },
+        {
+          "x": 3200,
+          "y": 2200
+        },
+        {
+          "x": -3200,
+          "y": 2200
+        }
+      ],
+      "label": "",
+      "capacity": 0,
+      "fs": 80,
+      "blocks": []
+    },
+    {
+      "id": "s396",
+      "kind": "rect",
+      "type": "stage",
+      "x": 0,
+      "y": 700,
+      "w": 2600,
+      "h": 1300,
+      "rot": 0,
+      "label": "SAHNE",
+      "capacity": 0,
+      "fs": 210,
+      "blocks": []
+    },
+    {
+      "id": "s397",
+      "kind": "rect",
+      "type": "screen",
+      "x": 0,
+      "y": -180,
+      "w": 2200,
+      "h": 420,
+      "rot": 0,
+      "label": "ORKESTRA ÇUKURU",
+      "capacity": 0,
+      "fs": 105,
+      "blocks": []
+    },
+    {
+      "id": "s398",
+      "kind": "rect",
+      "type": "door",
+      "x": -3050,
+      "y": -2450,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 1",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": [
+        "b403",
+        "b404",
+        "b405",
+        "b406",
+        "b409",
+        "b410",
+        "b411",
+        "b415",
+        "b416",
+        "b420"
+      ]
+    },
+    {
+      "id": "s399",
+      "kind": "rect",
+      "type": "door",
+      "x": 3050,
+      "y": -2450,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 2",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": [
+        "b403",
+        "b406",
+        "b407",
+        "b408",
+        "b412",
+        "b413",
+        "b414",
+        "b418",
+        "b419",
+        "b421"
+      ]
+    },
+    {
+      "id": "s400",
+      "kind": "rect",
+      "type": "door",
+      "x": -4550,
+      "y": -1500,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 3",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": [
+        "b403",
+        "b404",
+        "b409"
+      ]
+    },
+    {
+      "id": "s401",
+      "kind": "rect",
+      "type": "door",
+      "x": 4550,
+      "y": -1500,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 4",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": [
+        "b408",
+        "b414"
+      ]
+    },
+    {
+      "id": "s402",
+      "kind": "rect",
+      "type": "door",
+      "x": 0,
+      "y": -5980,
+      "w": 300,
+      "h": 300,
+      "rot": 0,
+      "label": "KAPI 5",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": [
+        "b406",
+        "b411",
+        "b412",
+        "b417"
+      ]
+    },
+    {
+      "id": "s422",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "wc",
+      "x": -5150,
+      "y": -2350,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "WC",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s423",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "wc",
+      "x": 5150,
+      "y": -2350,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "WC",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s424",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "beer",
+      "x": -4300,
+      "y": -4100,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Büfe",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s425",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "beer",
+      "x": 4300,
+      "y": -4100,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Büfe",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s426",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "stairs",
+      "x": -2450,
+      "y": -5250,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Merdiven",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s427",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "stairs",
+      "x": 2450,
+      "y": -5250,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "Merdiven",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s428",
+      "kind": "icon",
+      "type": "icon",
+      "icon": "aid",
+      "x": 0,
+      "y": 1750,
+      "rot": 0,
+      "size": 34,
+      "w": 200,
+      "h": 200,
+      "label": "İlk yardım",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b403",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 0,
+      "r0": 1150,
+      "rows": 2,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "15,15",
+      "align": "center",
+      "aStart": -20,
+      "aEnd": 20,
+      "aCenter": 0,
+      "pad": 45,
+      "level": "Protokol",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "PR",
+      "name": "Protokol · PR"
+    },
+    {
+      "id": "b404",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -70,
+      "r0": 1500,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -14.6352,
+      "aEnd": 14.6352,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Alt Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "A",
+      "name": "Alt Kademe · A"
+    },
+    {
+      "id": "b405",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -35,
+      "r0": 1500,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -14.6352,
+      "aEnd": 14.6352,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Alt Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "B",
+      "name": "Alt Kademe · B"
+    },
+    {
+      "id": "b406",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 0,
+      "r0": 1500,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -14.6352,
+      "aEnd": 14.6352,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Alt Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "C",
+      "name": "Alt Kademe · C"
+    },
+    {
+      "id": "b407",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 35,
+      "r0": 1500,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -14.6352,
+      "aEnd": 14.6352,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Alt Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "D",
+      "name": "Alt Kademe · D"
+    },
+    {
+      "id": "b408",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 70,
+      "r0": 1500,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -14.6352,
+      "aEnd": 14.6352,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Alt Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "E",
+      "name": "Alt Kademe · E"
+    },
+    {
+      "id": "b409",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -75,
+      "r0": 2700,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.3023,
+      "aEnd": 13.3023,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Orta Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "F",
+      "name": "Orta Kademe · F"
+    },
+    {
+      "id": "b410",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -45,
+      "r0": 2700,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.3023,
+      "aEnd": 13.3023,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Orta Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "G",
+      "name": "Orta Kademe · G"
+    },
+    {
+      "id": "b411",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -15,
+      "r0": 2700,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.3023,
+      "aEnd": 13.3023,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Orta Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "H",
+      "name": "Orta Kademe · H"
+    },
+    {
+      "id": "b412",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 15,
+      "r0": 2700,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.3023,
+      "aEnd": 13.3023,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Orta Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "I",
+      "name": "Orta Kademe · I"
+    },
+    {
+      "id": "b413",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 45,
+      "r0": 2700,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.3023,
+      "aEnd": 13.3023,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Orta Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "J",
+      "name": "Orta Kademe · J"
+    },
+    {
+      "id": "b414",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 75,
+      "r0": 2700,
+      "rows": 11,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.3023,
+      "aEnd": 13.3023,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Orta Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "K",
+      "name": "Orta Kademe · K"
+    },
+    {
+      "id": "b415",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -60,
+      "r0": 3900,
+      "rows": 6,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.6778,
+      "aEnd": 13.6778,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Üst Kademe",
+      "ov": {
+        "0,26": {
+          "rm": true
+        },
+        "0,27": {
+          "rm": true
+        },
+        "0,28": {
+          "rm": true
+        },
+        "0,29": {
+          "rm": true
+        },
+        "0,30": {
+          "rm": true
+        },
+        "0,31": {
+          "rm": true
+        },
+        "0,32": {
+          "rm": true
+        },
+        "0,33": {
+          "rm": true
+        },
+        "0,34": {
+          "rm": true
+        },
+        "1,28": {
+          "rm": true
+        },
+        "1,29": {
+          "rm": true
+        },
+        "1,30": {
+          "rm": true
+        },
+        "1,31": {
+          "rm": true
+        },
+        "1,32": {
+          "rm": true
+        },
+        "1,33": {
+          "rm": true
+        },
+        "2,31": {
+          "rm": true
+        },
+        "2,32": {
+          "rm": true
+        },
+        "2,33": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "M",
+      "name": "Üst Kademe · M"
+    },
+    {
+      "id": "b416",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -30,
+      "r0": 3900,
+      "rows": 6,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.6778,
+      "aEnd": 13.6778,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Üst Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "N",
+      "name": "Üst Kademe · N"
+    },
+    {
+      "id": "b417",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 0,
+      "r0": 3900,
+      "rows": 6,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.6778,
+      "aEnd": 13.6778,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Üst Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "O",
+      "name": "Üst Kademe · O"
+    },
+    {
+      "id": "b418",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 30,
+      "r0": 3900,
+      "rows": 6,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.6778,
+      "aEnd": 13.6778,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Üst Kademe",
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "P",
+      "name": "Üst Kademe · P"
+    },
+    {
+      "id": "b419",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 60,
+      "r0": 3900,
+      "rows": 6,
+      "rowGap": 95,
+      "seatGap": 50,
+      "counts": "",
+      "align": "center",
+      "aStart": -13.6778,
+      "aEnd": 13.6778,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Üst Kademe",
+      "ov": {
+        "0,2": {
+          "rm": true
+        },
+        "0,3": {
+          "rm": true
+        },
+        "0,4": {
+          "rm": true
+        },
+        "0,5": {
+          "rm": true
+        },
+        "0,6": {
+          "rm": true
+        },
+        "0,7": {
+          "rm": true
+        },
+        "0,8": {
+          "rm": true
+        },
+        "0,9": {
+          "rm": true
+        },
+        "0,10": {
+          "rm": true
+        },
+        "1,4": {
+          "rm": true
+        },
+        "1,5": {
+          "rm": true
+        },
+        "1,6": {
+          "rm": true
+        },
+        "1,7": {
+          "rm": true
+        },
+        "1,8": {
+          "rm": true
+        },
+        "1,9": {
+          "rm": true
+        },
+        "2,5": {
+          "rm": true
+        },
+        "2,6": {
+          "rm": true
+        },
+        "2,7": {
+          "rm": true
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "Q",
+      "name": "Üst Kademe · Q"
+    },
+    {
+      "id": "b420",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": -52,
+      "r0": 4680,
+      "rows": 2,
+      "rowGap": 130,
+      "seatGap": 62,
+      "counts": "18,18",
+      "align": "center",
+      "aStart": -13,
+      "aEnd": 13,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Erişilebilir Platform",
+      "ov": {
+        "0,0": {
+          "at": "wheel"
+        },
+        "0,1": {
+          "at": "comp"
+        },
+        "0,2": {
+          "at": "wheel"
+        },
+        "0,3": {
+          "at": "comp"
+        },
+        "0,4": {
+          "at": "wheel"
+        },
+        "0,5": {
+          "at": "comp"
+        },
+        "0,6": {
+          "at": "wheel"
+        },
+        "0,7": {
+          "at": "comp"
+        },
+        "0,8": {
+          "at": "wheel"
+        },
+        "0,9": {
+          "at": "comp"
+        },
+        "0,10": {
+          "at": "wheel"
+        },
+        "0,11": {
+          "at": "comp"
+        },
+        "0,12": {
+          "at": "wheel"
+        },
+        "0,13": {
+          "at": "comp"
+        },
+        "0,14": {
+          "at": "wheel"
+        },
+        "0,15": {
+          "at": "comp"
+        },
+        "0,16": {
+          "at": "wheel"
+        },
+        "0,17": {
+          "at": "comp"
+        },
+        "1,0": {
+          "at": "wheel"
+        },
+        "1,1": {
+          "at": "comp"
+        },
+        "1,2": {
+          "at": "wheel"
+        },
+        "1,3": {
+          "at": "comp"
+        },
+        "1,4": {
+          "at": "wheel"
+        },
+        "1,5": {
+          "at": "comp"
+        },
+        "1,6": {
+          "at": "wheel"
+        },
+        "1,7": {
+          "at": "comp"
+        },
+        "1,8": {
+          "at": "wheel"
+        },
+        "1,9": {
+          "at": "comp"
+        },
+        "1,10": {
+          "at": "wheel"
+        },
+        "1,11": {
+          "at": "comp"
+        },
+        "1,12": {
+          "at": "wheel"
+        },
+        "1,13": {
+          "at": "comp"
+        },
+        "1,14": {
+          "at": "wheel"
+        },
+        "1,15": {
+          "at": "comp"
+        },
+        "1,16": {
+          "at": "wheel"
+        },
+        "1,17": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "E1",
+      "name": "Erişilebilir Platform · E1"
+    },
+    {
+      "id": "b421",
+      "kind": "fan",
+      "mode": "span",
+      "x": 0,
+      "y": 0,
+      "rot": 52,
+      "r0": 4680,
+      "rows": 2,
+      "rowGap": 130,
+      "seatGap": 62,
+      "counts": "18,18",
+      "align": "center",
+      "aStart": -13,
+      "aEnd": 13,
+      "aCenter": 0,
+      "pad": 60,
+      "level": "Erişilebilir Platform",
+      "ov": {
+        "0,0": {
+          "at": "wheel"
+        },
+        "0,1": {
+          "at": "comp"
+        },
+        "0,2": {
+          "at": "wheel"
+        },
+        "0,3": {
+          "at": "comp"
+        },
+        "0,4": {
+          "at": "wheel"
+        },
+        "0,5": {
+          "at": "comp"
+        },
+        "0,6": {
+          "at": "wheel"
+        },
+        "0,7": {
+          "at": "comp"
+        },
+        "0,8": {
+          "at": "wheel"
+        },
+        "0,9": {
+          "at": "comp"
+        },
+        "0,10": {
+          "at": "wheel"
+        },
+        "0,11": {
+          "at": "comp"
+        },
+        "0,12": {
+          "at": "wheel"
+        },
+        "0,13": {
+          "at": "comp"
+        },
+        "0,14": {
+          "at": "wheel"
+        },
+        "0,15": {
+          "at": "comp"
+        },
+        "0,16": {
+          "at": "wheel"
+        },
+        "0,17": {
+          "at": "comp"
+        },
+        "1,0": {
+          "at": "wheel"
+        },
+        "1,1": {
+          "at": "comp"
+        },
+        "1,2": {
+          "at": "wheel"
+        },
+        "1,3": {
+          "at": "comp"
+        },
+        "1,4": {
+          "at": "wheel"
+        },
+        "1,5": {
+          "at": "comp"
+        },
+        "1,6": {
+          "at": "wheel"
+        },
+        "1,7": {
+          "at": "comp"
+        },
+        "1,8": {
+          "at": "wheel"
+        },
+        "1,9": {
+          "at": "comp"
+        },
+        "1,10": {
+          "at": "wheel"
+        },
+        "1,11": {
+          "at": "comp"
+        },
+        "1,12": {
+          "at": "wheel"
+        },
+        "1,13": {
+          "at": "comp"
+        },
+        "1,14": {
+          "at": "wheel"
+        },
+        "1,15": {
+          "at": "comp"
+        },
+        "1,16": {
+          "at": "wheel"
+        },
+        "1,17": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "label": "E2",
+      "name": "Erişilebilir Platform · E2"
+    }
+  ]
+}

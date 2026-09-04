@@ -1,4 +1,20 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
+import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats,
+  resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND } from "./core/geometry.js";
+import { offsetPoly } from "./core/polygon.js";
+import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
+import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
+import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
+import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
+import { gateMap, autoGates } from "./core/gates.js";
+import { nid } from "./core/ids.js";
+import { buildSeatsPayload } from "./core/export.js";
+import { buildCtx, runRules } from "./core/rules.js";
+import { BUILTINS, EMPTY } from "./venues/index.js";
+import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
+import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
+import { reducer, initialState } from "./ui/state/reducer.js";
+import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks } from "./ui/state/selectors.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -8,7 +24,7 @@ import React, { useState, useMemo, useRef, useCallback, useEffect } from "react"
    v7: plan.json içe aktarma · kalibrasyon · tuval tutamakları · doğrulama
    v8'de gelen:
    1. KOLTUK NİTELİKLERİ — tekerlekli sandalye, refakatçi, görüş kısıtlı,
-      teknik/satışa kapalı. Blok seviyesinde varsayılan, koltuk seviyesinde
+      teknik alan. Blok seviyesinde varsayılan, koltuk seviyesinde
       istisna, "Nitelik boya" aracıyla toplu uygulama.
       Kategoriden bağımsızdır: kategori fiyat etiketi, nitelik koltuğun
       fiziksel gerçeği. Biletleme sistemi ikisini ayrı kullanır.
@@ -22,543 +38,20 @@ import React, { useState, useMemo, useRef, useCallback, useEffect } from "react"
       kimliklerini yok ediyor? Satılmış biletin karşılığı odur.
    ══════════════════════════════════════════════════════════════════════════ */
 
-const RAD = Math.PI / 180;
-const DEF = { seatGap: 50, rowGap: 90, seatW: 41, seatH: 38 };
 const SEAT_BUDGET = 3500;
-/* cm ve derece için 4 ondalık yeter (0.0001° ~ birkaç mikron yay) — trig
-   sonuçlarını (bowl/tier'daki aisle→açı çevrimi, radyal dizi) ekranda ve
-   dışa aktarımda 15 haneli gürültüye dönüşmeden önce burada temizle. */
-const R4 = (n) => Math.round(n * 10000) / 10000;
 
-/* ─────────────────────────  YARDIMCILAR  ───────────────────────── */
 
-function parseCounts(s) {
-  const t = String(s || "").trim();
-  if (!t) return null;
-  const m = t.match(/^(\d+)\s*\.\.\s*(\d+)$/);
-  if (m) return { from: +m[1], to: +m[2] };
-  const list = t.split(",").map((x) => parseInt(x.trim(), 10)).filter((n) => n > 0);
-  return list.length ? list : null;
-}
-function countAt(spec, r, rows, fb) {
-  if (!spec) return fb;
-  if (spec.from != null) {
-    const t = rows <= 1 ? 0 : r / (rows - 1);
-    return Math.max(1, Math.round(spec.from + (spec.to - spec.from) * t));
-  }
-  return spec[r] ?? spec[spec.length - 1];
-}
-const offsetFor = (align, maxN, n) =>
-  align === "left" ? 0 : align === "right" ? maxN - n : Math.round((maxN - n) / 2);
 
-/* ─────────────────────────  GEOMETRİ ÇEKİRDEĞİ  ───────────────────────── */
 
-function prep(b) {
-  if (b.kind === "table") {
-    const n = Math.max(1, b.seats || 4);
-    return { counts: [n], maxN: n, R0: 0, sgn: 1 };
-  }
-  if (b.kind === "free") return { counts: [b.pts.length], maxN: b.pts.length, R0: 0, sgn: 1 };
-  const spec = parseCounts(b.counts);
-  const counts = Array.from({ length: b.rows }, (_, r) => {
-    const fb = b.kind === "fan"
-      ? (b.mode === "pitch" ? 10
-        : Math.round(((b.r0 + r * b.rowGap) * (b.aEnd - b.aStart) * RAD) / b.seatGap))
-      : Math.max(1, b.cols + r * (b.taper || 0));
-    return Math.max(1, countAt(spec, r, b.rows, fb));
-  });
-  const maxN = Math.max(...counts);
-  let R0 = 0, sgn = 1;
-  if (b.kind === "grid" && Math.abs(b.curve) > 1) {
-    const W = Math.max(1, (maxN - 1) * b.seatGap);
-    const h = Math.abs(b.curve);
-    sgn = Math.sign(b.curve);
-    R0 = (W * W) / (8 * h) + h / 2;
-  }
-  return { counts, maxN, R0, sgn };
-}
 
-function rowPts(b, r, P) {
-  if (b.kind === "table") return tableCells(b)[0];
-  if (b.kind === "free") return b.pts.map((p, i) => ({ x: p.x, y: p.y, a: p.rot || 0, ci: i }));
-  const n = P.counts[r];
-  const off = offsetFor(b.align, P.maxN, n);
-  if (b.kind === "fan") {
-    const R = b.r0 + r * b.rowGap;
-    let angles;
-    if (b.mode === "pitch") {
-      const step = b.seatGap / R / RAD;
-      const start = b.aCenter - (step * (n - 1)) / 2;
-      angles = Array.from({ length: n }, (_, c) => start + c * step);
-    } else {
-      const step = (b.aEnd - b.aStart) / n;
-      angles = Array.from({ length: n }, (_, c) => b.aStart + step / 2 + c * step);
-    }
-    return angles.map((a, c) => ({ x: R * Math.sin(a * RAD), y: -R * Math.cos(a * RAD), a, ci: off + c }));
-  }
-  if (P.R0 > 0) {
-    const R = P.R0 + r * b.rowGap, step = b.seatGap / R;
-    return Array.from({ length: n }, (_, c) => {
-      const a = (off + c - (P.maxN - 1) / 2) * step;
-      return { x: R * Math.sin(a), y: P.sgn * (R * Math.cos(a) - P.R0), a: (-a / RAD) * P.sgn, ci: off + c };
-    });
-  }
-  return Array.from({ length: n }, (_, c) => ({
-    x: (off + c - (P.maxN - 1) / 2) * b.seatGap, y: r * b.rowGap, a: 0, ci: off + c,
-  }));
-}
-/** Bir sıranın yalnızca iki ucu — tüm sırayı üretmeden.
- *  Blok tabanının yan kenarları bununla çıkarılıyor; 96 bloklu bir
- *  stadyumda tüm koltukları üretmeden taban geometrisi elde ediliyor. */
-function rowEnds(b, r, P) {
-  if (b.kind === "table") { const c = tableCells(b)[0]; return [c[0], c[c.length - 1]]; }
-  if (b.kind === "free") {
-    const a = b.pts[0] || { x: 0, y: 0 }, z = b.pts[b.pts.length - 1] || a;
-    return [{ x: a.x, y: a.y }, { x: z.x, y: z.y }];
-  }
-  const n = P.counts[r], off = offsetFor(b.align, P.maxN, n);
-  if (b.kind === "fan") {
-    const R = b.r0 + r * b.rowGap;
-    let a0, a1;
-    if (b.mode === "pitch") {
-      const step = b.seatGap / R / RAD;
-      a0 = b.aCenter - (step * (n - 1)) / 2; a1 = a0 + step * (n - 1);
-    } else {
-      const step = (b.aEnd - b.aStart) / n;
-      a0 = b.aStart + step / 2; a1 = a0 + step * (n - 1);
-    }
-    return [a0, a1].map((a) => ({ x: R * Math.sin(a * RAD), y: -R * Math.cos(a * RAD) }));
-  }
-  if (P.R0 > 0) {
-    const R = P.R0 + r * b.rowGap, step = b.seatGap / R;
-    return [off, off + n - 1].map((c) => {
-      const a = (c - (P.maxN - 1) / 2) * step;
-      return { x: R * Math.sin(a), y: P.sgn * (R * Math.cos(a) - P.R0) };
-    });
-  }
-  return [off, off + n - 1].map((c) => ({ x: (c - (P.maxN - 1) / 2) * b.seatGap, y: r * b.rowGap }));
-}
 
-/** Masa: koltuklar masanın çevresine dizilir, hepsi masaya döner.
- *  Bar, gala ve kabare düzeninde sıra diye bir şey yok; birim masadır. */
-function tableCells(b) {
-  const n = Math.max(1, b.seats || 4);
-  const clear = (b.clear != null ? b.clear : 12) + DEF.seatH / 2;
-  const out = [];
-  if ((b.tShape || "round") === "round") {
-    const R = (b.tW || 90) / 2 + clear;
-    for (let i = 0; i < n; i++) {
-      const a = (b.a0 || 0) + (360 * i) / n;
-      out.push({ x: R * Math.sin(a * RAD), y: -R * Math.cos(a * RAD), a, ci: i });
-    }
-    return [out];
-  }
-  /* Dikdörtgen masa: koltuklar çevre boyunca eşit aralıkla, yüzleri içeri */
-  const W = (b.tW || 160) + 2 * clear, H = (b.tH || 90) + 2 * clear;
-  const per = 2 * (W + H), step = per / n;
-  for (let i = 0; i < n; i++) {
-    let d = (step / 2 + i * step + (b.a0 || 0) / 360 * per) % per;
-    let x, y, a;
-    if (d < W) { x = -W / 2 + d; y = -H / 2; a = 0; }
-    else if (d < W + H) { x = W / 2; y = -H / 2 + (d - W); a = 90; }
-    else if (d < 2 * W + H) { x = W / 2 - (d - W - H); y = H / 2; a = 180; }
-    else { x = -W / 2; y = H / 2 - (d - 2 * W - H); a = 270; }
-    out.push({ x, y, a, ci: i });
-  }
-  return [out];
-}
-
-/** Poligonu kendi dış normali boyunca büyütür.
- *  Önce payı ağırlık merkezinden dışa doğru veriyordum; uzun ve sığ
- *  bloklarda bu pay yanlış yöne gidip koltukları dışarıda bırakıyordu. */
-function offsetPoly(ring, d) {
-  const n = ring.length;
-  if (n < 3 || d === 0) return ring;
-  const area = (pts) => {
-    let a = 0;
-    for (let i = 0, j = pts.length - 1; i < pts.length; j = i++)
-      a += pts[j].x * pts[i].y - pts[i].x * pts[j].y;
-    return a / 2;
-  };
-  const sign = area(ring) > 0 ? 1 : -1;
-  const nrm = (p, q) => {
-    const dx = q.x - p.x, dy = q.y - p.y, L = Math.hypot(dx, dy) || 1;
-    return { x: (dy / L) * sign, y: (-dx / L) * sign };
-  };
-  return ring.map((p, i) => {
-    const a = nrm(ring[(i - 1 + n) % n], p), b = nrm(p, ring[(i + 1) % n]);
-    let vx = a.x + b.x, vy = a.y + b.y;
-    const L = Math.hypot(vx, vy) || 1;
-    vx /= L; vy /= L;
-    /* Sivri köşelerde gönye uzaması — kontrolsüz büyümesin diye sınırlı */
-    const miter = Math.min(2.4, 1 / Math.max(0.42, (vx * a.x + vy * a.y)));
-    return { x: p.x + vx * d * miter, y: p.y + vy * d * miter };
-  });
-}
-
-const toWorld = (b, p, cos, sin) => ({ x: b.x + p.x * cos - p.y * sin, y: b.y + p.x * sin + p.y * cos });
-const toLocal = (b, p) => {
-  const a = -(b.rot || 0) * RAD, dx = p.x - b.x, dy = p.y - b.y;
-  return { x: Math.round(dx * Math.cos(a) - dy * Math.sin(a)),
-           y: Math.round(dx * Math.sin(a) + dy * Math.cos(a)) };
-};
-const polarPt = (r, a) => ({ x: r * Math.sin(a * RAD), y: -r * Math.cos(a * RAD) });
-
-/* ─────────────────────────  NUMARALANDIRMA  ───────────────────────── */
-
-const AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const AMBIG = new Set(["I", "O", "Q"]);
-function letterLabel(i, skipAmbig) {
-  const alpha = skipAmbig ? [...AZ].filter((c) => !AMBIG.has(c)) : [...AZ];
-  let s = "", n = i;
-  do { s = alpha[n % alpha.length] + s; n = Math.floor(n / alpha.length) - 1; } while (n >= 0);
-  return s;
-}
-function rowLabel(num, i, total) {
-  const idx = num.rowRev ? total - 1 - i : i;
-  if (num.rowScheme === "custom") {
-    const list = num.rowCustom.split(",").map((s) => s.trim()).filter(Boolean);
-    return list[idx] ?? String(idx + 1);
-  }
-  if (num.rowScheme === "letter") return letterLabel(idx + (num.rowStart - 1), num.skipAmbig);
-  return String(idx + num.rowStart);
-}
-const parseSkip = (s) =>
-  new Set(String(s).split(",").map((x) => parseInt(x.trim(), 10)).filter((n) => !isNaN(n)));
-
-function numberRow(flags, num, maxN) {
-  const skip = parseSkip(num.skip);
-  const out = {};
-  const live = flags.map((f, i) => ({ ...f, i })).filter((f) => !f.rm);
-  const step = num.seatScheme === "seq" ? 1 : 2;
-  if (num.anchor === "column" && num.seatScheme !== "center") {
-    live.forEach((f) => {
-      if (f.gap) return;
-      const k = num.seatDir === "rtl" ? maxN - 1 - f.ci : f.ci;
-      out[f.i] = num.seatStart + step * k;
-    });
-    return out;
-  }
-  if (num.seatScheme === "center") {
-    const mid = (live.length - 1) / 2;
-    let odd = num.seatStart, even = num.seatStart + 1;
-    const put = (f, v) => { if (!f.gap) out[f.i] = v; };
-    for (let k = Math.ceil(mid); k < live.length; k++) { while (skip.has(odd)) odd += 2; put(live[k], odd); odd += 2; }
-    for (let k = Math.floor(mid); k >= 0; k--) { while (skip.has(even)) even += 2; put(live[k], even); even += 2; }
-    return out;
-  }
-  let v = num.seatScheme === "even" ? Math.max(2, num.seatStart) : num.seatStart;
-  const order = num.seatDir === "rtl" ? [...live].reverse() : live;
-  for (const f of order) {
-    while (skip.has(v)) v += step;
-    if (!f.gap) out[f.i] = v;
-    v += step;
-  }
-  return out;
-}
-
-/* ─────────────────────────  META / KOLTUKLAR  ───────────────────────── */
-
-function buildMeta(b) {
-  const P = prep(b);
-  const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
-  const rows = P.counts.length;
-  let removed = 0, gaps = 0;
-  Object.values(b.ov || {}).forEach((o) => { if (o.rm) removed++; else if (o.gap) gaps++; });
-  const seatCount = P.counts.reduce((a, c) => a + c, 0) - removed - gaps;
-
-  /* nitelik sayımı — blok varsayılanı + koltuk istisnaları */
-  const attrs = {};
-  const withAt = Object.values(b.ov || {}).filter((o) => !o.rm && !o.gap && o.at !== undefined);
-  if (b.attr) attrs[b.attr] = Math.max(0, seatCount - withAt.length);
-  withAt.forEach((o) => { if (o.at) attrs[o.at] = (attrs[o.at] || 0) + 1; });
-  /* Blok tabanı: ön sıranın kavisi, iki yan kenar boyunca her sıranın ucu,
-     arka sıranın kavisi. Koltukların dış hattı değil, platformun kendi
-     şekli — daralan, genişleyen, oyuklu bloklar böyle okunuyor. */
-  const sample = (r) => {
-    const pts = rowPts(b, r, P);
-    if (pts.length <= 14) return pts;
-    const out = [];
-    for (let i = 0; i < 14; i++) out.push(pts[Math.round((i * (pts.length - 1)) / 13)]);
-    return out;
-  };
-  const W = (p) => toWorld(b, p, cos, sin);
-  const front = sample(0).map(W);
-  const back = sample(rows - 1).map(W).reverse();
-
-  /* Yan kenarlar: koltuk sayısı tam sayı olmak zorunda olduğu için sıra
-     uçları testere dişi gibi ileri geri sıçrıyor. Platform düz bir zemindir,
-     bu sıçramayı taşımamalı — kenar yumuşatılıyor. Gerçek daralma korunur,
-     yarım koltukluk gürültü silinir. */
-  const le = [], re = [];
-  for (let r = 0; r < rows; r++) {
-    const [a, z] = rowEnds(b, r, P);
-    le.push({ x: a.x, y: a.y }); re.push({ x: z.x, y: z.y });
-  }
-  /* Eski çözüm 3 geçişli ortalama + sapma sınırıydı. Basamağı tam
-     yutamadığı için kenar kırıklı kalıyordu (Zorlu ORK-C'de görüldü:
-     sağ uç 50cm'lik basamaklarla iniyor, yumuşatma sınırı 27,5cm).
-     Yerine DIŞBÜKEY ZİNCİR: bir nokta, komşularını birleştiren doğrunun
-     içinde kalıyorsa atılır; dışında kalıyorsa korunur. Sonuç parça parça
-     DÜZ bir kenar ve — kritik olan — hat hiçbir zaman içeri kesmez, yani
-     koltuk taban dışında kalamaz. Ortalama alan eski yöntem içeri
-     kesebiliyordu, sapma sınırı da tam bunun içindi.
-     Yalnız testere dişi ölçeğindeki sapmalar atılır (≤ bir koltuk
-     aralığı); gerçek daralma, oyuk ve kavis olduğu gibi korunur. */
-  let ox = 0, oy = 0;
-  for (let r = 0; r < rows; r++) { ox += re[r].x - le[r].x; oy += re[r].y - le[r].y; }
-  const olen = Math.hypot(ox, oy) || 1;
-  const outR = { x: ox / olen, y: oy / olen };
-  const chainEdge = (pts, out) => {
-    if (pts.length < 3) return pts;
-    const st = [];
-    for (const p of pts) {
-      while (st.length >= 2) {
-        const a = st[st.length - 2], q = st[st.length - 1];
-        let nx = -(p.y - a.y), ny = p.x - a.x;
-        const nl = Math.hypot(nx, ny) || 1;
-        nx /= nl; ny /= nl;
-        if (nx * out.x + ny * out.y < 0) { nx = -nx; ny = -ny; }
-        const d = (q.x - a.x) * nx + (q.y - a.y) * ny;   // q'nun dışa sapması
-        if (d > 0) break;                 // dışarı taşıyor → köşe gerçek, koru
-        if (-d > b.seatGap) break;        // derin oyuk → gerçek geometri, koru
-        st.pop();                         // testere dişi → at
-      }
-      st.push(p);
-    }
-    return st;
-  };
-  const rs = chainEdge(re, outR);
-  const ls = chainEdge(le, { x: -outR.x, y: -outR.y });
-  const rightEdge = rs.slice(1, -1).map(W);
-  const leftEdge = ls.slice(1, -1).map(W);
-  const ring = [...front, ...rightEdge, ...back, ...leftEdge.reverse()];
-
-  /* Pay = kullanıcı payı + koltuğun yarısı + yarım koltuk aralığı.
-     Son terim eskiden yumuşatmanın kenarı içeri çekmesini telafi ediyordu;
-     dışbükey zincir artık içeri kesmediği için o gerekçe kalktı. Yine de
-     duruyor: koltuk gövdesi ile komşu bloğun kenarı arasında nefes payı
-     bırakıyor ve salonların taban aralıkları bu değere göre ayarlandı
-     (GS/Ülker/AKM kademe boşlukları). Kaldırmak tüm salonların çakışma
-     dengesini bozar — ayrı bir iş. */
-  const pad = b.pad != null ? b.pad : 55;
-  const auto = offsetPoly(ring, pad + Math.max(DEF.seatW, DEF.seatH) / 2 + b.seatGap / 2);
-
-  /* Elle çizilmiş taban varsa o kazanır — sütun, merdiven boşluğu ve
-     düzensiz kenarlar koltuklardan türetilemez. */
-  if (b.kind === "table" && !(b.foot && b.foot.length >= 3)) {
-    const pad2 = (b.pad != null ? b.pad : 18) + Math.hypot(DEF.seatW, DEF.seatH) / 2;
-    const R = Math.max(...ring.map((p) => Math.hypot(p.x - b.x, p.y - b.y))) + pad2;
-    const ol = Array.from({ length: 28 }, (_, i) => {
-      const t = (i / 28) * Math.PI * 2;
-      return { x: b.x + R * Math.sin(t), y: b.y + R * Math.cos(t) };
-    });
-    const xs2 = ol.map((p) => p.x), ys2 = ol.map((p) => p.y);
-    return { P, seatCount, attrs, outline: ol, auto: ol, manual: false,
-      cx: b.x, cy: b.y, rows,
-      bbox: { x0: Math.min(...xs2), x1: Math.max(...xs2), y0: Math.min(...ys2), y1: Math.max(...ys2) } };
-  }
-  /* Tek sıralı blokta ön ve arka sıra aynı sıradır; dış hat çöküp
-     tel gibi bir çizgiye dönüyordu. Kapsül olarak kuruluyor. */
-  if (rows === 1 && b.kind !== "table" && !(b.foot && b.foot.length >= 3)) {
-    const line = rowPts(b, 0, P);
-    const a = line[0], z = line[line.length - 1];
-    const hh = DEF.seatH / 2, hw = DEF.seatW / 2;
-    const top = line.map((q) => W({ x: q.x, y: q.y - hh }));
-    const bot = [...line].reverse().map((q) => W({ x: q.x, y: q.y + hh }));
-    const ring1 = [...top, W({ x: z.x + hw, y: z.y }), ...bot, W({ x: a.x - hw, y: a.y })];
-    const ol = offsetPoly(ring1, b.pad != null ? b.pad : 55);
-    const xs1 = ol.map((p) => p.x), ys1 = ol.map((p) => p.y);
-    return { P, seatCount, attrs, outline: ol, auto: ol, manual: false,
-      cx: (Math.min(...xs1) + Math.max(...xs1)) / 2,
-      cy: (Math.min(...ys1) + Math.max(...ys1)) / 2, rows,
-      bbox: { x0: Math.min(...xs1), x1: Math.max(...xs1), y0: Math.min(...ys1), y1: Math.max(...ys1) } };
-  }
-
-  const manual = b.foot && b.foot.length >= 3;
-  const outline = manual ? b.foot.map(W) : auto;
-  const cx = outline.reduce((a, p) => a + p.x, 0) / outline.length;
-  const cy = outline.reduce((a, p) => a + p.y, 0) / outline.length;
-  const xs = outline.map((p) => p.x), ys = outline.map((p) => p.y);
-  return { P, seatCount, attrs, outline, auto, manual, cx, cy, rows,
-    bbox: { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) } };
-}
-
-function buildSeats(b, meta, tpl) {
-  const P = meta.P;
-  const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
-  const seats = [], labels = [];
-  for (let r = 0; r < P.counts.length; r++) {
-    const row = rowPts(b, r, P);
-    const flags = row.map((p, c) => {
-      const o = b.ov[`${r},${c}`] || {};
-      return { rm: !!o.rm, gap: !!o.gap, ci: p.ci };
-    });
-    const nums = numberRow(flags, b.num, P.maxN);
-    const rl = rowLabel(b.num, r, P.counts.length);
-    row.forEach((p, c) => {
-      const f = flags[c];
-      if (f.rm) return;
-      const o = b.ov[`${r},${c}`] || {};
-      const w = toWorld(b, { x: p.x + (o.dx || 0), y: p.y + (o.dy || 0) }, cos, sin);
-      const label = o.label != null && o.label !== "" ? o.label : nums[c] ?? "";
-      const gen = formatId(tpl, { level: b.level || "", block: b.label, row: rl, seat: label });
-      seats.push({ key: `${b.id}:${r},${c}`, id: o.id || gen, gen, adopted: !!o.id,
-        block: b.label, level: b.level || "", row: rl, num: label,
-        r, c, gap: f.gap, tweak: !!(o.dx || o.dy || o.rot || o.label || o.id),
-        at: o.at !== undefined ? o.at : (b.attr || ""),
-        x: w.x, y: w.y, rot: p.a + b.rot + (o.rot || 0), color: b.color });
-    });
-    if (b.kind !== "free" && b.kind !== "table" && row.length && P.counts.length > 1) {
-      [[row[0], -1], [row[row.length - 1], 1]].forEach(([p, k], i) => {
-        const w = toWorld(b, { x: p.x + k * b.seatGap * 1.15, y: p.y }, cos, sin);
-        labels.push({ key: `${b.id}-${r}-${i}`, text: rl, x: w.x, y: w.y });
-      });
-    }
-  }
-  return { seats, labels };
-}
 
 /* ─────────────────────────  DİZİ DÖNÜŞÜMLERİ  ───────────────────────── */
 
-let uid = 0;
-const nid = (p = "b") => `${p}${++uid}`;
 
-/** A→B, Z→AA, AA→AB. Salonlar bloklarını harfle adlandırır;
- *  dizi işlemi "A-2" değil "B" üretmeli. */
-function bumpAlpha(s, n) {
-  const up = s.toUpperCase();
-  let v = 0;
-  for (const c of up) v = v * 26 + (c.charCodeAt(0) - 64);
-  v += n;
-  let out = "";
-  while (v > 0) { const r = (v - 1) % 26; out = String.fromCharCode(65 + r) + out; v = Math.floor((v - 1) / 26); }
-  return s === up ? out : out.toLowerCase();
-}
-
-function incLabel(label, n) {
-  const s = String(label ?? "");
-  if (/^\d+$/.test(s)) return String(parseInt(s, 10) + n);
-  const m = s.match(/^(.*?)(\d+)$/);
-  if (m) return m[1] + String(parseInt(m[2], 10) + n);
-  if (/^[A-Za-z]{1,3}$/.test(s)) return bumpAlpha(s, n);
-  return `${s}-${n + 1}`;
-}
-const reLabel = (b, l) => {
-  const nb = { ...b, label: l, name: b.level ? `${b.level} · ${l}` : l };
-  for (const k of ["x", "y", "rot", "aStart", "aEnd", "aCenter"])
-    if (typeof nb[k] === "number") nb[k] = R4(nb[k]);
-  return nb;
-};
-
-/** reLabel'den farkı: bu YENİ blok üretmiyor, VAR OLAN bir bloğun
- *  "Kimlik ön eki" alanı elle değiştirildiğinde çağrılır. name'i sadece
- *  hâlâ otomatik türetilmiş haldeyse (kullanıcı özelleştirmediyse) takip
- *  ettirir — aksi halde elle girilmiş özel adı ezip kaybetmiş oluruz. */
-function relabelPatch(b, label) {
-  const autoName = b.level ? `${b.level} · ${b.label}` : b.label;
-  const patch = { label };
-  if (!b.name || b.name === autoName) patch.name = b.level ? `${b.level} · ${label}` : label;
-  return patch;
-}
-
-function linearArray(blocks, { count, dx, dy }) {
-  const out = [], step = blocks.length;
-  for (let i = 1; i < count; i++)
-    blocks.forEach((b) => out.push(reLabel(
-      { ...b, id: nid(), x: b.x + dx * i, y: b.y + dy * i }, incLabel(b.label, step * i))));
-  return out;
-}
-function radialArray(blocks, { count, cx, cy, step }) {
-  const out = [], lstep = blocks.length;
-  for (let i = 1; i < count; i++) {
-    const t = step * i, c = Math.cos(t * RAD), s = Math.sin(t * RAD);
-    blocks.forEach((b) => {
-      const px = b.x - cx, py = b.y - cy;
-      out.push(reLabel({ ...b, id: nid(),
-        x: cx + px * c - py * s, y: cy + px * s + py * c, rot: b.rot + t },
-        incLabel(b.label, lstep * i)));
-    });
-  }
-  return out;
-}
-
-/* ── akıllı hizalama kılavuzları ───────────────────────────────
-   Sürüklenen seçimin kutusunun merkezi ve kenarları, diğer blokların
-   ve şekillerin merkez/kenarlarıyla eşleştiğinde o eksene yapışır ve
-   kırmızı bir referans çizgisi gösterir. Eşik ekranda 7 piksel —
-   yakınlaştıkça hassaslaşır, uzaklaştıkça yardımcı olur. */
-function alignSetup(ids, metas, metaById, shapes) {
-  const sel = ids.map((id) => metaById.get(id)).filter(Boolean);
-  if (!sel.length) return null;
-  const box = {
-    x0: Math.min(...sel.map((m) => m.bbox.x0)), x1: Math.max(...sel.map((m) => m.bbox.x1)),
-    y0: Math.min(...sel.map((m) => m.bbox.y0)), y1: Math.max(...sel.map((m) => m.bbox.y1)),
-  };
-  box.cx = (box.x0 + box.x1) / 2; box.cy = (box.y0 + box.y1) / 2;
-
-  const tg = [];
-  metas.forEach(({ b, m }) => { if (!ids.includes(b.id)) tg.push(m.bbox); });
-  shapes.forEach((s) => {
-    if (s.kind !== "rect" || s.w < 40) return;
-    tg.push({ x0: s.x - s.w / 2, x1: s.x + s.w / 2, y0: s.y - s.h / 2, y1: s.y + s.h / 2 });
-  });
-  const xs = [], ys = [];
-  tg.forEach((t) => {
-    const cx = (t.x0 + t.x1) / 2, cy = (t.y0 + t.y1) / 2;
-    xs.push({ v: cx, t }, { v: t.x0, t }, { v: t.x1, t });
-    ys.push({ v: cy, t }, { v: t.y0, t }, { v: t.y1, t });
-  });
-  return { box, xs, ys };
-}
-
-/** Ham kaydırmayı hizaya oturtur; yakalanan eksenler için kılavuz döndürür. */
-function alignDelta(d, dx, dy, tol) {
-  const out = { dx, dy, g: [] };
-  if (!d.box) return out;
-  const b = d.box;
-  const pick = (cands, list) => {
-    let best = null;
-    cands.forEach((c) => list.forEach((t) => {
-      const diff = Math.abs(c - t.v);
-      if (diff <= tol && (!best || diff < best.diff)) best = { diff, shift: t.v - c, v: t.v, t: t.t };
-    }));
-    return best;
-  };
-  const bx = pick([b.cx + dx, b.x0 + dx, b.x1 + dx], d.xs);
-  if (bx) {
-    out.dx = dx + bx.shift;
-    out.g.push({ axis: "x", v: bx.v,
-      a: Math.min(b.y0 + dy, bx.t.y0) - 120, z: Math.max(b.y1 + dy, bx.t.y1) + 120 });
-  }
-  const by = pick([b.cy + dy, b.y0 + dy, b.y1 + dy], d.ys);
-  if (by) {
-    out.dy = dy + by.shift;
-    out.g.push({ axis: "y", v: by.v,
-      a: Math.min(b.x0 + out.dx, by.t.x0) - 120, z: Math.max(b.x1 + out.dx, by.t.x1) + 120 });
-  }
-  return out;
-}
 
 /* ─────────────────────────  SABİTLER  ───────────────────────── */
 
-/** Dizi önizlemesi — kimlik üretmez, sadece geometri döndürür. */
-function arrayPreview(blocks, kind, o) {
-  const out = [];
-  const cap = Math.max(2, Math.ceil(260 / Math.max(1, blocks.length)));
-  const n = Math.min(o.count, cap);
-  for (let i = 1; i < n; i++) {
-    if (kind === "lin") blocks.forEach((b) => out.push({ ...b, x: b.x + o.dx * i, y: b.y + o.dy * i }));
-    else {
-      const t = o.step * i, c = Math.cos(t * RAD), s = Math.sin(t * RAD);
-      blocks.forEach((b) => {
-        const px = b.x - o.cx, py = b.y - o.cy;
-        out.push({ ...b, x: o.cx + px * c - py * s, y: o.cy + px * s + py * c, rot: b.rot + t });
-      });
-    }
-  }
-  return out;
-}
 
 /* ─────────────────────────  ARAÇ SİMGELERİ  ─────────────────────────
    16'lık ızgarada, 1.4 kalınlık, dolgusuz. Hepsi aynı elden çıksın diye
@@ -645,22 +138,95 @@ const POI = {
   show: { label: "Gösteri / sahne", img: "theatre-mask", p: [] },
 };
 
-/* ─────────────────────────  KOLTUK NİTELİKLERİ  ─────────────────────────
-   Kategoriden ayrı bir eksen. Kategori = fiyat etiketi (biletleme sistemi
-   fiyatı ona bağlar). Nitelik = koltuğun fiziksel gerçeği.
-   ───────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────  KOLTUK TÜRÜ + ÖZELLİK  ─────────────────────────
+   Evrensel Mekân Yerleşim ve Koltuk Planı Değerlendirme Raporu §5.4: koltuk
+   modeli üç ayrı sorumluluğa ayrılır —
+     seat_kind  = fiziksel oturma/yer birimi NE (ATTRS, aşağıda — GÖRÜNÜM
+                  tarafı; FİZİKSEL tarafı, genişlik, core/geometry.js'teki
+                  SEAT_KINDS'te, o çekirdek dosyada kalmalı).
+     features   = erişim/görüş özelliği, 0..N (FEATURES, aşağıda).
+     seat_group = birlikte satılan yerler — BU GÖREVİN KAPSAMI DIŞINDA.
+   Kategoriden (fiyat etiketi) de AYRI bir eksen: biletleme sistemi ikisini
+   ayrı kullanır.
 
-/* Renkler Biletone tasarım sisteminin anlamsal paletinden (tokens/colors.css):
-   info · success · warning · ink-3. DS'in --seat-selected'ı seçim rengimiz
-   (--sel), --seat-free ise --seatoff. DS'te ayrıca --seat-taken ve
-   --seat-premium var; ikisi de biletleme durumu ve fiyat kategorisi demek,
-   bu editörün kapsamı dışında (geometri + kimlik), o yüzden eşlenmedi. */
+   Renkler Biletera tasarım sisteminin anlamsal paletinden (tokens/colors.css):
+   info · success · warning · ink-3. Eski dört ATTRS anahtarının (wheel/
+   comp/obstr/tech) renkleri BİREBİR korundu (wheelchair_space/companion/
+   tech aynı kavramın yeni adı; restrictedView artık bir KIND değil FEATURE
+   olduğu için o rengi FEATURES.restrictedView taşıyor). loveseat/stool/
+   accessible bu görevle gelen YENİ kavramlar — dördün dışında, DS'in tam
+   token adını bilmediğim için kendi seçtiğim ayırt edici renkler (bkz.
+   görev raporu). DS'in --seat-selected'ı seçim rengimiz (--sel),
+   --seat-free ise --seatoff; --seat-taken/--seat-premium biletleme
+   durumu+fiyat kategorisi demek, bu editörün kapsamı dışında, eşlenmedi. */
 const ATTRS = {
-  wheel: { label: "Tekerlekli sandalye", short: "Tekerlekli", color: "#5AC8FA", glyph: "T", wide: true },
-  comp:  { label: "Refakatçi",           short: "Refakatçi",  color: "#2FD07A", glyph: "R" },
-  obstr: { label: "Görüş kısıtlı",       short: "Görüş kıs.", color: "#F5A623", glyph: "!" },
-  tech:  { label: "Teknik / satışa kapalı", short: "Kapalı",  color: "#6E6E70", glyph: "×" },
+  wheelchair_space: { label: "Tekerlekli sandalye", short: "Tekerlekli", color: "#5AC8FA", glyph: "T", wide: true },
+  companion:        { label: "Refakatçi",           short: "Refakatçi",  color: "#2FD07A", glyph: "R" },
+  loveseat:         { label: "İkili (birleşik)",    short: "İkili",      color: "#8E6FD1", glyph: "2" },
+  stool:            { label: "Tabure",              short: "Tabure",     color: "#B5834D", glyph: "B" },
+  /* raporun kontrollü sözlüğünde KARŞILIĞI YOK — bkz. core/geometry.js'teki
+     SEAT_KINDS.tech notu. Editöre özgü bir uzantı olduğu ORADA (fiziksel
+     tanım) açıklandı, burada TEKRAR yorumlamıyoruz. */
+  tech:             { label: "Teknik alan",         short: "Teknik",     color: "#6E6E70", glyph: "×" },
 };
+/* "single" (varsayılan tür) burada YOK — eskiden boş `at`in ATTRS'te hiç
+   karşılığı olmaması ile aynı fikir, normal koltuğun boyanacak bir
+   rengi/rozeti yok.
+
+   İSİM KORUNDU: scripts/validate-venues.mjs (DOKUNMA) esbuild ile derlenmiş
+   modülden `ATTRS` adını BİREBİR okuyor (bkz. scripts/lib/load-module.mjs
+   EXTRA_EXPORTS) ve kendi WIDE_ATTRS'ini Object.keys(ATTRS).filter(k=>
+   ATTRS[k].wide) ile kurup buildCtx'e veriyor — isim ya da `.wide`
+   sözleşmesi değişirse o script (DOKUNMA) ve test/invariants/helpers.js
+   kırılır. `.wide` artık SADECE kozmetik (dolgusuz/boş gövde render, bkz.
+   seat render'daki isWheel) — FİZİKSEL genişlik SEAT_KINDS'ten geliyor
+   (core/rules.js'teki seatCorners SEAT_KINDS'i DOĞRUDAN import ediyor,
+   artık ctx üzerinden enjeksiyona ihtiyaç yok) — bu ikisi BİLEREK ayrı,
+   validate-venues.mjs'in geçtiği wideAttrs opsiyonu artık kullanılmıyor
+   ama zararsız (bkz. core/rules.js'teki buildCtx notu). */
+
+/* features — seat_kind'den BAĞIMSIZ ikinci eksen (erişim/görüş özelliği,
+   0..N). Aynı koltukta birden fazla bulunabilir; eskiden "wheel"/"comp" bu
+   ikisinin ("bir tekerlekli sandalye yeri" + "erişilebilir") ayrılamayan
+   tek karşılığıydı, "obstr" da "görüş kısıtlı"nın (artık burada) hem
+   tür hem özellik karışığıydı. */
+const FEATURES = {
+  accessible:     { label: "Erişilebilir",  short: "Erişilebilir", color: "#5AC8FA", glyph: "A" },
+  restrictedView: { label: "Görüş kısıtlı", short: "Görüş kıs.",   color: "#F5A623", glyph: "!" },
+};
+
+/** Bir koltuğun ROZETİ: seat_kind öncelikli ("single" hariç, boyanacak bir
+ *  şeyi yok), yoksa İLK feature. Koltuk kenarlığı/glyph/marquee vurgusu gibi
+ *  TEK renk/glyph gösterecek her yerin ORTAK karar noktası — aksi hâlde bu
+ *  öncelik sırası render kodunun birkaç yerinde ayrı ayrı elle kopyalanır,
+ *  biri güncellenince öteki unutulur. */
+const seatBadge = (s) => (s.seatKind !== DEFAULT_SEAT_KIND && ATTRS[s.seatKind])
+  || (s.seatFeatures[0] && FEATURES[s.seatFeatures[0]]) || null;
+
+/* features dizisini FEATURES'in kanonik anahtar sırasına göre sıralar +
+   tekilleştirir — brush/panelde biriken toggle'lar HER ZAMAN aynı sırada
+   dursun diye (sameAttr'ın dizi eşitliği buna güvenir, sırasız bir Set
+   kıyası değil). */
+const FEATURE_ORDER = Object.keys(FEATURES);
+const sortFeatures = (arr) => [...new Set(arr)].sort((a, b) => FEATURE_ORDER.indexOf(a) - FEATURE_ORDER.indexOf(b));
+const toggleFeature = (arr, k) => sortFeatures(arr.includes(k) ? arr.filter((f) => f !== k) : [...arr, k]);
+const sameAttr = (a, b) => a.seatKind === b.seatKind && a.seatFeatures.length === b.seatFeatures.length
+  && a.seatFeatures.every((f, i) => f === b.seatFeatures[i]);
+
+/** Bir koltuk istisnasına (b.ov[r,c]) fırça/panel değerini YAZAR. Blok
+ *  varsayılanıYLA (resolveSeatKind(b,{})) AYNIysa istisnayı SİLER — eski
+ *  `brush==="" && !b.attr` kısayolunun aynı fikri, artık iki alan için.
+ *  Eski tek-alan `at` bu koltuk için HER ZAMAN silinir: PlanEditor bundan
+ *  sonra SADECE yeni alanları (seatKind/seatFeatures) yazar — `at` yalnız
+ *  venue dosyalarından/göçmemiş kayıtlardan OKUNUR (core/geometry.js'teki
+ *  resolveSeatKind), editörün kendisi onu bir daha hiç ÜRETMEZ. */
+function paintOv(cur, b, seatKind, seatFeatures) {
+  const nx = { ...cur };
+  delete nx.at;
+  if (sameAttr({ seatKind, seatFeatures }, resolveSeatKind(b, {}))) { delete nx.seatKind; delete nx.seatFeatures; }
+  else { nx.seatKind = seatKind; nx.seatFeatures = seatFeatures; }
+  return nx;
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
    DEPOLAMA KATMANI
@@ -756,87 +322,7 @@ const Store = {
   },
 };
 
-/** Kaydedilmiş plan yüklenirken kimlik sayacını ileri sarar — çakışma olmasın. */
-function absorbIds(p) {
-  const scan = (id) => { const m = String(id || "").match(/(\d+)$/); if (m) uid = Math.max(uid, +m[1]); };
-  (p.blocks || []).forEach((b) => scan(b.id));
-  (p.shapes || []).forEach((s) => scan(s.id));
-  return p;
-}
 
-/* ══════════════════════════════════════════════════════════════════════════
-   KOLTUK KİMLİĞİ
-   Kimlik bu ürünün biletleme sistemiyle tek sözleşmesi. İki yol var:
-   · Şablondan üret — yeni mekânlar için
-   · Mevcut listeden benimse — hâlihazırda bilet satan mekânlar için.
-     O sistemdeki kimlik değişemez, biz ona uyarız.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-const DEF_TPL = "{block}-{row}-{seat}";
-
-/** "{block}-{row}-{seat:3}" → "A-5-012" */
-function formatId(tpl, p) {
-  return String(tpl || DEF_TPL).replace(/\{(\w+)(?::(\d+))?\}/g, (_, k, pad) => {
-    const v = String(p[k] ?? "");
-    return pad ? v.padStart(+pad, "0") : v;
-  });
-}
-
-const ID_TOKENS = ["{level}", "{block}", "{row}", "{seat}", "{seat:3}", "{row:2}"];
-
-/* ── CSV ── */
-
-function parseCSV(text) {
-  const first = (text.split(/\r?\n/)[0] || "");
-  const sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ";" : ",";
-  return text.split(/\r?\n/).filter((l) => l.trim()).map((l) => {
-    const out = []; let cur = "", q = false;
-    for (let i = 0; i < l.length; i++) {
-      const c = l[i];
-      if (c === '"') { if (q && l[i + 1] === '"') { cur += '"'; i++; } else q = !q; }
-      else if (c === sep && !q) { out.push(cur); cur = ""; }
-      else cur += c;
-    }
-    out.push(cur);
-    return out.map((s) => s.trim());
-  });
-}
-
-const COLS = {
-  id:    ["id", "kimlik", "seatid", "koltukid", "barkod", "kod"],
-  level: ["kat", "level", "tribun", "kusak", "bolum"],
-  block: ["blok", "block", "kisim", "section"],
-  row:   ["sira", "row", "satir"],
-  seat:  ["koltuk", "seat", "no", "numara", "koltukno", "seatno"],
-};
-const normHdr = (s) => s.toLocaleLowerCase("tr").replace(/[^a-z0-9çğıöşü]/g, "")
-  .replace(/[çğıöşü]/g, (c) => ({ ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u" }[c]));
-
-function mapColumns(header) {
-  const h = header.map(normHdr);
-  const idx = {};
-  Object.entries(COLS).forEach(([k, names]) => {
-    let best = -1;
-    h.forEach((cell, i) => {
-      if (best >= 0) return;
-      if (names.includes(cell)) best = i;
-    });
-    if (best < 0) h.forEach((cell, i) => {
-      if (best >= 0) return;
-      if (names.some((n) => cell.startsWith(n))) best = i;
-    });
-    if (best >= 0) idx[k] = best;
-  });
-  return idx;
-}
-
-/** Eşleştirme anahtarı: büyük harf, baştaki sıfırlar atılır, "A BLOK" → "A" */
-const normPart = (v) => {
-  let s = String(v ?? "").trim().toLocaleUpperCase("tr");
-  s = s.replace(/\s*(BLOK|BLOCK|SIRA|ROW)\s*$/u, "").trim();
-  return /^\d+$/.test(s) ? String(parseInt(s, 10)) : s;
-};
-const seatKey = (block, row, seat) => `${normPart(block)}|${normPart(row)}|${normPart(seat)}`;
 
 /* ══════════════════════════════════════════════════════════════════════════
    SAHA KÜTÜPHANESİ
@@ -983,69 +469,6 @@ const PITCHES = {
     note: "işaretlemesiz", marks: () => [] },
 };
 
-/* ─────────────────────────  KAPI EŞLEME  ─────────────────────────
-   Kapı, hizmet ettiği blokların kimliklerini taşır. Koltuk çıktısında
-   her koltuğa girilecek kapı bu ilişkiden yazılır.
-   ─────────────────────────────────────────────────────────────── */
-
-function gateMap(plan) {
-  const m = new Map();
-  plan.shapes.filter((s) => s.type === "door").forEach((d) => {
-    (d.blocks || []).forEach((bid) => {
-      if (!m.has(bid)) m.set(bid, []);
-      m.get(bid).push(d.label);
-    });
-  });
-  return m;
-}
-
-/** Her bloğu en yakın kapıya, ayrıca ona yakın sayılabilecek diğer kapılara atar.
- *  Gerçekte bir blok genelde iki girişten beslenir; tek kapıya bağlamak hem
- *  yanlış hem de uzaktaki kapıları sahipsiz bırakıyordu. */
-function autoGates(plan, metas) {
-  const doors = plan.shapes.filter((s) => s.type === "door");
-  if (!doors.length) return plan.shapes;
-  const assign = new Map(doors.map((d) => [d.id, []]));
-  metas.forEach(({ b, m }) => {
-    const dist = doors.map((d) => ({ d, v: Math.hypot(d.x - m.cx, d.y - m.cy) }))
-      .sort((p, q) => p.v - q.v);
-    const near = dist[0].v;
-    dist.filter((x, i) => i === 0 || x.v <= near * 1.6).slice(0, 3)
-      .forEach((x) => assign.get(x.d.id).push(b.id));
-  });
-  return plan.shapes.map((s) => (s.type === "door" ? { ...s, blocks: assign.get(s.id) || [] } : s));
-}
-
-/* ─────────────────────────  SÜRÜM FARKI  ─────────────────────────
-   İki plan arasındaki koltuk kimliği farkı. Kaldırılan kimlik = satılmış
-   biletin karşılığının yok olması. Yayın öncesi görülmesi gereken tek şey bu.
-   ─────────────────────────────────────────────────────────────── */
-
-function planSeatMap(pl) {
-  const m = new Map();
-  pl.blocks.forEach((b) => {
-    const meta = buildMeta(b);
-    buildSeats(b, meta, pl.idTemplate).seats.forEach((s) => { if (!s.gap) m.set(s.id, s); });
-  });
-  return m;
-}
-
-function diffPlans(base, next) {
-  const A = planSeatMap(base), B = planSeatMap(next);
-  const removed = [], added = [], moved = [], changed = [];
-  A.forEach((s, id) => {
-    const t = B.get(id);
-    if (!t) { removed.push(id); return; }
-    if (Math.hypot(t.x - s.x, t.y - s.y) > 25) moved.push(id);
-    if ((t.at || "") !== (s.at || "")) changed.push(id);
-  });
-  B.forEach((s, id) => { if (!A.has(id)) added.push(id); });
-  return { removed, added, moved, changed, from: A.size, to: B.size };
-}
-
-const stripUnderlay = (p) => ({ ...p, underlay: null });
-const planFingerprint = (p) =>
-  JSON.stringify({ b: p.blocks, s: p.shapes.map(({ id, ...r }) => r), n: p.name });
 
 /* Görünüm paleti. Bunlar sadece bloğu tuvalde ayırt etmek için —
    fiyat, kategori, satış hiçbiri bu uygulamanın konusu değil. */
@@ -1054,6 +477,16 @@ const planFingerprint = (p) =>
 const PALETTE = ["#C2415A", "#C1743C", "#B79A32", "#5F9142",
                  "#3E7FBF", "#6E7787", "#7C5BA8", "#3E9092"];
 const LEVEL_COLORS = ["#3E7FBF", "#5F9142", "#C1743C", "#7C5BA8", "#3E9092", "#C2415A"];
+
+/* A6.4: tek renk kanalı. Aktif kanal (colorChan) DIŞINDAKİ her kaynak bu
+   nötr griye düşer — LEVEL_COLORS/PALETTE/ATTRS/kapı renklerinin hiçbiriyle
+   çakışmayan, iki temada da okunan ayrı bir ton. Amaç: ekranda her an TEK
+   bir soru cevaplansın (bkz. görev raporu — yedi renk kaynağı yarışıyordu). */
+const NEUTRAL = "#8E8E93";
+/* Kanal seçici + lejant başlığı TEK sözlükten besleniyor (SHAPES/ATTRS/POI
+   ile aynı üslup) — ikisi ayrı yazılırsa isim er geç sürüklenir. */
+const COLOR_CHANS = { level: "Kat", attr: "Nitelik", gate: "Kapı", valid: "Doğrulama" };
+const CHAN_TITLE = { level: "Katlar", attr: "Nitelikler", gate: "Kapılar", valid: "Doğrulama" };
 
 
 /** Bir zemin renginin üstünde okunacak yazı rengi — parlaklığa göre.
@@ -1093,6 +526,13 @@ function badgeColor(hex) {
   return out;
 }
 
+/* EKSİK 4: çakışma büyüklüğünü canlı şeritte okunur birimde göster — operatör
+   bir eşiği (ör. yarıçap) el yordamıyla ararken sayının küçülüp büyüdüğünü
+   görüp yön bulabilsin. 1 m² = 10.000 cm²; küçük değerlerde cm² daha net. */
+const fmtOverlap = (cm2) => cm2 >= 10000
+  ? `${(cm2 / 10000).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} m²`
+  : `${Math.round(cm2).toLocaleString("tr-TR")} cm²`;
+
 const SHAPES = {
   stage:    { label: "Sahne",       fill: "var(--shapefill)", stroke: "var(--shapeline)" },
   pitch:    { label: "Saha",        fill: "#22452C",          stroke: "#3E6B4A" },
@@ -1102,723 +542,81 @@ const SHAPES = {
   standing: { label: "Ayakta alan", fill: "rgba(90,130,102,.16)", stroke: "#5B8266" },
   note:     { label: "Not",         fill: "none",             stroke: "var(--mut)" },
 };
-const DEF_NUM = {
-  rowScheme: "number", rowStart: 1, rowRev: false, rowCustom: "", skipAmbig: true,
-  seatScheme: "seq", seatDir: "ltr", seatStart: 1, skip: "", anchor: "order",
-};
-
-const newGrid = (x, y, cols, rows) => ({
+/* color: "" (LEVEL_COLORS/kat paletine bırak) dördünde de ORTAK olmalı —
+   cc(b) = b.color || LEVEL_COLORS[...] (aşağıda ~953) açık b.color'ı HER
+   ZAMAN kat paletine tercih ediyor. Eskiden newTable hariç üçü "#3E7FBF"
+   basıyordu: 81966d5 şablonlardan/örnek salonlardan sabit rengi kaldırdı
+   ama operatörün TUVALE ÇİZDİĞİ yeni blok buradan geçiyor — elle kurulan
+   HER salon, kaç kata dağılırsa dağılsın hep aynı renkte kalıyordu (bkz.
+   görev raporu, HATA 1). export: test/unit/block-factories.test.js gerçek
+   fabrikayı çağırıp bunu bir daha geri gelmeyeceğini doğruluyor. */
+export const newGrid = (x, y, cols, rows) => ({
   id: nid(), label: "A", name: "", level: "", kind: "grid", x, y, rot: 0,
   cols, rows, counts: "", align: "center", seatGap: DEF.seatGap, rowGap: DEF.rowGap,
-  curve: 0, taper: 0, color: "#3E7FBF", attr: "", num: { ...DEF_NUM, rowScheme: "letter" }, ov: {},
+  curve: 0, taper: 0, color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [], num: { ...DEF_NUM, rowScheme: "letter" }, ov: {},
 });
-const newFan = (x, y, r0) => ({
+export const newFan = (x, y, r0) => ({
   id: nid(), label: "A", name: "", level: "", kind: "fan", x, y, rot: 0, mode: "span",
   r0, rowGap: DEF.rowGap, aStart: -40, aEnd: 40, aCenter: 0, rows: 8,
-  seatGap: DEF.seatGap, counts: "", align: "center", color: "#3E7FBF", attr: "",
+  seatGap: DEF.seatGap, counts: "", align: "center", color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [],
   num: { ...DEF_NUM }, ov: {},
 });
-const newTable = (x, y) => ({
+export const newTable = (x, y) => ({
   id: nid(), label: "M1", name: "", level: "", kind: "table", x, y, rot: 0,
   tShape: "round", tW: 90, tH: 90, seats: 4, a0: 0, clear: 12, pad: 40,
   seatGap: DEF.seatGap, rowGap: DEF.rowGap, counts: "", align: "center",
-  cols: 1, rows: 1, curve: 0, taper: 0, color: "", attr: "",
+  cols: 1, rows: 1, curve: 0, taper: 0, color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [],
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
-const newFree = (x, y) => ({
+export const newFree = (x, y) => ({
   id: nid(), label: "S", name: "", level: "", kind: "free", x, y, rot: 0, pts: [],
-  seatGap: DEF.seatGap, counts: "", align: "center", color: "#3E7FBF", attr: "",
+  seatGap: DEF.seatGap, counts: "", align: "center", color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [],
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
 
-/* ══════════════  SALON 1 · CSO ADA ANKARA  ══════════════ */
-
-const fanB = (o) => ({
-  id: nid(), kind: "fan", name: "", level: "Ana Salon", rot: 0, mode: "pitch",
-  seatGap: 50, rowGap: 105, aStart: -40, aEnd: 40, aCenter: 0, counts: "",
-  align: "center", color: "#3E7FBF", num: { ...DEF_NUM }, ov: {}, ...o,
-});
-const wallPts = Array.from({ length: 44 }, (_, i) => {
-  const t = (i / 44) * Math.PI * 2;
-  return { x: Math.round(3170 * Math.sin(t)), y: Math.round(4030 * Math.cos(t)) };
-});
-const csoBlocks = [
-  fanB({ label: "A", x: 0, y: 6020, r0: 6545, rows: 12, rowGap: 105, aCenter: 0, counts: "39..48", color: "#3E7FBF" }),
-  fanB({ label: "B", x: 0, y: 6020, r0: 8176, rows: 7, rowGap: 107, aCenter: 0, counts: "58..52", color: "#C1743C" }),
-  fanB({ label: "C", x: 0, y: 6020, r0: 9016, rows: 9, rowGap: 105, aCenter: 0, counts: "34..26", color: "#3E9092" }),
-  /* Sahne arkası koro balkonu — tamamı görüş kısıtlı */
-  fanB({ label: "D", x: 0, y: -5180, r0: 6384, rows: 7, rowGap: 105, aCenter: 180, counts: "38..44", color: "#3E9092", attr: "obstr" }),
-  fanB({ label: "J", x: 0, y: -980, r0: 2460, rows: 8, rowGap: 105, aCenter: -39, counts: "9..12", color: "#C1743C" }),
-  fanB({ label: "G", x: 0, y: -980, r0: 1900, rows: 6, rowGap: 105, aCenter: -72, counts: "10..12", color: "#C1743C" }),
-  /* Yan kanat son sırası — tekerlekli sandalye alanı + refakatçi */
-  fanB({ label: "E", x: 0, y: -980, r0: 1300, rows: 13, rowGap: 105, aCenter: -112, counts: "8..12", color: "#3E9092",
-  }),
-  fanB({ label: "K", x: 0, y: -980, r0: 2460, rows: 8, rowGap: 105, aCenter: 39, counts: "9..12", color: "#C1743C" }),
-  fanB({ label: "H", x: 0, y: -980, r0: 1900, rows: 6, rowGap: 105, aCenter: 72, counts: "10..12", color: "#C1743C" }),
-  fanB({ label: "F", x: 0, y: -980, r0: 1300, rows: 13, rowGap: 105, aCenter: 112, counts: "8..12", color: "#3E9092",
-  }),
-];
-const csoBlocksA = withAccessible(csoBlocks, ["E", "F"], 9);
-const csoIds = (...labels) => csoBlocksA.filter((b) => labels.includes(b.label)).map((b) => b.id);
-
-/* Plandaki lejant: KAPI 1-2 A · 3 D-F-H · 4-5 B · 6 D-E-G · 7 C-K · 8 C-J */
-const CSO_DOORS = [
-  [1, 1435, -1680, ["A"]], [2, -1365, -1645, ["A"]],
-  [3, 2440, -945, ["D", "F", "H"]], [4, 1344, -2674, ["B"]],
-  [5, -1295, -2646, ["B"]], [6, -2400, -980, ["D", "E", "G"]],
-  [7, 980, -3400, ["C", "K"]], [8, -966, -3400, ["C", "J"]],
-];
-
-const CSO = {
-  key: "cso", name: "CSO Ada Ankara · Ziraat Bankası Ana Salon", unit: "cm",
-  home: { x: -2900, y: -4600, w: 5800, h: 7700 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "poly", type: "wall", x: 0, y: -700, rot: 0, pts: wallPts, label: "", capacity: 0, fs: 60, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: 250, w: 2150, h: 1200, rot: 0, label: "SAHNE", capacity: 0, fs: 240, blocks: [] },
-    ...CSO_DOORS.map(([n, x, y, bl]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 300, h: 300, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 95, blocks: csoIds(...bl),
-    })),
-  ],
-  blocks: csoBlocksA,
-};
-CSO.shapes = [...CSO.shapes,
-  ...[["wc", -2280, -1900, "WC"], ["wc", 2280, -1900, "WC"],
-      ["bar", -2180, 380, "Fuaye Bar"], ["bar", 2180, 380, "Fuaye Bar"],
-      ["cloak", -1750, 2450, "Vestiyer"], ["aid", 1750, 2450, "İlk yardım"],
-      ["access", 0, 3050, "Engelli erişimi"]]
-    .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-      x, y, rot: 0, size: 34, w: 200, h: 200, label, capacity: 0, fs: 100, blocks: [] }))];
-
-/* ══════════════  SALON 2 · ZORLU PSM  ══════════════ */
-
-const gr = (o) => ({
-  id: nid(), kind: "grid", name: "", rot: 0, cols: 10, taper: 0, curve: 0,
-  seatGap: 50, rowGap: 90, counts: "", align: "center", color: "#3E7FBF",
-  num: { ...DEF_NUM }, ov: {}, ...o,
-});
-const nOrta = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: rows, seatScheme: "seq", seatDir: "rtl", seatStart: 1, anchor: "order" });
-const nCift = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: rows, seatScheme: "even", seatDir: "rtl", seatStart: 102, anchor: "column" });
-const nTek  = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: rows, seatScheme: "odd", seatDir: "ltr", seatStart: 101, anchor: "column" });
-const ORK_MID = "CC,DD,EE,FF,GG,HH,A,B,C,D,E,F,G,H,I";
-const ORK_BACK = "J,K,L,M,N,O,P,Q,R,S,T,U,V,W";
-const ORK_SIDE = "J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
-const B1R = "A,B,C,D,E,F,G,H,I,J,K,L,M", B2R = "A,B,C,D,E,F,G,H,I";
-
-const ZORLU = {
-  key: "zorlu", name: "Zorlu PSM · Turkcell Sahnesi", unit: "cm",
-  home: { x: -2950, y: -1500, w: 5900, h: 9200 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -700, w: 2800, h: 900, rot: 0, label: "SAHNE", capacity: 0, fs: 220 },
-    { id: nid("s"), kind: "rect", type: "note", x: -2130, y: 1700, w: 10, h: 10, rot: 0, label: "ORKESTRA", capacity: 0, fs: 108 },
-    { id: nid("s"), kind: "rect", type: "note", x: -2130, y: 4780, w: 10, h: 10, rot: 0, label: "1. BALKON", capacity: 0, fs: 108 },
-    { id: nid("s"), kind: "rect", type: "note", x: -2130, y: 6600, w: 10, h: 10, rot: 0, label: "2. BALKON", capacity: 0, fs: 108 },
-    ...[[1, -1900, 1400], [2, 1900, 1400], [3, -1900, 4900], [4, 1900, 4900],
-        [5, -1750, 6900], [6, 1750, 6900]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 260, h: 260, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 90, blocks: [],
-    })),
-  ],
-  blocks: [
-    gr({ label: "ORK-O", name: "Orkestra Orta (ön)", level: "Orkestra", x: 0, y: 200, rows: 2, counts: "18..20", color: "#3E7FBF", num: nOrta("AA,BB") }),
-    gr({ label: "ORK-O", name: "Orkestra Orta", level: "Orkestra", x: 0, y: 560, rows: 15, counts: "21..15", color: "#3E7FBF", num: nOrta(ORK_MID),
-         ov: { "14,6": { rm: true }, "14,7": { rm: true }, "14,8": { rm: true } } }),
-    gr({ label: "ORK-O", name: "Orkestra Orta (arka)", level: "Orkestra", x: 0, y: 2140, rows: 14, counts: "19..28", color: "#C1743C", num: nOrta(ORK_BACK),
-    }),
-    gr({ label: "ORK-C", name: "Orkestra Çift (ön)", level: "Orkestra", x: -1000, y: 290, rows: 2, counts: "5,5", color: "#3E7FBF", num: nCift("BB,CC") }),
-    gr({ label: "ORK-C", name: "Orkestra Çift", level: "Orkestra", x: -1000, y: 650, rows: 3, counts: "5..6", color: "#3E7FBF", num: nCift("DD,EE,FF") }),
-    gr({ label: "ORK-C", name: "Orkestra Çift (yan)", level: "Orkestra", x: -880, y: 1040, rows: 7, counts: "4..3", color: "#3E7FBF", num: nCift("A,B,C,D,E,F,G") }),
-    gr({ label: "ORK-C", name: "Orkestra Çift (arka)", level: "Orkestra", x: -1300, y: 2140, rows: 17, counts: "17..11", color: "#C1743C", align: "left", num: nCift(ORK_SIDE) }),
-    gr({ label: "ORK-T", name: "Orkestra Tek (ön)", level: "Orkestra", x: 1000, y: 290, rows: 2, counts: "5,5", color: "#3E7FBF", num: nTek("BB,CC") }),
-    gr({ label: "ORK-T", name: "Orkestra Tek", level: "Orkestra", x: 1000, y: 650, rows: 3, counts: "5..6", color: "#3E7FBF", num: nTek("DD,EE,FF") }),
-    gr({ label: "ORK-T", name: "Orkestra Tek (yan)", level: "Orkestra", x: 880, y: 1040, rows: 7, counts: "4..3", color: "#3E7FBF", num: nTek("A,B,C,D,E,F,G") }),
-    gr({ label: "ORK-T", name: "Orkestra Tek (arka)", level: "Orkestra", x: 1300, y: 2140, rows: 17, counts: "17..11", color: "#C1743C", align: "right", num: nTek(ORK_SIDE) }),
-    gr({ label: "B1-O", name: "1. Balkon Orta", level: "1. Balkon", x: 0, y: 4200, rows: 13,
-         counts: "20,21,21,22,22,22,23,23,23,23,23,23,8", color: "#C1743C", num: nOrta(B1R),
-         ov: { "12,2": { gap: true }, "12,3": { gap: true }, "12,4": { gap: true }, "12,5": { gap: true } } }),
-    gr({ label: "B1-C", name: "1. Balkon Çift", level: "1. Balkon", x: -1200, y: 4200, rows: 12, counts: "19..5", color: "#3E9092", num: nCift(B1R) }),
-    gr({ label: "B1-T", name: "1. Balkon Tek", level: "1. Balkon", x: 1200, y: 4200, rows: 12, counts: "19..5", color: "#3E9092", num: nTek(B1R) }),
-    gr({ label: "B2-O", name: "2. Balkon Orta", level: "2. Balkon", x: 0, y: 6200, rows: 7, counts: "21..23", color: "#3E9092", num: nOrta("A,B,C,D,E,F,G") }),
-    gr({ label: "B2-C", name: "2. Balkon Çift", level: "2. Balkon", x: -1150, y: 6200, rows: 9, counts: "17..5", color: "#5F9142", num: nCift(B2R) }),
-    gr({ label: "B2-T", name: "2. Balkon Tek", level: "2. Balkon", x: 1150, y: 6200, rows: 9, counts: "17..5", color: "#5F9142", num: nTek(B2R) }),
-  ],
-};
-
-/* ══════════════  SALON 3 · GALATASARAY STADYUMU  ══════════════ */
-
-/* Koridor payları santimetre cinsinden veriliyor, açı cinsinden değil.
-   Yarıçap büyüdükçe aynı açı metrelerce boşluk demek; oysa insanın
-   geçmesi için gereken şey sabit bir genişlik. */
-function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
-                first, level, colors, aisle = 240, pad = 80 }) {
-  const along = W - Rc, aside = H - Rc;
-  const seg = (2 * along) / nLong, segS = (2 * aside) / nShort;
-  const cStep = 90 / nCorner;
-  const cAisle = (aisle / Rc) / RAD;              // koridorun açı karşılığı
-  const base = { rot: 0, counts: "", align: "center", curve: 0, taper: 0,
-    seatGap, rowGap, ov: {}, num: { ...DEF_NUM }, level, pad };
-  const L = (k) => String(first + k);
-  const seed = (o, l) => reLabel({ id: nid(), ...base, ...o }, l);
-  /* Düz kenarda blok genişliği: dilim eksi koridor */
-  const colsFor = (s) => Math.max(3, Math.floor((s - aisle) / seatGap));
-
-  const c1 = seed({ kind: "fan", mode: "span", x: -along, y: aside, r0: Rc, rows,
-    aStart: -90 - cStep + cAisle / 2, aEnd: -90 - cAisle / 2, color: colors.corner }, L(0));
-  const g1 = [c1, ...radialArray([c1], { count: nCorner, cx: -along, cy: aside, step: -cStep })];
-
-  const s1 = seed({ kind: "grid", x: -along + seg / 2, y: H, rows,
-    cols: colsFor(seg), color: colors.long }, L(nCorner));
-  const g2 = [s1, ...linearArray([s1], { count: nLong, dx: seg, dy: 0 })];
-
-  const c2 = seed({ kind: "fan", mode: "span", x: along, y: aside, r0: Rc, rows,
-    aStart: 180 - cStep + cAisle / 2, aEnd: 180 - cAisle / 2, color: colors.corner }, L(nCorner + nLong));
-  const g3 = [c2, ...radialArray([c2], { count: nCorner, cx: along, cy: aside, step: -cStep })];
-
-  const s2 = seed({ kind: "grid", x: W, y: aside - segS / 2, rot: -90, rows,
-    cols: colsFor(segS), color: colors.short }, L(2 * nCorner + nLong));
-  const g4 = [s2, ...linearArray([s2], { count: nShort, dx: 0, dy: -segS })];
-
-  const half = [...g1, ...g2, ...g3, ...g4];
-  return [...half, ...radialArray(half, { count: 2, cx: 0, cy: 0, step: 180 })];
+/* mirror()'ın (aşağıda, component içinde) tek bir bloğu Y ekseninde
+   yansıtan SAF kısmı — etiket defterini (taken/freeLabel, TÜM seçime
+   göre kümülatif) tutan kabuktan AYRILDI ki newGrid/newFan/newTable/
+   newFree gibi test GERÇEK fonksiyonu çağırabilsin, hand-copy'e muhtaç
+   kalmasın (bkz. block-factories.test.js başlığı). reLabel color'a HİÇ
+   dokunmuyor (core/labels.js) — ...b spread'i girdinin renk alanını
+   (varsa/yoksa) olduğu gibi kopyaya taşır; bu fonksiyon ne enjekte eder
+   ne siler. */
+export function mirrorBlock(b, label) {
+  const cp = reLabel({ ...b, id: nid(), x: -b.x }, label);
+  if (b.kind === "fan") { cp.aCenter = -b.aCenter; cp.aStart = -b.aEnd; cp.aEnd = -b.aStart; }
+  else if (b.kind === "free") cp.pts = b.pts.map((p) => ({ ...p, x: -p.x, rot: -(p.rot || 0) }));
+  else { cp.rot = -b.rot; cp.align = b.align === "left" ? "right" : b.align === "right" ? "left" : "center"; }
+  return cp;
 }
-
-/** Gerçek stadyumda vomitorium tribünün İÇİNE oyulur: o dikdörtgende koltuk
- *  YOKTUR, merdiven konkorstan oraya çıkar — sıralar tünelin iki yanından
- *  devam eder (bkz. kullanıcının Türk Telekom Stadyumu fotoğrafı). Kapıyı
- *  bloklar arasındaki koridora koymak bu yüzden yanlıştı: kapı, koltuk
- *  dizilimini fiilen bozan mimari bir boşluk olmalı.
- *
- *  Bu fonksiyon her bloğun ARKA sıralarından (sahadan uzak, konkorsun
- *  olduğu taraf) ortada bir dikdörtgen koltuk kümesini `ov.rm` ile siler ve
- *  tam o boşluğa, tünel yönüne hizalanmış kapı şeklini üretir.
- *
- *  Ölçüler bilerek boşluktan bir koltuk/sıra dar tutuluyor: kapı
- *  dikdörtgeninin kenarı ile kalan en yakın koltuğun merkezi arasında tam
- *  bir seatGap/rowGap kalıyor, yani kapı hiçbir koltuğa değmiyor. */
-function cutVomitories(blocks, { depth = 3, width = 6 } = {}) {
-  const doors = [];
-  const cut = blocks.map((b) => {
-    const P = prep(b);
-    const nRows = P.counts.length;
-    if (nRows < depth + 2) return b;            // sığ blokta tünel açılmaz
-    const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
-    const ov = { ...(b.ov || {}) };
-    const centers = [];
-    /* Dar sıralarda kesim istenenden az koltuk olabiliyor; kapı boyutu
-       İSTENEN değil GERÇEKLEŞEN en dar kesime göre hesaplanmalı, yoksa
-       dikdörtgen kesilmemiş koltukların üstüne taşıyor. */
-    let minCut = Infinity;
-    for (let r = nRows - depth; r < nRows; r++) {
-      const n = P.counts[r];
-      const w = Math.min(width, n - 2);         // iki yanda en az birer koltuk kalsın
-      if (w < 2) continue;
-      minCut = Math.min(minCut, w);
-      const c0 = Math.round((n - w) / 2);
-      const pts = rowPts(b, r, P);
-      const world = [];
-      for (let c = c0; c < c0 + w; c++) {
-        ov[`${r},${c}`] = { ...(ov[`${r},${c}`] || {}), rm: true };
-        world.push(toWorld(b, pts[c], cos, sin));
-      }
-      centers.push({ x: world.reduce((a, p) => a + p.x, 0) / world.length,
-                     y: world.reduce((a, p) => a + p.y, 0) / world.length });
-    }
-    if (centers.length < 2) return b;
-    const inner = centers[0], outer = centers[centers.length - 1];
-    doors.push({ id: nid("s"), kind: "rect", type: "door",
-      x: Math.round((inner.x + outer.x) / 2), y: Math.round((inner.y + outer.y) / 2),
-      w: Math.round((centers.length - 1) * b.rowGap), h: Math.round((minCut - 1) * b.seatGap),
-      rot: Math.round((Math.atan2(outer.y - inner.y, outer.x - inner.x) * 180) / Math.PI),
-      capacity: 0, fs: 120, blocks: [] });
-    return { ...b, ov };
-  });
-  return [cut, doors];
-}
-const labelGates = (gates) => gates.map((d, i) => ({ ...d, label: `KAPI ${i + 1}` }));
-
-/* Gerçek Türk Telekom Stadyumu'nda her tribün bloğunun kendi merdiven/tünel
-   çıkışı (vomitorium) var ve bu tüneller tribünün İÇİNE oyulmuş: o
-   dikdörtgende koltuk yok, sıralar tünelin iki yanından devam ediyor
-   (bkz. kullanıcının paylaştığı saha fotoğrafı). Kapı bu yüzden bloklar
-   arası koridora konan bir işaret değil, cutVomitories() ile her bloğun
-   arka sıralarından koltuk silen mimari bir boşluk. Bloklar arası koridor
-   (aisle) yine gerçek merdivendir ama kapıyı barındırmadığı için orijinal
-   genişliğinde bırakıldı. Kapının hangi bloğu beslediği autoGates ile
-   mesafeye göre çözülüyor. */
-const [gsAlt, gsAltDoors] = cutVomitories(bowl({ W: 6600, H: 4600, Rc: 2200, rows: 21, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 100, level: "Alt Tribün", aisle: 240, pad: 80,
-  colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } }));
-const [gsOrta, gsOrtaDoors] = cutVomitories(bowl({ W: 9200, H: 7200, Rc: 4800, rows: 13, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 200, level: "Orta Tribün", aisle: 260, pad: 80,
-  colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } }));
-const [gsUst, gsUstDoors] = cutVomitories(bowl({ W: 10950, H: 8950, Rc: 6550, rows: 17, rowGap: 85, seatGap: 50, nLong: 6, nShort: 4, nCorner: 3,
-  first: 400, level: "Üst Tribün", aisle: 280, pad: 80,
-  colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
-  .map((b) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
-    "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
-    ? withAccessible([b], [b.label], 9)[0] : b)));
-
-const GS = {
-  key: "gs", name: "Galatasaray · Türk Telekom Stadyumu", unit: "cm",
-  home: { x: -14000, y: -12000, w: 28000, h: 24000 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "pitch", sport: "football", x: 0, y: 0, w: 10500, h: 6800, rot: 0, label: "Futbol sahası", capacity: 0, fs: 300, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "note", x: 0, y: -11400, w: 10, h: 10, rot: 0, label: "DOĞU / EAST", capacity: 0, fs: 600 },
-    { id: nid("s"), kind: "rect", type: "note", x: 0, y: 11600, w: 10, h: 10, rot: 0, label: "BATI / WEST", capacity: 0, fs: 600 },
-    { id: nid("s"), kind: "rect", type: "note", x: -13100, y: 0, w: 10, h: 10, rot: 90, label: "KUZEY / NORTH", capacity: 0, fs: 600 },
-    { id: nid("s"), kind: "rect", type: "note", x: 13100, y: 0, w: 10, h: 10, rot: -90, label: "GÜNEY / SOUTH", capacity: 0, fs: 600 },
-    ...labelGates([...gsAltDoors, ...gsOrtaDoors, ...gsUstDoors]),
-  ],
-  blocks: [...gsAlt, ...gsOrta, ...gsUst],
-};
-GS.shapes = autoGates(GS, GS.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════  SALON 4 · ÜLKER SPOR VE ETKİNLİK SALONU (Fenerbahçe Beko)  ══════
-   Gerçek mekân. Ataşehir/İstanbul, 2012 açılışlı, Ömerler Mimarlık.
-   Doğrulanan veriler:
-     · basketbol kapasitesi 13.500 (konserde 15.000)
-     · iki kademeli kase — üst kademede 360° LED bant
-     · iki kademe arasında 44 loca
-     · alt kademe blokları 1xx numaralı; 118 ve 119 "pota arkası" bloklar
-   FIBA sahası 28 × 15 m.
-
-   Kase ölçüsü sahaya göre kuruldu: kenar çizgisine ~6,5 m, dip çizgisine
-   ~8,5 m. Bu pay skorer masası, yedek kulübeleri, basın ve yürüme yolu
-   içindir — önceki sahte "Örnek Arena"da bu 24-26 m'ye kadar açılmış,
-   saha kocaman bir boşluğun ortasında kalmıştı.
-
-   Loca katı 44 bloktan oluşuyor: bowl() blok sayısı
-   2*(2*nCorner + nLong + nShort) olduğundan 2*(2*8 + 4 + 2) = 44 ile
-   her blok bir locaya karşılık geliyor. Blokların çoğu köşelerde çünkü
-   düz kenarlarda 44'ü paylaştırmak locaları birbirine geçirtiyordu
-   (test "taban çakışma" ile yakaladı). İki sıralı ve geniş koltuk
-   aralıklı — gerçek locada da iki sıra koltuk olur; ayrıca tek sıralı
-   yelpaze blokta taban hesabı kavisi takip etmediğinden koltuklar
-   tabanın dışında kalıyordu (test "koltuk-içerme" ile yakaladı).
-
-   Kapılar GS'deki gibi cutVomitories() ile tribünün içine oyuluyor.
-   Loca sığ olduğu için tünel açılmaz (fonksiyon sığ blokları atlar). */
-const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: 2250, H: 1400, Rc: 900, rows: 20, rowGap: 85, seatGap: 50,
-  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: 70,
-  colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
-const ulkerLoca = bowl({ W: 4300, H: 3450, Rc: 2600, rows: 2, rowGap: 90, seatGap: 90,
-  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: 60,
-  colors: { long: "#B79A32", short: "#B79A32", corner: "#B79A32" } });
-const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: 4750, H: 3900, Rc: 2800, rows: 16, rowGap: 85, seatGap: 50,
-  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: 70,
-  colors: { long: "#5F9142", short: "#6E7787", corner: "#3E7FBF" } }),
-  ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
-
-const ULKER = {
-  key: "ulker", name: "Ülker Spor ve Etkinlik Salonu · Fenerbahçe Beko", unit: "cm",
-  home: { x: -6600, y: -5700, w: 13200, h: 11400 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
-      w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
-    ...labelGates([...ulkerAltDoors, ...ulkerUstDoors]),
-  ],
-  blocks: [
-    /* Parket kenarı — sahaya paralel iki tek sıra (courtside) */
-    { id: nid(), kind: "grid", label: "P1", name: "Parket Kenarı · P1", level: "Parket Kenarı",
-      x: 0, y: 950, rot: 0, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
-      num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
-    { id: nid(), kind: "grid", label: "P2", name: "Parket Kenarı · P2", level: "Parket Kenarı",
-      x: 0, y: -950, rot: 180, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
-      num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
-
-    ...ulkerAlt, ...ulkerLoca, ...ulkerUst,
-  ],
-};
-ULKER.shapes = autoGates(ULKER, ULKER.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 5 · HARBİYE CEMİL TOPUZLU AÇIKHAVA  ══════════════
-   180°'lik amfi. Üç kademe, harfle adlandırılmış radyal bloklar,
-   önde protokol locası, sahne ile seyirci arasında orkestra çukuru.
-   Her kademe tek tohum blok + radyal diziyle kuruluyor.
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/** Amfi kademesi: eşit açı adımlarıyla radyal dizi, soldan sağa harflenir. */
-function tier({ r0, rows, rowGap, span, count, first, level, color, aisle = 160, pad = 60 }) {
-  /* Koridor cm olarak verilir; ilk sıranın yarıçapında açıya çevrilir.
-     Kademe geriye gittikçe koridor açısal olarak daralmaz, genişler —
-     gerçekte de merdiven yukarı doğru açılır. */
-  const aDeg = (aisle / r0) / RAD;
-  const step = span;
-  const start = (-step * (count - 1)) / 2;
-  return Array.from({ length: count }, (_, i) => reLabel({
-    id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: start + step * i,
-    r0, rows, rowGap, seatGap: 50, counts: "", align: "center",
-    aStart: -(span - aDeg) / 2, aEnd: (span - aDeg) / 2, aCenter: 0,
-    color, pad, level, ov: {}, num: { ...DEF_NUM },
-  }, incLabel(first, i)));
-}
-
-/** Loca kanadı: paylaşılan odağa bakan küçük yelpaze kutular, iki yanda
- *  simetrik. Kutular ana bloğun (parter/balkon) kapladığı açısal aralığın
- *  DIŞINDA başlamalı — aynı yarıçapta aynı açıya konursa localar parterin
- *  üstüne biner, koltuklar birebir çakışır. fromDeg ana bloğun kenar açısı
- *  (+ pay), toDeg localarının gidebileceği en uç açı. */
-function locaWing({ r0, rows, rowGap, seatGap, perRow, gap, countPerSide,
-                    first, level, color, pad = 40, fromDeg, toDeg }) {
-  /* Kutu genişliğini TAHMİN etmek güvenilmezdi: offsetPoly'nin köşe
-     gönyesi ve koltuğun kendi fiziksel genişliği hesaba katılmayınca
-     tahmin gerçek genişlikten dar çıkıyordu (ölçünce 11,6° vs tahmin
-     9,1°) — komşu kutular birbirine giriyordu. Şimdi örnek bir kutu
-     gerçekten inşa edilip dış hattından ÖLÇÜLÜYOR, tahmin yok. */
-  const counts = Array.from({ length: rows }, () => perRow).join(",");
-  const probe = { id: nid(), kind: "fan", mode: "pitch", x: 0, y: 0, rot: 0,
-    r0, rows, rowGap, seatGap, counts, align: "center",
-    aStart: -40, aEnd: 40, aCenter: 0, color, pad, level, ov: {}, num: { ...DEF_NUM } };
-  const pm = buildMeta(probe);
-  const measuredDeg = (Math.atan2((pm.bbox.x1 - pm.bbox.x0) / 2, r0) / RAD) * 2;
-  const gapDeg = (gap / r0) / RAD;
-  const step = measuredDeg + gapDeg;
-  const fit = Math.floor((toDeg - fromDeg) / step);
-  const n = Math.min(countPerSide, Math.max(1, fit));
-  const seed = (a, i) => reLabel({ ...probe, id: nid(), rot: a, noAisle: true }, incLabel(first, i));
-  const out = [];
-  for (let i = 0; i < n; i++) {
-    const a = fromDeg + step / 2 + step * i;
-    out.push(seed(-a, i));
-    out.push(seed(a, n + i));
-  }
-  return out;
-}
-
-const wallArc = [
-  ...Array.from({ length: 40 }, (_, i) => {
-    const a = (-96 + (192 * i) / 39) * RAD;
-    return { x: Math.round(5750 * Math.sin(a)), y: Math.round(-5750 * Math.cos(a)) };
-  }),
-  { x: 3200, y: 2200 }, { x: -3200, y: 2200 },
-];
-
-ZORLU.blocks = withAccessible(ZORLU.blocks,
-  (b) => ["Orkestra Orta (arka)", "1. Balkon Orta"].includes(b.name), 9);
-ZORLU.shapes = autoGates(ZORLU, ZORLU.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-const HARBIYE = {
-  key: "harbiye", name: "Harbiye Cemil Topuzlu Açıkhava Tiyatrosu", unit: "cm",
-  home: { x: -6400, y: -6400, w: 12800, h: 9600 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "poly", type: "wall", x: 0, y: 0, rot: 0, pts: wallArc,
-      label: "", capacity: 0, fs: 80, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: 700, w: 2600, h: 1300, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 210, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "screen", x: 0, y: -180, w: 2200, h: 420, rot: 0,
-      label: "ORKESTRA ÇUKURU", capacity: 0, fs: 105, blocks: [] },
-    ...[[1, -3050, -2450], [2, 3050, -2450], [3, -4550, -1500], [4, 4550, -1500],
-        [5, 0, -5980]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 300, h: 300, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 100, blocks: [],
-    })),
-  ],
-  blocks: [
-    /* Protokol locası — sahnenin hemen önünde, iki sıra */
-    reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 1150, rows: 2, rowGap: 95, seatGap: 50, counts: "15,15", align: "center",
-      aStart: -20, aEnd: 20, aCenter: 0, color: "#B79A32", pad: 45,
-      level: "Protokol", ov: {}, num: { ...DEF_NUM } }, "PR"),
-
-    ...tier({ r0: 1500, rows: 11, rowGap: 95, span: 35, count: 5,
-      first: "A", level: "Alt Kademe", color: "#3E7FBF", aisle: 150, pad: 60 }),
-    ...tier({ r0: 2700, rows: 11, rowGap: 95, span: 30, count: 6,
-      first: "F", level: "Orta Kademe", color: "#5F9142", aisle: 160, pad: 60 }),
-    ...tier({ r0: 3900, rows: 6, rowGap: 95, span: 30, count: 5,
-      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: 60 }),
-
-    /* Erişilebilir platformlar — üst kademenin arkasındaki düz alan.
-       Tekerlekli sandalye ve refakatçi yerleri sırayla dizili. */
-    ...[-1, 1].map((sd, k) => reLabel({
-      id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: sd * 52,
-      r0: 4680, rows: 2, rowGap: 130, seatGap: 62, counts: "18,18", align: "center",
-      aStart: -13, aEnd: 13, aCenter: 0, color: "#3E9092", pad: 60,
-      level: "Erişilebilir Platform",
-      ov: Object.fromEntries(Array.from({ length: 36 }, (_, i) =>
-        [`${Math.floor(i / 18)},${i % 18}`, { at: i % 2 === 0 ? "wheel" : "comp" }])),
-      num: { ...DEF_NUM },
-    }, `E${k + 1}`)),
-  ],
-};
-
-/* Kapılar en yakın bloklara atanıyor — editördeki düğmenin yaptığı işlem. */
-HARBIYE.shapes = autoGates(HARBIYE, HARBIYE.blocks.map((b) => ({ b, m: buildMeta(b) })));
-HARBIYE.shapes = [...HARBIYE.shapes,
-  ...[["wc", -5150, -2350, "WC"], ["wc", 5150, -2350, "WC"],
-      ["beer", -4300, -4100, "Büfe"], ["beer", 4300, -4100, "Büfe"],
-      ["stairs", -2450, -5250, "Merdiven"], ["stairs", 2450, -5250, "Merdiven"],
-      ["aid", 0, 1750, "İlk yardım"]]
-    .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-      x, y, rot: 0, size: 34, w: 200, h: 200, label, capacity: 0, fs: 100, blocks: [] }))];
-
-/** Son sıralardan başlayarak tekerlekli sandalye + refakatçi çiftleri açar.
- *  Çifti bölmez: sıra kısaysa bir öncekine taşar. Önceden sıranın sonuna
- *  denk gelen çiftin refakatçisi düşüyordu, sayılar tutmuyordu. */
-function withAccessible(blocks, match, pairs = 2) {
-  const hit = typeof match === "function" ? match : (b) => match.includes(b.label);
-  return blocks.map((b) => {
-    if (!hit(b)) return b;
-    const P = prep(b);
-    const ov = { ...b.ov };
-    let placed = 0;
-    for (let r = P.counts.length - 1; r >= 0 && placed < pairs; r--) {
-      const n = P.counts[r];
-      for (let i = 0; i + 1 < n && placed < pairs; i += 2) {
-        ov[`${r},${i}`] = { at: "wheel" };
-        ov[`${r},${i + 1}`] = { at: "comp" };
-        placed++;
-      }
-    }
-    return { ...b, ov };
-  });
-}
-
-/* ══════════════  SALON 6 · AYLAK BAR KADIKÖY  ══════════════
-   Stand-up gecesi düzeni. Sıra yok, masa var: 2 ve 4 kişilik yuvarlak
-   masalar, bar tezgâhı boyunca tabure, arkada ayakta alan.
-   Tellalzade Sk. No:13, Caferağa — küçük bir bar, düzensiz plan.
-   ═══════════════════════════════════════════════════════════ */
-
-const tbl = (label, x, y, seats, tW, a0, color) => reLabel({
-  id: nid(), kind: "table", x, y, rot: 0, tShape: "round",
-  tW, tH: tW, seats, a0, clear: 12, pad: 10, color, level: "Salon",
-  cols: 1, rows: 1, counts: "", align: "center", curve: 0, taper: 0,
-  seatGap: 50, rowGap: 90, attr: "", ov: {},
-  num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" },
-}, label);
-
-const AYLAK = {
-  key: "aylak", name: "Aylak Bar Kadıköy · Stand-up düzeni", unit: "cm",
-  home: { x: -900, y: -800, w: 1900, h: 1560 },
-  idTemplate: "{block}-{seat}", underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "wall", x: 130, y: -60, w: 1560, h: 1120, rot: 0,
-      label: "", capacity: 0, fs: 40, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -470, w: 420, h: 180, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 70, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "screen", x: -490, y: -25, w: 140, h: 550, rot: 0,
-      label: "BAR TEZGÂHI", capacity: 0, fs: 52, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 150, y: 455, w: 900, h: 130, rot: 0,
-      label: "Ayakta alan", capacity: 40, fs: 44, blocks: [] },
-    ...[[1, -640, 250], [2, 640, 250]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 90, h: 90, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 36, blocks: [] })),
-    ...[["entrance", -545, 405, "Giriş"], ["wc", 555, 405, "WC"],
-        ["aid", 555, -520, "İlk yardım"], ["cafe", -545, -520, "Bar"]]
-      .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-        x, y, rot: 0, size: 32, w: 120, h: 120, label, capacity: 0, fs: 100, blocks: [] })),
-  ],
-  blocks: [
-    /* Sahne önü — iki kişilik masalar */
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 1}`, x, -250, 2, 65, 0, "#C2415A")),
-    /* Salon — dört kişilik masalar, iki sıra */
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 5}`, x, -20, 4, 90, 45, "#3E7FBF")),
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 9}`, x, 210, 4, 90, 45, "#3E7FBF")),
-    /* Bar tezgâhı taburesi — tek sıra, tezgâha dönük */
-    reLabel({ id: nid(), kind: "grid", x: -370, y: -25, rot: -90,
-      cols: 7, rows: 1, counts: "", align: "center", seatGap: 72, rowGap: 90,
-      curve: 0, taper: 0, color: "#B79A32", pad: 30, level: "Bar", attr: "", ov: {},
-      num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "B", seatStart: 1 } }, "BAR"),
-  ],
-};
-/* Erişilebilir masalar — girişe ve geçiş aksına yakın */
-AYLAK.blocks = withAccessible(AYLAK.blocks, ["M1", "M4", "M9", "M12"], 1);
-AYLAK.shapes = autoGates(AYLAK, AYLAK.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 7 · SÜREYYA OPERASI (KADIKÖY)  ══════════════
-   1927'de sinema olarak açılan, 2007'de operaya dönüştürülen tarihi bina.
-   570 kişilik, at nalı (horseshoe) formda: parter + zemin loca + 1. kat
-   (açık balkon + loca) + 2. kat (sadece loca). Odak sahnenin hemen önünde;
-   localar paylaşılan bu odağa bakan küçük yelpaze kutular olarak kuruluyor.
-   ═══════════════════════════════════════════════════════════════════ */
-
-const SUREYYA = {
-  key: "sureyya", name: "Süreyya Operası · Kadıköy", unit: "cm",
-  home: { x: -1150, y: -900, w: 2300, h: 2000 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: 620, w: 1500, h: 750, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 90, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "screen", x: 0, y: 140, w: 950, h: 220, rot: 0,
-      label: "ORKESTRA ÇUKURU", capacity: 0, fs: 46, blocks: [] },
-    ...[["cloak", -980, 950, "Vestiyer"], ["wc", 980, 950, "WC"],
-        ["entrance", 0, 980, "Giriş"], ["info", -980, -820, "Danışma"]]
-      .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
-        x, y, rot: 0, size: 30, w: 120, h: 120, label, capacity: 0, fs: 100, blocks: [] })),
-    ...[[1, -700, 940], [2, 700, 940]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 90, h: 90, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 34, blocks: [] })),
-  ],
-  blocks: [
-    /* Parter — sahne önü, hafif açılan taban, sabit değil doğal taper */
-    reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 320, rows: 7, rowGap: 82, seatGap: 47, counts: "", align: "center",
-      aStart: -54, aEnd: 54, aCenter: 0, color: "#3E7FBF", pad: 45,
-      level: "Parter", ov: {}, num: { ...DEF_NUM } }, "P"),
-
-    /* Zemin kat locaları — parterin iki yanında, sahneye yakın kutular.
-       6 sıra × 2'şer koltuk, ön sahneden başlayıp arkaya doğru sayılı. */
-    ...locaWing({ r0: 460, rows: 2, rowGap: 78, seatGap: 46, perRow: 3, gap: 14,
-      countPerSide: 8, first: "ZL1", level: "Zemin Loca", color: "#C2415A", pad: 26,
-      fromDeg: 70, toDeg: 104 }),
-
-    /* 1. kat — orta kesim açık balkon, yanlarda loca */
-    reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
-      r0: 930, rows: 5, rowGap: 62, seatGap: 48, counts: "", align: "center",
-      aStart: -34, aEnd: 34, aCenter: 0, color: "#5F9142", pad: 45,
-      level: "1. Kat", ov: {}, num: { ...DEF_NUM, rowScheme: "letter" } }, "A"),
-    ...locaWing({ r0: 930, rows: 2, rowGap: 78, seatGap: 46, perRow: 3, gap: 18,
-      countPerSide: 5, first: "1L1", level: "1. Kat Loca", color: "#B79A32", pad: 26,
-      fromDeg: 60, toDeg: 92 }),
-
-    /* 2. kat — sadece loca, sahneyi görmek için öne eğilmek gerekiyor */
-    ...locaWing({ r0: 1280, rows: 2, rowGap: 70, seatGap: 46, perRow: 3, gap: 14,
-      countPerSide: 9, first: "2L1", level: "2. Kat Loca", color: "#7C5BA8", pad: 26,
-      fromDeg: 40, toDeg: 100 }),
-  ],
-};
-/* Erişilebilir yer — zemin kat locasının en uç, en kolay ulaşılan kutusu */
-SUREYYA.blocks = withAccessible(SUREYYA.blocks, (b) => b.level === "Zemin Loca" || b.label === "P", 2);
-SUREYYA.shapes = autoGates(SUREYYA, SUREYYA.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 8 · AKM TÜRK TELEKOM OPERA SALONU  ══════════════
-   Taksim, at nalı (horseshoe) formlu opera salonu — parter + 2 balkon,
-   her biri ORTA/ÇİFT/TEK üçlüsü. Passo'nun yayınladığı gerçek oturma
-   planından (akmistanbul.gov.tr / passo.com.tr) çıkarıldı: 2040 koltuk,
-   85 kişilik orkestra çukuru, 3 kattan 16 kapı. Burada 1.829 koltuk ve
-   6 kapıya sadeleştirildi — gerçek planın 4 derinlik-bandı (fiyat
-   kategorisine göre) 2'ye indirildi, tam sayı hedeflenmedi.
-   ─────────────────────────────────────────────────────────────────────
-   Parter'ın iki bandı (ön/arka) ve 1./2. Balkon aynı yarıçapta DEĞİL —
-   Süreyya'daki kat ilkesiyle aynı: her kat kendi halkasında oturur,
-   halkalar yarıçapça çakışmaz. Fiziksel olarak balkon parterin üstünde
-   çıkıntı yapar ama bu düzlemsel planda katları çakıştırırsak
-   validate() "koltuk çifti üst üste biniyor" der — kat ayrımı yalnızca
-   yürüme payı kontrolünde var, ham çakışma kontrolünde yok.
-   ORTA ile ÇİFT/TEK arasındaki açı boşluğu (Parter'da 44°, balkonlarda
-   ~6-8°) taban payının (~100cm) çakışmaması için — dar tutulursa
-   Sutherland-Hodgman testi gizli bir taban çakışması buluyor (ilk
-   denemede P.ORTA-2 ↔ ÇİFT-2/TEK-2 arasında ~5.500cm² çıkmıştı).
-   ═══════════════════════════════════════════════════════════════════ */
-
-const akmDoor = (n, x, y) => ({
-  id: nid("s"), kind: "rect", type: "door", x, y, w: 200, h: 200, rot: 0,
-  label: `KAPI ${n}`, capacity: 0, fs: 150, blocks: [],
-});
-
-const AKM = {
-  key: "akm", name: "AKM · Türk Telekom Opera Salonu", unit: "cm",
-  home: { x: -2950, y: -3550, w: 5900, h: 3900 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -450, w: 1200, h: 350, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 100, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "wall", x: 0, y: -1600, w: 5700, h: 3800, rot: 0,
-      label: "DUVAR", capacity: 0, fs: 100, blocks: [] },
-    akmDoor(1, -1893, -166), akmDoor(2, 1893, -166),
-    akmDoor(3, -1543, -1839), akmDoor(4, 1543, -1839),
-    akmDoor(5, -2155, -1940), akmDoor(6, 2155, -1940),
-  ],
-  blocks: [
-    /* Sahneye en yakın küçük ön bant — tek parça (ÇİFT/TEK ayrımı bu
-       yarıçapta ≥26°'lik bir koridor açısı ister, gereksiz daralma). */
-    fanB({ label: "P.ON", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 200, rows: 5, rowGap: 85, aStart: -78, aEnd: 78, seatGap: 48, color: "#3E7FBF",
-      ov: {
-        "4,8": { at: "wheel" }, "4,9": { at: "wheel" }, "4,10": { at: "wheel" },
-        "4,11": { at: "wheel" }, "4,12": { at: "wheel" }, "4,13": { at: "wheel" },
-        "4,14": { at: "wheel" }, "4,15": { at: "wheel" }, "4,16": { at: "wheel" }, "4,17": { at: "wheel" },
-        "3,8": { at: "comp" }, "3,9": { at: "comp" }, "3,10": { at: "comp" },
-        "3,11": { at: "comp" }, "3,12": { at: "comp" }, "3,13": { at: "comp" },
-        "3,14": { at: "comp" }, "3,15": { at: "comp" }, "3,16": { at: "comp" }, "3,17": { at: "comp" },
-      } }),
-    fanB({ label: "P.ORTA-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: -22, aEnd: 22, seatGap: 50, color: "#3E7FBF" }),
-    fanB({ label: "P.ÇİFT-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: -86, aEnd: -37, seatGap: 50, color: "#3E7FBF" }),
-    fanB({ label: "P.TEK-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: 825, rows: 13, rowGap: 88, aStart: 37, aEnd: 86, seatGap: 50, color: "#3E7FBF" }),
-    fanB({ label: "1B.ORTA", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: -16, aEnd: 16, seatGap: 52, color: "#3E7FBF",
-      ov: {
-        "6,8": { at: "wheel" }, "6,9": { at: "wheel" }, "6,10": { at: "wheel" }, "6,11": { at: "wheel" },
-        "6,12": { at: "wheel" }, "6,13": { at: "wheel" }, "6,14": { at: "wheel" }, "6,15": { at: "wheel" },
-        "5,8": { at: "comp" }, "5,9": { at: "comp" }, "5,10": { at: "comp" }, "5,11": { at: "comp" },
-        "5,12": { at: "comp" }, "5,13": { at: "comp" }, "5,14": { at: "comp" }, "5,15": { at: "comp" },
-      } }),
-    fanB({ label: "1B.ÇİFT", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: -43, aEnd: -22, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "1B.TEK", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2150, rows: 7, rowGap: 88, aStart: 22, aEnd: 43, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "2B.ORTA", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: -21, aEnd: 21, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "2B.ÇİFT", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: -52, aEnd: -27, seatGap: 52, color: "#3E7FBF" }),
-    fanB({ label: "2B.TEK", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: 2950, rows: 5, rowGap: 88, aStart: 27, aEnd: 52, seatGap: 52, color: "#3E7FBF" }),
-  ],
-};
-AKM.shapes = autoGates(AKM, AKM.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-/* ══════════════  SALON 9 · FESTIVAL PARK YENİKAPI  ══════════════
-   Büyük ölçekli açık hava — koltuk yerine çoğunlukla ayakta alan
-   (standing shape) modelledi. Sahneden uzaklaştıkça genişleyen üç
-   ayakta bant (Sahne Önü A/B, Genel Giriş) + ayrı bir VIP cebi +
-   tek gerçek oturan blok (LOCA, ızgara). Toplam 40.000 — Şebnem
-   Ferah'ın buradaki konserinin gerçek rakamı; bant içi dağılım
-   editöryel tahmin (kaynakta tek tek bilet kategorisi kırılımı yok).
-   ══════════════════════════════════════════════════════════════ */
-
-const YENIKAPI = {
-  key: "yenikapi", name: "Festival Park Yenikapı · Ayakta Konser Alanı", unit: "cm",
-  home: { x: -10500, y: -2200, w: 19000, h: 20400 }, underlay: null,
-  shapes: [
-    { id: nid("s"), kind: "rect", type: "stage", x: 0, y: -750, w: 4000, h: 1500, rot: 0,
-      label: "SAHNE", capacity: 0, fs: 300, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 0, y: 1600, w: 5000, h: 3000, rot: 0,
-      label: "Sahne Önü A", capacity: 7000, fs: 110, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 0, y: 5200, w: 8000, h: 4000, rot: 0,
-      label: "Sahne Önü B", capacity: 11200, fs: 130, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: 0, y: 11350, w: 13000, h: 8000, rot: 0,
-      label: "Genel Giriş", capacity: 20100, fs: 160, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "standing", x: -7500, y: 4450, w: 3000, h: 2500, rot: 0,
-      label: "VIP Alan", capacity: 1200, fs: 100, blocks: [] },
-    { id: nid("s"), kind: "rect", type: "wall", x: -1250, y: 8000, w: 16500, h: 19600, rot: 0,
-      label: "", capacity: 0, fs: 100, blocks: [] },
-    ...[[1, -9500, 6000], [2, 7000, 6000], [3, -9500, 14000], [4, 7000, 14000],
-        [5, -3000, 17600], [6, 2000, 17600]].map(([n, x, y]) => ({
-      id: nid("s"), kind: "rect", type: "door", x, y, w: 400, h: 400, rot: 0,
-      label: `KAPI ${n}`, capacity: 0, fs: 160, blocks: [],
-    })),
-  ],
-  blocks: [
-    { id: nid(), kind: "grid", label: "LOCA", name: "LOCA", level: "Loca",
-      x: 0, y: 15650, rot: 0, cols: 25, rows: 20, counts: "", align: "center",
-      seatGap: 50, rowGap: 90, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
-      num: { ...DEF_NUM },
-      ov: {
-        "19,0": { at: "wheel" }, "19,1": { at: "wheel" }, "19,2": { at: "wheel" },
-        "19,3": { at: "wheel" }, "19,4": { at: "wheel" }, "19,5": { at: "wheel" },
-        "19,6": { at: "comp" }, "19,7": { at: "comp" }, "19,8": { at: "comp" },
-        "19,9": { at: "comp" }, "19,10": { at: "comp" }, "19,11": { at: "comp" },
-      } },
-  ],
-};
-YENIKAPI.shapes = autoGates(YENIKAPI, YENIKAPI.blocks.map((b) => ({ b, m: buildMeta(b) })));
-
-const EMPTY = { key: "empty", name: "Yeni plan", unit: "cm",
-  home: { x: -2000, y: -1500, w: 4000, h: 3000 }, underlay: null, blocks: [], shapes: [] };
 
 /* ─────────────────────────  İÇE AKTARMA  ─────────────────────────
    Dış dosyadaki kimlikler oturumdaki sayaçla çakışabilir; hepsi
    yeniden atanır. Eksik alanlar varsayılanla tamamlanır.
-   ─────────────────────────────────────────────────────────────── */
 
-function adoptPlan(raw, key) {
+   color: "" (kat paletine bırak) — newGrid/newFan/newTable/newFree'nin
+   AYNI varsayılanı (bkz. yukarıdaki not, ~475). Eskiden burada "#3E7FBF"
+   sabitleniyordu: renksiz (color alanı olmayan/boş) bir bloklu plan.json
+   içe aktarılınca operatörün TUVALE ÇİZDİĞİ blokla AYNI hataya düşüyordu
+   — ...b spread'i b.color VARSA onu korur (renkli girdi zaten güvenliydi),
+   ama YOKSA bu varsayılana düşer; "#3E7FBF" olduğu sürece dışarıdan gelen
+   renksiz blok içe aktarma yoluyla renk KAZANIYORDU (bkz. görev raporu,
+   HATA 1 — koordinatör ölçtü). export: test/unit/block-factories.test.js
+   gerçek fonksiyonu çağırıp bunu bir daha geri gelmeyeceğini doğruluyor. */
+export function adoptPlan(raw, key) {
   if (!raw || !Array.isArray(raw.blocks)) throw new Error("blocks dizisi yok");
+  /* seatKind/seatFeatures (ya da eski attr) BİLEREK burada varsayılanla
+     doldurulmuyor: resolveSeatKind (core/geometry.js) zaten "hiçbiri yoksa
+     single" kuralını kendisi uyguluyor. Burada bir varsayılan YAZILSAYDI
+     (ör. seatKind:"single") — resolveSeatKind seatKind'i her zaman ÖNCE
+     kontrol ettiği için — dışarıdan gelen ESKİ biçimli bir plan.json'un
+     (attr:"wheel" gibi, ör. bir venue'nun kendi plan.json'u) attr'ı hiç
+     görülmeden GÖLGELENİRDİ. ...b spread'i ne varsa (attr, ya da
+     seatKind/seatFeatures) olduğu gibi taşır, resolveSeatKind ikisini de
+     çalışma anında doğru yorumlar. */
   const blocks = raw.blocks.map((b) => ({
     kind: "grid", x: 0, y: 0, rot: 0, cols: 10, rows: 5, counts: "", align: "center",
-    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
+    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "",
     mode: "span", r0: 500, aStart: -40, aEnd: 40, aCenter: 0, pts: [],
     ...b, id: nid(), ov: b.ov || {}, num: { ...DEF_NUM, ...(b.num || {}) },
     label: String(b.label ?? "A"), level: b.level || "",
@@ -1838,303 +636,58 @@ function adoptPlan(raw, key) {
     home, underlay: null, blocks, shapes };
 }
 
-/* ─────────────────────────  SALON SINIRI  ─────────────────────────
-   "Duvar" tipindeki şekiller salonun sınırıdır. Sınır dışına taşan
-   koltuk fiziksel olarak var olamaz; bu bir çizim hatasıdır ve
-   yayına gitmeden yakalanmalıdır.
-   ───────────────────────────────────────────────────────────────── */
-
-function boundaryPolys(plan) {
-  const out = [];
-  (plan.shapes || []).filter((s) => s.type === "wall").forEach((s) => {
-    const cos = Math.cos((s.rot || 0) * RAD), sin = Math.sin((s.rot || 0) * RAD);
-    const pts = s.kind === "poly" ? s.pts : [
-      { x: -s.w / 2, y: -s.h / 2 }, { x: s.w / 2, y: -s.h / 2 },
-      { x: s.w / 2, y: s.h / 2 }, { x: -s.w / 2, y: s.h / 2 },
-    ];
-    out.push(pts.map((p) => ({ x: s.x + p.x * cos - p.y * sin, y: s.y + p.x * sin + p.y * cos })));
-  });
-  return out;
-}
-
-/** Işın atma — poligon içinde mi? */
-function inPoly(x, y, poly) {
-  let hit = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const a = poly[i], b = poly[j];
-    if ((a.y > y) !== (b.y > y) && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) hit = !hit;
-  }
-  return hit;
-}
-/** Sınır tanımlı değilse her yer geçerli sayılır. */
-const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
-
-/* ───────────────  TABAN-TABAN ÇAKIŞMA (Sutherland-Hodgman)  ───────────────
-   İki blok tabanı (m.outline) gerçekten kesişiyor mu? Görünürde bir
-   boşluk olsa bile otomatik taban payı (offsetPoly'nin şişirdiği dış hat)
-   yine de çakışabilir — ZORLU'da ve AKM'de tam bunu bulduk: dar açısal
-   boşluk, geniş taban payını durduramadı, ama koltuklar güvendeydi. Bu
-   yüzden bu kontrol koltuk merkezlerine değil, tabanın kendisine bakar.
-   clip poligonu dışbükey olmasa da bbox ile önceden elenmiş komşu
-   bloklar için doğru sonuç veriyor. */
-function polySignedArea(poly) {
-  let a = 0;
-  for (let i = 0; i < poly.length; i++) {
-    const p = poly[i], q = poly[(i + 1) % poly.length];
-    a += p.x * q.y - q.x * p.y;
-  }
-  return a / 2;
-}
-const polyCCW = (poly) => (polySignedArea(poly) < 0 ? [...poly].reverse() : poly);
-function segIntersect(p1, p2, p3, p4) {
-  const d1x = p2.x - p1.x, d1y = p2.y - p1.y, d2x = p4.x - p3.x, d2y = p4.y - p3.y;
-  const denom = d1x * d2y - d1y * d2x;
-  const t = denom === 0 ? 0 : ((p3.x - p1.x) * d2y - (p3.y - p1.y) * d2x) / denom;
-  return { x: p1.x + t * d1x, y: p1.y + t * d1y };
-}
-function clipPoly(subject, clip) {
-  let out = subject;
-  for (let i = 0; i < clip.length && out.length; i++) {
-    const a = clip[i], b = clip[(i + 1) % clip.length];
-    const inside = (p) => (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x) >= 0;
-    const inp = out; out = [];
-    for (let j = 0; j < inp.length; j++) {
-      const cur = inp[j], prev = inp[(j - 1 + inp.length) % inp.length];
-      const curIn = inside(cur), prevIn = inside(prev);
-      if (curIn) { if (!prevIn) out.push(segIntersect(prev, cur, a, b)); out.push(cur); }
-      else if (prevIn) out.push(segIntersect(prev, cur, a, b));
-    }
-  }
-  return out;
-}
-/** İki dış hattın kesişim alanı (cm²) — kesişmiyorsa 0. */
-function outlineOverlapArea(polyA, polyB) {
-  const xa = polyA.map((p) => p.x), ya = polyA.map((p) => p.y);
-  const xb = polyB.map((p) => p.x), yb = polyB.map((p) => p.y);
-  if (Math.max(...xa) < Math.min(...xb) || Math.max(...xb) < Math.min(...xa)) return 0;
-  if (Math.max(...ya) < Math.min(...yb) || Math.max(...yb) < Math.min(...ya)) return 0;
-  const result = clipPoly(polyCCW(polyA), polyCCW(polyB));
-  return result.length < 3 ? 0 : Math.abs(polySignedArea(result));
-}
-
-/* ─────────────────────────  DOĞRULAMA  ───────────────────────── */
-
+/* ─────────────────────────  DOĞRULAMA  ─────────────────────────
+   Kuralların kendisi artık core/rules.js'te — burası ince bir sarmalayıcı:
+   ctx'i hazırlar, runRules()'u (TÜM kurallarla, liveOnly değil) çağırır,
+   eski { list, total } şeklini geri verir. "Hata veya uyarı yok" özeti
+   burada kalıyor çünkü bir kural değil, DİĞER TÜM kuralların sonucuna
+   bakan bir toplam — onu da bir kural yapmak, kendi tetikleme koşulunu
+   diğer ~15 kuralınkiyle ayrı ayrı yeniden yazıp senkron tutmayı
+   gerektirirdi (tam da bu görevin ortadan kaldırmaya çalıştığı türden
+   bir kopya). */
 function validate(plan, metas, gates) {
-  const out = [];
-  const seen = new Map();
-  const at = {};
-  const polys = boundaryPolys(plan);
-  const outside = {};
-  const outsideIds = new Set();
-  const pts = [];
-  let outCount = 0, unlabeled = 0, total = 0;
-  metas.forEach(({ b, m }) => {
-    buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (s.gap) return;
-      total++;
-      /* Yandan geçiş gerektirmeyen bloklar: masa (etrafı zaten bitişik
-         oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi —
-         erişim arkadan/koridordan, yandan değil; komşu kutular arasında
-         sadece ince bir bölme olur). */
-      pts.push({ x: s.x, y: s.y, b: s.block, bid: b.id, l: s.level, t: b.kind === "table" || !!b.noAisle });
-      if (polys.length && !inBounds(s.x, s.y, polys)) {
-        outCount++; outside[s.block] = (outside[s.block] || 0) + 1; outsideIds.add(b.id);
-      }
-      if (s.at) at[s.at] = (at[s.at] || 0) + 1;
-      if (s.num === "" || s.num == null) unlabeled++;
-      seen.set(s.id, (seen.get(s.id) || 0) + 1);
-    });
-  });
-
-  /* Tuvaldeki canlı uyarı blok tabanına, doğrulama koltuklara bakıyordu;
-     biri kırmızı çerçeve çizerken öteki "temiz" diyordu. İkisi de artık
-     hem koltuğu hem tabanı ölçüyor. */
-  const outBlocks = polys.length
-    ? metas.filter(({ m }) => m.outline.some((q) => !inBounds(q.x, q.y, polys)))
-    : [];
-  if (outCount) out.push({ t: "err",
-    m: `${outCount.toLocaleString("tr-TR")} koltuk salon sınırının dışında`,
-    d: Object.entries(outside).map(([b, n]) => `${b}: ${n}`).join(" · "), ids: [...outsideIds] });
-  if (outBlocks.length) out.push({ t: "err",
-    m: `${outBlocks.length} bloğun tabanı salon sınırına taşıyor`,
-    d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", "),
-    ids: outBlocks.map(({ b }) => b.id) });
-  if (polys.length && !outCount && !outBlocks.length)
-    out.push({ t: "ok", m: "Tüm koltuklar ve blok tabanları salon sınırı içinde" });
-
-  /* Taban-taban çakışma: aynı kattaki iki bloğun dış hattı (koltukların
-     değil, platformun kendisi) örtüşüyor mu? Sadece aynı kat karşılaştırılır
-     — farklı katlar fiziksel olarak üst üste, kesişmeleri anlamsız bir
-     uyarı olurdu. Koltuklar güvende olsa da (yürüme payı ve çakışma
-     kontrolleri ayrı geçse de) taban payı örtüşebilir — bu, koltuk
-     merkezlerine bakan diğer kontrollerin kaçırdığı bir sınıf hata. */
-  const footprintByLevel = new Map();
-  metas.forEach((x) => {
-    const key = x.b.level || "";
-    if (!footprintByLevel.has(key)) footprintByLevel.set(key, []);
-    footprintByLevel.get(key).push(x);
-  });
-  const footprintOverlaps = [];
-  footprintByLevel.forEach((group) => {
-    for (let i = 0; i < group.length; i++) {
-      for (let j = i + 1; j < group.length; j++) {
-        const area = outlineOverlapArea(group[i].m.outline, group[j].m.outline);
-        if (area > 50) footprintOverlaps.push({
-          a: group[i].b.name || group[i].b.label, b: group[j].b.name || group[j].b.label, area,
-          ai: group[i].b.id, bi: group[j].b.id,
-        });
-      }
-    }
-  });
-  if (footprintOverlaps.length) out.push({ t: "err",
-    m: `${footprintOverlaps.length} blok tabanı başka bir bloğun tabanıyla çakışıyor`,
-    d: footprintOverlaps.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
-    ids: [...new Set(footprintOverlaps.flatMap((o) => [o.ai, o.bi]))] });
-
-  /* Kat-arası taban çakışması. Gerçek bir salonda balkon partere sarkabilir,
-     o yüzden bu HATA değil UYARI: fiziksel olarak mümkün ama 2B oturma
-     planında bloklar üst üste binince hem tıklanamaz hem bozuk görünür.
-     (AKM'de 1. ve 2. Balkon tabanları %16 biniyordu; yalnız-aynı-kat
-     kontrolü bunu hiç görmemişti.) */
-  const crossPairs = [], crossIds = new Set();
-  const lvKeys = [...footprintByLevel.keys()];
-  for (let a = 0; a < lvKeys.length; a++)
-    for (let b2 = a + 1; b2 < lvKeys.length; b2++)
-      for (const A of footprintByLevel.get(lvKeys[a]))
-        for (const B of footprintByLevel.get(lvKeys[b2])) {
-          const area = outlineOverlapArea(A.m.outline, B.m.outline);
-          if (area > 50) {
-            crossPairs.push(`${A.b.name || A.b.label}\u2194${B.b.name || B.b.label}`);
-            crossIds.add(A.b.id); crossIds.add(B.b.id);
-          }
-        }
-  if (crossPairs.length) out.push({ t: "warn",
-    m: `${crossPairs.length} blok tabanı farklı kattaki bir blokla çakışıyor`,
-    d: `${crossPairs.slice(0, 6).join(" \u00b7 ")} \u00b7 balkon sarkması olabilir, ama planda üst üste binerler`,
-    ids: [...crossIds] });
-
-  /* Üst üste binen koltuk: merkezleri 30 cm'den yakın iki koltuk fiziksel
-     olarak aynı yerde demektir. Izgara indeksiyle taranıyor. */
-  const CELL = 200, grid = new Map();
-  let clash = 0; const clashPairs = new Set(); const clashIds = new Set();
-  pts.forEach((q, i) => {
-    const k = `${Math.floor(q.x / CELL)}:${Math.floor(q.y / CELL)}`;
-    if (!grid.has(k)) grid.set(k, []);
-    grid.get(k).push(i);
-  });
-  const narrow = { min: Infinity, pair: "", ids: [] };
-  pts.forEach((q, i) => {
-    const cx = Math.floor(q.x / CELL), cy = Math.floor(q.y / CELL);
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
-      (grid.get(`${cx + dx}:${cy + dy}`) || []).forEach((j) => {
-        if (j <= i) return;
-        const w = pts[j];
-        const d = Math.hypot(q.x - w.x, q.y - w.y);
-        if (d < 30) { clash++; clashPairs.add(q.b === w.b ? q.b : `${q.b}↔${w.b}`); clashIds.add(q.bid).add(w.bid); }
-        /* İki masa arasında koridor aranmaz — sandalye sırtları bitişik
-           olabilir. Farklı katlardaki bloklar da aranmaz — aralarında
-           zaten düşey bir ayrım (tavan/zemin) var, "80 cm boşluk yeter
-           mi" sorusu anlamsız; kural yalnızca aynı kat içinde geçerli. */
-        if (q.b !== w.b && q.l === w.l && !(q.t && w.t) && d < narrow.min) {
-          narrow.min = d; narrow.pair = `${q.b} ↔ ${w.b}`; narrow.ids = [q.bid, w.bid];
-        }
-      });
-    }
-  });
-  if (clash) out.push({ t: "err", m: `${clash.toLocaleString("tr-TR")} koltuk çifti üst üste biniyor`,
-    d: [...clashPairs].slice(0, 6).join(" · "), ids: [...clashIds] });
-
-  /* Farklı bloklar arasında insanın geçebileceği bir açıklık olmalı.
-     90 cm altı geçit sayılmaz; iki blok pratikte tek blok gibi olur. */
-  if (narrow.min < 90 && narrow.min < Infinity)
-    out.push({ t: "err", m: `Bloklar arasında yürüme payı yok — en dar açıklık ${Math.round(narrow.min)} cm`,
-      d: `${narrow.pair} · geçit için en az 90 cm gerekir`, ids: narrow.ids });
-  else if (narrow.min < 120 && narrow.min < Infinity)
-    out.push({ t: "warn", m: `Bloklar arası en dar açıklık ${Math.round(narrow.min)} cm`,
-      d: `${narrow.pair} · rahat geçiş için 120 cm önerilir`, ids: narrow.ids });
-
-  const sellable = total - (at.tech || 0);
-  out.push({ t: "info", m: `${sellable.toLocaleString("tr-TR")} satılabilir koltuk`,
-    d: at.tech ? `${at.tech} koltuk teknik/satışa kapalı` : null });
-
-  /* Gerekli tekerlekli sandalye yeri sabit bir yüzde değil, kademeli:
-     ilk 500 koltuk için 6, sonraki her 150 koltuk için 1, 5.000'in
-     üstünde her 200 koltuk için 1. Küçük salonda oran yüksek, büyükte
-     düşük olur — sabit yüzde iki uçta da yanlış sonuç veriyordu. */
-  const need = total <= 25 ? 1 : total <= 50 ? 2 : total <= 150 ? 4
-    : total <= 300 ? 5 : total <= 500 ? 6
-    : total <= 5000 ? 6 + Math.ceil((total - 500) / 150)
-    : 36 + Math.ceil((total - 5000) / 200);
-  const wheel = at.wheel || 0;
-  if (!wheel) out.push({ t: "err", m: `Tekerlekli sandalye alanı tanımlanmamış — en az ${need} gerekiyor` });
-  else if (wheel < need) out.push({ t: "warn",
-    m: `${wheel} tekerlekli sandalye alanı — bu kapasite için ${need} gerekiyor`,
-    d: `${need - wheel} yer daha eklenmeli` });
-  else out.push({ t: "ok", m: `${wheel} tekerlekli sandalye alanı · ${at.comp || 0} refakatçi`,
-    d: `gereken ${need}` });
-  if (wheel && (at.comp || 0) < wheel)
-    out.push({ t: "warn", m: `Refakatçi koltuğu tekerlekli sandalye alanından az (${at.comp || 0} < ${wheel})` });
-  if (at.obstr) out.push({ t: "info", m: `${at.obstr.toLocaleString("tr-TR")} görüş kısıtlı koltuk` });
-  const dups = [...seen].filter(([, n]) => n > 1);
-  if (dups.length) out.push({ t: "err",
-    m: `${dups.length} yinelenen koltuk kimliği`, d: dups.slice(0, 6).map(([id, n]) => `${id} ×${n}`).join(", ") });
-  if (unlabeled) out.push({ t: "err", m: `${unlabeled} etiketsiz koltuk` });
-
-  const noLevel = plan.blocks.filter((b) => !b.level).length;
-  if (noLevel) out.push({ t: "warn", m: `${noLevel} blok katsız` });
-
-  const doors = plan.shapes.filter((s) => s.type === "door");
-  if (!doors.length) out.push({ t: "warn", m: "Hiç kapı tanımlanmamış" });
-  else {
-    const orphan = plan.blocks.filter((b) => !gates || !gates.has(b.id));
-    if (orphan.length) out.push({ t: "err", m: `${orphan.length} blok hiçbir kapıya bağlı değil`,
-      d: orphan.slice(0, 8).map((b) => b.name || b.label).join(", "), ids: orphan.map((b) => b.id) });
-    const emptyDoor = doors.filter((d) => !(d.blocks || []).length);
-    if (emptyDoor.length) out.push({ t: "warn", m: `${emptyDoor.length} kapıya blok atanmamış`,
-      d: emptyDoor.slice(0, 8).map((d) => d.label).join(", ") });
-  }
-
-  const lbl = new Map();
-  plan.blocks.forEach((b) => lbl.set(b.label, (lbl.get(b.label) || 0) + 1));
-  const dupL = [...lbl].filter(([, n]) => n > 1);
-  if (dupL.length) {
-    const dupLbls = new Set(dupL.map(([l]) => l));
-    out.push({ t: "info",
-      m: `${dupL.length} blok kimliği birden fazla blokta kullanılmış`,
-      d: dupL.slice(0, 6).map(([l, n]) => `${l} ×${n}`).join(", "),
-      ids: plan.blocks.filter((b) => dupLbls.has(b.label)).map((b) => b.id) });
-  }
-
-  const emptyBlocks = plan.blocks.filter((b, i) => metas[i].m.seatCount === 0);
-  if (emptyBlocks.length) out.push({ t: "warn", m: `${emptyBlocks.length} boş blok`,
-    ids: emptyBlocks.map((b) => b.id) });
-
-  if (!out.some((o) => o.t === "err" || o.t === "warn"))
-    out.push({ t: "ok", m: "Hata veya uyarı yok" });
-  return { list: out, total };
+  const ctx = buildCtx(plan, metas, gates);
+  /* runRules() her bulguya hangi kuraldan geldiğini söyleyen `id` ekliyor
+     (canlı taraf breach'i collide'dan bu alanla ayırıyor). validate()'in
+     dönüş şekli tarihsel olarak { t, m, d, ids } — o alanı burada atarak
+     eski çıktıyla BİREBİR (fazladan alan bile olmadan) aynı kalıyor. */
+  const list = runRules(ctx).map(({ id, ...f }) => f);
+  if (!list.some((o) => o.t === "err" || o.t === "warn"))
+    list.push({ t: "ok", m: "Hata veya uyarı yok" });
+  return { list, total: ctx.seats.total };
 }
 
 /* ─────────────────────────  TUTAMAKLAR  ───────────────────────── */
 
-function handlesFor(b, m) {
+export function handlesFor(b, m) {
   if (b.foot && b.foot.length >= 3) {
     const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
     return b.foot.map((p, i) => ({ k: `foot:${i}`, ...toWorld(b, p, cos, sin) }));
   }
   const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
   const L = (p, k) => ({ k, ...toWorld(b, p, cos, sin) });
+  let hs = [];
   if (b.kind === "grid") {
     const halfW = ((m.P.maxN - 1) / 2) * b.seatGap;
-    return [
+    const backY = (b.rows - 1) * b.rowGap;
+    hs = [
       L({ x: 0, y: -b.rowGap * 1.4 }, "rot"),
-      L({ x: halfW + b.seatGap * 0.9, y: (b.rows - 1) * b.rowGap + b.rowGap * 0.5 }, "size"),
+      /* kavis: ön sıranın orta noktasının hemen ÖNÜNDE, kavis değeri kadar
+         dıştan başlıyor — r0/rows tutamaklarıyla AYNI dil (tutamacın
+         dinlenme konumu düzenlediği alanın GÜNCEL değerini taşır). */
+      L({ x: 0, y: -b.rowGap * 0.6 - (b.curve || 0) }, "curve"),
+      L({ x: halfW + b.seatGap * 0.9, y: backY / 2 }, "cols"),
+      L({ x: 0, y: backY + b.rowGap * 0.9 }, "rows"),
     ];
-  }
-  if (b.kind === "fan") {
+  } else if (b.kind === "fan") {
     const span = (b.mode || "span") === "span";
     const am = span ? (b.aStart + b.aEnd) / 2 : b.aCenter;
     const rOut = b.r0 + (b.rows - 1) * b.rowGap;
-    const hs = [
+    hs = [
+      /* "rows" tutamacından (+0.75) belirgin biçimde ayrı dursun diye +2.4 —
+         ikisi de dıştan, aynı açıda; çok sıralı/dar yelpazelerde 0.65 katı
+         fark ekranda iç içe geçiyordu (bkz. görev raporu, GS köşe bloğu). */
+      L(polarPt(rOut + b.rowGap * 2.4, am), "rot"),
       L(polarPt(b.r0 - b.rowGap * 0.75, am), "r0"),
       L(polarPt(rOut + b.rowGap * 0.75, am), "rows"),
     ];
@@ -2142,77 +695,236 @@ function handlesFor(b, m) {
       hs.push(L(polarPt(rOut, b.aStart), "aStart"));
       hs.push(L(polarPt(rOut, b.aEnd), "aEnd"));
     }
-    return hs;
   }
-  return [];
+  /* SADECE "cols": duruş noktası m.P.maxN'den (counts/taper varsa b.cols'tan
+     FARKLI bir genişlik) türerken handlePatch b.cols'u yazıyor — tutamaç
+     durduğu yerle YAZDIĞI alan ayrı BÜYÜKLÜK olabiliyor (bkz. ZORLU,
+     counts="19..28" iken cols=10 kalıyor). Bu SEMANTİK bir hata: tutamaç
+     orada ne gösterdiğini yazmıyor, round-trip'i ne kadar gevşetirsen
+     gevşet düzelmez — gizlemekten başka çare yok (bkz. GATED_HANDLES).
+     rot/r0/curve/aStart/aEnd BURAYA GİRMEZ: onlar kendi formüllerinde
+     bilerek bir hassasiyete (derece / 10cm) yuvarlıyor ama duruş noktası
+     ile yazdığı alan HER ZAMAN aynı büyüklük — sadece kaba. O kabalık
+     HANDLE_DRAG_PX eşiğiyle (bkz. onMove) zaten çözülüyor; onları da
+     burada gizlemek 255 tutamacın (SÜREYYA/HARBIYE/GS/ULKER'deki çözücü-
+     üretimi yelpazelerin çoğu) editörden kaybolması demekti — çözülmüş
+     bir sorun için asıl aracı (tutamacın kendisini) çöpe atmak olurdu. */
+  return hs.filter((h) => !GATED_HANDLES.has(h.k) || canRoundTrip(b, h));
+}
+
+/* Round-trip'i handlesFor'da DOĞRULAMADAN gösterilmeyecek tutamaçların
+   sınıfı — bugün tek üye "cols" (yukarıdaki not). Yarın aynı sınıfa
+   (duruş NOKTASI ile YAZILAN alan ayrı büyüklük) giren başka bir tutamaç
+   çıkarsa buraya eklenir; rot/r0/curve/aStart/aEnd gibi "aynı büyüklük,
+   sadece yuvarlanmış" tutamaçlar asla buraya girmez. */
+const GATED_HANDLES = new Set(["cols"]);
+
+/* Tolerans 1e-9: sin/cos/atan2 tersine sarınca kalan kayan-nokta gürültüsü
+   (~1e-13, bkz. handlePatch'teki rnd() notu) bunun çok altında, gerçek bir
+   uyuşmazlık (18 koltuk, bkz. görev raporu) çok üstünde — ikisini
+   karıştırmaz. GATED_HANDLES'taki tutamaçlar için formülün kendisi
+   İNŞAEN kesin (yuvarlama YOK, bkz. "cols"un handlePatch dalı) — o yüzden
+   burada gevşek bir kuantum toleransı YOK, tek sayı yeterli. */
+function canRoundTrip(b, h) {
+  const startAng = h.k === "rot" ? Math.atan2(h.y - b.y, h.x - b.x) / RAD : undefined;
+  const patch = handlePatch(b, h.k, h, startAng);
+  return Object.keys(patch).every((f) => Math.abs(patch[f] - b[f]) < 1e-9);
+}
+
+/** Bir tutamacın YENİ dünya konumundan (raw) o bloğun alanlarına giden TEK
+ *  hesap — onMove ("handle" kipi), handlesFor'un kendi canRoundTrip kontrolü
+ *  (yalnız GATED_HANDLES için) ve test/invariants/handle-roundtrip.test.js
+ *  ÜÇÜ DE bunu çağırır, kopyası yok. Her sabit (0.8/0.9/0.75/0.6…)
+ *  handlesFor'daki duruş konumu sabitinin TAM TERSİ olacak şekilde
+ *  seçildi: tutamacı hiç sürüklemeden (raw = kendi duruş konumu) bırakmak
+ *  no-op olmalı — aksi hâlde tıklamak bile değer kaydırır (bkz. görev
+ *  raporu, eski "size" tutamacının +1 kusuru).
+ *
+ *  r0/curve/aStart/aEnd/rot BİLEREK bir hassasiyet sınırına (derece /
+ *  10cm) yuvarlıyor — gerçek bir sürüklemede kullanıcı temiz sayı ister,
+ *  bu yuvarlama giderilmiyor. Alan zaten o hassasiyette DEĞİLSE (çözücünün
+ *  ürettiği SÜREYYA rot=84,9622 gibi ince değerler) round-trip TAM olamaz
+ *  ama bu bir HATA değil — tutamaç YİNE DE gösterilir (handlesFor onu
+ *  GİZLEMEZ, bkz. GATED_HANDLES): kabalık, bilgi kaybı değil. "Sürüklemeden
+ *  bırakmak no-op" garantisi bu tutamaçlar için handlesFor'da değil,
+ *  onMove'da duruyor — işaretçi mousedown'dan beri birkaç EKRAN pikseli
+ *  hareket etmeden bu fonksiyon hiç ÇAĞRILMIYOR (bkz. HANDLE_DRAG_PX).
+ *  Yani "tam üstüne denk gelmeyen bir tıklama" sorunu YUVARLAMAYI
+ *  gevşeterek ya da tutamacı gizleyerek değil, patch'i hiç UYGULAMAYARAK
+ *  çözülüyor — bir kez 3px'i aşan GERÇEK bir sürüklemede bu yuvarlama
+ *  aynen uygulanır, temiz sayı üretir. */
+export function handlePatch(b0, h, raw, startAng) {
+  const a = -b0.rot * RAD;
+  const gx = raw.x - b0.x, gy = raw.y - b0.y;
+  const lx = gx * Math.cos(a) - gy * Math.sin(a);
+  const ly = gx * Math.sin(a) + gy * Math.cos(a);
+  const dist = Math.hypot(lx, ly);
+  /* sin/cos tersine sarınca üretilen ~1e-13 mertebeli kayan-nokta gürültüsü,
+     bir değer TAM ORTADA (ör. r0=825 → 82,5) durduğunda round()'u yanlış
+     tarafa yuvarlatabiliyordu (AKM'de görüldü: 825 → 820, olması gereken
+     830). Yuvarlamadan önceki bu minik pay onu gideriyor — gerçek bir
+     sürüklemede (cm/derece mertebesinde hareket) hissedilmez. */
+  const rnd = (v) => Math.round(v + 1e-6);
+  if (h.startsWith("foot:")) {
+    const k = +h.slice(5);
+    return { foot: (b0.foot || []).map((q, j) => j === k ? { x: rnd(lx), y: rnd(ly) } : q) };
+  }
+  if (h === "rot") {
+    const ang = Math.atan2(raw.y - b0.y, raw.x - b0.x) / RAD;
+    return { rot: rnd(b0.rot + (ang - startAng)) };
+  }
+  if (h === "cols") {
+    // duruş: x = halfW + 0,9·seatGap = (maxN-1)/2·seatGap + 0,9·seatGap → ters çevirince -0,8
+    return { cols: Math.max(1, rnd((Math.abs(lx) * 2) / b0.seatGap - 0.8)) };
+  }
+  if (h === "rows") {
+    return b0.kind === "fan"
+      // duruş: dist = rOut + 0,75·rowGap
+      ? { rows: Math.max(1, rnd((dist - b0.r0) / b0.rowGap - 0.75) + 1) }
+      // duruş: y = backY + 0,9·rowGap
+      : { rows: Math.max(1, rnd(ly / b0.rowGap - 0.9) + 1) };
+  }
+  if (h === "curve") {
+    // duruş: y = -0,6·rowGap - kavis → ters formül zaten kavisi geri veriyor
+    return { curve: rnd((-b0.rowGap * 0.6 - ly) / 10) * 10 };
+  }
+  if (h === "r0") {
+    // duruş: dist = r0 - 0,75·rowGap → 0,75·rowGap geri eklenir
+    return { r0: Math.max(50, rnd((dist + b0.rowGap * 0.75) / 10) * 10) };
+  }
+  if (h === "aStart" || h === "aEnd") {
+    return { [h]: rnd(Math.atan2(lx, -ly) / RAD) };
+  }
+  return {};
 }
 
 const HANDLE_HINT = {
-  rot: "Döndür", size: "Sıra ve koltuk sayısı", r0: "İlk yarıçap",
-  rows: "Sıra sayısı", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
+  rot: "Döndür", cols: "Koltuk sayısı (±)", rows: "Sıra sayısı (±)", curve: "Kavis",
+  r0: "İlk yarıçap", aStart: "Başlangıç açısı", aEnd: "Bitiş açısı",
 };
 
-/* Salt-okunur örnek salonların kaynak (kod) sürümü. Kod değişince bunu
-   artır — kullanıcının localStorage'ındaki ESKİ otomatik-kayıt kopyası
-   kaynağı gölgelemesin. Yoksa bir kez açılan örnek salon sonsuza dek eski
-   halinde takılı kalıyor, koddaki düzeltmeler kullanıcıya hiç ulaşmıyor. */
-const SRC_VER = 10;
-const BUILTINS = { sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, ulker: ULKER, zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY };
-/* Sürüm kapısı yalnızca şablonlara uygulanır; empty ve p-* anahtarları
-   kullanıcının kendi işini tutar (örn. empty üstüne kurulan Aspendos), asla
-   atılmaz. */
-const SAMPLE_KEYS = new Set(["sureyya", "aylak", "harbiye", "gs", "ulker", "zorlu", "cso", "akm", "yenikapi"]);
-const stampVer = (obj) => Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, { ...v, srcVer: SRC_VER }]));
+/* Bir tutamacı tıklayıp bırakmak (fare hiç hareket etmeden de olsa) her
+   zaman bir mousemove karesi üretir; o kare handlePatch'e verilirse
+   rot/r0/aStart/aEnd'in BİLEREK yuvarlaması (bkz. handlePatch) tek başına
+   bunu no-op sanamaz — el titremesi ya da tutamacın geniş dokunma alanı
+   yüzünden matematiksel duruş noktasının birkaç piksel dışına düşen bir
+   tıklama, yuvarlama sınırını aşıp değeri bir birim kaydırabilir. Eşik
+   EKRAN pikselinde: dünya biriminde (cm) olsaydı yakınlaştırma seviyesine
+   göre "birkaç piksel"in karşılığı değişir, aynı jest bazen no-op bazen
+   gerçek bir sürükleme sayılırdı. 3px — fare/dokunmatik el titremesini
+   (tipik 1-2px) yutacak, gerçek bir sürüklemeyi geciktirmeyecek kadar
+   küçük; tarayıcıların kendi sürükleme-başlatma eşikleriyle aynı mertebe. */
+const HANDLE_DRAG_PX = 3;
 
 /* ─────────────────────────  ANA BİLEŞEN  ───────────────────────── */
 
-export default function PlanEditor() {
-  const [venues, setVenues] = useState(stampVer(BUILTINS));
-  const [vk, setVk] = useState("gs");
-  const plan = venues[vk];
+export default function PlanEditor({ cssText = "" } = {}) {
+  /* ── belge durumu: reducer (bkz. ui/state/reducer.js) ────────────
+     venues, vk, past/future/rev, seçim, görünüm, kat süzgeci,
+     doğrulama/kalibrasyon/eşleştirme, kayıt durumu — doğruluğu birden
+     fazla alanı ilgilendiren HER ŞEY tek bir saf reducer'da. Okuma
+     tarafı aşağıda düz const'lara açılıyor, geri kalan ~3000 satır
+     bu isimleri DEĞİŞMEDEN okumaya devam ediyor. */
+  const [state, dispatch] = useReducer(reducer, initialState(BUILTINS, "gs"));
+  const {
+    venues, vk, past, future, rev,
+    selIds, selShapeId, selSeat, selSeats,
+    view, levelFilter, report, calib, match, saveState,
+  } = state;
+  const plan = selectPlan(state);
 
-  const [past, setPast] = useState([]);
-  const [future, setFuture] = useState([]);
-  const [tool, setTool] = useState("select");
-  const [selIds, setSelIds] = useState([]);
-  const [selShapeId, setSelShapeId] = useState(null);
-  const [selSeat, setSelSeat] = useState(null);
-  const [selSeats, setSelSeats] = useState(new Set());
-  const [view, setView] = useState(GS.home);
-  const [levelFilter, setLevelFilter] = useState("*");
+  /* value-veya-updater sarmalayıcıları: useState'in fonksiyonel setState
+     sözleşmesiyle AYNI (setSelIds(x), setView((v) => ({...v,...})) gibi
+     var olan onlarca çağrı noktası bunu bekliyor) — gövdeleri artık
+     reducer'a tek tip {type,payload} eylemi gönderiyor. dispatch kararlı
+     olduğundan ([]) bunlar da eski useState setter'ları gibi kararlı. */
+  const setVenues = useCallback((v) => dispatch({ type: "venues/set", payload: v }), []);
+  const setVk = useCallback((v) => dispatch({ type: "vk/set", payload: v }), []);
+  const setPast = useCallback((v) => dispatch({ type: "past/set", payload: v }), []);
+  const setFuture = useCallback((v) => dispatch({ type: "future/set", payload: v }), []);
+  const setRev = useCallback((v) => dispatch({ type: "rev/set", payload: v }), []);
+  const setSelIds = useCallback((v) => dispatch({ type: "selectBlocks", payload: v }), []);
+  const setSelShapeId = useCallback((v) => dispatch({ type: "selectShape", payload: v }), []);
+  const setSelSeat = useCallback((v) => dispatch({ type: "selectSeat", payload: v }), []);
+  const setSelSeats = useCallback((v) => dispatch({ type: "selectSeats", payload: v }), []);
+  const setView = useCallback((v) => dispatch({ type: "setView", payload: v }), []);
+  const setLevelFilter = useCallback((v) => dispatch({ type: "setLevelFilter", payload: v }), []);
+  const setReport = useCallback((v) => dispatch({ type: "setReport", payload: v }), []);
+  const setCalib = useCallback((v) => dispatch({ type: "setCalib", payload: v }), []);
+  const setMatch = useCallback((v) => dispatch({ type: "setMatch", payload: v }), []);
+  const setSaveState = useCallback((v) => dispatch({ type: "setSaveState", payload: v }), []);
+
+  /* ── araç tercihleri: TEK useState nesnesi ───────────────────────
+     Belgeden bağımsız (hangi salon/plan açık olursa olsun aynı kalır),
+     birbirine bağlı değil — reducer'a GİRMİYORLAR. Okuma tarafı yine
+     düz const'lara açılıyor ki aşağıdaki kod DEĞİŞMEDEN çalışsın. */
+  const [toolPrefs, setToolPrefs] = useState({
+    /* Fırça artık İKİ eksen: brushKind (tek seçim, ATTRS'in İLK anahtarı —
+       eski `brush:"wheel"` varsayılanıyla AYNI fikir, "en çok boyanan tür
+       en başta hazır") + brushFeatures (0..N işaretlenebilir). */
+    tool: "select", shapeType: "stage", sport: "football",
+    brushKind: Object.keys(ATTRS)[0], brushFeatures: [], poiKind: "wc",
+    snapOn: true, gridStep: 50,
+    lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
+    wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
+    toolsOpen: true, propsOpen: true,
+    /* A6.4: tek renk kanalı — "level" (Kat) varsayılan, bugünkü davranış.
+       toolPrefs'te yaşıyor çünkü belgeden bağımsız bir görünüm tercihi,
+       tıpkı legend/plates/theme gibi (bkz. dosya başı gerekçesi). */
+    colorChan: "level",
+    /* blok panelindeki katlanır bölümlerin açık/kapalı durumu — bkz.
+       BlockPanel. Burada tutulduğu için (BlockPanel'in kendi state'i
+       DEĞİL) bir bloktan diğerine geçmek sıfırlamaz: kullanıcı "Gelişmiş"i
+       bir kez açtıysa oturum boyunca açık kalır. */
+    footOpen: false, numOpen: false, advOpen: false,
+  });
+  const {
+    tool, shapeType, sport, brushKind, brushFeatures, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
+    toolsOpen, propsOpen, footOpen, numOpen, advOpen, colorChan,
+  } = toolPrefs;
+  const setToolPref = useCallback((key, v) =>
+    setToolPrefs((p) => ({ ...p, [key]: typeof v === "function" ? v(p[key]) : v })), []);
+  const setTool = useCallback((v) => setToolPref("tool", v), [setToolPref]);
+  const setShapeType = useCallback((v) => setToolPref("shapeType", v), [setToolPref]);
+  const setSport = useCallback((v) => setToolPref("sport", v), [setToolPref]);
+  const setBrushKind = useCallback((v) => setToolPref("brushKind", v), [setToolPref]);
+  const setBrushFeatures = useCallback((v) => setToolPref("brushFeatures", v), [setToolPref]);
+  const setPoiKind = useCallback((v) => setToolPref("poiKind", v), [setToolPref]);
+  const setSnapOn = useCallback((v) => setToolPref("snapOn", v), [setToolPref]);
+  const setGridStep = useCallback((v) => setToolPref("gridStep", v), [setToolPref]);
+  const setLin = useCallback((v) => setToolPref("lin", v), [setToolPref]);
+  const setRad = useCallback((v) => setToolPref("rad", v), [setToolPref]);
+  const setWheelPref = useCallback((v) => setToolPref("wheelPref", v), [setToolPref]);
+  const setTheme = useCallback((v) => setToolPref("theme", v), [setToolPref]);
+  const setLegend = useCallback((v) => setToolPref("legend", v), [setToolPref]);
+  const setColorChan = useCallback((v) => setToolPref("colorChan", v), [setToolPref]);
+  const setPlates = useCallback((v) => setToolPref("plates", v), [setToolPref]);
+  const setQ = useCallback((v) => setToolPref("q", v), [setToolPref]);
+  const setToolsOpen = useCallback((v) => setToolPref("toolsOpen", v), [setToolPref]);
+  const setPropsOpen = useCallback((v) => setToolPref("propsOpen", v), [setToolPref]);
+  const setFootOpen = useCallback((v) => setToolPref("footOpen", v), [setToolPref]);
+  const setNumOpen = useCallback((v) => setToolPref("numOpen", v), [setToolPref]);
+  const setAdvOpen = useCallback((v) => setToolPref("advOpen", v), [setToolPref]);
+
+  /* ── geçici / yüksek frekanslı / pencere durumu ──────────────────
+     Saniyede 60 kez değişebilen imleç/sürükleme/önizleme durumu ve
+     salt bu oturuma ait pencere/panel durumu — reducer'a BİLEREK
+     SOKULMUYOR (bkz. ui/state/reducer.js dosya başı gerekçesi). */
   const [draft, setDraft] = useState(null);
   const [marq, setMarq] = useState(null);
   const [poly, setPoly] = useState(null);
-  const [calib, setCalib] = useState(null);
-  const [report, setReport] = useState(null);
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
-  const [snapOn, setSnapOn] = useState(true);
-  const [gridStep, setGridStep] = useState(50);
-  const [shapeType, setShapeType] = useState("stage");
-  const [sport, setSport] = useState("football");
-  const [brush, setBrush] = useState("wheel");
-  const [lin, setLin] = useState({ count: 6, dx: 1500, dy: 0 });
-  const [rad, setRad] = useState({ count: 3, cx: 0, cy: 0, step: -30 });
   const [arrPrev, setArrPrev] = useState(null);
   const [verOpen, setVerOpen] = useState(false);
   const [diff, setDiff] = useState(null);
   const [pubNote, setPubNote] = useState("");
-  const [match, setMatch] = useState(null);
-  const [rev, setRev] = useState(0);
-  const [saveState, setSaveState] = useState("idle");
   const [saved, setSaved] = useState([]);
   const [canvasSize, setCanvasSize] = useState({ w: 1000, h: 700 });
   const [spaceDown, setSpaceDown] = useState(false);
   const [guides, setGuides] = useState([]);
   const [hoverId, setHoverId] = useState("");
   const [setOpen, setSetOpen] = useState(false);
-  const [theme, setTheme] = useState("system");
-  const [legend, setLegend] = useState(false);
-  const [plates, setPlates] = useState(true);
   const [footDraft, setFootDraft] = useState(null);
-  const [poiKind, setPoiKind] = useState("wc");
-  const [wheelPref, setWheelPref] = useState("auto");
-  const [q, setQ] = useState("");
   const [sysDark, setSysDark] = useState(true);
   const [msg, setMsgOk] = useState("");
   const [msgErr, setMsgErr] = useState(false);
@@ -2226,19 +938,19 @@ export default function PlanEditor() {
   const pinch = useRef(null);
 
   const setPlan = useCallback((p) => setVenues((v) => ({ ...v, [vk]: p })), [vk]);
-  const commit = useCallback((next) => {
-    setPast((p) => [...p.slice(-39), plan]); setFuture([]); setPlan(next);
-    setRev((r) => r + 1);
-  }, [plan, setPlan]);
+  /* commit/finalizeDrag/undo/redo/switchVenue: TEK dispatch, TEK geçiş.
+     Eskiden undo/redo setPast'in updater'ı İÇİNDE setFuture+setPlan
+     çağırıyordu — React updater'ı saf olmak zorunda, StrictMode'da iki
+     kez koşunca future'a çift kayıt giriyordu. Reducer'da bu tanım
+     gereği yok: her biri saf, tek bir {type,payload} geçişi (bkz.
+     ui/state/reducer.js ve test/unit/reducer.test.js). */
+  const commit = useCallback((next) => dispatch({ type: "commit", payload: next }), []);
   /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
    *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
    *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
    *  paint) ayrı ayrı unutmasın. Gerçekten değişiklik yoksa (salt tıklama)
    *  no-op — geri-al/kayıt boş yere kirlenmesin. */
-  const finalizeDrag = useCallback((snapshot) => {
-    if (plan === snapshot) return;
-    setPast((p) => [...p.slice(-39), snapshot]); setFuture([]); setRev((r) => r + 1);
-  }, [plan]);
+  const finalizeDrag = useCallback((snapshot) => dispatch({ type: "finalizeDrag", payload: snapshot }), []);
   /* Sıra/açı/koltuk-aralığı gibi alanlar sıra başına koltuk sayısını
      değiştirebilir; var olan koltuk düzeltmeleri/nitelikleri "r,c" anahtarıyla
      saklandığından, artık var olmayan bir sütuna işaret eden kayıtlar sessizce
@@ -2257,37 +969,27 @@ export default function PlanEditor() {
     }
     commit({ ...plan, blocks: plan.blocks.map((x) => (x.id === id ? { ...x, ...patch } : x)) });
   };
+  /* patch.level varsa her blok için relevelPatch — toplu kat değişimi de
+     HATA 2'yle aynı sınıf: her bloğun adı KENDİ eski adına göre değerlendirilir. */
   const patchSelected = (patch) =>
-    commit({ ...plan, blocks: plan.blocks.map((b) => (selIds.includes(b.id) ? { ...b, ...patch } : b)) });
+    commit({ ...plan, blocks: plan.blocks.map((b) => (selIds.includes(b.id)
+      ? { ...b, ...patch, ...("level" in patch ? relevelPatch(b, patch.level) : null) } : b)) });
   const patchShape = (id, patch) =>
     commit({ ...plan, shapes: plan.shapes.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
-  const undo = () => setPast((p) => {
-    if (!p.length) return p;
-    setFuture((f) => [plan, ...f]); setPlan(p[p.length - 1]); return p.slice(0, -1);
-  });
-  const redo = () => setFuture((f) => {
-    if (!f.length) return f;
-    setPast((p) => [...p, plan]); setPlan(f[0]); return f.slice(1);
-  });
-  const switchVenue = (k) => {
-    setVk(k); setPast([]); setFuture([]); setSelIds([]); setSelShapeId(null);
-    setSelSeat(null); setSelSeats(new Set()); setLevelFilter("*"); setView(venues[k].home);
-    setReport(null); setCalib(null); setMatch(null);
-  };
+  const undo = () => dispatch({ type: "undo" });
+  const redo = () => dispatch({ type: "redo" });
+  const switchVenue = (k) => dispatch({ type: "switchVenue", payload: k });
 
+  /* metas/metaById: buildMeta AĞIR (geometri türetimi) — bu yüzden
+     PlanEditor.jsx'te useMemo olarak kalıyor (bkz. ui/state/selectors.js
+     dosya başı gerekçesi). levels/levelCounts/totalSeats SADECE reducer
+     durumuna bağlı saf hesap — mantık ui/state/selectors.js'e taşındı,
+     burada sadece useMemo sınırı ve girdiler kaldı. */
   const metas = useMemo(() => plan.blocks.map((b) => ({ b, m: buildMeta(b) })), [plan.blocks]);
   const metaById = useMemo(() => new Map(metas.map((x) => [x.b.id, x.m])), [metas]);
-  const totalSeats = useMemo(() => metas.reduce((a, x) => a + x.m.seatCount, 0), [metas]);
-  const levels = useMemo(() => {
-    const s = [];
-    plan.blocks.forEach((b) => { if (b.level && !s.includes(b.level)) s.push(b.level); });
-    return s;
-  }, [plan.blocks]);
-  const levelCounts = useMemo(() => {
-    const m = {};
-    metas.forEach(({ b, m: mm }) => { m[b.level || "—"] = (m[b.level || "—"] || 0) + mm.seatCount; });
-    return m;
-  }, [metas]);
+  const totalSeats = useMemo(() => selectTotalSeats(metas), [metas]);
+  const levels = useMemo(() => selectLevels(plan), [plan.blocks]);
+  const levelCounts = useMemo(() => selectLevelCounts(metas), [metas]);
 
   const shown = useMemo(() => {
     const pad = view.w * 0.08;
@@ -2345,8 +1047,11 @@ export default function PlanEditor() {
     return hit ? hit.seats.find((x) => x.r === selSeat.r && x.c === selSeat.c) : null;
   }, [selSeat, drawn]);
 
-  const selBlocks = useMemo(() => plan.blocks.filter((b) => selIds.includes(b.id)), [plan.blocks, selIds]);
+  const selBlocks = useMemo(() => selectSelectedBlocks(plan, selIds), [plan.blocks, selIds]);
   const selBlock = selBlocks.length === 1 ? selBlocks[0] : null;
+  /* Çoğaltma/dizi/aynalama planda ZATEN kullanılan bir ön eki bir daha
+     üretmesin diye (bkz. görev raporu) — tek kaynak: plandaki tüm etiketler. */
+  const usedLabels = useMemo(() => new Set(plan.blocks.map((b) => b.label)), [plan.blocks]);
   const selShape = plan.shapes.find((s) => s.id === selShapeId) || null;
   const handles = useMemo(() => {
     if (!selBlock || tool !== "select") return [];
@@ -2365,51 +1070,89 @@ export default function PlanEditor() {
     Math.max(0, levels.indexOf(b.level || "")) % LEVEL_COLORS.length], [levels]);
   const gates = useMemo(() => gateMap(plan), [plan.shapes]);
 
-  /* Sınır taşması canlı izleniyor: blok dış hattının bir noktası bile
-     duvarın dışındaysa blok işaretlenir. Kesin koltuk sayısı Doğrula'da. */
-  const bounds = useMemo(() => boundaryPolys(plan), [plan.shapes]);
-  const breach = useMemo(() => {
-    if (!bounds.length) return [];
-    return metas.filter(({ m }) => m.outline.some((p) => !inBounds(p.x, p.y, bounds)))
-      .map(({ b }) => b.id);
-  }, [metas, bounds]);
+  /* ── A6.4: tek renk kanalı ────────────────────────────────────────
+     Kat, blok rengi, nitelik, kapı — dördü de aynı anda çizilince hangi
+     rengin ne anlattığı ayırt edilemiyordu (bkz. görev raporu). chanColor
+     TEK kapı: aktif kanal "level" değilse blok/koltuk zemini NEUTRAL'a
+     düşer, kanalın kendi sinyali (nitelik kanalında koltuk kenarlığı,
+     kapı kanalında blok/kapı rengi) ayrı yerde devreye girer. Seçim
+     vurgusu (.blk.on rect / .sel — CSS stroke override) ve canlı
+     breach/collide bundan ETKİLENMEZ, chanColor'dan hiç geçmiyorlar. */
+  const gateShapes = useMemo(() => plan.shapes.filter((s) => s.type === "door"), [plan.shapes]);
+  const gateColor = useCallback((label) => {
+    if (!label) return NEUTRAL;
+    const i = gateShapes.findIndex((d) => d.label === label);
+    return PALETTE[(i < 0 ? 0 : i) % PALETTE.length];
+  }, [gateShapes]);
+  const chanColor = useCallback((b) => {
+    if (colorChan === "gate") return gateColor(gates.get(b.id)?.[0]);
+    if (colorChan !== "level") return NEUTRAL; // "attr" / "valid": blok rengi bu sorunun cevabı değil
+    return cc(b);
+  }, [colorChan, cc, gateColor, gates]);
+
+  /* Sınır taşması VE aynı kat çakışması canlı izleniyor — ikisi de artık
+     core/rules.js'teki AYNI runRules() motorundan geliyor (liveOnly: true):
+     Doğrula raporuyla ayrı bir kopya değil, tek kaynak. bbox ön elemesi
+     rules.js içinde KORUNUYOR — 96 bloklu bir stadyumda her sürükleme
+     karesinde binlerce çokgen kırpımı yapılamaz; bbox ile pratikte
+     birkaç tanesi kalıyor (bkz. görev raporundaki ölçüm). */
+  const liveCtx = useMemo(() => buildCtx(plan, metas, gates), [plan, metas, gates]);
+  const liveFindings = useMemo(() => runRules(liveCtx, { liveOnly: true }), [liveCtx]);
+  /* Sınır taşması: blok dış hattının bir noktası bile duvarın dışındaysa
+     blok işaretlenir. Kesin koltuk sayısı Doğrula'da. */
+  const breach = useMemo(() =>
+    liveFindings.find((f) => f.id === "blocks-outside-boundary")?.ids || [],
+    [liveFindings]);
   const breachSet = useMemo(() => new Set(breach), [breach]);
 
   /* Aynı kattaki iki bloğun tabanı birbirinin içine giremez — fiziksel
-     olarak imkânsız ve planı tıklanamaz hale getirir. Sınır taşması gibi
-     CANLI izleniyor: kullanıcı bloğu sürüklerken anında kırmızıya dönüyor,
-     Doğrula'yı beklemesine gerek kalmıyor.
-     Farklı katlar burada kasıtlı olarak karşılaştırılmıyor: gerçek bir
-     salonda balkon partere sarkabilir. O durum yine de 2B planda sorun
-     olduğu için Doğrula raporunda uyarı olarak çıkıyor.
-     bbox ön elemesi şart — 96 bloklu stadyumda her sürükleme karesinde
-     binlerce çokgen kırpımı yapılamaz; bbox ile pratikte birkaç tanesi
-     kalıyor. */
-  const collide = useMemo(() => {
-    const byLevel = new Map();
-    metas.forEach((x) => {
-      const k = x.b.level || "";
-      if (!byLevel.has(k)) byLevel.set(k, []);
-      byLevel.get(k).push(x);
-    });
-    const hit = new Set();
-    for (const g of byLevel.values())
-      for (let i = 0; i < g.length; i++)
-        for (let j = i + 1; j < g.length; j++) {
-          const A = g[i].m, B = g[j].m;
-          if (A.bbox.x1 < B.bbox.x0 || B.bbox.x1 < A.bbox.x0) continue;
-          if (A.bbox.y1 < B.bbox.y0 || B.bbox.y1 < A.bbox.y0) continue;
-          if (outlineOverlapArea(A.outline, B.outline) > 50) {
-            hit.add(g[i].b.id); hit.add(g[j].b.id);
-          }
-        }
-    return [...hit];
-  }, [metas]);
+     olarak imkânsız ve planı tıklanamaz hale getirir. Kullanıcı bloğu
+     sürüklerken anında kırmızıya dönüyor, Doğrula'yı beklemesine gerek
+     kalmıyor. Farklı katlar burada kasıtlı olarak karşılaştırılmıyor:
+     gerçek bir salonda balkon partere sarkabilir. O durum yine de 2B
+     planda sorun olduğu için Doğrula raporunda uyarı olarak çıkıyor. */
+  const collide = useMemo(() =>
+    liveFindings.find((f) => f.id === "footprint-overlap-same-level")?.ids || [],
+    [liveFindings]);
   const collideSet = useMemo(() => new Set(collide), [collide]);
+  /* EKSİK 4: en büyük örtüşme büyüklüğü — kuralın zaten hesapladığı maxArea'yı
+     taşır, burada yeni bir geometri hesabı YOK (bkz. core/rules.js). */
+  const collideArea = useMemo(() =>
+    liveFindings.find((f) => f.id === "footprint-overlap-same-level")?.maxArea || 0,
+    [liveFindings]);
 
-  const attrTotals = useMemo(() => {
+  /* "Doğrulama" kanalı canlı breach/collide'ı (yukarıda, HER kanalda zaten
+     görünür) "vurgular": kanalın kendisi doğrulamaysa, son Doğrula
+     raporundaki TÜM bulgular (dar açıklık, kat-arası çakışma, yinelenen
+     kimlik gibi live:false kurallar dahil) aynı dış hat vurgusuyla eklenir.
+     Rapor hiç çalıştırılmamışsa (report=null) sadece canlı ikisi görünür —
+     eksik değil, kullanıcı henüz Doğrula'ya basmadı. */
+  const reportMarks = useMemo(() => {
+    if (colorChan !== "valid" || !report) return { err: [], warn: [] };
+    const err = new Set(), warn = new Set();
+    report.list.forEach((f) => {
+      if (f.t === "err") (f.ids || []).forEach((id) => err.add(id));
+      else if (f.t === "warn") (f.ids || []).forEach((id) => warn.add(id));
+    });
+    breach.forEach((id) => err.delete(id));
+    collide.forEach((id) => err.delete(id));
+    err.forEach((id) => warn.delete(id));
+    return { err: [...err], warn: [...warn] };
+  }, [colorChan, report, breach, collide]);
+
+  /* Lejantın "Nitelik" kanalı iki ayrı toplam gösterir — tür (kind, m.kinds)
+     VE özellik (feature, m.features), planın TÜMÜNDE. buildMeta zaten
+     blok başına bu ikisini hesaplıyor (bkz. core/geometry.js), burada
+     sadece TÜM bloklar üzerinde topluyoruz. */
+  const kindTotals = useMemo(() => {
     const t = {};
-    metas.forEach(({ m }) => Object.entries(m.attrs || {})
+    metas.forEach(({ m }) => Object.entries(m.kinds || {})
+      .forEach(([k, v]) => { t[k] = (t[k] || 0) + v; }));
+    return t;
+  }, [metas]);
+  const featureTotals = useMemo(() => {
+    const t = {};
+    metas.forEach(({ m }) => Object.entries(m.features || {})
       .forEach(([k, v]) => { t[k] = (t[k] || 0) + v; }));
     return t;
   }, [metas]);
@@ -2517,7 +1260,7 @@ export default function PlanEditor() {
 
   const doLinear = () => {
     if (!selBlocks.length) return;
-    const made = linearArray(selBlocks, lin);
+    const made = linearArray(selBlocks, lin, usedLabels);
     commit({ ...plan, blocks: [...plan.blocks, ...made] });
     setSelIds([...selIds, ...made.map((b) => b.id)]);
     setArrPrev(null);
@@ -2525,7 +1268,7 @@ export default function PlanEditor() {
   };
   const doRadial = () => {
     if (!selBlocks.length) return;
-    const made = radialArray(selBlocks, rad);
+    const made = radialArray(selBlocks, rad, usedLabels);
     commit({ ...plan, blocks: [...plan.blocks, ...made] });
     setSelIds([...selIds, ...made.map((b) => b.id)]);
     setArrPrev(null);
@@ -2591,16 +1334,13 @@ export default function PlanEditor() {
     (async () => {
       const keys = await Store.list();
       if (dead || !keys.length) { setSaved(keys); return; }
-      const loaded = {};
-      for (const k of keys) {
-        const p = await Store.load(k);
-        if (!p?.blocks) continue;
-        /* Şablonun kaynak sürümü değiştiyse eski kayıtlı kopyayı yükleme —
-           koddaki düzeltme kazansın. Kullanıcı planlarına (empty, p-*)
-           dokunulmaz. */
-        if (SAMPLE_KEYS.has(k) && p.srcVer !== SRC_VER) continue;
-        loaded[k] = absorbIds(p);
-      }
+      /* Örnek salonlar (BUILTINS'teki empty dışı anahtarlar) burada asla
+         kabul edilmez — kod her zaman kazanır (bkz. core/schema.js
+         isProtectedSample). Geri kalanı göç ettirip id sayacını ileri
+         sarma da aynı saf fonksiyonda (mergeSavedVenues). */
+      const entries = [];
+      for (const k of keys) entries.push([k, await Store.load(k)]);
+      const loaded = mergeSavedVenues(BUILTINS, entries);
       if (!dead && Object.keys(loaded).length) {
         setVenues((v) => ({ ...v, ...loaded }));
         setSaved(keys);
@@ -2614,7 +1354,24 @@ export default function PlanEditor() {
     if (!rev) return;
     setSaveState("saving");
     const t = setTimeout(async () => {
-      const ok = await Store.save(vk, plan);
+      /* plan !== BUILTINS[vk]: sadece venues[vk] BUILTINS'teki taze
+         referanstan FARKLI bir nesneyse (yani gerçekten düzenlendiyse)
+         çatalla. Salt görüntülemek için başka bir örneğe geçmek plan
+         referansını değiştirmez, bu yüzden burada YANLIŞLIKLA tetiklenmez
+         (bkz. görev raporu — id/seçim/sürükleme kopmasın diye çatalda
+         id'ler bilerek değişmiyor). */
+      if (isProtectedSample(vk, BUILTINS) && plan !== BUILTINS[vk]) {
+        const fk = `p${Date.now().toString(36)}`;
+        const forked = forkSample(plan, fk);
+        setVenues((v) => ({ ...v, [vk]: BUILTINS[vk], [fk]: forked }));
+        setVk(fk);
+        setSaved((s) => (s.includes(fk) ? s : [...s, fk]));
+        setMsg(`Örnek salon salt okunur — değişiklikleriniz "${forked.name}" olarak ayrı kaydedildi`);
+        const ok = await Store.save(fk, stampSchema(forked));
+        setSaveState(ok ? "saved" : "error");
+        return;
+      }
+      const ok = await Store.save(vk, stampSchema(plan));
       setSaveState(ok ? "saved" : "error");
       setSaved((s) => (s.includes(vk) ? s : [...s, vk]));
     }, 1000);
@@ -2624,6 +1381,19 @@ export default function PlanEditor() {
   const newPlan = () => {
     const k = `p${Date.now().toString(36)}`;
     const p = { ...EMPTY, key: k, name: "Yeni plan", blocks: [], shapes: [], versions: [], published: null };
+    setVenues((v) => ({ ...v, [k]: p }));
+    switchVenue2(k, p);
+    setRev((r) => r + 1);
+  };
+  /* Şablondan yeni plan — newPlan() ile AYNI akış (p<timestamp> anahtarı,
+     versions/published sıfırlanır), tek fark boş EMPTY yerine şablon
+     üretecinin (src/venues/templates.js) döndürdüğü bloklar/şekillerle
+     başlaması. build() ÇAĞRILDIĞINDA nid() üretir — duplicatePlan()'daki
+     gibi kimlikler o an paylaşılan sayaçtan gelir, örnek salonların modül
+     yüklemede sabitlenmiş sırasına hiç dokunmaz (bkz. templates.js başlığı). */
+  const newPlanFromTemplate = (build, name) => {
+    const k = `p${Date.now().toString(36)}`;
+    const p = { ...build(), key: k, name, versions: [], published: null };
     setVenues((v) => ({ ...v, [k]: p }));
     switchVenue2(k, p);
     setRev((r) => r + 1);
@@ -2668,7 +1438,12 @@ export default function PlanEditor() {
     bg.setAttribute("fill", dark ? "#0C0D13" : "#E9E6DF");
     svg.insertBefore(bg, svg.firstChild);
     const st = document.createElementNS(NS, "style");
-    st.textContent = CSS;
+    /* cssText: main.jsx'ten prop olarak geliyor (?raw import). Burada
+       doğrudan "./styles/*.css" import edilemez — bu dosya JSX içerdiği
+       için test betikleri onu esbuild transform + çıplak Node import'uyla
+       yüklüyor (bkz. scripts/lib/load-module.mjs); Node'un ESM'i .css
+       uzantısını çözemediğinden bir import burada npm test'i kırar. */
+    st.textContent = cssText;
     svg.insertBefore(st, svg.firstChild);
     svg.setAttribute("class", dark ? "ed dark" : "ed light");
     svg.setAttribute("width", 1800);
@@ -2753,7 +1528,11 @@ export default function PlanEditor() {
   const nudge = (dx, dy) => {
     const fresh = Date.now() - lastNudge.current > 800;
     lastNudge.current = Date.now();
-    const push = (next) => { if (fresh) setPast((p) => [...p.slice(-39), plan]); setPlan(next); setRev((r) => r + 1); };
+    /* checkpoint: fresh — 800ms'lik pencere içindeki art arda basışlar TEK
+       geri-al kaydına düşsün. commit'in aksine elle setPast/setFuture/setRev
+       yazmıyoruz — future'ı unutmayan TEK yer artık reducer (bkz. nudgeCommit,
+       ui/state/reducer.js). */
+    const push = (next) => dispatch({ type: "nudgeCommit", payload: { plan: next, checkpoint: fresh } });
     if (selSeats.size) {
       const byB = new Map();
       selSeats.forEach((k) => { const [bid, rc] = k.split("|");
@@ -2919,6 +1698,7 @@ export default function PlanEditor() {
     }
     if (t?.h && selBlock) {
       drag.current = { mode: "handle", h: t.h, b: selBlock, snapshot: plan,
+        sx: e.clientX, sy: e.clientY,
         startAng: Math.atan2(raw.y - selBlock.y, raw.x - selBlock.x) / RAD };
       return;
     }
@@ -2955,9 +1735,13 @@ export default function PlanEditor() {
     }
     if (tool === "seat") {
       if (t?.b && t.r != null) {
+        /* SIRA ÖNEMLİ: selectBlocks artık koltuk seçimini kendiliğinden
+           bırakıyor (bkz. reducer.js "selectBlocks", HATA 2) — önce blok
+           seçilip SONRA koltuk yazılmalı, yoksa setSelIds az önce alttaki
+           iki satırın yazdığı koltuk seçimini siler. */
+        setSelIds([t.b]);
         setSelSeat({ bid: t.b, r: +t.r, c: +t.c });
         setSelSeats(new Set([`${t.b}|${t.r},${t.c}`]));
-        setSelIds([t.b]);
         const b = plan.blocks.find((x) => x.id === t.b);
         drag.current = { mode: "seat", bid: t.b, r: +t.r, c: +t.c, p: raw, ov: b.ov, blockRot: b.rot, snapshot: plan };
       } else {
@@ -3032,33 +1816,13 @@ export default function PlanEditor() {
       return;
     }
     if (d.mode === "handle") {
-      const b0 = d.b;
-      const a = -b0.rot * RAD;
-      const gx = raw.x - b0.x, gy = raw.y - b0.y;
-      const lx = gx * Math.cos(a) - gy * Math.sin(a);
-      const ly = gx * Math.sin(a) + gy * Math.cos(a);
-      const dist = Math.hypot(lx, ly);
-      let patch = {};
-      if (d.h.startsWith("foot:")) {
-        const k = +d.h.slice(5);
-        patch = { foot: (b0.foot || []).map((q, j) => j === k ? { x: Math.round(lx), y: Math.round(ly) } : q) };
-        setPlan({ ...plan, blocks: plan.blocks.map((x) => (x.id === b0.id ? { ...x, ...patch } : x)) });
-        return;
-      }
-      if (d.h === "rot") {
-        const ang = Math.atan2(raw.y - b0.y, raw.x - b0.x) / RAD;
-        patch = { rot: Math.round(b0.rot + (ang - d.startAng)) };
-      } else if (d.h === "size") {
-        patch = { cols: Math.max(1, Math.round((Math.abs(lx) * 2) / b0.seatGap)),
-                  rows: Math.max(1, Math.round(ly / b0.rowGap) + 1) };
-      } else if (d.h === "r0") {
-        patch = { r0: Math.max(50, Math.round(dist / 10) * 10) };
-      } else if (d.h === "rows") {
-        patch = { rows: Math.max(1, Math.round((dist - b0.r0) / b0.rowGap) + 1) };
-      } else if (d.h === "aStart" || d.h === "aEnd") {
-        patch = { [d.h]: Math.round(Math.atan2(lx, -ly) / RAD) };
-      }
-      setPlan({ ...plan, blocks: plan.blocks.map((x) => (x.id === b0.id ? { ...x, ...patch } : x)) });
+      /* İşaretçi mousedown'dan beri anlamlı bir mesafe hareket etmediyse
+         (bkz. HANDLE_DRAG_PX) hiçbir patch uygulama — salt tıklama, blok
+         snapshot'tan bir bit bile ayrılmamalı (finalizeDrag'ın referans
+         eşitliğiyle no-op sayması da BUNA dayanıyor, bkz. reducer.js). */
+      if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < HANDLE_DRAG_PX) return;
+      const patch = handlePatch(d.b, d.h, raw, d.startAng);
+      setPlan({ ...plan, blocks: plan.blocks.map((x) => (x.id === d.b.id ? { ...x, ...patch } : x)) });
       return;
     }
     if (d.mode === "marq" || d.mode === "seatMarq") { setMarq((q) => ({ ...q, x1: raw.x, y1: raw.y })); return; }
@@ -3132,9 +1896,8 @@ export default function PlanEditor() {
           if (!list) return b;
           const ov = { ...b.ov };
           list.forEach((rc) => {
-            const cur = { ...(ov[rc] || {}) };
-            if (brush === "" && !b.attr) delete cur.at; else cur.at = brush;
-            Object.keys(cur).length ? (ov[rc] = cur) : delete ov[rc];
+            const nx = paintOv(ov[rc] || {}, b, brushKind, brushFeatures);
+            Object.keys(nx).length ? (ov[rc] = nx) : delete ov[rc];
           });
           return { ...b, ov };
         }) });
@@ -3291,9 +2054,8 @@ export default function PlanEditor() {
       const b = pl.blocks.find((x) => x.id === bid);
       if (!b) return vs;
       const k = `${r},${c}`, cur = b.ov[k] || {};
-      if ((cur.at ?? (b.attr || "")) === brush) return vs;
-      const nx = { ...cur };
-      if (brush === "" && !b.attr) delete nx.at; else nx.at = brush;
+      if (sameAttr(resolveSeatKind(b, cur), { seatKind: brushKind, seatFeatures: brushFeatures })) return vs;
+      const nx = paintOv(cur, b, brushKind, brushFeatures);
       const ov = { ...b.ov };
       Object.keys(nx).length ? (ov[k] = nx) : delete ov[k];
       return { ...vs, [vk]: { ...pl, blocks: pl.blocks.map((x) => (x.id === bid ? { ...x, ov } : x)) } };
@@ -3312,9 +2074,22 @@ export default function PlanEditor() {
       }
       if (e.key === "Enter" && footDraft) { footFinish(); return; }
       if (e.key === "Enter" && poly) { finishPoly(); return; }
-      if (e.key === "Escape") { setPoly(null); setDraft(null); setCalib(null); setReport(null); setSetOpen(false);
+      /* A6.4: Esc, "normal olmayan" altı durumun (arrPrev, levelFilter,
+         calib, footDraft, poly, match — bkz. modeChips'in üstündeki not)
+         HEPSİNDEN tutarlı çıkış yolu. Önceden yalnız poly/calib/footDraft
+         kapanıyordu, arrPrev/levelFilter/match AÇIK KALIYORDU — kullanıcı
+         Esc'e basıp "temizlendi" sanırken üçü sessizce aktif kalabiliyordu.
+         footDraft ve poly kendi taslaklarını iptal ederken seçili bloğu
+         KORUR (o taslağı hangi blok için çizdiğini unutturmamak için) —
+         bu yüzden ikisi de erken return ile genel seçim temizliğini atlar. */
+      if (e.key === "Escape") {
+        setDraft(null); setCalib(null); setReport(null); setSetOpen(false);
+        setArrPrev(null); setMatch(null);
+        if (levelFilter !== "*") setLevelFilter("*");
         if (footDraft) { setFootDraft(null); setTool("select"); return; }
-        setSelIds([]); setSelShapeId(null); setSelSeat(null); setSelSeats(new Set()); return; }
+        if (poly) { setPoly(null); setTool("select"); return; }
+        setSelIds([]); setSelShapeId(null); setSelSeat(null); setSelSeats(new Set()); return;
+      }
 
       /* ok tuşları: varsayılan 1 cm, Shift 10×, Alt ızgara adımı */
       const ARR = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
@@ -3423,36 +2198,18 @@ export default function PlanEditor() {
   };
   const exportSeats = () => {
     setMsg("koltuklar üretiliyor…");
-    const all = [];
-    const gm = gateMap(plan);
-    const bid = new Map(plan.blocks.map((b) => [b.label, b.id]));
-    metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (!s.gap) all.push({ ...s, gate: (gm.get(b.id) || [])[0] || null });
-    }));
-    const at = {};
-    all.forEach((s) => { if (s.at) at[s.at] = (at[s.at] || 0) + 1; });
-    download(`${plan.key}-seats.json`, {
-      venue: plan.name, unit: "cm", version: plan.published || null,
-      seatCount: all.length, sellableCount: all.length - (at.tech || 0),
-      levels: levelCounts, attributes: at,
-      gates: plan.shapes.filter((s) => s.type === "door")
-        .map((d) => ({ label: d.label, blocks: (d.blocks || []).map((i) => plan.blocks.find((b) => b.id === i)?.label).filter(Boolean) })),
-      seats: all.map((s) => ({ id: s.id, level: s.level, block: s.block, row: s.row, seat: s.num,
-        gate: s.gate, x: +s.x.toFixed(1), y: +s.y.toFixed(1), rot: +s.rot.toFixed(1),
-        attribute: s.at || null, sellable: s.at !== "tech" })),
-    });
+    download(`${plan.key}-seats.json`, buildSeatsPayload(plan, metas, levelCounts, gates));
   };
   const exportPlan = () => download(`${plan.key}-plan.json`,
     { ...plan, underlay: plan.underlay ? { ...plan.underlay, src: null } : null });
 
   const mirror = () => {
     if (!selBlocks.length) return;
+    const taken = new Set(usedLabels);
     const made = selBlocks.map((b) => {
-      const cp = reLabel({ ...b, id: nid(), x: -b.x }, incLabel(b.label, selBlocks.length));
-      if (b.kind === "fan") { cp.aCenter = -b.aCenter; cp.aStart = -b.aEnd; cp.aEnd = -b.aStart; }
-      else if (b.kind === "free") cp.pts = b.pts.map((p) => ({ ...p, x: -p.x, rot: -(p.rot || 0) }));
-      else { cp.rot = -b.rot; cp.align = b.align === "left" ? "right" : b.align === "right" ? "left" : "center"; }
-      return cp;
+      const label = freeLabel(b.label, selBlocks.length, taken);
+      taken.add(label);
+      return mirrorBlock(b, label);
     });
     commit({ ...plan, blocks: [...plan.blocks, ...made] });
     setSelIds(made.map((b) => b.id));
@@ -3482,18 +2239,55 @@ export default function PlanEditor() {
                ["poi", "İşaret", "I", "info"]]],
     ["Referans", [["cal", "Kalibre et", "K", "cal"], ["measure", "Ölç", "M", "measure"]]],
   ];
-  const seatOv = selSeat
-    ? plan.blocks.find((b) => b.id === selSeat.bid)?.ov[`${selSeat.r},${selSeat.c}`] || {} : null;
+  const seatOvBlock = selSeat ? plan.blocks.find((b) => b.id === selSeat.bid) : null;
+  const seatOv = selSeat ? seatOvBlock?.ov[`${selSeat.r},${selSeat.c}`] || {} : null;
+  /* SeatPanel'in gösterdiği "şu an ne seçili" değeri — seatOv PARÇALI
+     olabilir (bkz. resolveSeatKind'in bağımsız override notu), panel yine
+     de TEK bir somut {seatKind, seatFeatures} göstermeli. seatOvBlock
+     bulunamazsa (selSeat, silinmiş bir bloğa işaret eden BAYAT bir
+     referansla kalmışsa — eski seatOv da AYNI durumda sessizce {}'e
+     düşüyordu, bkz. yukarıdaki satır) resolveSeatKind({}, {}) güvenle
+     "single" varsayılanına döner; SeatPanel eff.seatKind'i KOŞULSUZ okur,
+     null asla geçmemeli. */
+  const seatEffAttr = selSeat ? resolveSeatKind(seatOvBlock || {}, seatOv || {}) : null;
   const lodFont = 17 * U;
   const hSize = Math.max(24, 9 / (pxPerCm || 0.01));
   const arrProps = { lin, setLin, rad, setRad, onArrayL: doLinear, onArrayR: doRadial,
     prev: arrPrev, setPrev: setArrPrev };
   const selSeatTotal = selBlocks.reduce((a, b) => a + (metaById.get(b.id)?.seatCount || 0), 0);
 
+  /* ── A6.4: mod şeridi ─────────────────────────────────────────────
+     Adaylar (görev tanımındaki altısı): arrPrev, levelFilter, calib,
+     footDraft, poly, match. Ölçüt: bu durum aktifken uygulama kullanıcının
+     beklediğinden farklı davranıyor mu, VE bunu ekranda panel/rayın açık
+     olmasına bakmadan HER ZAMAN okuyabiliyor mu?
+       - levelFilter: seçici sol rayda (toolsOpen kapalıyken hiç görünmez);
+         filtre bloğu SİLMİYOR ama öyle hissettiriyor ("bloklarımı yuttu").
+       - arrPrev: paneli (BlockPanel → ArraySection) sağ rayda (propsOpen
+         kapalıyken hiç görünmez) VE seçim değişince de panelden düşmüyor;
+         hayalet bloklar ekranda kalırken kapatacak kontrol kayboluyor
+         ("diziden çıkamadım").
+       - poly: tek göstergesi sol raydaki "Poligonu kapat" düğmesi
+         (yine toolsOpen'a bağımlı) — footDraft'ın aksine tuval üstünde
+         sabit bir ipucu YOK.
+     calib ve footDraft BİLEREK dışarıda bırakıldı: ikisi de rayın açık/
+     kapalı olmasından bağımsız, tuval üstünde HER ZAMAN görünen kendi
+     şeridine sahip (.calbar / .tip) ve ikisi de zaten "Esc ile çık"ı
+     söylüyor — ikinci bir şerit eklemek aynı bilgiyi tekrarlar. match da
+     dışarıda: kendi geniş panelinde ("Koltuk listesi eşleştirme") zaten
+     her zaman görünür ve açık bir "kapat" bağlantısı taşıyor; tek eksiği
+     Esc'ti, o aşağıda düzeltildi — ayrıca bir şerit rozeti eklemek
+     gürültü olurdu. */
+  const modeChips = [];
+  if (levelFilter !== "*") modeChips.push({ k: "lf",
+    label: `Kat süzgeci: ${levelFilter}`, x: () => setLevelFilter("*") });
+  if (arrPrev) modeChips.push({ k: "ap",
+    label: `Dizi önizleme: ${arrPrev === "lin" ? "doğrusal" : "radyal"}`, x: () => setArrPrev(null) });
+  if (poly) modeChips.push({ k: "pg",
+    label: `Çokgen çiziliyor · ${poly.pts.length} nokta`, x: () => { setPoly(null); setTool("select"); } });
+
   return (
     <div className={`ed ${dark ? "dark" : "light"}`}>
-      <style>{CSS}</style>
-
       <div className="gate">
         <p>Bu editör geniş bir çalışma alanı gerektirir.
           <span>Lütfen masaüstü tarayıcıda veya en az 1024px genişliğinde bir pencerede açın.</span>
@@ -3512,6 +2306,13 @@ export default function PlanEditor() {
         <span className={dirty ? "pub dirty" : "pub"}>
           {published ? `v${published.v}` : "taslak"}{dirty ? " · değişiklik var" : " · yayında"}
         </span>
+        <span className="tsep" />
+        <label className="chk" title="Tuvalde tek bir soru cevaplansın diye seçili kanal dışındaki her şey griye düşer">
+          Renklendir
+          <select className="mini" value={colorChan} onChange={(e) => setColorChan(e.target.value)}>
+            {Object.entries(COLOR_CHANS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+          </select>
+        </label>
 
         <div className="grow" />
 
@@ -3530,8 +2331,28 @@ export default function PlanEditor() {
         <button className="pri" onClick={exportSeats}>seats.json</button>
       </header>
 
-      <div className="body">
-        <nav className="tools">
+      {/* Mod şeridi: ray/panel kapalıyken de HER ZAMAN görünür — hangi
+          "normal olmayan" durumun aktif olduğunu tahmin ettirmez, tek
+          tıkla (ya da Esc ile) çıkış verir. Gerekçe için modeChips'in
+          üstündeki not. */}
+      {modeChips.length > 0 && (
+        <div className="modestrip">
+          {modeChips.map((c) => (
+            <span key={c.k} className="chip">
+              {c.label}
+              <button onClick={c.x} title="Çık (Esc)">×</button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className={`body${toolsOpen ? "" : " tc"}${propsOpen ? "" : " pc"}`}>
+        <nav className={`tools${toolsOpen ? "" : " closed"}`}>
+          <button className="pcol" onClick={() => setToolsOpen(!toolsOpen)}
+            title={toolsOpen ? "Araç rayını daralt" : "Araç rayını genişlet"}>
+            <span className="chev">{toolsOpen ? "‹" : "›"}</span><em>Araçlar</em>
+          </button>
+          {toolsOpen && <>
           {TOOL_GROUPS.map(([g, list]) => (
             <div className="grp" key={g || "main"}>
               {g && <p className="glab">{g}</p>}
@@ -3575,16 +2396,31 @@ export default function PlanEditor() {
             </div>
           )}
 
+          {/* Nitelik boya: artık İKİ eksen (bkz. görev tanımı — tek eksenli
+              seçici iki eksene döndü). Tür (brushKind) TEK seçim — bir
+              koltuk aynı anda yalnız bir fiziksel birimdir. Özellikler
+              (brushFeatures) 0..N işaretlenebilir, türden BAĞIMSIZ —
+              paintOv ikisini HER fırça darbesinde birlikte (bir "hedef
+              değer" olarak) yazar (bkz. paintOv'un dosya başı notu). */}
           {tool === "attr" && (
             <div className="brush">
+              <button className={brushKind === DEFAULT_SEAT_KIND ? "on" : ""} onClick={() => setBrushKind(DEFAULT_SEAT_KIND)}>
+                <i style={{ background: "transparent", border: "1px solid #5A5F70" }} />Tekli (temizle)
+              </button>
               {Object.entries(ATTRS).map(([k, a]) => (
-                <button key={k} className={brush === k ? "on" : ""} onClick={() => setBrush(k)}>
+                <button key={k} className={brushKind === k ? "on" : ""} onClick={() => setBrushKind(k)}>
                   <i style={{ background: a.color }} />{a.short}
                 </button>
               ))}
-              <button className={brush === "" ? "on" : ""} onClick={() => setBrush("")}>
-                <i style={{ background: "transparent", border: "1px solid #5A5F70" }} />Temizle
-              </button>
+              <div className="sep" />
+              <p className="lab">Özellikler</p>
+              {Object.entries(FEATURES).map(([k, f]) => (
+                <label key={k} className="chk">
+                  <input type="checkbox" checked={brushFeatures.includes(k)}
+                    onChange={() => setBrushFeatures(toggleFeature(brushFeatures, k))} />
+                  {f.label}
+                </label>
+              ))}
             </div>
           )}
           {poly && <button className="pri sm" onClick={finishPoly}>Poligonu kapat ({poly.pts.length})</button>}
@@ -3623,6 +2459,7 @@ export default function PlanEditor() {
             ))}
             {!plan.blocks.length && !plan.shapes.length && <li className="mut">Boş tuval</li>}
           </ul>
+          </>}
         </nav>
 
         <main className="canvas">
@@ -3698,6 +2535,12 @@ export default function PlanEditor() {
                    eder; rot ile tünelin radyal yönüne hizalanır. Numara dik
                    (döndürülmemiş) yazılır. */
                 const fs = Math.min(s.fs || 95, Math.min(s.w, s.h) * 0.66);
+                /* "Kapı" kanalı dışında işaret nötr griye düşer — bugüne
+                   kadar sabit --doorfill (tema tersi, hep beyaz/siyah)
+                   diğer üç kanalda da aynı canlılıkta kalıyor, greylenmiş
+                   bloklar arasında yersiz göze batıyordu. Kanal "Kapı"
+                   ise kapının kendi rengiyle (bloklarıyla AYNI) boyanır. */
+                const dcol = colorChan === "gate" ? gateColor(s.label) : st.fill;
                 return (
                   <g key={s.id} className={on ? "dr on" : "dr"}>
                     {on && (s.blocks || []).map((bid) => {
@@ -3706,7 +2549,7 @@ export default function PlanEditor() {
                     })}
                     <g transform={`translate(${s.x} ${s.y}) rotate(${s.rot || 0})`}>
                       <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h}
-                        rx={14} fill={st.fill} stroke={st.stroke} strokeWidth={6} />
+                        rx={14} fill={dcol} stroke={dcol} strokeWidth={6} />
                     </g>
                     <text x={s.x} y={s.y + fs * 0.35} className="dv" style={{ fontSize: fs }}>{num}</text>
                   </g>
@@ -3759,7 +2602,7 @@ export default function PlanEditor() {
             )}
 
             {!seatMode && shown.map(({ b, m }) => {
-              const col = cc(b);
+              const col = chanColor(b);
               const bw = lodFont * (String(b.label).length * 0.62 + 0.7);
               return (
                 <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
@@ -3780,15 +2623,15 @@ export default function PlanEditor() {
               <g key={`t${b.id}`} className="tbl"
                 transform={`translate(${b.x} ${b.y}) rotate(${b.rot})`}>
                 {(b.tShape || "round") === "round"
-                  ? <circle r={(b.tW || 90) / 2} fill={cc(b)} stroke={cc(b)} />
+                  ? <circle r={(b.tW || 90) / 2} fill={chanColor(b)} stroke={chanColor(b)} />
                   : <rect x={-(b.tW || 160) / 2} y={-(b.tH || 90) / 2}
                       width={b.tW || 160} height={b.tH || 90} rx={12}
-                      fill={cc(b)} stroke={cc(b)} />}
+                      fill={chanColor(b)} stroke={chanColor(b)} />}
                 {(() => {
                   const f = Math.min((b.tW || 90) * 0.42, 13 * U);
                   return f / U < 7 ? null : (
                     <text className="tlab" y={f * 0.35} style={{ fontSize: f }}
-                      fill={onColor(cc(b))}>{b.label}</text>
+                      fill={onColor(chanColor(b))}>{b.label}</text>
                   );
                 })()}
               </g>
@@ -3797,7 +2640,7 @@ export default function PlanEditor() {
             {seatMode && plates && drawn.filter(({ b }) => b.kind !== "table").map(({ b, m }) => (
               <polygon key={`pl${b.id}`} className="plate"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
-                fill={cc(b)} stroke={cc(b)}
+                fill={chanColor(b)} stroke={chanColor(b)}
                 fillOpacity={dark ? 0.16 : 0.13} strokeOpacity={dark ? 0.5 : 0.6}
                 strokeWidth={Math.max(2, 1.6 / (pxPerCm || 0.01))} />
             ))}
@@ -3818,7 +2661,7 @@ export default function PlanEditor() {
               return (
                 <g key={`sb${b.id}`} className="stick">
                   <rect x={(vx0 + vx1) / 2 - bw / 2} y={by}
-                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(cc(b))} />
+                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(chanColor(b))} />
                   <text x={(vx0 + vx1) / 2} y={by + f * 1.04}
                     style={{ fontSize: f }}>{b.label}</text>
                 </g>
@@ -3828,8 +2671,15 @@ export default function PlanEditor() {
             {seatMode && drawn.map(({ b, seats, labels }) => (
               <g key={b.id} className={selIds.includes(b.id) ? "blk on" : "blk"}>
                 {seats.map((s) => {
-                  const A = s.at ? ATTRS[s.at] : null;
-                  const w = A?.wide ? 86 : DEF.seatW;
+                  const A = seatBadge(s);
+                  const w = seatKindWidth(s.seatKind);
+                  /* isWheel: SADECE kozmetik (dolgusuz/boş gövde) — eski
+                     `A?.wide` ile AYNI görsel özel durum, hâlâ ATTRS'ten
+                     (bkz. dosya başı notu), yalnız wheelchair_space'te
+                     true. Fiziksel genişlik (w, yukarıda) SEAT_KINDS'ten
+                     geliyor ve TÜM türler için doğru — bu ikisi kasıtlı
+                     ayrı: biri çizim tercihi, öteki ölçü. */
+                  const isWheel = ATTRS[s.seatKind]?.wide;
                   const isSel = selSeats.has(`${b.id}|${s.r},${s.c}`);
                   return (
                     <rect key={s.key} data-b={b.id} data-r={s.r} data-c={s.c}
@@ -3838,28 +2688,41 @@ export default function PlanEditor() {
                     style={selIds.includes(b.id) || isSel
                       ? { strokeWidth: (isSel ? 2.6 : 1.4) * U } : undefined}
                       transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
-                      fill={s.gap ? "none" : s.at === "tech" ? "var(--seatoff)"
-                        : A?.wide ? "none" : cc(b)}
-                      fillOpacity={A?.wide ? 0 : 1}
-                      stroke={s.gap ? "var(--mut)" : A ? A.color : s.tweak ? "var(--acc)" : "none"}
+                      fill={s.gap ? "none" : s.seatKind === "tech" ? "var(--seatoff)"
+                        : isWheel ? "none" : chanColor(b)}
+                      fillOpacity={isWheel ? 0 : 1}
+                      stroke={s.gap ? "var(--mut)" : A ? (colorChan === "attr" ? A.color : NEUTRAL) : s.tweak ? "var(--acc)" : "none"}
                       strokeWidth={s.gap ? 1.1 * U : A ? 1.8 * U : 1.2 * U}
                       strokeDasharray={s.gap ? `${3 * U} ${2.4 * U}` : ""} />
                   );
                 })}
-                {seats.filter((s) => ATTRS[s.at]?.wide && !s.gap).map((s) => (
-                  <rect key={`w${s.key}`} x={-43} y={-DEF.seatH / 2 - 3} width={86}
-                    height={DEF.seatH + 6} rx={6} fill={ATTRS[s.at].color} fillOpacity={0.14}
-                    transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
-                    pointerEvents="none" />
-                ))}
-                {seatNums && seats.filter((s) => s.at && !s.gap).map((s) => (
-                  <text key={`a${s.key}`} className="atg" x={s.x} y={s.y + 3.4 * U}
-                    style={{ fontSize: 9.5 * U }} fill={ATTRS[s.at].color}>{ATTRS[s.at].glyph}</text>
-                ))}
-                {seatNums && seats.filter((s) => !s.gap && !s.at &&
+                {/* boyut halesi: eskiden SADECE wheelchair (86cm sabit), artık
+                    genişliği DEF.seatW'dan farklı olan HER tür (loveseat/
+                    stool dahil) — "bu koltuk standart ölçüde değil" sinyali
+                    artık tek bir türe özel değil. */}
+                {seats.filter((s) => !s.gap && seatKindWidth(s.seatKind) !== DEF.seatW).map((s) => {
+                  const A = seatBadge(s);
+                  const hw = seatKindWidth(s.seatKind);
+                  return (
+                    <rect key={`w${s.key}`} x={-hw / 2} y={-DEF.seatH / 2 - 3} width={hw}
+                      height={DEF.seatH + 6} rx={6}
+                      fill={colorChan === "attr" && A ? A.color : NEUTRAL} fillOpacity={0.14}
+                      transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
+                      pointerEvents="none" />
+                  );
+                })}
+                {seatNums && seats.filter((s) => !s.gap && seatBadge(s)).map((s) => {
+                  const A = seatBadge(s);
+                  return (
+                    <text key={`a${s.key}`} className="atg" x={s.x} y={s.y + 3.4 * U}
+                      style={{ fontSize: 9.5 * U }}
+                      fill={colorChan === "attr" ? A.color : NEUTRAL}>{A.glyph}</text>
+                  );
+                })}
+                {seatNums && seats.filter((s) => !s.gap && !seatBadge(s) &&
                   s.x > view.x && s.x < view.x + view.w && s.y > view.y && s.y < view.y + view.h)
                   .map((s) => (
-                    <text key={`n${s.key}`} className="snum" fill={onColor(cc(b))}
+                    <text key={`n${s.key}`} className="snum" fill={onColor(chanColor(b))}
                       x={s.x} y={s.y + 3.1 * U} style={{ fontSize: 8.6 * U }}>{s.num}</text>
                   ))}
                 {pxPerCm * b.rowGap > 22 && labels.map((l) => (
@@ -3874,10 +2737,14 @@ export default function PlanEditor() {
                 points={g.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")} />
             ))}
 
-            {/* tutamaklar */}
+            {/* tutamaklar — HANDLE_HINT'teki Türkçe etiket, tarayıcının
+                yerleşik <title> ipucuyla üstüne gelince görünür (ayrı bir
+                tooltip bileşeni gerekmiyor). */}
             {handles.map((hd) => (
               <g key={hd.k} className="hnd">
-                <circle data-h={hd.k} cx={hd.x} cy={hd.y} r={hSize} />
+                <circle data-h={hd.k} cx={hd.x} cy={hd.y} r={hSize}>
+                  <title>{hd.k.startsWith("foot:") ? "Dış hat köşesi" : (HANDLE_HINT[hd.k] || hd.k)}</title>
+                </circle>
                 {hd.k === "rot" && <text x={hd.x} y={hd.y + hSize * 0.4} style={{ fontSize: hSize * 1.2 }}>↻</text>}
               </g>
             ))}
@@ -3890,6 +2757,20 @@ export default function PlanEditor() {
 
             {collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
               <polygon key={`co${b.id}`} className="collide"
+                points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
+            ))}
+
+            {/* "Doğrulama" kanalının vurgusu: son rapordaki canlı-olmayan
+                bulgular da (bkz. reportMarks) breach/collide ile aynı dış
+                hat dilinde işaretlenir — err kırmızı kesik, warn amber. */}
+            {reportMarks.err.length > 0 && metas.filter(({ b }) => reportMarks.err.includes(b.id)).map(({ b, m }) => (
+              <polygon key={`rfe${b.id}`} className="breach"
+                points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
+            ))}
+            {reportMarks.warn.length > 0 && metas.filter(({ b }) => reportMarks.warn.includes(b.id)).map(({ b, m }) => (
+              <polygon key={`rfw${b.id}`} className="rfwarn"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
@@ -3946,23 +2827,75 @@ export default function PlanEditor() {
             <div className="cempty">Sol menüden bir araç seçip çizmeye başlayın, ya da yukarıdan bir örnek salon açın.</div>
           )}
 
+          {/* Lejant aktif kanala göre değişir — gri şeylerin lejantta yeri
+              yok (bkz. chanColor gerekçesi). "Kat" dışındaki üç kanalda
+              blok/kat rengi zaten görünmüyor, o yüzden lejant da onu
+              göstermiyor. */}
           {legend && (
             <div className="lgnd">
-              <p>Katlar<button className="link" onClick={() => setLegend(false)}>gizle</button></p>
-              {levels.map((l, i) => (
+              <p>{CHAN_TITLE[colorChan]}<button className="link" onClick={() => setLegend(false)}>gizle</button></p>
+
+              {colorChan === "level" && levels.map((l, i) => (
                 <div key={l}>
                   <i style={{ background: LEVEL_COLORS[i % LEVEL_COLORS.length] }} />
                   <span>{l}</span>
                   <b className="n">{(levelCounts[l] || 0).toLocaleString("tr-TR")}</b>
                 </div>
               ))}
-              {Object.entries(attrTotals).filter(([k]) => ATTRS[k]).map(([k, v]) => (
+
+              {/* Nitelik kanalı artık İKİ liste: tür (seat_kind) + özellik
+                  (features) — raporun ayrımını lejanta da taşıyoruz, aksi
+                  hâlde "3 refakatçi + 1 erişilebilir" gibi bir koltuğun
+                  hem türü hem özelliği aynı satırda karışırdı. */}
+              {colorChan === "attr" && Object.entries(kindTotals).filter(([k]) => ATTRS[k]).map(([k, v]) => (
                 <div key={k} className="at">
                   <i style={{ background: "transparent", border: `2px solid ${ATTRS[k].color}` }} />
                   <span>{ATTRS[k].short}</span>
                   <b className="n">{v.toLocaleString("tr-TR")}</b>
                 </div>
               ))}
+              {colorChan === "attr" && Object.keys(featureTotals).length > 0 && (
+                <p className="lab">Özellikler</p>
+              )}
+              {colorChan === "attr" && Object.entries(featureTotals).filter(([k]) => FEATURES[k]).map(([k, v]) => (
+                <div key={k} className="at">
+                  <i style={{ background: "transparent", border: `2px solid ${FEATURES[k].color}` }} />
+                  <span>{FEATURES[k].short}</span>
+                  <b className="n">{v.toLocaleString("tr-TR")}</b>
+                </div>
+              ))}
+              {colorChan === "attr" && !Object.keys(kindTotals).length && !Object.keys(featureTotals).length && (
+                <p className="mut sm">Hiç nitelik atanmamış</p>
+              )}
+
+              {colorChan === "gate" && gateShapes.map((d) => (
+                <div key={d.id}>
+                  <i style={{ background: gateColor(d.label) }} />
+                  <span>{d.label}</span>
+                  <b className="n">{(d.blocks || []).length}</b>
+                </div>
+              ))}
+              {colorChan === "gate" && !gateShapes.length && (
+                <p className="mut sm">Hiç kapı tanımlanmamış</p>
+              )}
+              {colorChan === "gate" && gateShapes.length > 0 && (() => {
+                const assigned = new Set(gateShapes.flatMap((d) => d.blocks || []));
+                const n = metas.filter(({ b }) => !assigned.has(b.id)).length;
+                return n > 0 ? (
+                  <div><i style={{ background: NEUTRAL }} /><span>Kapı atanmamış</span><b className="n">{n}</b></div>
+                ) : null;
+              })()}
+
+              {colorChan === "valid" && (<>
+                <div><i style={{ background: "var(--err)" }} /><span>Sınır ihlali (canlı)</span>
+                  <b className="n">{breach.length}</b></div>
+                <div><i style={{ background: "var(--err)" }} /><span>Taban çakışması (canlı)</span>
+                  <b className="n">{collide.length}</b></div>
+                {report
+                  ? <div><i style={{ background: "var(--warn)" }} /><span>Diğer bulgular (Doğrula)</span>
+                      <b className="n">{reportMarks.err.length + reportMarks.warn.length}</b></div>
+                  : <p className="mut sm">Diğer bulgular için Doğrula'yı çalıştır</p>}
+              </>)}
             </div>
           )}
 
@@ -3985,7 +2918,7 @@ export default function PlanEditor() {
               </button></>}
             {collide.length > 0 && <><span className="tsep" />
               <button className="alert" onClick={() => { setSelIds(collide); setSelShapeId(null); }}>
-                {collide.length} blok birbirinin alanına giriyor
+                {collide.length} blok birbirinin alanına giriyor · en fazla {fmtOverlap(collideArea)}
               </button></>}
             {msg && <><span className="tsep" />
               <span className={msgErr ? "hi err" : "hi"} title={msg}>{msg}</span></>}
@@ -4008,20 +2941,23 @@ export default function PlanEditor() {
               <span className="n">{scaleBar.label}</span>
             </div>
             <span className="tsep" />
-            <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Taban</button>
+            <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Dış hatlar</button>
             <button className={legend ? "on" : ""} onClick={() => setLegend(!legend)}>Lejant</button>
             <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
             <span className="n zoompct" title="%100'e sıfırla" onClick={zoomToAll}>
               {zoomPct}%
             </span>
             <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
-            <button onClick={zoomToAll}>Sığdır</button>
-            <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "İçeriğe zumla"}</button>
+            {/* Eskiden "Sığdır" ve "İçeriğe zumla" ayrı düğmelerdi; seçim
+                yokken zoomToSelection zaten zoomToAll'a düşüyordu (bkz.
+                yukarısı) — yani hiçbir şey seçili değilken birebir aynı
+                düğmeydi. Tek düğme: seçim varsa ona odaklan, yoksa Sığdır. */}
+            <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "Sığdır"}</button>
           </div>
 
           {footDraft && (
             <div className="tip">
-              Tabanın köşelerini tıkla · <b>Enter</b> veya çift tık ile kapat · <b>Esc</b> iptal
+              Dış hattın köşelerini tıkla · <b>Enter</b> veya çift tık ile kapat · <b>Esc</b> iptal
               {footDraft.length > 0 && ` · ${footDraft.length} nokta`}
             </div>
           )}
@@ -4055,7 +2991,9 @@ export default function PlanEditor() {
             <PlanSettings plan={plan} sample={metas[0]} onClose={() => setSetOpen(false)}
               onCsv={exportCSV} onSvg={exportSVG} onCsvImport={importCSV} saved={saved} venues={venues} vk={vk}
               theme={theme} onTheme={setThemePref} wheelPref={wheelPref} onWheelPref={setWheelPrefP}
-              onNew={newPlan} onDup={duplicatePlan} onDel={deletePlan}
+              onNew={newPlan} onNewStadium={() => newPlanFromTemplate(buildStadiumTemplate, "Yeni stadyum")}
+              onNewHall={() => newPlanFromTemplate(buildHallTemplate, "Yeni salon")}
+              onDup={duplicatePlan} onDel={deletePlan}
               onChange={(p) => commit({ ...plan, ...p })} />
           )}
 
@@ -4111,7 +3049,7 @@ export default function PlanEditor() {
                   </div>
                   {diff.added.length > 0 && <div className="info">{diff.added.length} yeni koltuk<em>{diff.added.slice(0, 5).join(", ")}</em></div>}
                   {diff.moved.length > 0 && <div className="warn">{diff.moved.length} koltuk yer değiştirdi (&gt;25 cm)</div>}
-                  {diff.changed.length > 0 && <div className="warn">{diff.changed.length} koltuğun kategorisi veya niteliği değişti</div>}
+                  {diff.changed.length > 0 && <div className="warn">{diff.changed.length} koltuğun niteliği değişti</div>}
                 </div>
               )}
             </div>
@@ -4172,12 +3110,17 @@ export default function PlanEditor() {
           )}
         </main>
 
-        <aside className="props">
-          {selSeats.size > 1 ? (
+        <aside className={`props${propsOpen ? "" : " closed"}`}>
+          <button className="pcol" onClick={() => setPropsOpen(!propsOpen)}
+            title={propsOpen ? "Özellik panelini daralt" : "Özellik panelini genişlet"}>
+            <span className="chev">{propsOpen ? "›" : "‹"}</span><em>Özellikler</em>
+          </button>
+          {propsOpen && (
+          selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
           ) : selSeat && seatOv ? (
-            <SeatPanel sel={selSeat} info={selSeatInfo} ov={seatOv} onToggle={(k) => toggleOv(selSeat, k)}
+            <SeatPanel sel={selSeat} info={selSeatInfo} ov={seatOv} eff={seatEffAttr} onToggle={(k) => toggleOv(selSeat, k)}
               onSet={(p) => setOv(selSeat, p)} onClose={() => setSelSeat(null)} />
           ) : selShape ? (
             <ShapePanel s={selShape} blocks={plan.blocks} metas={metaById} onAuto={doAutoGates}
@@ -4191,12 +3134,20 @@ export default function PlanEditor() {
             <BlockPanel b={selBlock} levels={levels} meta={metaById.get(selBlock.id)} arr={arrProps}
               doors={gates.get(selBlock.id)}
               onFootDraw={footStart} onFootSeed={footSeed} onFootClear={footClear}
+              footOpen={footOpen} setFootOpen={setFootOpen}
+              numOpen={numOpen} setNumOpen={setNumOpen}
+              advOpen={advOpen} setAdvOpen={setAdvOpen}
               onZoom={() => zoomTo(metaById.get(selBlock.id))}
               onChange={(p) => patchBlock(selBlock.id, p)} onMirror={mirror}
-              onDup={() => { const cp = { ...selBlock, id: nid(), x: selBlock.x + 300, y: selBlock.y + 300 }; commit({ ...plan, blocks: [...plan.blocks, cp] }); setSelIds([cp.id]); }}
+              onDup={() => {
+                const label = freeLabel(selBlock.label, 1, usedLabels);
+                const cp = reLabel({ ...selBlock, id: nid(), x: selBlock.x + 300, y: selBlock.y + 300 }, label);
+                commit({ ...plan, blocks: [...plan.blocks, cp] }); setSelIds([cp.id]);
+              }}
               onDelete={() => { commit({ ...plan, blocks: plan.blocks.filter((x) => x.id !== selBlock.id) }); setSelIds([]); }} />
           ) : (
             <div className="empty">Bir blok, koltuk veya şekil seç</div>
+          )
           )}
         </aside>
       </div>
@@ -4217,15 +3168,48 @@ function MultiSeatPanel({ n, onOps, onClear }) {
         <button className="link" onClick={onClear}>bırak</button>
       </div>
 
+      {/* İki AYRI toplu eylem, iki AYRI eksen (bkz. görev tanımı): tür
+          BLOK VARSAYILANINA döner ya da belli bir türe SABİTLENİR (eskiden
+          "Normal koltuk"in delete o.at ile yaptığı — istisnayı SİLMEK,
+          FORCE-etmek değil, bkz. paintOv/SeatPanel'deki AYRI "sıfırla"
+          fikriyle karıştırma). Özellik EKLE/KALDIR ise türe hiç dokunmadan
+          seatFeatures'ı bağımsız değiştirir (resolveSeatKind'in kısmi
+          override desteği tam bunun için var). */}
       <section>
-        <p className="lab">Nitelik ata</p>
+        <p className="lab">Tür ata</p>
         <select className="full" defaultValue="_"
           onChange={(e) => { if (e.target.value === "_") return;
-            const v = e.target.value === "-" ? "" : e.target.value;
-            onOps((o) => { if (v) o.at = v; else delete o.at; return o; }); e.target.value = "_"; }}>
+            const v = e.target.value === "-" ? null : e.target.value;
+            onOps((o) => {
+              delete o.at;
+              if (v === null) { delete o.seatKind; delete o.seatFeatures; }
+              else o.seatKind = v;
+              return o;
+            }); e.target.value = "_"; }}>
           <option value="_">seç…</option>
-          <option value="-">Normal koltuk</option>
+          <option value="-">Bloğun varsayılanı</option>
+          <option value={DEFAULT_SEAT_KIND}>Tekli (sabitle)</option>
           {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
+        </select>
+      </section>
+
+      <section>
+        <p className="lab">Özellik ekle/kaldır</p>
+        <select className="full" defaultValue="_"
+          onChange={(e) => { if (e.target.value === "_") return;
+            const [action, key] = e.target.value.split(":");
+            onOps((o) => {
+              const cur = o.seatFeatures !== undefined ? o.seatFeatures
+                : (o.at !== undefined ? legacyAtToKind(o.at).seatFeatures : []);
+              delete o.at;
+              o.seatFeatures = action === "add" ? sortFeatures([...cur, key]) : cur.filter((f) => f !== key);
+              return o;
+            }); e.target.value = "_"; }}>
+          <option value="_">seç…</option>
+          {Object.entries(FEATURES).flatMap(([k, f]) => [
+            <option key={`a${k}`} value={`add:${k}`}>{f.label} ekle</option>,
+            <option key={`r${k}`} value={`remove:${k}`}>{f.label} kaldır</option>,
+          ])}
         </select>
       </section>
 
@@ -4253,7 +3237,7 @@ function MultiSeatPanel({ n, onOps, onClear }) {
 }
 
 /** Seçim yokken: plan seviyesindeki ayarlar. */
-function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onDup, onDel, onChange }) {
+function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onNewStadium, onNewHall, onDup, onDel, onChange }) {
   const tpl = plan.idTemplate || DEF_TPL;
   const s = sample ? buildSeats(sample.b, sample.m, tpl).seats.find((x) => !x.gap) : null;
   return (
@@ -4286,13 +3270,17 @@ function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved,
       <div className="sec">
         <p className="lab">Planlar</p>
         <div className="acts">
-          <button onClick={onNew}>Yeni</button>
+          <button onClick={onNew}>Yeni (boş)</button>
+          <button onClick={onNewStadium}>Yeni (stadyum)</button>
+          <button onClick={onNewHall}>Yeni (salon)</button>
           <button onClick={onDup}>Kopyala</button>
           <button className="dgr" disabled={!saved.includes(vk) || Object.keys(venues).length < 2}
             onClick={() => onDel(vk)}>Sil</button>
         </div>
         <p className="mut sm">
-          Plan geçişi üstteki menüden. Düzenlemeler otomatik kaydediliyor; altlık görseli kaydedilmez.
+          Stadyum/salon, boş tuval yerine düzenlenebilir bir başlangıç iskeleti (tribün/kademe +
+          gerçek vomitorium ya da kapı) verir. Plan geçişi üstteki menüden. Düzenlemeler otomatik
+          kaydediliyor; altlık görseli kaydedilmez.
         </p>
       </div>
 
@@ -4478,15 +3466,16 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
             <input list="lv2" placeholder="değiştirme" onBlur={(e) => e.target.value && onSet({ level: e.target.value })} />
             <datalist id="lv2">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
-          <Row label="Taban payı (cm)">
+          <Row label="Dış hat payı (cm)">
             <input type="number" min="0" step="5" placeholder="değiştirme"
               onBlur={(e) => e.target.value !== "" && onSet({ pad: Math.max(0, +e.target.value) })} />
           </Row>
         </div>
-        <Row label="Varsayılan nitelik">
-          <select defaultValue="_" onChange={(e) => e.target.value !== "_" && onSet({ attr: e.target.value })}>
+        <Row label="Varsayılan tür">
+          <select defaultValue="_" onChange={(e) => e.target.value !== "_"
+            && onSet({ seatKind: e.target.value, seatFeatures: [], attr: undefined })}>
             <option value="_">değiştirme</option>
-            <option value="">Normal koltuk</option>
+            <option value={DEFAULT_SEAT_KIND}>Tekli (normal)</option>
             {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
           </select>
         </Row>
@@ -4499,7 +3488,7 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
   );
 }
 
-function SeatPanel({ sel, info, ov, onToggle, onSet, onClose }) {
+function SeatPanel({ sel, info, ov, eff, onToggle, onSet, onClose }) {
   return (
     <div className="panel">
       <div className="phead">
@@ -4520,12 +3509,31 @@ function SeatPanel({ sel, info, ov, onToggle, onSet, onClose }) {
           <Row label="Etiket"><input value={ov.label ?? ""} placeholder="otomatik" onChange={(e) => onSet({ label: e.target.value })} /></Row>
         </div>
       </section>
+      {/* İki eksen: tür (tek seçim, eff.seatKind gösterir/yazar) + özellik
+          (0..N, eff.seatFeatures gösterir/toggler). Değişiklik HER İKİSİ de
+          doğrudan koltuğa yazılır (ov.seatKind/ov.seatFeatures) — blok
+          varsayılanına geri dönmek isteyen "Sıfırla"yı DEĞİL, türü elle
+          "Bloğun varsayılanı"na çevirmek yerine burada YOK (eskiden de
+          yoktu — bkz. görev raporu, bu panel her zaman somut bir değer
+          yazdı, MultiSeatPanel'in "Bloğun varsayılanı"na dönen toplu
+          eylemi ayrı bir şey). */}
       <section>
-        <p className="lab">Nitelik</p>
-        <select className="full" value={ov.at ?? ""} onChange={(e) => onSet({ at: e.target.value })}>
-          <option value="">Bloğun varsayılanı / normal</option>
+        <p className="lab">Tür</p>
+        <select className="full" value={eff.seatKind}
+          onChange={(e) => onSet({ seatKind: e.target.value, at: undefined })}>
+          <option value={DEFAULT_SEAT_KIND}>Tekli (normal)</option>
           {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
         </select>
+      </section>
+      <section>
+        <p className="lab">Özellikler</p>
+        {Object.entries(FEATURES).map(([k, f]) => (
+          <label key={k} className="chk">
+            <input type="checkbox" checked={eff.seatFeatures.includes(k)}
+              onChange={() => onSet({ seatFeatures: toggleFeature(eff.seatFeatures, k), at: undefined })} />
+            {f.label}
+          </label>
+        ))}
       </section>
       <section className="acts">
         <button className={ov.gap ? "on" : ""} onClick={() => onToggle("gap")}>Boşluk</button>
@@ -4636,11 +3644,35 @@ function ShapePanel({ s, blocks, metas, onChange, onDelete, onAuto }) {
   );
 }
 
-function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFootClear, onChange, onMirror, onDup, onDelete, onZoom }) {
+function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFootClear, onChange, onMirror, onDup, onDelete, onZoom,
+  footOpen, setFootOpen, numOpen, setNumOpen, advOpen, setAdvOpen }) {
   const n = b.num;
   const setNum = (p) => onChange({ num: { ...n, ...p } });
   const kindLabel = b.kind === "fan" ? "Yelpaze" : b.kind === "free" ? "Serbest"
     : b.kind === "table" ? "Masa" : "Izgara";
+  /* b.attr (ESKİ, venue dosyaları hâlâ yazıyor — ör. CSO'nun "obstr"
+     bloğu) doğrudan OKUNMAZ: resolveSeatKind ikisini de (yeni seatKind/
+     seatFeatures ya da eski attr) doğru yorumlar, panel HER ZAMAN
+     çözülmüş, somut değeri gösterir. */
+  const blockDefault = resolveSeatKind(b, {});
+  /* A6.2'den beri rot/cols/rows/curve/r0/aStart/aEnd tuvaldeki tutamaçla
+     doğrudan ayarlanabiliyor (bkz. handlesFor) — panelde ikinci kez tam
+     genişlikte sunulmaları artık zorunlu değil, "Gelişmiş" altına inerler.
+     Yine de klavye/hassas giriş için kalıyorlar, sadece varsayılan olarak
+     kapalılar. Etkisi tuvalde her zaman görünür olsa da (rotasyon/kavis
+     gözle fark edilir) kullanıcı panel kapalıyken HANGİ bloğun bu tür bir
+     özel değere sahip olduğunu göremez — bu yüzden varsayılandan (0)
+     farklıysa özet satırında belirtiliyor. X/Y'nin "varsayılanı" yok
+     (her blok bir yerde durur), o yüzden onlar için rozet yok.
+     Masa/Serbest'te ise handlesFor HİÇ tutamaç üretmiyor (grid/fan
+     dalları dışında düz []) — Döndür°'ü oralarda "Gelişmiş"e atmak
+     ölçütün ("tutamacın karşılığı var mı?") kendisini çiğnerdi, o yüzden
+     bu iki kind'da çekirdekte kalıyor; rozet de sadece gerçekten
+     Gelişmiş'te gizliyken anlamlı. */
+  const rotInAdv = b.kind === "grid" || b.kind === "fan";
+  const advBits = [];
+  if (rotInAdv && Math.round(b.rot) % 360 !== 0) advBits.push(`${Math.round(b.rot)}° döndürülmüş`);
+  if (b.kind === "grid" && b.curve) advBits.push("kavisli");
   return (
     <div className="panel">
       <div className="phead">
@@ -4661,12 +3693,12 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
         <div className="g2">
           <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => onChange(relabelPatch(b, e.target.value))} /></Row>
           <Row label="Kat / kuşak">
-            <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange({ level: e.target.value })} />
+            <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange(relevelPatch(b, e.target.value))} />
             <datalist id="lv">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
-          <Row label="X (cm)"><Num v={Math.round(b.x)} on={(v) => onChange({ x: v })} step={10} /></Row>
-          <Row label="Y (cm)"><Num v={Math.round(b.y)} on={(v) => onChange({ y: v })} step={10} /></Row>
-          <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>
+          {!rotInAdv && (
+            <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>
+          )}
           <Row label="Yandan erişim">
             <label className="chk" style={{ height: 32 }}>
               <input type="checkbox" checked={!b.noAisle}
@@ -4684,17 +3716,30 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               ))}
             </div>
           </Row>
-          <Row label="Varsayılan nitelik">
-            <select value={b.attr || ""} onChange={(e) => onChange({ attr: e.target.value })}>
-              <option value="">Normal koltuk</option>
+          <Row label="Varsayılan tür">
+            <select value={blockDefault.seatKind}
+              onChange={(e) => onChange({ seatKind: e.target.value, seatFeatures: blockDefault.seatFeatures, attr: undefined })}>
+              <option value={DEFAULT_SEAT_KIND}>Tekli (normal)</option>
               {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
             </select>
           </Row>
+          <Row label="Varsayılan özellikler">
+            {Object.entries(FEATURES).map(([k, f]) => (
+              <label key={k} className="chk">
+                <input type="checkbox" checked={blockDefault.seatFeatures.includes(k)}
+                  onChange={() => onChange({ seatFeatures: toggleFeature(blockDefault.seatFeatures, k), attr: undefined })} />
+                {f.label}
+              </label>
+            ))}
+          </Row>
         </div>
-        {meta && Object.keys(meta.attrs || {}).length > 0 && (
+        {meta && (Object.keys(meta.kinds || {}).length > 0 || Object.keys(meta.features || {}).length > 0) && (
           <div className="chips">
-            {Object.entries(meta.attrs).map(([k, v]) => ATTRS[k] && (
+            {Object.entries(meta.kinds || {}).map(([k, v]) => ATTRS[k] && (
               <span key={k}><i style={{ background: ATTRS[k].color }} />{ATTRS[k].short} {v}</span>
+            ))}
+            {Object.entries(meta.features || {}).map(([k, v]) => FEATURES[k] && (
+              <span key={`f${k}`}><i style={{ background: FEATURES[k].color }} />{FEATURES[k].short} {v}</span>
             ))}
           </div>
         )}
@@ -4733,11 +3778,8 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
           <p className="lab">Geometri (cm)</p>
           {b.kind === "grid" ? (
             <div className="g2">
-              <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
-              <Row label="Koltuk"><Num v={b.cols} on={(v) => onChange({ cols: Math.max(1, v) })} min={1} /></Row>
               <Row label="Koltuk aralığı"><Num v={b.seatGap} on={(v) => onChange({ seatGap: Math.max(20, v) })} step={5} /></Row>
               <Row label="Sıra aralığı"><Num v={b.rowGap} on={(v) => onChange({ rowGap: Math.max(20, v) })} step={5} /></Row>
-              <Row label="Kavis"><Num v={b.curve} on={(v) => onChange({ curve: v })} step={10} /></Row>
               <Row label="Sıra başına ±"><Num v={b.taper} on={(v) => onChange({ taper: v })} /></Row>
             </div>
           ) : (
@@ -4749,14 +3791,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
                 </select>
               </Row>
               <div className="g2" style={{ marginTop: 8 }}>
-                <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
-                <Row label="İlk yarıçap"><Num v={Math.round(b.r0)} on={(v) => onChange({ r0: Math.max(50, v) })} step={10} /></Row>
-                {(b.mode || "span") === "pitch" ? (
-                  <Row label="Merkez açı °"><Num v={b.aCenter} on={(v) => onChange({ aCenter: v })} /></Row>
-                ) : (<>
-                  <Row label="Başlangıç °"><Num v={b.aStart} on={(v) => onChange({ aStart: v })} /></Row>
-                  <Row label="Bitiş °"><Num v={b.aEnd} on={(v) => onChange({ aEnd: v })} /></Row>
-                </>)}
+                {/* aCenter'ın tutamacı YOK (handlesFor sadece span modunda
+                    aStart/aEnd ekliyor) — o yüzden rot/r0/rows/aStart/aEnd
+                    "Gelişmiş"e inerken bu burada, çekirdekte kalıyor. */}
+                {(b.mode || "span") === "pitch" &&
+                  <Row label="Merkez açı °"><Num v={b.aCenter} on={(v) => onChange({ aCenter: v })} /></Row>}
                 <Row label="Sıra aralığı"><Num v={b.rowGap} on={(v) => onChange({ rowGap: Math.max(20, v) })} step={5} /></Row>
                 <Row label="Koltuk aralığı"><Num v={b.seatGap} on={(v) => onChange({ seatGap: Math.max(20, v) })} step={5} /></Row>
               </div>
@@ -4775,9 +3814,36 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
         </section>
       )}
 
+      <details className="sec" open={advOpen} onToggle={(e) => setAdvOpen(e.target.open)}>
+        <summary className="lab">Gelişmiş{advBits.length > 0 && <em>{advBits.join(" · ")}</em>}</summary>
+        <p className="mut sm">
+          Konum ve şekil artık tuvalde bloğun üstündeki tutamaçlarla doğrudan
+          ayarlanabiliyor — buradakiler klavye veya tam sayı girişi içindir.
+        </p>
+        <div className="g2">
+          <Row label="X (cm)"><Num v={Math.round(b.x)} on={(v) => onChange({ x: v })} step={10} /></Row>
+          <Row label="Y (cm)"><Num v={Math.round(b.y)} on={(v) => onChange({ y: v })} step={10} /></Row>
+          {rotInAdv &&
+            <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>}
+          {b.kind === "grid" && <>
+            <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
+            <Row label="Koltuk"><Num v={b.cols} on={(v) => onChange({ cols: Math.max(1, v) })} min={1} /></Row>
+            <Row label="Kavis"><Num v={b.curve} on={(v) => onChange({ curve: v })} step={10} /></Row>
+          </>}
+          {b.kind === "fan" && <>
+            <Row label="Sıra"><Num v={b.rows} on={(v) => onChange({ rows: Math.max(1, v) })} min={1} /></Row>
+            <Row label="İlk yarıçap"><Num v={Math.round(b.r0)} on={(v) => onChange({ r0: Math.max(50, v) })} step={10} /></Row>
+            {(b.mode || "span") === "span" && <>
+              <Row label="Başlangıç °"><Num v={b.aStart} on={(v) => onChange({ aStart: v })} /></Row>
+              <Row label="Bitiş °"><Num v={b.aEnd} on={(v) => onChange({ aEnd: v })} /></Row>
+            </>}
+          </>}
+        </div>
+      </details>
+
       {b.kind !== "free" && (
-        <details className="sec">
-          <summary className="lab">Taban{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</summary>
+        <details className="sec" open={footOpen} onToggle={(e) => setFootOpen(e.target.open)}>
+          <summary className="lab">Dış hat{b.foot && b.foot.length >= 3 && <em>elle çizilmiş</em>}</summary>
           {b.foot && b.foot.length >= 3 ? (<>
             <p className="mut sm">
               {b.foot.length} nokta. Köşeleri tuvalde sürükleyerek düzeltebilirsin.
@@ -4787,11 +3853,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <button onClick={onFootClear}>Otomatiğe dön</button>
             </div>
           </>) : (<>
-            <Row label="Taban payı (cm)">
+            <Row label="Dış hat payı (cm)">
               <Num v={b.pad != null ? b.pad : 55} on={(v) => onChange({ pad: Math.max(0, v) })} step={5} />
             </Row>
             <p className="mut sm">
-              Taban koltuklardan türetiliyor. Sütun, merdiven boşluğu veya düzensiz
+              Dış hat koltuklardan türetiliyor. Sütun, merdiven boşluğu veya düzensiz
               kenar varsa elle çiz.
             </p>
             <div className="acts">
@@ -4804,8 +3870,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
 
       <ArraySection {...arr} />
 
-      <details className="sec">
-        <summary className="lab">Sıra etiketi</summary>
+      {/* Eskiden iki ayrı katlanır bölümdü (Sıra etiketi / Koltuk numarası)
+          — numaralandırma tek bir alt konu, tek bir aç/kapa yeter. */}
+      <details className="sec" open={numOpen} onToggle={(e) => setNumOpen(e.target.open)}>
+        <summary className="lab">Numaralandırma</summary>
+        <p className="lab">Sıra etiketi</p>
         <div className="g2">
           <Row label="Şema">
             <select value={n.rowScheme} onChange={(e) => setNum({ rowScheme: e.target.value })}>
@@ -4814,7 +3883,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <option value="custom">Özel liste</option>
             </select>
           </Row>
-          <Row label="Başlangıç"><Num v={n.rowStart} on={(v) => setNum({ rowStart: v })} /></Row>
+          <Row label="Sıra başlangıcı"><Num v={n.rowStart} on={(v) => setNum({ rowStart: v })} /></Row>
         </div>
         {n.rowScheme === "custom" && (
           <Row label="Liste"><input value={n.rowCustom} onChange={(e) => setNum({ rowCustom: e.target.value })} /></Row>
@@ -4824,10 +3893,8 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
           {n.rowScheme === "letter" &&
             <label><input type="checkbox" checked={n.skipAmbig} onChange={(e) => setNum({ skipAmbig: e.target.checked })} />I, O, Q atla</label>}
         </div>
-      </details>
 
-      <details className="sec">
-        <summary className="lab">Koltuk numarası</summary>
+        <p className="lab" style={{ marginTop: 10 }}>Koltuk numarası</p>
         <div className="g2">
           <Row label="Şema">
             <select value={n.seatScheme} onChange={(e) => setNum({ seatScheme: e.target.value })}>
@@ -4842,7 +3909,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               <option value="ltr">Soldan sağa</option><option value="rtl">Sağdan sola</option>
             </select>
           </Row>
-          <Row label="Başlangıç"><Num v={n.seatStart} on={(v) => setNum({ seatStart: v })} /></Row>
+          <Row label="Koltuk başlangıcı"><Num v={n.seatStart} on={(v) => setNum({ seatStart: v })} /></Row>
           <Row label="Atlanacak"><input value={n.skip} placeholder="13, 4" onChange={(e) => setNum({ skip: e.target.value })} /></Row>
         </div>
         <Row label="Numara bağlama">
@@ -4866,415 +3933,3 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
   );
 }
 
-/* ─────────────────────────  STİL  ───────────────────────── */
-
-const CSS = `
-/* ══════════════════════════════════════════════════════════════════════
-   BILETONE / BILETERA TASARIM SİSTEMİ
-   Kaynak: biletone-design-system-a49308b5 · tokens/*.css + Geliştirici
-   Spesifikasyonu. Marka kırmızısı #E30613 yalnızca üç yerde: aksiyon,
-   seçili durum, fiyat — dekoratif kullanılmaz (spesifikasyon kuralı).
-   Tipografi tek aile: Poppins. Boşluk 8pt ızgara. Ev yarıçapı 24px.
-
-   Uyarlama notu: tasarım sistemi 390px mobil referansıyla yazılmış
-   (buton 52px, dokunma alanı 48px). Bu editör masaüstü yoğunluğunda bir
-   çizim aleti olduğundan ölçüler DS'in KENDİ ölçeğinden bir-iki kademe
-   aşağıdan seçildi (radius-xs/sm, caption/label tipografi). Renk,
-   tipografi ailesi, hareket ve koltuk paleti birebir DS değeridir.
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* Poppins — marka tipografisi (DS tokens/fonts.css ile aynı kaynak) */
-@font-face{font-family:"Poppins";font-style:normal;font-weight:300;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLDz8Z1xlFd2JQEk.woff2) format("woff2")}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecnFHGPc.woff2) format("woff2")}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLGT9Z1xlFd2JQEk.woff2) format("woff2")}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLEj6Z1xlFd2JQEk.woff2) format("woff2")}
-@font-face{font-family:"Poppins";font-style:normal;font-weight:700;font-display:swap;src:url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2) format("woff2")}
-
-/* Koyu tema — DS "OLED dark scale (product)". Ürünün varsayılan teması. */
-.ed.dark{
-  --ink:#090909; --panel:#151515; --panel2:#1C1C1C; --ovl:rgba(21,21,21,.94);
-  --line:rgba(255,255,255,.08); --bone:#FFFFFF; --dim:#A5A5A5; --mut:#6E6E70;
-  --acc:#E30613; --accrgb:227,6,19; --accline:rgba(227,6,19,.12); --onacc:#FFFFFF;
-  --canvas:#090909; --grid:rgba(255,255,255,.04); --grid2:rgba(255,255,255,.09); --rowlab:#6E6E70;
-  --sel:#E30613; --marqfill:rgba(227,6,19,.12);
-  --ok:#2FD07A; --okline:rgba(47,208,122,.16); --err:#FF453A; --warn:#F5A623;
-  --shapefill:#1C1C1C; --shapeline:rgba(255,255,255,.12); --seatoff:#2E2E2E;
-  --doorfill:#FFFFFF; --doorink:#111111;   /* DS surface-inverse / text-on-inverse */
-  --shadow:0 8px 28px rgba(0,0,0,.44);
-}
-/* Açık tema — DS Geliştirici Spesifikasyonu "Açık tema" bölümü.
-   Anlamsal renkler (ok/err/warn) DS'te tek takım verilmiş; açık zeminde
-   okunmadıkları için aynı tonun koyu karşılıkları kullanıldı — DS'i
-   genişlettiğim tek yer, spesifikasyonun kendi metin renklerini temaya
-   göre ayırma mantığını izliyor. */
-.ed.light{
-  --ink:#F7F7F5; --panel:#FFFFFF; --panel2:#F1F1EE; --ovl:rgba(255,255,255,.96);
-  --line:rgba(17,17,17,.08); --bone:#111111; --dim:#3C3C43; --mut:#6B6B73;
-  --acc:#E30613; --accrgb:227,6,19; --accline:rgba(227,6,19,.12); --onacc:#FFFFFF;
-  --canvas:#F7F7F5; --grid:rgba(17,17,17,.05); --grid2:rgba(17,17,17,.10); --rowlab:#6B6B73;
-  --sel:#E30613; --marqfill:rgba(227,6,19,.12);
-  --ok:#1F9A57; --okline:rgba(31,154,87,.16); --err:#C42B22; --warn:#8A5D06;
-  --shapefill:#E4E4E0; --shapeline:#C2C2BD; --seatoff:#E4E4E0;
-  --doorfill:#111111; --doorink:#FFFFFF;   /* DS bt-black / bt-white */
-  --shadow:0 2px 8px rgba(17,17,17,.10);
-}
-
-.ed{
-  /* DS tipografi ailesi — tek aile, rakamlar da Poppins (--font-numeric) */
-  --font-core:"Poppins","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --mono:"Poppins","SF Mono",ui-monospace,monospace;
-  /* DS yarıçap ölçeği — yoğun masaüstü için alt kademeler */
-  --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-pill:999px;
-  /* DS hareket */
-  --ease:cubic-bezier(.32,.72,0,1); --dur-fast:160ms; --dur-base:240ms;
-  position:fixed; inset:0; display:flex; flex-direction:column;
-  background:var(--ink); color:var(--bone);
-  font:400 13px/1.45 var(--font-core);
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-}
-.ed ::selection{ background:rgba(227,6,19,.24); }
-.ed *{ box-sizing:border-box; }
-.ed .n{ font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
-.grow{ flex:1; }
-.tsep{ width:1px; height:16px; background:var(--line); flex:none; }
-
-/* ── üst şerit ── */
-.top{ display:flex; align-items:center; gap:6px; height:44px; padding:0 12px;
-  border-bottom:1px solid var(--line); flex:none; }
-.venue{ background:none; border:1px solid transparent; color:var(--bone); border-radius:var(--r-xs);
-  padding:5px 8px; font-size:12.5px; font-weight:600; max-width:300px; }
-.venue:hover{ border-color:var(--line); background:var(--panel2); }
-.top button, .btn{ display:inline-flex; align-items:center; gap:5px; background:none;
-  border:1px solid transparent; color:var(--dim); border-radius:var(--r-xs); height:28px; padding:0 9px;
-  cursor:pointer; font-size:12px; white-space:nowrap; }
-.top button:hover, .btn:hover{ background:var(--panel2); color:var(--bone); }
-.top button.on{ background:var(--accline); color:var(--acc); }
-.top button:disabled{ opacity:.3; cursor:default; }
-.top .badge{ border-radius:var(--r-pill); font-size:10px; font-weight:700; line-height:1; color:#fff;
-  min-width:15px; height:15px; display:inline-flex; align-items:center; justify-content:center; padding:0 4px; }
-.top .badge.err{ background:var(--err); }
-.top .badge.warn{ background:var(--warn); }
-.top button:disabled:hover{ background:none; color:var(--dim); }
-.top .ib{ width:28px; padding:0; justify-content:center; font-size:14px; }
-.top .pri{ background:var(--acc); color:var(--onacc); font-weight:600; padding:0 12px; }
-.top .pri:hover{ background:var(--acc); filter:brightness(1.08); color:var(--onacc); }
-.sv{ font-size:11px; color:var(--mut); font-family:var(--mono); }
-.sv.saving{ color:var(--acc); } .sv.saved{ color:var(--ok); } .sv.error{ color:var(--err); }
-.pub{ font-size:11px; color:var(--dim); font-family:var(--mono); }
-.pub.dirty{ color:var(--acc); }
-
-.body{ flex:1; display:grid; grid-template-columns:190px 1fr 292px; min-height:0; }
-
-.gate{ display:none; }
-@media (max-width:1023px){
-  .ed > .top, .ed > .body{ display:none; }
-  .gate{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    background:var(--ink); padding:32px; text-align:center; }
-  .gate p{ max-width:320px; color:var(--bone); font-size:14px; line-height:1.6; }
-  .gate p span{ display:block; color:var(--mut); font-size:12px; margin-top:8px; }
-}
-
-/* ── araç rayı ── */
-.tools{ border-right:1px solid var(--line); padding:8px; overflow:auto; }
-.grp{ padding-bottom:6px; margin-bottom:6px; border-bottom:1px solid var(--line); }
-.grp:last-of-type{ border-bottom:0; }
-.glab{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--mut);
-  margin:6px 0 4px 9px; }
-.tools button, .tools .tbtn{ display:flex; align-items:center; gap:9px; width:100%;
-  background:none; border:0; color:var(--dim); text-align:left; height:28px; padding:0 9px;
-  border-radius:var(--r-xs); cursor:pointer; font-size:12.5px; }
-.tools button:hover, .tools .tbtn:hover{ background:var(--panel2); color:var(--bone); }
-.tools button.on{ background:var(--accline); color:var(--acc); }
-.tools button span, .tools .tbtn span{ flex:1; }
-.ic{ width:17px; height:17px; flex:none; stroke:currentColor; stroke-width:1.7;
-  stroke-linecap:round; stroke-linejoin:round; }
-kbd{ font:10px var(--mono); color:var(--mut); }
-.tools button.on kbd{ color:var(--acc); }
-
-.sep{ height:1px; background:var(--line); margin:8px 0; }
-.lab{ font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--mut); margin:0 0 6px; }
-.tree{ list-style:none; margin:0; padding:0; }
-.tree li{ display:flex; align-items:center; gap:8px; height:26px; padding:0 9px;
-  border-radius:var(--r-xs); cursor:pointer; font-size:12px; color:var(--dim); }
-.tree li:hover{ background:var(--panel2); color:var(--bone); }
-.tree li.on{ background:var(--accline); color:var(--acc); }
-.tree .nm{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.tree .nm.dim{ color:var(--mut); }
-.tree li i{ font-style:normal; color:var(--mut); font-size:11px;
-  font-family:var(--mono); font-variant-numeric:tabular-nums; }
-.tree li.mut{ color:var(--mut); cursor:default; }
-
-/* ── tuval ── */
-.canvas{ position:relative; min-width:0; min-height:0; display:flex; flex-direction:column; }
-.canvas svg{ flex:1; width:100%; min-height:0; display:block; touch-action:none; background:var(--canvas); }
-.cempty{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  pointer-events:none; color:var(--mut); font-size:12.5px; text-align:center; padding:0 40px; }
-svg.t-select{ cursor:default; } svg.t-pan{ cursor:grab; } svg.t-seat{ cursor:pointer; }
-svg.t-grid, svg.t-fan, svg.t-row, svg.t-shape, svg.t-poly, svg.t-measure,
-svg.t-seatAdd, svg.t-cal, svg.t-attr, svg.t-table{ cursor:crosshair; }
-.grid line{ stroke:var(--grid); stroke-width:1; }
-.grid.maj line{ stroke:var(--grid2); }
-.blk rect{ cursor:pointer; }
-.blk.on rect{ stroke:var(--sel); }
-.blk rect.sel{ stroke:var(--sel) !important; }
-.lod polygon{ cursor:pointer; }
-.lod text{ text-anchor:middle; font-weight:700; pointer-events:none;
-  font-family:var(--mono); letter-spacing:-.02em; }
-.lod .badge{ pointer-events:none; }
-.lod.on polygon{ stroke:var(--sel); }
-.hnd circle{ fill:var(--canvas); stroke:var(--acc); stroke-width:5; cursor:pointer; }
-.hnd circle:hover{ fill:var(--acc); }
-.hnd text{ fill:var(--acc); text-anchor:middle; pointer-events:none; }
-.shp text.shl{ fill:var(--mut); text-anchor:middle; pointer-events:none; letter-spacing:.22em; }
-.shp.on polygon, .shp.on rect{ stroke:var(--sel); }
-.pit rect{ cursor:pointer; }
-.pit.on > rect:first-child{ stroke:var(--sel); }
-.dr rect{ cursor:pointer; stroke-width:6; }
-.dr text{ fill:var(--doorink); opacity:.75; text-anchor:middle; pointer-events:none; letter-spacing:.1em; }
-.dr .dv{ fill:var(--doorink); opacity:1; font-weight:700; letter-spacing:0; font-family:var(--mono); }
-.dr line{ stroke:var(--doorfill); stroke-width:6; stroke-dasharray:26 20; opacity:.6; }
-.dr.on rect{ stroke:var(--sel); }
-.rl{ fill:var(--rowlab); text-anchor:middle; pointer-events:none; font-family:var(--mono); }
-.snum{ text-anchor:middle; font-weight:600; pointer-events:none;
-  font-family:var(--mono); opacity:.85; }
-.stick rect{ pointer-events:none; }
-.stick text{ fill:#FBFAF7; text-anchor:middle; font-weight:700; pointer-events:none;
-  font-family:var(--mono); letter-spacing:-.02em; }
-.atg{ text-anchor:middle; font-weight:700; pointer-events:none; font-family:var(--mono); }
-.draft{ fill:rgba(var(--accrgb),.10); stroke:var(--acc); stroke-width:6; stroke-dasharray:30 22; }
-.ghost{ fill:rgba(var(--accrgb),.08); stroke:var(--acc); stroke-width:5; stroke-dasharray:34 24; pointer-events:none; }
-.footd polyline{ fill:rgba(var(--accrgb),.10); stroke:var(--acc); stroke-dasharray:26 18; }
-.footd circle{ fill:var(--canvas); stroke:var(--acc); stroke-width:4; }
-svg.t-foot{ cursor:crosshair; }
-.plate{ pointer-events:none; }
-.tbl{ pointer-events:none; }
-.tbl circle, .tbl rect{ fill-opacity:.30; stroke-opacity:.85; stroke-width:2; }
-.tbl text.tlab{ text-anchor:middle; font-weight:700; font-family:var(--mono); pointer-events:none; }
-.poi circle:first-child{ fill:var(--panel); stroke:var(--shapeline); cursor:pointer; }
-.poi > g{ stroke:var(--bone); fill:none; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
-.poi text{ fill:var(--dim); text-anchor:middle; pointer-events:none; }
-.poi.on circle:first-child{ stroke:var(--sel); }
-.poigrid{ display:grid; grid-template-columns:repeat(5,1fr); gap:3px; margin-top:6px; }
-.poigrid.wide{ grid-template-columns:repeat(6,1fr); }
-.poigrid button{ aspect-ratio:1; display:flex; align-items:center; justify-content:center;
-  background:none; border:1px solid transparent; border-radius:var(--r-xs); cursor:pointer; padding:0; }
-.poigrid button:hover{ background:var(--panel2); }
-.poigrid button.on{ background:var(--accline); border-color:var(--acc); }
-.poigrid svg{ width:72%; height:72%; stroke:var(--dim); stroke-width:1.8;
-  stroke-linecap:round; stroke-linejoin:round; }
-.poigrid button.on svg{ stroke:var(--acc); }
-/* PNG işaret ikonları: maske olarak kullanılıp zeminden renk alıyorlar,
-   böylece vektör ikonlarla aynı tema/seçim davranışını gösteriyorlar. */
-.poigrid i.pic{ width:72%; height:72%; background:var(--dim);
-  -webkit-mask:var(--u) center/contain no-repeat; mask:var(--u) center/contain no-repeat; }
-.poigrid button.on i.pic{ background:var(--acc); }
-#poiTint feFlood{ flood-color:var(--bone); }
-#poiTintSel feFlood{ flood-color:var(--sel); }
-.breach{ fill:rgba(229,72,77,.12); stroke:var(--err); stroke-dasharray:26 18; pointer-events:none; }
-.collide{ fill:rgba(229,72,77,.16); stroke:var(--err); stroke-dasharray:10 10; pointer-events:none; }
-.status .alert{ color:var(--err); font-weight:600; }
-.status .alert:hover{ background:rgba(229,72,77,.12); color:var(--err); }
-.stop{ margin:0 0 9px; padding:8px 10px; border:1px solid var(--err); border-radius:var(--r-sm);
-  color:var(--err); font-size:11.5px; line-height:1.5; }
-.pubrow .pri:disabled{ opacity:.4; cursor:default; }
-.guide{ stroke:var(--err); stroke-linecap:round; pointer-events:none; }
-.marq{ fill:var(--marqfill); stroke:var(--sel); stroke-width:5; stroke-dasharray:26 18; }
-.cal line{ stroke:var(--acc); stroke-width:7; }
-.cal circle{ fill:none; stroke:var(--acc); stroke-width:5; }
-.mtxt{ fill:var(--acc); text-anchor:middle; font-family:var(--mono); }
-
-/* ── alt ölçüm şeridi ── */
-.status{ display:flex; align-items:center; gap:8px; height:32px; padding:0 10px; flex:none;
-  border-top:1px solid var(--line); background:var(--panel); font-size:11px; color:var(--mut);
-  min-width:0; overflow-x:auto; overflow-y:hidden; white-space:nowrap; }
-.status .hi{ color:var(--bone); flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:320px; }
-.status .hi.err{ color:var(--err); font-weight:600; }
-.status .ok{ color:var(--ok); flex-shrink:0; } .status .wr{ color:var(--acc); flex-shrink:0; }
-.status .n{ color:var(--bone); }
-.status .coord{ min-width:112px; text-align:right; color:var(--dim); }
-.status button{ background:none; border:0; color:var(--dim); border-radius:var(--r-xs); height:24px;
-  padding:0 8px; cursor:pointer; font-size:11px; }
-.status button:hover{ background:var(--panel2); color:var(--bone); }
-.status button.on{ color:var(--acc); }
-.status .ib{ width:24px; padding:0; font-size:14px; }
-.status .zoompct{ min-width:38px; text-align:center; cursor:pointer; user-select:none; }
-.status .zoompct:hover{ color:var(--acc); }
-.chk{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--mut); cursor:pointer; }
-.chk input{ accent-color:var(--acc); }
-.mini{ background:none; border:1px solid var(--line); color:var(--dim); border-radius:var(--r-xs);
-  padding:3px 5px; font-size:11px; font-family:var(--mono); }
-.mini.full{ width:100%; margin-top:6px; padding:5px 7px; }
-.sbar{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:0 2px; }
-.sline{ height:5px; border:1px solid var(--mut); border-top:0; }
-.sbar span{ font-size:10px; color:var(--mut); }
-
-/* ── tuval üstü kutular ── */
-.lgnd{ position:absolute; left:12px; bottom:44px; background:var(--ovl); box-shadow:var(--shadow);
-  border:1px solid var(--line); border-radius:var(--r-sm); padding:9px 11px; font-size:11.5px; min-width:170px; }
-.lgnd > p{ margin:0 0 7px; color:var(--mut); font-size:9.5px; letter-spacing:.14em;
-  text-transform:uppercase; display:flex; }
-.lgnd > p .link{ margin-left:auto; }
-.lgnd div{ display:flex; align-items:center; gap:8px; padding:2px 0; }
-.lgnd i{ width:11px; height:11px; border-radius:2px; flex:none; }
-.lgnd span{ flex:1; color:var(--bone); }
-.lgnd b{ color:var(--mut); font-weight:400; }
-.lgnd .at span{ color:var(--dim); }
-.tip{ position:absolute; left:50%; top:12px; transform:translateX(-50%);
-  background:var(--ovl); box-shadow:var(--shadow); border:1px solid var(--acc); color:var(--acc);
-  border-radius:var(--r-sm); padding:6px 13px; font-size:11.5px; }
-.calbar{ position:absolute; left:50%; bottom:52px; transform:translateX(-50%);
-  display:flex; align-items:center; gap:9px; background:var(--ovl); box-shadow:var(--shadow); border:1px solid var(--acc);
-  border-radius:var(--r-sm); padding:8px 11px; font-size:11.5px; }
-.calbar b{ color:var(--acc); font-family:var(--mono); }
-.calbar input{ width:76px; background:var(--panel2); border:1px solid var(--line); color:var(--bone);
-  border-radius:var(--r-xs); padding:4px 7px; font:12px var(--mono); }
-.calbar button{ background:none; border:1px solid var(--line); color:var(--dim);
-  border-radius:var(--r-xs); padding:4px 10px; cursor:pointer; font-size:11.5px; }
-.calbar .pri{ background:var(--acc); color:var(--onacc); border-color:var(--acc); font-weight:600; }
-.ulbar{ position:absolute; left:12px; top:12px; display:flex; align-items:center; gap:8px;
-  background:var(--ovl); box-shadow:var(--shadow); border:1px solid var(--line); border-radius:var(--r-sm); padding:5px 9px; font-size:11px; color:var(--mut); }
-.ulbar button{ background:none; border:1px solid var(--line); color:var(--mut); border-radius:var(--r-xs);
-  padding:2px 7px; cursor:pointer; font-size:11px; }
-.ulbar button:hover{ color:var(--bone); }
-.ulbar input[type=range]{ width:74px; accent-color:var(--acc); }
-
-.val{ position:absolute; right:12px; bottom:44px; width:320px; max-height:46%;
-  overflow:auto; background:var(--ovl); box-shadow:var(--shadow); border:1px solid var(--line); border-radius:var(--r-sm);
-  padding:10px 12px; font-size:11.5px; }
-.val p{ margin:0 0 7px; color:var(--mut); font-size:9.5px; letter-spacing:.14em;
-  text-transform:uppercase; display:flex; }
-.val p .link{ margin-left:auto; }
-.val div{ margin-bottom:6px; }
-.val em{ display:block; color:var(--mut); font-style:normal; font-size:11px; margin-top:2px; }
-.val .err{ color:var(--err); } .val .warn{ color:var(--warn); }
-.val .info{ color:var(--dim); } .val .ok{ color:var(--ok); }
-.val .go{ cursor:pointer; } .val .go:hover{ background:var(--panel2); }
-
-.ver{ position:absolute; right:12px; top:12px; width:326px; max-height:calc(100% - 60px);
-  overflow:auto; background:var(--ovl); box-shadow:var(--shadow); border:1px solid var(--line); border-radius:var(--r-sm);
-  padding:11px 13px; font-size:12px; }
-.ver > p:first-child{ margin:0 0 10px; color:var(--mut); font-size:9.5px; letter-spacing:.14em;
-  text-transform:uppercase; display:flex; }
-.ver > p:first-child .link{ margin-left:auto; }
-.ver .sec{ border-top:1px solid var(--line); margin-top:12px; padding-top:11px; }
-.ver .tplin.name{ margin-bottom:2px; color:var(--bone); font:600 13px var(--font-core); }
-.pubrow{ display:flex; gap:6px; margin-bottom:9px; }
-.pubrow input{ flex:1; background:var(--panel2); border:1px solid var(--line); color:var(--bone);
-  border-radius:var(--r-xs); padding:6px 9px; font-size:12px; }
-.pubrow .pri{ background:var(--acc); color:var(--onacc); border:0; border-radius:var(--r-xs);
-  padding:6px 13px; font-weight:600; cursor:pointer; font-size:12px; }
-.vlist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px; }
-.vlist li{ display:flex; align-items:center; gap:6px; background:var(--panel2);
-  border:1px solid var(--line); border-radius:var(--r-sm); padding:7px 9px; }
-.vlist li.on{ border-color:var(--okline); }
-.vlist li div{ flex:1; min-width:0; }
-.vlist strong{ display:block; font-size:12px; }
-.vlist span{ display:block; font-size:10.5px; color:var(--mut); font-family:var(--mono); }
-.vlist em{ display:block; font-style:normal; font-size:11px; color:var(--dim); margin-top:2px; }
-.vlist button{ background:none; border:1px solid var(--line); color:var(--mut);
-  border-radius:var(--r-xs); padding:3px 8px; font-size:11px; cursor:pointer; }
-.vlist button:hover{ border-color:var(--acc); color:var(--acc); }
-.diff{ margin-top:11px; border-top:1px solid var(--line); padding-top:10px; }
-.diff div{ margin-bottom:6px; font-size:11.5px; }
-.diff em{ display:block; font-style:normal; color:var(--mut); font-size:11px; margin-top:2px; font-family:var(--mono); }
-.diff .err{ color:var(--err); } .diff .warn{ color:var(--warn); }
-.diff .ok{ color:var(--ok); } .diff .info{ color:var(--dim); }
-
-/* ── sağ panel ── */
-.props{ border-left:1px solid var(--line); background:var(--panel); overflow:auto; }
-.props .empty{ padding:28px 18px; color:var(--mut); font-size:11.5px; text-align:center; }
-.panel{ padding:13px 15px 22px; }
-.phead{ display:flex; align-items:center; gap:9px; margin-bottom:9px; }
-.plabel{ background:var(--panel2); border:1px solid var(--line); color:var(--bone);
-  border-radius:var(--r-xs); padding:6px 9px; width:72px; font-weight:600; font-size:12.5px; }
-.plabel.wide{ width:auto; flex:1; }
-.plabel.seatid{ font-family:var(--mono); font-size:12px; color:var(--acc); }
-.kind{ font-size:11px; color:var(--mut); }
-.cap{ font-size:11.5px; color:var(--mut); display:flex; align-items:center; gap:7px; margin-bottom:5px; }
-.cap b{ color:var(--bone); font-size:15px; font-family:var(--mono); font-variant-numeric:tabular-nums; }
-.cap .link{ margin-left:auto; }
-.panel section, .panel details.sec{ border-top:1px solid var(--line); padding:11px 0; }
-.panel details.sec summary{ cursor:pointer; list-style-position:outside; }
-.panel details.sec summary::marker{ color:var(--mut); font-size:9px; }
-.panel details.sec[open] summary{ margin-bottom:9px; }
-.g2{ display:grid; grid-template-columns:1fr 1fr; gap:7px; }
-.g3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; }
-.pr{ display:flex; flex-direction:column; gap:3px; margin-top:7px; }
-.g2 .pr, .g3 .pr{ margin-top:0; }
-.pr span{ font-size:10px; color:var(--mut); }
-.pr input, .pr select{ background:var(--panel2); border:1px solid var(--line); color:var(--bone);
-  border-radius:var(--r-xs); padding:5px 7px; font-size:12px; width:100%; }
-.pr input[type=number]{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
-.pr input:focus, .pr select:focus{ border-color:var(--acc); outline:0; }
-.pr select:disabled{ opacity:.4; }
-label.asfile{ display:block; text-align:center; }
-button.wide, label.wide{ width:100%; margin-top:8px; background:none; border:1px solid var(--line);
-  color:var(--dim); border-radius:var(--r-xs); padding:7px; cursor:pointer; font-size:12px; }
-button.wide:hover{ border-color:var(--acc); color:var(--acc); }
-.checks{ display:flex; gap:13px; margin-top:8px; font-size:11.5px; color:var(--mut); }
-.checks label{ display:flex; align-items:center; gap:5px; cursor:pointer; }
-.checks input{ accent-color:var(--acc); }
-.acts{ display:flex; gap:6px; }
-.acts button{ flex:1; background:none; border:1px solid var(--line); color:var(--dim);
-  border-radius:var(--r-xs); padding:7px; cursor:pointer; font-size:12px; }
-.acts button:hover{ border-color:var(--acc); color:var(--acc); }
-.acts button.on{ border-color:var(--acc); color:var(--acc); background:var(--accline); }
-.acts button:disabled{ opacity:.35; cursor:default; }
-.acts .dgr:hover{ border-color:var(--err); color:var(--err); }
-.alg{ display:grid; grid-template-columns:repeat(6,1fr); gap:4px; }
-.alg button{ background:none; border:1px solid var(--line); color:var(--dim);
-  border-radius:var(--r-xs); padding:6px 0; cursor:pointer; font-size:14px; line-height:1; }
-.alg button:hover{ border-color:var(--acc); color:var(--acc); }
-.sw{ display:flex; flex-wrap:wrap; gap:4px; }
-.sw button{ width:21px; height:21px; border:1px solid var(--line); border-radius:4px;
-  cursor:pointer; padding:0; background:none; color:var(--mut); font-size:9px; }
-.sw button.on{ outline:2px solid var(--acc); outline-offset:1px; }
-.seg{ display:flex; border:1px solid var(--line); border-radius:var(--r-xs); overflow:hidden; }
-.seg button{ flex:1; background:none; border:0; border-right:1px solid var(--line);
-  color:var(--mut); padding:6px 0; cursor:pointer; font-size:11.5px; }
-.seg button:last-child{ border-right:0; }
-.seg button.on{ background:var(--accline); color:var(--acc); font-weight:600; }
-.toks{ display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
-.toks button{ background:none; border:1px solid var(--line); color:var(--mut);
-  border-radius:4px; padding:2px 6px; font:10.5px var(--mono); cursor:pointer; }
-.toks button:hover{ border-color:var(--acc); color:var(--acc); }
-.tplin{ width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--acc);
-  border-radius:var(--r-xs); padding:7px 9px; font:12.5px var(--mono); }
-.sample{ margin:8px 0 0; font-size:11.5px; color:var(--mut); }
-.sample b{ color:var(--bone); font-family:var(--mono); }
-.brush{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
-.brush button{ display:flex; align-items:center; gap:7px; justify-content:flex-start !important;
-  font-size:11.5px !important; height:26px !important; }
-.brush i{ width:10px; height:10px; border-radius:2px; display:block; flex:none; }
-.chips{ display:flex; flex-wrap:wrap; gap:5px 9px; margin-top:9px; font-size:11px; color:var(--mut); }
-.chips span{ display:flex; align-items:center; gap:5px; }
-.chips i{ width:8px; height:8px; border-radius:2px; }
-.chips .warnc{ color:var(--acc); }
-.picklist{ list-style:none; margin:0 0 4px; padding:0; max-height:210px; overflow:auto;
-  border:1px solid var(--line); border-radius:var(--r-sm); }
-.picklist li{ display:flex; align-items:center; gap:7px; padding:5px 8px; cursor:pointer;
-  font-size:11.5px; color:var(--dim); }
-.picklist li:hover{ background:var(--panel2); color:var(--bone); }
-.picklist li.on{ color:var(--acc); }
-.picklist li span{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.picklist li i{ font-style:normal; color:var(--mut); font-size:11px; font-family:var(--mono); }
-.picklist li b.x{ font-weight:400; color:var(--mut); cursor:pointer; padding:0 3px; }
-.picklist li b.x:hover{ color:var(--err); }
-.picklist input{ accent-color:var(--acc); }
-.find{ width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--bone);
-  border-radius:var(--r-xs); padding:5px 9px; font-size:11.5px; margin-bottom:5px; }
-.find:focus{ border-color:var(--acc); outline:0; }
-.ovinfo{ font-size:11px; color:var(--mut); margin:11px 0 0; }
-.mut{ color:var(--mut); }
-.mut.sm{ font-size:11px; margin:6px 0 8px; line-height:1.55; }
-.link{ background:none; border:0; color:var(--acc); cursor:pointer; padding:0; font-size:11px; }
-.link:hover{ text-decoration:underline; }
-.panel section.prev, .panel details.sec.prev{ background:var(--panel2); margin:0 -15px; padding-left:15px; padding-right:15px; }
-.lab em{ font-style:normal; color:var(--acc); margin-left:7px; letter-spacing:0; text-transform:none; }
-select.full{ width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--bone);
-  border-radius:var(--r-xs); padding:5px 7px; font-size:12px; }
-
-button:focus-visible, input:focus-visible, select:focus-visible, label:focus-visible{
-  outline:2px solid var(--acc); outline-offset:1px; }
-@media (prefers-reduced-motion:reduce){ *{ transition:none !important; animation:none !important; } }
-`;

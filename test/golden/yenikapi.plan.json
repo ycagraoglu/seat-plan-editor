@@ -1,0 +1,258 @@
+{
+  "key": "yenikapi",
+  "name": "Festival Park Yenikapı · Ayakta Konser Alanı",
+  "unit": "cm",
+  "home": {
+    "x": -10500,
+    "y": -2200,
+    "w": 19000,
+    "h": 20400
+  },
+  "underlay": null,
+  "shapes": [
+    {
+      "id": "s499",
+      "kind": "rect",
+      "type": "stage",
+      "x": 0,
+      "y": -750,
+      "w": 4000,
+      "h": 1500,
+      "rot": 0,
+      "label": "SAHNE",
+      "capacity": 0,
+      "fs": 300,
+      "blocks": []
+    },
+    {
+      "id": "s500",
+      "kind": "rect",
+      "type": "standing",
+      "x": 0,
+      "y": 1600,
+      "w": 5000,
+      "h": 3000,
+      "rot": 0,
+      "label": "Sahne Önü A",
+      "capacity": 7000,
+      "fs": 110,
+      "blocks": []
+    },
+    {
+      "id": "s501",
+      "kind": "rect",
+      "type": "standing",
+      "x": 0,
+      "y": 5200,
+      "w": 8000,
+      "h": 4000,
+      "rot": 0,
+      "label": "Sahne Önü B",
+      "capacity": 11200,
+      "fs": 130,
+      "blocks": []
+    },
+    {
+      "id": "s502",
+      "kind": "rect",
+      "type": "standing",
+      "x": 0,
+      "y": 11350,
+      "w": 13000,
+      "h": 8000,
+      "rot": 0,
+      "label": "Genel Giriş",
+      "capacity": 20100,
+      "fs": 160,
+      "blocks": []
+    },
+    {
+      "id": "s503",
+      "kind": "rect",
+      "type": "standing",
+      "x": -7500,
+      "y": 4450,
+      "w": 3000,
+      "h": 2500,
+      "rot": 0,
+      "label": "VIP Alan",
+      "capacity": 1200,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s504",
+      "kind": "rect",
+      "type": "wall",
+      "x": -1250,
+      "y": 8000,
+      "w": 16500,
+      "h": 19600,
+      "rot": 0,
+      "label": "",
+      "capacity": 0,
+      "fs": 100,
+      "blocks": []
+    },
+    {
+      "id": "s505",
+      "kind": "rect",
+      "type": "door",
+      "x": -9500,
+      "y": 6000,
+      "w": 400,
+      "h": 400,
+      "rot": 0,
+      "label": "KAPI 1",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": []
+    },
+    {
+      "id": "s506",
+      "kind": "rect",
+      "type": "door",
+      "x": 7000,
+      "y": 6000,
+      "w": 400,
+      "h": 400,
+      "rot": 0,
+      "label": "KAPI 2",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": []
+    },
+    {
+      "id": "s507",
+      "kind": "rect",
+      "type": "door",
+      "x": -9500,
+      "y": 14000,
+      "w": 400,
+      "h": 400,
+      "rot": 0,
+      "label": "KAPI 3",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": []
+    },
+    {
+      "id": "s508",
+      "kind": "rect",
+      "type": "door",
+      "x": 7000,
+      "y": 14000,
+      "w": 400,
+      "h": 400,
+      "rot": 0,
+      "label": "KAPI 4",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": []
+    },
+    {
+      "id": "s509",
+      "kind": "rect",
+      "type": "door",
+      "x": -3000,
+      "y": 17600,
+      "w": 400,
+      "h": 400,
+      "rot": 0,
+      "label": "KAPI 5",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": [
+        "b511"
+      ]
+    },
+    {
+      "id": "s510",
+      "kind": "rect",
+      "type": "door",
+      "x": 2000,
+      "y": 17600,
+      "w": 400,
+      "h": 400,
+      "rot": 0,
+      "label": "KAPI 6",
+      "capacity": 0,
+      "fs": 160,
+      "blocks": [
+        "b511"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b511",
+      "kind": "grid",
+      "label": "LOCA",
+      "name": "LOCA",
+      "level": "Loca",
+      "x": 0,
+      "y": 15650,
+      "rot": 0,
+      "cols": 25,
+      "rows": 20,
+      "counts": "",
+      "align": "center",
+      "seatGap": 50,
+      "rowGap": 90,
+      "curve": 0,
+      "taper": 0,
+      "color": "#3E7FBF",
+      "attr": "",
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "19,0": {
+          "at": "wheel"
+        },
+        "19,1": {
+          "at": "wheel"
+        },
+        "19,2": {
+          "at": "wheel"
+        },
+        "19,3": {
+          "at": "wheel"
+        },
+        "19,4": {
+          "at": "wheel"
+        },
+        "19,5": {
+          "at": "wheel"
+        },
+        "19,6": {
+          "at": "comp"
+        },
+        "19,7": {
+          "at": "comp"
+        },
+        "19,8": {
+          "at": "comp"
+        },
+        "19,9": {
+          "at": "comp"
+        },
+        "19,10": {
+          "at": "comp"
+        },
+        "19,11": {
+          "at": "comp"
+        }
+      }
+    }
+  ]
+}
