@@ -14,32 +14,35 @@ listeleniyor.
 
 ---
 
-## 1. Dal özeti — `main` (`51a6e4c`) → `rewrite/v2` (12 commit)
+## 1. Dal özeti — `main` (`51a6e4c`) → `rewrite/v2` (15 commit)
 
 Rakamlar bu görev sırasında ölçüldü, tahmin değil:
 
 | Ölçü | main | şu an (`rewrite/v2`) |
 |---|---|---|
-| `src/PlanEditor.jsx` satır sayısı | 5.280 | **4.082** |
-| Otomatik test sayısı (vitest `it()`) | 0 | **190** |
-| `src/` altındaki dosya sayısı | 2 (`PlanEditor.jsx`, `main.jsx`) | 28 (+ `core/` 12, `venues/` 12, `ui/state/` 2) |
+| `src/PlanEditor.jsx` satır sayısı | 5.280 | **3.659** |
+| Otomatik test sayısı (vitest `it()`) | 0 | **196** |
+| `src/` altındaki dosya sayısı | 2 (`PlanEditor.jsx`, `main.jsx`) | 31 (+ `core/` 12, `venues/` 13, `ui/state/` 2, `styles/` 2) |
 | `scripts/` altındaki dosya sayısı | 2 (`validate-venues.mjs`, `validate-interactions.mjs`) | 6 (+ `lib/`, altın-dosya betikleri) |
-| `test/` dizini | yok | `golden/` (27 dosya) · `invariants/` (7 test dosyası + `helpers.js`, 115 vaka) · `unit/` (8 dosya, 75 vaka) |
+| `test/` dizini | yok | `golden/` (27 dosya) · `invariants/` (8 test dosyası + `helpers.js`, 121 vaka) · `unit/` (8 dosya, 75 vaka) |
 
 `PlanEditor.jsx` doğrusal küçülmedi — A1-A3 çekirdeği dışarı çıkarırken
-5.280 → 4.530 (A1) → 4.337 (A2) → 3.661'e (A3) indi, sonra A6.2-A6.4'ün
-eklediği yeni arayüz mantığıyla (tutamaçlar, kademeli panel, renk kanalı,
-mod şeridi) bugünkü 4.082'ye geri çıktı. Net etki: dosya küçülmedi ama
-*içeriği* değişti — geometri/kural/veri artık `core/`+`venues/`'ta test
-edilebilir saf fonksiyonlar, `PlanEditor.jsx`'te kalan neredeyse tamamı
-arayüz.
+5.280 → 4.530 (A1) → 4.337 (A2) → 3.661'e (A3) indi, A6.2-A6.4'ün eklediği
+yeni arayüz mantığıyla (tutamaçlar, kademeli panel, renk kanalı, mod
+şeridi) 4.082'ye çıktı, A7 gömülü CSS'i `src/styles/`e çıkarınca 3.639'a
+indi, A6.5'in üç şablon düğmesi birkaç satır ekleyip bugünkü **3.659**'da
+bıraktı. Net etki: dosya küçülmedi ama *içeriği* değişti — geometri/kural/
+veri `core/`+`venues/`'ta test edilebilir saf fonksiyonlar, görünüm
+`src/styles/`te taşınabilir bir katman; `PlanEditor.jsx`'te kalan
+neredeyse tamamı arayüz mantığı.
 
 Test sayısı tek yönde arttı, hiç düşmedi: 0 → **128** (A5) → **148** (A6.1,
 +reducer) → **178** (görünüm varlıkları, +design-assets) → **190** (A6.2
 düzeltmesi, +handle-roundtrip) → 190 (A6.3, A6.4 — yeni test eklemedi,
-davranış zaten var olan takımla korunuyordu). Her sayı ilgili commit'in
-kendi ölçümü; 190 bu görevde `npm run test:unit` ile bağımsızca da
-doğrulandı.
+davranış zaten var olan takımla korunuyordu) → 190 (A7 — mekanik CSS
+taşıması, yeni test eklemedi) → **196** (A6.5, +template-plans). Her sayı
+ilgili commit'in kendi ölçümü; 196 bu görevde `npm run test:unit` ile
+bağımsızca da doğrulandı.
 
 ### Aşama aşama
 
@@ -56,6 +59,8 @@ doğrulandı.
 | **A6.2** | `7f293fa` + `f83f36a` | Izgara/yelpaze bloklarına tuvalde doğrudan sürüklenen tutamaçlar (döndür/kavis/koltuk±/sıra± vb.) eklendi, yan paneller daraltılabilir yapıldı. Düzeltme commit'i kendi ilk turunun 3 hatasını kapattı: sistematik kayma (bırakınca no-op olmayan tutamaç), semantik olarak yanlış `cols` tutamacı (artık `counts`/`taper` varken gizleniyor), tıkla-bırak sıçraması (3 piksellik eşikle çözüldü). |
 | **A6.3** | `4bb0c8d` | Blok paneli 38 alanlık bir duvardı; 32 alanın 10'u varsayılan görünür, kalanı beş katlanır bölümde (Gelişmiş · Dış hat · Doğrusal dizi · Radyal dizi · Numaralandırma). Üç anlamlı "Taban" terimi Dış hatlar/Dış hat/Dış hat payı olarak ayrıştırıldı (UI + `rules.js` mesajları). |
 | **A6.4** | `a6f5c35` | Tuvalde aynı anda 7 renk kaynağı yarışıyordu; tek `Renklendir` kanalı (Kat/Nitelik/Kapı/Doğrulama) getirdi, seçim vurgusu ve canlı sınır-ihlali/çakışma kanaldan bağımsız kalmaya devam ediyor. Mod şeridi (kat süzgeci/dizi önizleme/poligon) eklendi. `Esc` artık altı "normal olmayan" durumun HEPSİNDEN çıkıyor — önceden üçü sessizce hayatta kalıyordu. |
+| **A7** | `c618242` | `const CSS` template literal'i `src/PlanEditor.jsx`'ten çıkıp `src/styles/tokens.css` (63 satır, tasarım token'ları + `.ed.dark`/`.ed.light` tema blokları) ve `src/styles/app.css` (392 satır, bileşen stilleri) oldu. Gerekçe: editör ile Biletera'nın diğer projesi ayrı depoda yaşıyor, tasarım sistemi ortak — `tokens.css` tek başına taşınabilir olsun diye ayrıldı. `main.jsx` CSS'i hem normal import eder hem `?raw` ile okuyup `cssText` prop'uyla `PlanEditor`'a geçirir (ikincisi `exportSVG()` için — indirilen SVG dosyası sayfanın stylesheet'ine erişemez, stili kendi içinde taşımalı). Ölü kural `.picklist li b.x` silindi (markup hiç `<b>` basmıyor). 296 kuralın seçicisi/bildirimi/sırası korunarak taşındığı bağımsız bir script'le doğrulandı (296/296 birebir). |
+| **A6.5** | `5051cbe` | "Yeni plan" üç seçeneğe çıktı: **boş** · **stadyum** (14 blok · 3.138 koltuk · 14 kapı, 252 koltuk `cutVomitories()` ile tribünün İÇİNE oyulmuş — kapı tribünün üstüne kondurulmuş bir işaret değil) · **salon** (6 blok · 618 koltuk · 2 kapı, `tier()` ile radyal kademeler + sahne). `src/venues/templates.js`, mevcut `builders.js` yapı taşlarıyla kuruldu; şablondan doğan plan örnek salon değil kullanıcı planı (`p<timestamp>`), örnek ad alanına sızmıyor. Gerçek sıra-bağımlılığı hatası bulundu ve düzeltildi: `cutVomitories()` `withAccessible()`'dan ÖNCE çağrılırsa erişilebilirlik etiketi tünel kesimini eziyordu (16 kapı-koltuk çakışması, ölçülünce çıktı). `test/invariants/template-plans.test.js` (6 test) iki şablonu da `runRules()`'tan geçirip hiç `err` bulgu olmadığını ve kapı/işaretin hiçbir koltukla kesişmediğini doğruluyor. |
 
 ---
 
@@ -72,6 +77,7 @@ Her satır: **ne** korunuyor, **nasıl** doğrulanıyor, **şu an durumu**
 | Kenar kırıklığı sınırlı ("testere dişi" değil) | `test/invariants/edge-smoothness.test.js` (15 vaka) — `buildMeta`'nın `leftEdge`/`rightEdge` zincirindeki GERÇEK (≥1°) dönüş **sayısını** ölçer (en büyük açıyı değil — aksi halde Zorlu B1-O'nun tek meşru ~76° kesimi yanlış alarm verirdi), 9 salonun 523 kenarında tavan 3 kırık. | 9/9 salon temiz (en kötü: Zorlu ORK-C, 3 kırık) |
 | Saha/sahne açıklığı makul | `test/invariants/pitch-stage-clearance.test.js` (16 vaka) — kademeli tribün (rows≥3) için saha kenar/dip açıklığı 4-12m, courtside/loca (rows<3) için ayrı gevşek 100cm taban; sahne için tek taraflı 30cm alt sınır. | GS/ULKER (pitch) + 7 salon (stage) temiz |
 | Tutamaç round-trip (sürüklemeden bırakmak no-op) | `test/invariants/handle-roundtrip.test.js` (12 vaka) — `handlesFor()`'un ürettiği HER tutamacı kendi duruş noktasından `handlePatch()`'e geri besler; `rows`/`curve`/`cols` TAM (1e-9), `rot`/`r0`/`aStart`/`aEnd` TEK-KUANTUM (1°/10cm) toleransla. | 9 salon × her blok × her tutamaç temiz (bağımsız ölçüm: 1.157 tutamaç, kuantumu aşan 0 — bkz. `f83f36a`) |
+| Şablon planları (stadyum/salon) kural motorundan hatasız | `test/invariants/template-plans.test.js` (6 vaka) — `buildStadiumTemplate()`/`buildHallTemplate()`'in ürettiği planı `runRules()`'tan geçirir (hiç `err` bulgu yok), kapı/işaretin hiçbir koltukla kesişmediğini `door-marker-seat-overlap.test.js`'le AYNI hesapla (paylaşılan `seatCorners`/`outlineOverlapArea`) sınar, koltuk sayısının makul aralıkta kaldığını (stadyum <6.000, salon <1.200) doğrular. | 2/2 şablon temiz |
 | Tasarım token'ları + POI ikonları yerinde | `test/invariants/design-assets.test.js` (30 vaka) — Biletera kırmızısı (#E30613), OLED zemin (#090909), Poppins, koltuk-boş token'ı `src/**/*.{js,jsx,css}`'te konumdan bağımsız aranır; `PlanEditor.jsx`'teki 20 POI ikon atfının `public/poi/*.png`'de birebir karşılığı var mı kontrol edilir. | 30/30 temiz |
 | 9 salonun veri denkliği | `node scripts/check-golden.mjs` — 9 salon × 3 dosya (plan/seats/render) `test/golden/`'daki dondurulmuş referansla bayt-bayt karşılaştırılır. | 9/9 AYNI |
 | Kural motoru tek kaynak | `npm run test:geometry` (`scripts/validate-venues.mjs`) — `core/rules.js`'teki 21 kuralı (aynı `runRules()`; `validate()`, bu betik ve canlı tuval üçü de bunu çağırır) 9 salonda çalıştırır, ayrıca `<PlanEditor/>`'ı `react-dom/server` ile gerçekten mount eder (derleme geçse de çalışma-anı hatası kaçabilir). | 9 salon temiz + mount hatasız |
@@ -98,7 +104,7 @@ altında olduğu doğrulanan davranışlar):
 Dürüst olmak gerekirse, aşağıdakiler şu an sadece "kodun bugün yaptığı
 şey" — hiçbir test onları kırmızıya döndürmez. Görev tanımındaki dört
 adayın hepsi doğrulandı (gerçekten korumasız), artı kod okurken bulunan
-dört madde daha:
+beş madde daha:
 
 1. **"Sığdır = %100 zum"** — `zoomToAll()` (`src/PlanEditor.jsx`) tüm
    bloklara `zoomToBBox` ile oturur, ekrandaki `%100` etiketi TANIM
@@ -111,16 +117,16 @@ dört madde daha:
    değişmesi ya da anahtarın tamamen kırılması (`test`/`scripts` içinde
    `SEAT_BUDGET`/`seatMode` hiç geçmiyor) test edilmez.
 3. **POI ikonlarının iki temada da görünmesi** — `design-assets.test.js`
-   SADECE dosya varlığını ve `POI` sözlüğünün atıflarını doğruluyor.
-   Simgelerin koyu temada kaybolmaması, tuvaldeki `#poiTint`/`#poiTintSel`
-   SVG filtresine (`feFlood` rengini `var(--bone)`/`var(--sel)`'den alıp
-   PNG'nin alfasıyla birleştirir, `src/PlanEditor.jsx` ~2292-2296 ve
-   ~3870-3871) bağlı — bu filtrenin var olduğunu, doğru elemente
-   bağlandığını ya da iki temada da yeterli kontrast ürettiğini kontrol
-   eden hiçbir test yok.
+   token/POI'nin sadece VAR OLDUĞUNU doğruluyor (bkz. §2); A7 token'ları
+   `src/styles/tokens.css`'e taşısa da bu sınır değişmedi. Simgelerin koyu
+   temada kaybolmaması, tuvaldeki `#poiTint`/`#poiTintSel` SVG filtresine
+   (`feFlood` rengini `var(--bone)`/`var(--sel)`'den alıp PNG'nin
+   alfasıyla birleştirir, `src/PlanEditor.jsx` ~2309-2313 ve ~3098) bağlı
+   — bu filtrenin var olduğunu, doğru elemente bağlandığını ya da iki
+   temada da yeterli kontrast ürettiğini kontrol eden hiçbir test yok.
 4. **Yayın kilidi** (breach/collide varken Yayınla kapalı) — buton
    `disabled={breach.length > 0 || collide.length > 0}` (`src/PlanEditor.jsx`
-   ~2801). Altındaki VERİ (`footprint-overlap-same-level`,
+   ~2820). Altındaki VERİ (`footprint-overlap-same-level`,
    `blocks-outside-boundary`) invariant testleriyle korunuyor, ama bu
    veriden butonun `disabled` durumuna giden TELİ hiçbir test sınamıyor —
    `validate-venues.mjs`'in mount testi bileşeni varsayılan (boş) haliyle
@@ -145,13 +151,23 @@ dört madde daha:
    TEK bir dosya yok — A1'de çekirdeğe taşındıkları günden beri hiç
    dedike testi olmadı. Kılavuzun §13'te "en kritik uyarı" dediği tam da
    bu hesap.
+9. **SVG dışa aktarımının kendi stil kopyası** (A7'nin yeni yüzeyi) —
+   `main.jsx`, `tokens.css` + `app.css`'i `?raw` ile okuyup `cssText`
+   prop'uyla `PlanEditor`'a geçiriyor; `exportSVG()` bunu indirilen
+   dosyanın kendi `<style>`'ına gömüyor (indirilen SVG, sayfanın
+   stylesheet'ine erişemediği için). `cssText` adı `test/` içinde hiç
+   geçmiyor: `validate-venues.mjs`'in mount testi `createElement(mod.
+   default)`'ı hiç prop vermeden çağırıyor — `cssText` boş string'e
+   düşse (main.jsx'teki kablo kopsa) bile mount testi yeşil kalır;
+   indirilen SVG'nin `<style>`'ının gerçekten dolu olduğunu doğrulayan
+   hiçbir test yok.
 
 ---
 
 ## 4. Nasıl koşulur
 
 ```bash
-npm test                        # vitest (190 vaka) + test:geometry + test:interactions, sırayla
+npm test                        # vitest (196 vaka) + test:geometry + test:interactions, sırayla
 node scripts/check-golden.mjs   # 9 salonu tazeden üretip test/golden/ ile bayt-bayt karşılaştırır
 npm run build                   # vite production build
 ```

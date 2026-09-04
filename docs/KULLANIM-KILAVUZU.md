@@ -68,7 +68,7 @@ Soldan sağa:
 
 | Öğe | Ne işe yarar |
 |---|---|
-| **Salon seçici** (açılır liste) | Hangi salon planı üzerinde çalıştığınızı seçer. Hazır örnek salonlar (stadyum, opera, bar vb.) ve sizin kaydettiğiniz planlar burada listelenir. "Yeni plan" boş bir tuval açar. |
+| **Salon seçici** (açılır liste) | Hangi salon planı üzerinde çalıştığınızı seçer. Hazır örnek salonlar (stadyum, opera, bar vb.) ve sizin kaydettiğiniz planlar burada listelenir. "Yeni plan" boş bir tuval açar. Boş bir plana **Ayarlar → Planlar**'dan da başlayabilirsiniz (bkz. [§12](#12-ayarlar-penceresi)) — stadyum/salon şablonları SADECE orada. |
 | **"otomatik kayıt" / "kaydediliyor" / "kaydedildi" / "kaydedilemedi"** | Şu an yapılan değişikliğin kayıt durumu. Kırmızı "kaydedilemedi" görürseniz tarayıcının depolama alanı dolu ya da engellenmiş olabilir. |
 | **"taslak" / "v3 · yayında"** | Planın **yayın durumu**. Yeni açılan bir plan hep "taslak"tır. "Sürümler" penceresinden bir sürüm yayınlarsanız burada "v1 · yayında" gibi görünür. "· değişiklik var" ibaresi, son yayından beri plan üzerinde değişiklik yaptığınızı, henüz yayınlanmadığını anlatır. |
 | **Renklendir** (açılır liste: Kat · Nitelik · Kapı · Doğrulama) | Tuvaldeki rengin hangi soruyu cevapladığını seçer. Seçili kanal DIŞINDAKİ her şey nötr griye düşer. Ayrıntı için hemen altındaki "Renklendir kanalları" bölümüne bakın. |
@@ -566,10 +566,21 @@ Soldan sağa (her şey aynı anda görünmez, duruma göre belirir/kaybolur):
   kimlikler güncellenir). Bu, editörde çizdiğiniz plan ile halihazırda
   satılmış biletlerin koltuk kimliklerinin **uyuşmasını** sağlamak
   içindir.
-- **Planlar**: **Yeni** (boş bir plan açar), **Kopyala** (şu anki planın
-  aynısından yeni bir kopya oluşturur — büyük bir değişikliği denemeden
-  önce güvenli bir yedek almak için idealdir), **Sil** (şu anki planı
-  kalıcı olarak siler; son kalan tek planı silemezsiniz).
+- **Planlar**: **Yeni (boş)** (boş bir tuval açar), **Yeni (stadyum)**
+  (14 blok · 3.138 koltuk · 14 kapılık kapalı bir tribün iskeleti kurar —
+  kapılar tribünün üstüne konmaz, koltuk dizisinin İÇİNE oyulmuştur),
+  **Yeni (salon)** (6 blok · 618 koltuklu, sahneye bakan radyal bir
+  kademe + 2 kapı kurar), **Kopyala** (şu anki planın aynısından yeni
+  bir kopya oluşturur — büyük bir değişikliği denemeden önce güvenli bir
+  yedek almak için idealdir), **Sil** (şu anki planı kalıcı olarak
+  siler; son kalan tek planı silemezsiniz).
+
+  Stadyum ve salon birer **başlangıç iskeleti** — sıfırdan blok
+  yerleştirmek yerine hazır bir tribün/kademe üzerinden başlarsınız.
+  Ortaya çıkan plan bir örnek salon DEĞİL, kendi planınızdır: salon
+  seçicide "Yeni stadyum" / "Yeni salon" adıyla görünür, tıpkı
+  **Yeni (boş)**'tan başlayan bir plan gibi dilediğiniz gibi düzenlersiniz
+  (blok ekleyip çıkarabilir, kapı taşıyabilir, adını değiştirebilirsiniz).
 - **Görünüm → tema**: Açık / Koyu / Sistem (işletim sisteminin
   tercihini izler).
 - **Görünüm → Tekerlek davranışı**: Fare tekerleği ile trackpad'in kaydırma
@@ -667,8 +678,9 @@ tiyatroya göre biraz daha geniş).
 
 ### Adım 1 — Boş bir plan aç
 
-Üst bardaki salon seçiciden **"Yeni plan"**ı seçin. Tuval bomboş
-gelecek, sol altta "Boş tuval" yazacaktır.
+Üst bardaki salon seçiciden **"Yeni plan"**ı seçin (ya da **Ayarlar →
+Planlar → Yeni (boş)**). Tuval bomboş gelecek, sol altta "Boş tuval"
+yazacaktır.
 
 ### Adım 2 — Sol bloğu çiz
 
