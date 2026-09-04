@@ -306,6 +306,50 @@ describe("blok silince seçim temizlenir", () => {
   });
 });
 
+describe("selectBlocks koltuk seçimini bırakır (HATA 2)", () => {
+  /* Kök neden: PlanEditor.jsx panel önceliği selSeats.size>1'i HER ZAMAN
+     selBlock'tan önce gösteriyor (~2939). selectBlocks eskiden selSeats/
+     selSeat'e hiç dokunmuyordu: koltuk çoklu-seçimi açıkken blok
+     ağacından/tuvalden bir bloğa tıklamak selIds'i GÜNCELLİYORDU ama
+     panel hâlâ "N koltuk seçili" gösterdiği için operatöre tıklama
+     SESSİZCE yutulmuş gibi görünüyordu (bkz. görev raporu). Düzeltme:
+     selectBlocks artık koltuk seçimini kendiliğinden temizliyor — seçim
+     türleri birbirini dışlıyor. */
+  it("blok seçilince önceki çoklu koltuk seçimi (selSeats) temizlenir", () => {
+    let s = initialState(venuesFixture(), "a");
+    s = reducer(s, { type: "selectSeats", payload: new Set(["b1|0,0", "b1|0,1"]) });
+    expect(s.selSeats.size).toBe(2);
+
+    s = reducer(s, { type: "selectBlocks", payload: ["b2"] });
+    expect(s.selIds).toEqual(["b2"]);
+    expect(s.selSeats.size).toBe(0);
+  });
+
+  it("tek koltuk seçimi (selSeat) de blok seçilince temizlenir", () => {
+    let s = initialState(venuesFixture(), "a");
+    s = reducer(s, { type: "selectSeat", payload: { bid: "b1", r: 0, c: 0 } });
+    expect(s.selSeat).not.toBeNull();
+
+    s = reducer(s, { type: "selectBlocks", payload: ["b2"] });
+    expect(s.selSeat).toBeNull();
+  });
+
+  it("'seat' aracının blok+tek-koltuk birlikte seçimi bozulmaz (önce blok, sonra koltuk sırasıyla)", () => {
+    /* PlanEditor.jsx'teki tool==="seat" pointerdown'ı artık BU sırayla
+       dispatch ediyor (bkz. satır ~1611): önce selectBlocks, SONRA
+       selectSeat/selectSeats. Ters sıra olsaydı selectBlocks'un yeni yan
+       etkisi koltuk seçimini SİLERDİ — bu test o regresyonu yakalar. */
+    let s = initialState(venuesFixture(), "a");
+    s = reducer(s, { type: "selectBlocks", payload: ["b1"] });
+    s = reducer(s, { type: "selectSeat", payload: { bid: "b1", r: 2, c: 3 } });
+    s = reducer(s, { type: "selectSeats", payload: new Set(["b1|2,3"]) });
+
+    expect(s.selIds).toEqual(["b1"]);
+    expect(s.selSeat).toEqual({ bid: "b1", r: 2, c: 3 });
+    expect(s.selSeats).toEqual(new Set(["b1|2,3"]));
+  });
+});
+
 describe("value-veya-updater sözleşmesi (setState ile aynı)", () => {
   it("selectBlocks doğrudan değer VE fonksiyonel güncelleyici kabul eder", () => {
     let s = initialState(venuesFixture(), "a");

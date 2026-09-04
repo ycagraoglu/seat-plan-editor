@@ -161,8 +161,20 @@ export function reducer(state, action) {
     }
 
     /* ── seçim ──────────────────────────────────────────────────── */
+    /* selectBlocks koltuk seçimini (selSeat/selSeats) KENDİLİĞİNDEN
+       bırakır — seçim türleri birbirini dışlar. Eskiden dokunmuyordu:
+       koltuk çoklu-seçimi açıkken (selSeats.size>1) blok ağacından/
+       tuvalden bir bloğa tıklamak selIds'i GÜNCELLİYORDU ama panel
+       selSeats.size>1'i selBlock'tan önce gösterdiği için (PlanEditor.jsx
+       aside/props ~2939) tıklama Esc'e kadar GÖRÜNMEZ kalıyordu — operatör
+       tıklıyor, panelde hiçbir şey değişmiyor sanıyordu (bkz. görev
+       raporu, HATA 2). Tek koltuk+bloğun BİRLİKTE seçildiği "seat" aracı
+       (PlanEditor.jsx tool==="seat" pointerdown'ı) bu yüzden artık ÖNCE
+       selectBlocks, SONRA selectSeat/selectSeats dispatch ediyor — aynı
+       olaydaki ardışık dispatch'ler sırayla işlendiği için (useReducer'ın
+       standart davranışı) son yazan kazanır ve koltuk seçimi kalır. */
     case "selectBlocks":
-      return { ...state, selIds: resolve(action.payload, state.selIds) };
+      return { ...state, selIds: resolve(action.payload, state.selIds), selSeat: null, selSeats: new Set() };
     case "selectShape":
       return { ...state, selShapeId: resolve(action.payload, state.selShapeId) };
     case "selectSeat":

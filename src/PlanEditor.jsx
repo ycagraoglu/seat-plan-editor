@@ -472,27 +472,35 @@ const SHAPES = {
   standing: { label: "Ayakta alan", fill: "rgba(90,130,102,.16)", stroke: "#5B8266" },
   note:     { label: "Not",         fill: "none",             stroke: "var(--mut)" },
 };
-const newGrid = (x, y, cols, rows) => ({
+/* color: "" (LEVEL_COLORS/kat paletine bırak) dördünde de ORTAK olmalı —
+   cc(b) = b.color || LEVEL_COLORS[...] (aşağıda ~953) açık b.color'ı HER
+   ZAMAN kat paletine tercih ediyor. Eskiden newTable hariç üçü "#3E7FBF"
+   basıyordu: 81966d5 şablonlardan/örnek salonlardan sabit rengi kaldırdı
+   ama operatörün TUVALE ÇİZDİĞİ yeni blok buradan geçiyor — elle kurulan
+   HER salon, kaç kata dağılırsa dağılsın hep aynı renkte kalıyordu (bkz.
+   görev raporu, HATA 1). export: test/unit/block-factories.test.js gerçek
+   fabrikayı çağırıp bunu bir daha geri gelmeyeceğini doğruluyor. */
+export const newGrid = (x, y, cols, rows) => ({
   id: nid(), label: "A", name: "", level: "", kind: "grid", x, y, rot: 0,
   cols, rows, counts: "", align: "center", seatGap: DEF.seatGap, rowGap: DEF.rowGap,
-  curve: 0, taper: 0, color: "#3E7FBF", attr: "", num: { ...DEF_NUM, rowScheme: "letter" }, ov: {},
+  curve: 0, taper: 0, color: "", attr: "", num: { ...DEF_NUM, rowScheme: "letter" }, ov: {},
 });
-const newFan = (x, y, r0) => ({
+export const newFan = (x, y, r0) => ({
   id: nid(), label: "A", name: "", level: "", kind: "fan", x, y, rot: 0, mode: "span",
   r0, rowGap: DEF.rowGap, aStart: -40, aEnd: 40, aCenter: 0, rows: 8,
-  seatGap: DEF.seatGap, counts: "", align: "center", color: "#3E7FBF", attr: "",
+  seatGap: DEF.seatGap, counts: "", align: "center", color: "", attr: "",
   num: { ...DEF_NUM }, ov: {},
 });
-const newTable = (x, y) => ({
+export const newTable = (x, y) => ({
   id: nid(), label: "M1", name: "", level: "", kind: "table", x, y, rot: 0,
   tShape: "round", tW: 90, tH: 90, seats: 4, a0: 0, clear: 12, pad: 40,
   seatGap: DEF.seatGap, rowGap: DEF.rowGap, counts: "", align: "center",
   cols: 1, rows: 1, curve: 0, taper: 0, color: "", attr: "",
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
-const newFree = (x, y) => ({
+export const newFree = (x, y) => ({
   id: nid(), label: "S", name: "", level: "", kind: "free", x, y, rot: 0, pts: [],
-  seatGap: DEF.seatGap, counts: "", align: "center", color: "#3E7FBF", attr: "",
+  seatGap: DEF.seatGap, counts: "", align: "center", color: "", attr: "",
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
 
@@ -1609,9 +1617,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
     }
     if (tool === "seat") {
       if (t?.b && t.r != null) {
+        /* SIRA ÖNEMLİ: selectBlocks artık koltuk seçimini kendiliğinden
+           bırakıyor (bkz. reducer.js "selectBlocks", HATA 2) — önce blok
+           seçilip SONRA koltuk yazılmalı, yoksa setSelIds az önce alttaki
+           iki satırın yazdığı koltuk seçimini siler. */
+        setSelIds([t.b]);
         setSelSeat({ bid: t.b, r: +t.r, c: +t.c });
         setSelSeats(new Set([`${t.b}|${t.r},${t.c}`]));
-        setSelIds([t.b]);
         const b = plan.blocks.find((x) => x.id === t.b);
         drag.current = { mode: "seat", bid: t.b, r: +t.r, c: +t.c, p: raw, ov: b.ov, blockRot: b.rot, snapshot: plan };
       } else {
