@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { RULES, buildCtx } from "../../src/core/rules.js";
+import { RULES, buildCtx, runRules, seatCorners } from "../../src/core/rules.js";
+import { buildMeta } from "../../src/core/geometry.js";
 
 const overlapRule = RULES.find((r) => r.id === "footprint-overlap-same-level");
 
@@ -47,5 +48,61 @@ describe("footprint-overlap-same-level — maxArea canlı büyüklük gösterges
     const { ctx } = chainPlan();
     const [finding] = overlapRule.check(ctx);
     expect(finding.maxArea).toBeCloseTo(5000, 6); // A↔B (5000) > B↔C (2000)
+  });
+});
+
+/* ─────────────────────────────────────────────────────────────────────
+   seat_kind + features göçünden SONRA: tekerlekli yeterlilik / refakatçi /
+   görüş-kısıtlı kuralları eski davranışla AYNI sonucu üretmeli — sadece
+   veri kaynağı değişti (ctx.seats.at.wheel/comp/obstr → kinds/features).
+   Blok, AKM/YENİKAPI'nın gerçekte yaptığı gibi SADECE eski ov.at alanını
+   kullanıyor (venue dosyaları hiç migrate() görmez) — bu üç kural o ham
+   veriden doğru sonucu üretebiliyor mu, asıl soru bu. ───────────────── */
+function wheelchairPlan() {
+  const block = {
+    id: "b1", kind: "grid", label: "A", name: "A", level: "", x: 0, y: 0, rot: 0,
+    cols: 10, rows: 1, taper: 0, curve: 0, seatGap: 50, rowGap: 90, counts: "",
+    align: "center", color: "", attr: "", num: {},
+    ov: {
+      "0,0": { at: "wheel" }, "0,1": { at: "wheel" }, "0,2": { at: "wheel" },
+      "0,3": { at: "comp" },
+      "0,4": { at: "obstr" },
+    },
+  };
+  const metas = [{ b: block, m: buildMeta(block) }];
+  const ctx = buildCtx({ blocks: [block], shapes: [], idTemplate: undefined }, metas, new Map());
+  return runRules(ctx);
+}
+
+describe("wheelchair-adequacy / companion-seat-shortfall / obstructed-view-count — yeni modelle çalışmaya devam ediyor", () => {
+  const findings = wheelchairPlan();
+  const byId = (id) => findings.find((f) => f.id === id);
+
+  it("wheelchair-adequacy: 3 wheelchair_space (eski ov.at:'wheel') doğru sayılır, refakatçi sayısı mesajda", () => {
+    const f = byId("wheelchair-adequacy");
+    expect(f.t).toBe("ok"); // 10 koltuk için gereken 1, elde 3 → yeterli
+    expect(f.m).toBe("3 tekerlekli sandalye alanı · 1 refakatçi");
+  });
+
+  it("companion-seat-shortfall: 1 companion (eski ov.at:'comp') < 3 wheelchair_space → uyarı", () => {
+    const f = byId("companion-seat-shortfall");
+    expect(f).toBeDefined();
+    expect(f.t).toBe("warn");
+    expect(f.m).toContain("1 < 3");
+  });
+
+  it("obstructed-view-count: eski ov.at:'obstr' artık bir FEATURE (restrictedView), kind DEĞİL — yine de doğru sayılıyor", () => {
+    const f = byId("obstructed-view-count");
+    expect(f).toBeDefined();
+    expect(f.m).toBe("1 görüş kısıtlı koltuk");
+  });
+
+  it("seatCorners: wheelchair_space koltuğun köşesi artık SEAT_KINDS'ten (86cm) geliyor, tekli (41cm) değil", () => {
+    const wheelSeat = { x: 0, y: 0, rot: 0, seatKind: "wheelchair_space" };
+    const singleSeat = { x: 0, y: 0, rot: 0, seatKind: "single" };
+    const wWheel = seatCorners(wheelSeat)[1].x - seatCorners(wheelSeat)[0].x; // sağ-üst - sol-üst
+    const wSingle = seatCorners(singleSeat)[1].x - seatCorners(singleSeat)[0].x;
+    expect(wWheel).toBeCloseTo(86, 6);
+    expect(wSingle).toBeCloseTo(41, 6);
   });
 });

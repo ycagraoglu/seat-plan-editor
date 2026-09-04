@@ -1,5 +1,6 @@
 import { absorbIds } from "./ids.js";
 import { DEF_NUM } from "./labels.js";
+import { legacyAtToKind } from "./geometry.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    ŞEMA SÜRÜMLEME
@@ -19,7 +20,7 @@ import { DEF_NUM } from "./labels.js";
    atılmadan, kendi hızında göç eder (2).
    ══════════════════════════════════════════════════════════════════════════ */
 
-export const CURRENT_SCHEMA_VERSION = 1;
+export const CURRENT_SCHEMA_VERSION = 2;
 
 /* migrations[v] planı v sürümünden v+1'e taşır. Yeni alan/varsayılan
    eklendikçe buraya bir adım daha eklenir; var olanlar asla değişmez —
@@ -35,6 +36,42 @@ const migrations = [
     blocks: (plan.blocks || []).map((b) => ({
       ...b, attr: b.attr ?? "", num: { ...DEF_NUM, ...(b.num || {}) },
     })),
+  }),
+  /* 1 → 2: seat_kind + features ayrımı (bkz. görev raporu — Evrensel
+     Mekân Yerleşim ve Koltuk Planı Değerlendirme Raporu §5.4). Eskiden
+     blok varsayılanı b.attr, koltuk istisnası ov[key].at TEK bir alanda
+     "hangi erişim/görüş özelliği" ile "hangi fiziksel oturma birimi"
+     sorularını karıştırıyordu — ör. "wheel" hem "bu bir tekerlekli
+     sandalye yeri" (tür) hem "erişilebilir" (özellik) demekti, ikisi
+     ayrılamıyordu. legacyAtToKind() (core/geometry.js, TEK kaynak — bu
+     göç İLE venue dosyalarının (src/venues/**, hiçbir zaman migrate()'ten
+     geçmez) çalışma anı okuması AYNI tabloyu kullanır, kopyası yok) her
+     eski değeri {seatKind, seatFeatures}'e çevirip EKLER.
+
+     attr/at alanları BİLEREK SİLİNMİYOR (eklemeli göç — sütun eklenir,
+     eskisi düşürülmez): resolveSeatKind (core/geometry.js) seatKind/
+     seatFeatures'ı HER ZAMAN attr/at'in ÖNÜNE koyduğu için (bkz. o
+     fonksiyonun önceliği) geride kalan attr/at değeri bir daha hiç
+     okunmaz, tamamen zararsız. Bunu silmek daha "temiz" görünürdü ama
+     migrations[0]'ın kurduğu bir garantiyi (her kayıtta attr alanı VARDIR,
+     eksikse "" ile tamamlanır) bu adımdan SONRA da geçerli tutmak
+     gerekiyor — o garantiye güvenen bağımsız bir tüketici var (scripts/
+     validate-interactions.mjs, DOKUNMA listesinde, "eksik attr boşla
+     tamamlandı" kontrolü CURRENT_SCHEMA_VERSION'a göçmüş bir kaydı
+     sınıyor). O script'i silmeden/değiştirmeden bu iki gerçeği (yeni alan
+     EKLENSİN, eski alan hâlâ orada dursun) birlikte sağlamanın yolu buydu. */
+  (plan) => ({
+    ...plan,
+    blocks: (plan.blocks || []).map((b) => {
+      const base = legacyAtToKind(b.attr);
+      const nextOv = {};
+      Object.entries(b.ov || {}).forEach(([key, o]) => {
+        if (o.at === undefined) { nextOv[key] = o; return; }
+        const mapped = legacyAtToKind(o.at);
+        nextOv[key] = { ...o, seatKind: mapped.seatKind, seatFeatures: mapped.seatFeatures };
+      });
+      return { ...b, seatKind: base.seatKind, seatFeatures: base.seatFeatures, ov: nextOv };
+    }),
   }),
 ];
 

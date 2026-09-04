@@ -14,6 +14,13 @@ export function planSeatMap(pl) {
   return m;
 }
 
+/* Özellik listesi karşılaştırması: sıradan bağımsız olsun diye sıralanıp
+   birleştiriliyor — PlanEditor.jsx özellikleri hep FEATURES'in kanonik
+   sırasıyla yazsa da (bkz. sortFeatures), bir diff fonksiyonu için bu
+   VARSAYIMA güvenmek yerine burada AYRICA garanti etmek daha ucuz bir
+   sigorta. */
+const featureKey = (f) => (f || []).slice().sort().join(",");
+
 export function diffPlans(base, next) {
   const A = planSeatMap(base), B = planSeatMap(next);
   const removed = [], added = [], moved = [], changed = [];
@@ -21,7 +28,7 @@ export function diffPlans(base, next) {
     const t = B.get(id);
     if (!t) { removed.push(id); return; }
     if (Math.hypot(t.x - s.x, t.y - s.y) > 25) moved.push(id);
-    if ((t.at || "") !== (s.at || "")) changed.push(id);
+    if (t.seatKind !== s.seatKind || featureKey(t.seatFeatures) !== featureKey(s.seatFeatures)) changed.push(id);
   });
   B.forEach((s, id) => { if (!A.has(id)) added.push(id); });
   return { removed, added, moved, changed, from: A.size, to: B.size };

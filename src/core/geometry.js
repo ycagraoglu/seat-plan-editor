@@ -5,6 +5,89 @@ import { formatId } from "./identity.js";
 export const RAD = Math.PI / 180;
 export const DEF = { seatGap: 50, rowGap: 90, seatW: 41, seatH: 38 };
 
+/* ═══════════════════════════════════════════════════════════════════════
+   KOLTUK TÜRÜ (seat_kind) + ÖZELLİK (features) SÖZLÜĞÜ
+   Kaynak: Evrensel Mekân Yerleşim ve Koltuk Planı Değerlendirme Raporu §5.4,
+   koltuk modelini üç ayrı sorumluluğa ayırıyor:
+     seat_kind  = fiziksel oturma/yer birimi NEDİR (bu koltukta HER ZAMAN
+                  bir değer var, "single" varsayılan) — burada, SEAT_KINDS.
+     features   = bu yerin erişim/görüş özelliği (0..N) — sözlüğü (etiket/
+                  renk) PlanEditor.jsx'teki FEATURES'ta, burası sadece
+                  değerleri (legacyAtToKind) bilir.
+     seat_group = hangi yerler birlikte seçilir/satılır — BU GÖREVİN VE BU
+                  DOSYANIN KAPSAMI DIŞINDA, raporun kendi ayrımı, sonraki iş.
+   width: koltuğun çizilen GENİŞLİĞİ (cm). Eskiden ATTRS[k].wide → sabit 86
+   tek bir "geniş" bayrağıydı (bkz. eski v8 notu); artık her tür kendi
+   ölçüsünü taşıyor — core/rules.js (seatCorners) ve PlanEditor.jsx (render)
+   AYNI sözlükten okur, iki ayrı genişlik sabiti yaşamaz. */
+export const SEAT_KINDS = {
+  single:           { width: DEF.seatW },  // standart tek kişilik (varsayılan)
+  loveseat:         { width: 74 },         // fiziksel birleşik ikili — tekliden belirgin geniş
+  wheelchair_space: { width: 86 },         // DEĞİŞMEZ: mevcut 9 salonun geometrisi buna bağlı (bkz. görev tanımı)
+  companion:        { width: DEF.seatW },  // refakatçi — normal tekli genişlik
+  stool:            { width: 34 },         // tabure — tekliden küçük
+  /* Raporun kontrollü sözlüğünde (single/loveseat/wheelchair_space/
+     companion/stool) KARŞILIĞI YOK. Izgarada yer kaplayan ama seyirci
+     koltuğu OLMAYAN bir konum (kamera platformu, ışık masası) — "erişim/
+     görüş özelliği" (feature) de değil, bambaşka bir fiziksel gerçek.
+     Editöre özgü bir UZANTI: bu referansı okuyup DB şemasına geçirecek
+     ekip bunun raporun STANDART sözlüğünde olmadığını bilmeli. */
+  tech:             { width: DEF.seatW },
+};
+export const DEFAULT_SEAT_KIND = "single";
+export const seatKindWidth = (kind) => SEAT_KINDS[kind]?.width ?? DEF.seatW;
+
+/* Eski tek-alan sözlüğü (v8'den kalma ATTRS/`at`) → yeni {seatKind,
+   seatFeatures}. src/venues/** (DOKUNMA) hâlâ ham `attr`/`ov.at` yazıyor —
+   builders.js'teki withAccessible() örneğin ov[k]={at:"wheel"} üretiyor,
+   venue dosyaları hiçbir zaman core/schema.js'in migrate()'inden geçmiyor
+   (bkz. o dosyanın başlık notu) — bu yüzden bu eşleme HEM burada (aşağıda,
+   resolveSeatKind ile ham salon verisini OKUMA anında yorumlamak için) HEM
+   core/schema.js'in kalıcı göçünde (kullanıcının KAYITLI planını dönüştürmek
+   için) kullanılıyor. TEK kaynak: schema.js kendi kopyasını tutmaz, buradan
+   import eder. */
+export const LEGACY_AT_MAP = {
+  "":      { seatKind: "single",           seatFeatures: [] },
+  wheel:   { seatKind: "wheelchair_space", seatFeatures: ["accessible"] },
+  comp:    { seatKind: "companion",        seatFeatures: ["accessible"] },
+  obstr:   { seatKind: "single",           seatFeatures: ["restrictedView"] },
+  tech:    { seatKind: "tech",             seatFeatures: [] },
+};
+export const legacyAtToKind = (at) => LEGACY_AT_MAP[at ?? ""] ?? LEGACY_AT_MAP[""];
+
+/** Bir BLOĞUN kendi varsayılanı (koltuk istisnaları hariç). Önce yeni alanı
+ *  (b.seatKind) dener, yoksa eski tek-alanı (b.attr, venue dosyaları) çözer.
+ *  DİKKAT: b.kind blokun ŞEKLİDİR ("grid"/"fan"/"table"/"free") — bilerek
+ *  AYRI adlandırıldı (b.seatKind), aksi hâlde bu ikisi çakışırdı. */
+function blockSeatKind(b) {
+  if (b.seatKind !== undefined) return { seatKind: b.seatKind, seatFeatures: b.seatFeatures || [] };
+  if (b.attr) return legacyAtToKind(b.attr);
+  return { seatKind: DEFAULT_SEAT_KIND, seatFeatures: [] };
+}
+
+/** Bir KOLTUĞUN etkin türü + özellik listesi. seatKind ve seatFeatures
+ *  BİRBİRİNDEN BAĞIMSIZ override edilebilir (raporun "iki ayrı sorumluluk"
+ *  ayrımı burada da geçerli: bir koltuğun türünü değiştirmeden sadece
+ *  özelliğini eklemek/kaldırmak mümkün olmalı, bkz. MultiSeatPanel'in
+ *  toplu özellik ekle/kaldır eylemi) — her biri KENDİ alanı tanımlıysa
+ *  (`!== undefined`) o alanı kullanır, tanımlı DEĞİLSE aynı katmandaki
+ *  DİĞER alana değil, bir alt katmana (blok varsayılanına) düşer.
+ *  Eski tek-alan (`at`/`attr`) bu ayrımı yapamaz (ikisini AYNI ANDA verir)
+ *  — legacyAtToKind onu SADECE o katmanda hiç yeni alan yoksa devreye
+ *  girer (venue dosyaları / göçmemiş kayıtlar hâlâ bunu yazıyor,
+ *  PlanEditor.jsx'in kendisi artık SADECE yeni alanları yazıyor, bkz.
+ *  paintOv). Dönüş HER ZAMAN somut: seatKind hiçbir zaman boş/undefined
+ *  değil (raporun modelinde her koltuğun bir seat_kind'i vardır),
+ *  seatFeatures hiçbir zaman null değil (yoksa []). */
+export function resolveSeatKind(b, o) {
+  const legacy = o && o.at !== undefined ? legacyAtToKind(o.at) : null;
+  const base = legacy || blockSeatKind(b);
+  return {
+    seatKind: o && o.seatKind !== undefined ? o.seatKind : base.seatKind,
+    seatFeatures: o && o.seatFeatures !== undefined ? o.seatFeatures : base.seatFeatures,
+  };
+}
+
 /* ─────────────────────────  YARDIMCILAR  ───────────────────────── */
 
 export function parseCounts(s) {
@@ -173,11 +256,29 @@ export function buildMeta(b) {
   Object.values(b.ov || {}).forEach((o) => { if (o.rm) removed++; else if (o.gap) gaps++; });
   const seatCount = P.counts.reduce((a, c) => a + c, 0) - removed - gaps;
 
-  /* nitelik sayımı — blok varsayılanı + koltuk istisnaları */
-  const attrs = {};
-  const withAt = Object.values(b.ov || {}).filter((o) => !o.rm && !o.gap && o.at !== undefined);
-  if (b.attr) attrs[b.attr] = Math.max(0, seatCount - withAt.length);
-  withAt.forEach((o) => { if (o.at) attrs[o.at] = (attrs[o.at] || 0) + 1; });
+  /* tür + özellik sayımı — blok varsayılanı + koltuk istisnaları. "single"
+     (varsayılan tür) sayılmaz — eski attrs'ın boş `at`'ı hiç saymaması ile
+     aynı fikir, binlerce normal koltuğu chip'te göstermenin anlamı yok.
+     features 0..N olduğu için (seat_kind'in aksine) bir koltuk BİRDEN
+     FAZLA sayaca birden katkı yapabilir. */
+  const kinds = {}, features = {};
+  /* seatKind ve seatFeatures BAĞIMSIZ override edilebildiği için (bkz.
+     resolveSeatKind'in dosya başı notu) üçünü de tek tek kontrol ediyoruz
+     — sadece seatFeatures'ı değişmiş bir koltuk (kind blok varsayılanından
+     miras) bu filtreyi KAÇIRIRSA baseCount'a yanlışlıkla dahil olur. */
+  const withOverride = Object.values(b.ov || {})
+    .filter((o) => !o.rm && !o.gap && (o.seatKind !== undefined || o.seatFeatures !== undefined || o.at !== undefined));
+  const base = blockSeatKind(b);
+  const baseCount = Math.max(0, seatCount - withOverride.length);
+  if (baseCount > 0) {
+    if (base.seatKind !== DEFAULT_SEAT_KIND) kinds[base.seatKind] = (kinds[base.seatKind] || 0) + baseCount;
+    base.seatFeatures.forEach((f) => { features[f] = (features[f] || 0) + baseCount; });
+  }
+  withOverride.forEach((o) => {
+    const eff = resolveSeatKind(b, o);
+    if (eff.seatKind !== DEFAULT_SEAT_KIND) kinds[eff.seatKind] = (kinds[eff.seatKind] || 0) + 1;
+    eff.seatFeatures.forEach((f) => { features[f] = (features[f] || 0) + 1; });
+  });
   /* Blok tabanı: ön sıranın kavisi, iki yan kenar boyunca her sıranın ucu,
      arka sıranın kavisi. Koltukların dış hattı değil, platformun kendi
      şekli — daralan, genişleyen, oyuklu bloklar böyle okunuyor. */
@@ -264,7 +365,7 @@ export function buildMeta(b) {
       return { x: b.x + R * Math.sin(t), y: b.y + R * Math.cos(t) };
     });
     const xs2 = ol.map((p) => p.x), ys2 = ol.map((p) => p.y);
-    return { P, seatCount, attrs, outline: ol, auto: ol, manual: false,
+    return { P, seatCount, kinds, features, outline: ol, auto: ol, manual: false,
       cx: b.x, cy: b.y, rows,
       bbox: { x0: Math.min(...xs2), x1: Math.max(...xs2), y0: Math.min(...ys2), y1: Math.max(...ys2) } };
   }
@@ -279,7 +380,7 @@ export function buildMeta(b) {
     const ring1 = [...top, W({ x: z.x + hw, y: z.y }), ...bot, W({ x: a.x - hw, y: a.y })];
     const ol = offsetPoly(ring1, b.pad != null ? b.pad : 55);
     const xs1 = ol.map((p) => p.x), ys1 = ol.map((p) => p.y);
-    return { P, seatCount, attrs, outline: ol, auto: ol, manual: false,
+    return { P, seatCount, kinds, features, outline: ol, auto: ol, manual: false,
       cx: (Math.min(...xs1) + Math.max(...xs1)) / 2,
       cy: (Math.min(...ys1) + Math.max(...ys1)) / 2, rows,
       bbox: { x0: Math.min(...xs1), x1: Math.max(...xs1), y0: Math.min(...ys1), y1: Math.max(...ys1) } };
@@ -299,7 +400,7 @@ export function buildMeta(b) {
      türetilmiş ama KULLANILMAYAN yardımcı veridir — test bu durumda
      onları yok saymalı, çünkü gerçek dış hat b.foot'tur ve kasıtlı
      köşeli olabilir (sütun, merdiven boşluğu). */
-  return { P, seatCount, attrs, outline, auto, manual, cx, cy, rows, leftEdge, rightEdge,
+  return { P, seatCount, kinds, features, outline, auto, manual, cx, cy, rows, leftEdge, rightEdge,
     bbox: { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) } };
 }
 
@@ -325,7 +426,7 @@ export function buildSeats(b, meta, tpl) {
       seats.push({ key: `${b.id}:${r},${c}`, id: o.id || gen, gen, adopted: !!o.id,
         block: b.label, level: b.level || "", row: rl, num: label,
         r, c, gap: f.gap, tweak: !!(o.dx || o.dy || o.rot || o.label || o.id),
-        at: o.at !== undefined ? o.at : (b.attr || ""),
+        ...resolveSeatKind(b, o),
         x: w.x, y: w.y, rot: p.a + b.rot + (o.rot || 0), color: b.color });
     });
     if (b.kind !== "free" && b.kind !== "table" && row.length && P.counts.length > 1) {

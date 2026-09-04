@@ -18,23 +18,13 @@ import { BUILTINS } from "../../src/venues/index.js";
    bir geometrisi yok, 9 örnek salonun invariant taramasına girmez. */
 export const VENUES = Object.entries(BUILTINS).filter(([key]) => key !== "empty");
 
-/* ATTRS.wheel.wide=true — src/PlanEditor.jsx'teki TEK "wide" (koltuğu 86cm
-   genişleten) nitelik; koltuğun GERÇEK dikdörtgenini ölçen invariant'lar
-   (kapı/işaret çakışması, kendi tabanı içinde kalma) bunu bilmek zorunda.
-   scripts/lib/load-module.mjs, PlanEditor.jsx'i esbuild ile geçici TEK bir
-   dosyaya (PID'e göre adlandırılmış) derleyip ATTRS'i oradan canlı okuyor
-   — ama scripts/validate-venues.mjs gibi sıralı çalışan tek bir Node
-   sürecinde güvenli olan bu teknik, vitest'in varsayılan paralel/thread'li
-   test-dosyası çalıştırmasında GÜVENLİ DEĞİL: birden fazla invariant test
-   dosyası aynı anda loadModule() çağırırsa aynı geçici yola yazıp
-   birbirinin dosyasını silebilir (aynı OS sürecinin thread'leri arasında
-   process.pid ortak).
-   ponytail: o yüzden burada sabit bir kopya tutuluyor — tek "wide"
-   nitelik olduğu için drift riski düşük. ATTRS'e yeni bir wide:true
-   nitelik eklenirse bu satır da güncellenmeli (scripts/validate-venues.mjs
-   ile karşılaştır). Tek-kaynak isteniyorsa yükseltme yolu: vitest'i
-   `fileParallelism:false` ile çalıştırıp loadModule()'u buradan çağırmak. */
-export const WIDE_ATTRS = new Set(["wheel"]);
+/* WIDE_ATTRS burada eskiden yaşıyordu (Set(["wheel"]), ATTRS.wheel.wide=true'nun
+   sabit kopyası — bkz. eski görev notu). seat_kind + features ayrımından
+   sonra koltuğun genişliği artık kendi `seatKind` alanından, core/
+   geometry.js'teki SEAT_KINDS'ten geliyor (bkz. rules.js'teki seatCorners) —
+   dışarıdan bir "hangi değerler geniş" kümesi enjekte etmeye gerek kalmadı,
+   invariant'lar seatCorners(s)'ı DOĞRUDAN çağırıyor (bkz. door-marker-
+   seat-overlap.test.js / template-plans.test.js). */
 
 /** Bir salonun TÜM bloklarının meta'sı (taban/outline) + boşluk (gap)
  *  OLMAYAN koltukları — rules.js'teki computeSeatScan ile AYNI süzme

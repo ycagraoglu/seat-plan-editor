@@ -6,9 +6,10 @@
    böyle bir kontrol hiç yoktu. Sayılar (koltuk sayısı, kapasite) hep
    doğruydu; resim yanlıştı.
 
-   Koltuğun GERÇEK dikdörtgenini kullanıyoruz (ATTRS'teki `wide` genişliği
+   Koltuğun GERÇEK dikdörtgenini kullanıyoruz (SEAT_KINDS'teki genişlik
    dahil — tekerlekli sandalye koltuğu 86cm, normal 41cm, bkz.
-   src/core/rules.js'teki seatCorners) ve şeklin GERÇEK biçimini:
+   src/core/rules.js'teki seatCorners, artık koltuğun kendi `seatKind`
+   alanından okuyor) ve şeklin GERÇEK biçimini:
      · kapı (`type:"door"`)  → dikdörtgen, x/y/w/h/rot'lu (bkz. venue
        dosyalarındaki gerçek santimetre ölçüleri, ör. cutVomitories()'in
        ürettiği tünel kapıları).
@@ -26,7 +27,7 @@
 import { describe, it, expect } from "vitest";
 import { seatCorners } from "../../src/core/rules.js";
 import { outlineOverlapArea, inPoly } from "../../src/core/polygon.js";
-import { VENUES, venueSeats, WIDE_ATTRS } from "./helpers.js";
+import { VENUES, venueSeats } from "./helpers.js";
 
 /** Rastgele döndürülmüş bir dikdörtgenin dört köşesi — seatCorners'ın
  *  koltuğa özel genişlik sabitleri OLMADAN genel hâli (kapı ölçüleri
@@ -68,7 +69,7 @@ export function findDoorMarkerSeatOverlaps(venue) {
   const icons = (venue.shapes || []).filter((s) => s.type === "icon");
   const violations = [];
   for (const s of seats) {
-    const corners = seatCorners(s, WIDE_ATTRS.has(s.at));
+    const corners = seatCorners(s);
     for (const d of doors) {
       const area = outlineOverlapArea(corners, rectCorners(d.x, d.y, d.w, d.h, d.rot || 0));
       if (area > AREA_EPS) violations.push({ seat: s.id, shape: d.label || d.id, kind: "door", area: Math.round(area) });

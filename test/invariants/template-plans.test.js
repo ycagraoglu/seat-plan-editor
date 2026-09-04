@@ -18,8 +18,8 @@
    fazladan test, ölçüldü: 6 yerine 18 test raporlandı). O yüzden
    PAYLAŞILAN YARDIMCI kullanılıyor: o dosyanın findDoorMarkerSeatOverlaps'ı
    da zaten hangi ASIL kaynaklardan kuruluysa (rules.js'teki seatCorners,
-   polygon.js'teki outlineOverlapArea/inPoly, helpers.js'teki
-   venueSeats/WIDE_ATTRS) aynılarından, aynı hesabı burada AYNEN çağırıyoruz.
+   polygon.js'teki outlineOverlapArea/inPoly, helpers.js'teki venueSeats)
+   aynılarından, aynı hesabı burada AYNEN çağırıyoruz.
    Tek tekrar eden şey o dosyanın da paylaşılan bir yerden almayıp yerel
    tanımladığı birkaç satırlık geometri yapıştırıcısı (dikdörtgen köşesi,
    nokta-segment mesafesi, daire-çokgen kesişimi) — geometrinin KENDİSİ
@@ -30,7 +30,7 @@ import { gateMap } from "../../src/core/gates.js";
 import { buildCtx, runRules, seatCorners } from "../../src/core/rules.js";
 import { outlineOverlapArea, inPoly } from "../../src/core/polygon.js";
 import { buildStadiumTemplate, buildHallTemplate } from "../../src/venues/templates.js";
-import { venueSeats, WIDE_ATTRS } from "./helpers.js";
+import { venueSeats } from "./helpers.js";
 
 const TEMPLATES = [
   ["stadyum", buildStadiumTemplate],
@@ -65,7 +65,7 @@ function findDoorMarkerSeatOverlaps(plan) {
   const icons = (plan.shapes || []).filter((s) => s.type === "icon");
   const violations = [];
   for (const s of seats) {
-    const corners = seatCorners(s, WIDE_ATTRS.has(s.at));
+    const corners = seatCorners(s);
     for (const d of doors) {
       const area = outlineOverlapArea(corners, rectCorners(d.x, d.y, d.w, d.h, d.rot || 0));
       if (area > AREA_EPS) violations.push({ seat: s.id, shape: d.label || d.id, kind: "door", area: Math.round(area) });
@@ -79,7 +79,7 @@ function findDoorMarkerSeatOverlaps(plan) {
 function findingsFor(plan) {
   const metas = plan.blocks.map((b) => ({ b, m: buildMeta(b) }));
   const gates = gateMap(plan);
-  const ctx = buildCtx(plan, metas, gates, { wideAttrs: WIDE_ATTRS });
+  const ctx = buildCtx(plan, metas, gates);
   return runRules(ctx);
 }
 

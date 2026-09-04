@@ -16,12 +16,12 @@ import { buildMeta } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import { buildCtx, runRules } from "../../src/core/rules.js";
 import { DEF_NUM } from "../../src/core/labels.js";
-import { VENUES, WIDE_ATTRS } from "./helpers.js";
+import { VENUES } from "./helpers.js";
 
 function findingsFor(venue) {
   const metas = venue.blocks.map((b) => ({ b, m: buildMeta(b) }));
   const gates = gateMap(venue);
-  const ctx = buildCtx(venue, metas, gates, { wideAttrs: WIDE_ATTRS });
+  const ctx = buildCtx(venue, metas, gates);
   return runRules(ctx);
 }
 

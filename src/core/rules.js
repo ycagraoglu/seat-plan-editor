@@ -14,22 +14,26 @@
    fazladan alanı yok sayar, bozulmaz). */
 import { inPoly, outlineOverlapArea } from "./polygon.js";
 import { boundaryPolys } from "./gates.js";
-import { buildSeats, DEF } from "./geometry.js";
+import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND } from "./geometry.js";
 
 export const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
 
 /** Koltuk dikdörtgeninin dört köşesi (döndürülmüş). Taşma kontrolleri koltuk
  *  MERKEZİ değil gerçek dikdörtgeni kullanır: merkez tabanın içinde kalıp
- *  köşe dışarı taşabilir (geniş/tekerlekli sandalye koltuklarında olduğu
- *  gibi — bu yüzden `wide` genişliği ATTRS'ten çağıran tarafından gelir,
- *  rules.js kendi görünüm/etiket sabitlerini bilmez).
+ *  köşe dışarı taşabilir (geniş koltuklarda — tekerlekli sandalye, ikili —
+ *  olduğu gibi). Genişlik artık koltuğun kendi seatKind'inden, core/
+ *  geometry.js'teki SEAT_KINDS'ten geliyor — o da rules.js gibi bir ÇEKİRDEK
+ *  dosya (fiziksel ölçü, görünüm/etiket DEĞİL), bu yüzden burada eskisi gibi
+ *  ctx üzerinden enjekte edilmesine gerek kalmadı (bkz. eski wideAttrs/
+ *  buildCtx notu — ATTRS UI dosyasında yaşarken bu dolaylama GEREKLİYDİ,
+ *  SEAT_KINDS çekirdekte yaşadığı için artık gereksiz, doğrudan import).
  *  A5'te dışa açıldı: kapı/işaret-koltuk çakışma invariant'ı (test/invariants)
  *  koltuğun GERÇEK dikdörtgenine ihtiyaç duyuyor — ikinci bir kopyası
  *  yazılırsa tam da bu dosyanın başındaki notta anlatılan hata sınıfı
  *  (aynı geometri iki ayrı yerde iki ayrı kodla, sessizce sapabilir)
- *  tekrarlanır. Davranış DEĞİŞMEDİ, sadece görünürlük. */
-export function seatCorners(s, wide) {
-  const w = (wide ? 86 : DEF.seatW) / 2, h = DEF.seatH / 2;
+ *  tekrarlanır. */
+export function seatCorners(s) {
+  const w = seatKindWidth(s.seatKind) / 2, h = DEF.seatH / 2;
   const rad = (s.rot * Math.PI) / 180;
   const cos = Math.cos(rad), sin = Math.sin(rad);
   return [[-w, -h], [w, -h], [w, h], [-w, h]].map(([lx, ly]) => ({
@@ -46,7 +50,7 @@ export function seatCorners(s, wide) {
    tetiklemez. */
 function computeSeatScan(plan, metas) {
   const list = [];
-  const at = {}; const seen = new Map();
+  const kinds = {}, features = {}; const seen = new Map();
   let unlabeled = 0, total = 0;
   metas.forEach(({ b, m }) => {
     buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
@@ -54,10 +58,11 @@ function computeSeatScan(plan, metas) {
       total++;
       /* Yandan geçiş gerektirmeyen bloklar: masa (etrafı zaten bitişik
          oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi). */
-      list.push({ id: s.id, at: s.at, x: s.x, y: s.y, rot: s.rot,
+      list.push({ id: s.id, seatKind: s.seatKind, seatFeatures: s.seatFeatures, x: s.x, y: s.y, rot: s.rot,
         block: b.label, bid: b.id, level: s.level, t: b.kind === "table" || !!b.noAisle,
         outline: m.outline });
-      if (s.at) at[s.at] = (at[s.at] || 0) + 1;
+      if (s.seatKind !== DEFAULT_SEAT_KIND) kinds[s.seatKind] = (kinds[s.seatKind] || 0) + 1;
+      s.seatFeatures.forEach((f) => { features[f] = (features[f] || 0) + 1; });
       if (s.num === "" || s.num == null) unlabeled++;
       seen.set(s.id, (seen.get(s.id) || 0) + 1);
     });
@@ -91,15 +96,20 @@ function computeSeatScan(plan, metas) {
     }
   });
 
-  return { list, at, seen, unlabeled, total, clash, clashPairs, clashIds, narrow };
+  return { list, kinds, features, seen, unlabeled, total, clash, clashPairs, clashIds, narrow };
 }
 
 /** Kurallara ortak girdi. Her alan EN FAZLA bir kez hesaplanır — üç
  *  tüketici de (validate, validate-venues.mjs, canlı breach/collide) aynı
  *  buildCtx()'i çağırır, kimse kendi kopyasını üretmez.
  *  `seats` ve seat-köşesi tabanlı alanlar LAZY: yalnız gerçekten okunurlarsa
- *  hesaplanır, böylece canlı yol (liveOnly) koltuk üretimini asla tetiklemez. */
-export function buildCtx(plan, metas, gates, opts = {}) {
+ *  hesaplanır, böylece canlı yol (liveOnly) koltuk üretimini asla tetiklemez.
+ *  4. parametre (opts) artık YOK: tek kullanım alanı wideAttrs'tı (bkz.
+ *  seatCorners'ın başındaki not), o da SEAT_KINDS'in doğrudan import
+ *  edilmesiyle gereksizleşti. scripts/validate-venues.mjs (DOKUNMA) hâlâ
+ *  4. argüman geçiyor — JS fazla argümanı sessizce yok sayar, çağrı
+ *  BOZULMAZ, sadece artık okunmuyor. */
+export function buildCtx(plan, metas, gates) {
   const bounds = boundaryPolys(plan);
   const byLevel = new Map();
   metas.forEach((x) => {
@@ -115,8 +125,7 @@ export function buildCtx(plan, metas, gates, opts = {}) {
     : [];
   const doors = (plan.shapes || []).filter((s) => s.type === "door");
 
-  const ctx = { plan, metas, gates, bounds, byLevel, blockBreaches, doors,
-    wideAttrs: opts.wideAttrs || new Set() };
+  const ctx = { plan, metas, gates, bounds, byLevel, blockBreaches, doors };
 
   let seatsCache = null;
   Object.defineProperty(ctx, "seats", {
@@ -278,38 +287,44 @@ export const RULES = [
     },
   },
   /* Gerekli tekerlekli sandalye yeri kademeli: ilk 500 koltuk için 6,
-     sonraki her 150 koltuk için 1, 5.000'in üstünde her 200 koltuk için 1. */
+     sonraki her 150 koltuk için 1, 5.000'in üstünde her 200 koltuk için 1.
+     seat_kind + features ayrımından sonra "tekerlekli" artık bir KIND
+     (wheelchair_space), "refakatçi" de öyle (companion) — ikisi de
+     ctx.seats.kinds'ten okunuyor (eski ctx.seats.at.wheel/at.comp). */
   {
     id: "wheelchair-adequacy", severity: "err", live: false,
     check(ctx) {
-      const { total, at } = ctx.seats;
+      const { total, kinds } = ctx.seats;
       const need = total <= 25 ? 1 : total <= 50 ? 2 : total <= 150 ? 4
         : total <= 300 ? 5 : total <= 500 ? 6
         : total <= 5000 ? 6 + Math.ceil((total - 500) / 150)
         : 36 + Math.ceil((total - 5000) / 200);
-      const wheel = at.wheel || 0;
+      const wheel = kinds.wheelchair_space || 0;
       if (!wheel) return [{ t: "err", m: `Tekerlekli sandalye alanı tanımlanmamış — en az ${need} gerekiyor` }];
       if (wheel < need) return [{ t: "warn",
         m: `${wheel} tekerlekli sandalye alanı — bu kapasite için ${need} gerekiyor`,
         d: `${need - wheel} yer daha eklenmeli` }];
-      return [{ t: "ok", m: `${wheel} tekerlekli sandalye alanı · ${at.comp || 0} refakatçi`, d: `gereken ${need}` }];
+      return [{ t: "ok", m: `${wheel} tekerlekli sandalye alanı · ${kinds.companion || 0} refakatçi`, d: `gereken ${need}` }];
     },
   },
   {
     id: "companion-seat-shortfall", severity: "warn", live: false,
     check(ctx) {
-      const { at } = ctx.seats;
-      const wheel = at.wheel || 0;
-      if (!wheel || (at.comp || 0) >= wheel) return [];
-      return [{ t: "warn", m: `Refakatçi koltuğu tekerlekli sandalye alanından az (${at.comp || 0} < ${wheel})` }];
+      const { kinds } = ctx.seats;
+      const wheel = kinds.wheelchair_space || 0;
+      if (!wheel || (kinds.companion || 0) >= wheel) return [];
+      return [{ t: "warn", m: `Refakatçi koltuğu tekerlekli sandalye alanından az (${kinds.companion || 0} < ${wheel})` }];
     },
   },
+  /* "Görüş kısıtlı" artık bir KIND değil bir FEATURE (restrictedView) —
+     hangi seat_kind'te olursa olsun sayılır, ctx.seats.features'ten
+     (eski ctx.seats.at.obstr). */
   {
     id: "obstructed-view-count", severity: "info", live: false,
     check(ctx) {
-      const { at } = ctx.seats;
-      if (!at.obstr) return [];
-      return [{ t: "info", m: `${at.obstr.toLocaleString("tr-TR")} görüş kısıtlı koltuk` }];
+      const { features } = ctx.seats;
+      if (!features.restrictedView) return [];
+      return [{ t: "info", m: `${features.restrictedView.toLocaleString("tr-TR")} görüş kısıtlı koltuk` }];
     },
   },
   {
@@ -395,7 +410,7 @@ export const RULES = [
     check(ctx) {
       const bad = new Set();
       ctx.seats.list.forEach((s) => {
-        const corners = seatCorners(s, ctx.wideAttrs.has(s.at));
+        const corners = seatCorners(s);
         if (corners.some((c) => !inPoly(c.x, c.y, s.outline))) bad.add(s.bid);
       });
       if (!bad.size) return [];
@@ -408,7 +423,7 @@ export const RULES = [
       if (!ctx.bounds.length) return [];
       let count = 0; const ids = new Set();
       ctx.seats.list.forEach((s) => {
-        const corners = seatCorners(s, ctx.wideAttrs.has(s.at));
+        const corners = seatCorners(s);
         if (corners.some((c) => !inBounds(c.x, c.y, ctx.bounds))) { count++; ids.add(s.bid); }
       });
       if (!count) return [];

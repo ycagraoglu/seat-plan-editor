@@ -1,5 +1,6 @@
 import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
-import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats } from "./core/geometry.js";
+import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats,
+  resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
@@ -137,26 +138,95 @@ const POI = {
   show: { label: "Gösteri / sahne", img: "theatre-mask", p: [] },
 };
 
-/* ─────────────────────────  KOLTUK NİTELİKLERİ  ─────────────────────────
-   Kategoriden ayrı bir eksen. Kategori = fiyat etiketi (biletleme sistemi
-   fiyatı ona bağlar). Nitelik = koltuğun fiziksel gerçeği.
-   ───────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────  KOLTUK TÜRÜ + ÖZELLİK  ─────────────────────────
+   Evrensel Mekân Yerleşim ve Koltuk Planı Değerlendirme Raporu §5.4: koltuk
+   modeli üç ayrı sorumluluğa ayrılır —
+     seat_kind  = fiziksel oturma/yer birimi NE (ATTRS, aşağıda — GÖRÜNÜM
+                  tarafı; FİZİKSEL tarafı, genişlik, core/geometry.js'teki
+                  SEAT_KINDS'te, o çekirdek dosyada kalmalı).
+     features   = erişim/görüş özelliği, 0..N (FEATURES, aşağıda).
+     seat_group = birlikte satılan yerler — BU GÖREVİN KAPSAMI DIŞINDA.
+   Kategoriden (fiyat etiketi) de AYRI bir eksen: biletleme sistemi ikisini
+   ayrı kullanır.
 
-/* Renkler Biletera tasarım sisteminin anlamsal paletinden (tokens/colors.css):
-   info · success · warning · ink-3. DS'in --seat-selected'ı seçim rengimiz
-   (--sel), --seat-free ise --seatoff. DS'te ayrıca --seat-taken ve
-   --seat-premium var; ikisi de biletleme durumu ve fiyat kategorisi demek,
-   bu editörün kapsamı dışında (geometri + kimlik), o yüzden eşlenmedi. */
+   Renkler Biletera tasarım sisteminin anlamsal paletinden (tokens/colors.css):
+   info · success · warning · ink-3. Eski dört ATTRS anahtarının (wheel/
+   comp/obstr/tech) renkleri BİREBİR korundu (wheelchair_space/companion/
+   tech aynı kavramın yeni adı; restrictedView artık bir KIND değil FEATURE
+   olduğu için o rengi FEATURES.restrictedView taşıyor). loveseat/stool/
+   accessible bu görevle gelen YENİ kavramlar — dördün dışında, DS'in tam
+   token adını bilmediğim için kendi seçtiğim ayırt edici renkler (bkz.
+   görev raporu). DS'in --seat-selected'ı seçim rengimiz (--sel),
+   --seat-free ise --seatoff; --seat-taken/--seat-premium biletleme
+   durumu+fiyat kategorisi demek, bu editörün kapsamı dışında, eşlenmedi. */
 const ATTRS = {
-  wheel: { label: "Tekerlekli sandalye", short: "Tekerlekli", color: "#5AC8FA", glyph: "T", wide: true },
-  comp:  { label: "Refakatçi",           short: "Refakatçi",  color: "#2FD07A", glyph: "R" },
-  obstr: { label: "Görüş kısıtlı",       short: "Görüş kıs.", color: "#F5A623", glyph: "!" },
-  tech:  { label: "Teknik alan",         short: "Teknik",  color: "#6E6E70", glyph: "×" },
+  wheelchair_space: { label: "Tekerlekli sandalye", short: "Tekerlekli", color: "#5AC8FA", glyph: "T", wide: true },
+  companion:        { label: "Refakatçi",           short: "Refakatçi",  color: "#2FD07A", glyph: "R" },
+  loveseat:         { label: "İkili (birleşik)",    short: "İkili",      color: "#8E6FD1", glyph: "2" },
+  stool:            { label: "Tabure",              short: "Tabure",     color: "#B5834D", glyph: "B" },
+  /* raporun kontrollü sözlüğünde KARŞILIĞI YOK — bkz. core/geometry.js'teki
+     SEAT_KINDS.tech notu. Editöre özgü bir uzantı olduğu ORADA (fiziksel
+     tanım) açıklandı, burada TEKRAR yorumlamıyoruz. */
+  tech:             { label: "Teknik alan",         short: "Teknik",     color: "#6E6E70", glyph: "×" },
 };
-/* core/rules.js kendi görünüm sabitlerini (renk/etiket) bilmemeli — koltuk
-   köşesi kontrolleri için ihtiyaç duyduğu tek fiziksel gerçek, hangi
-   niteliğin koltuğu GENİŞ yaptığı. Bunu ATTRS'ten türetip ctx'e taşıyoruz. */
-const WIDE_ATTRS = new Set(Object.keys(ATTRS).filter((k) => ATTRS[k].wide));
+/* "single" (varsayılan tür) burada YOK — eskiden boş `at`in ATTRS'te hiç
+   karşılığı olmaması ile aynı fikir, normal koltuğun boyanacak bir
+   rengi/rozeti yok.
+
+   İSİM KORUNDU: scripts/validate-venues.mjs (DOKUNMA) esbuild ile derlenmiş
+   modülden `ATTRS` adını BİREBİR okuyor (bkz. scripts/lib/load-module.mjs
+   EXTRA_EXPORTS) ve kendi WIDE_ATTRS'ini Object.keys(ATTRS).filter(k=>
+   ATTRS[k].wide) ile kurup buildCtx'e veriyor — isim ya da `.wide`
+   sözleşmesi değişirse o script (DOKUNMA) ve test/invariants/helpers.js
+   kırılır. `.wide` artık SADECE kozmetik (dolgusuz/boş gövde render, bkz.
+   seat render'daki isWheel) — FİZİKSEL genişlik SEAT_KINDS'ten geliyor
+   (core/rules.js'teki seatCorners SEAT_KINDS'i DOĞRUDAN import ediyor,
+   artık ctx üzerinden enjeksiyona ihtiyaç yok) — bu ikisi BİLEREK ayrı,
+   validate-venues.mjs'in geçtiği wideAttrs opsiyonu artık kullanılmıyor
+   ama zararsız (bkz. core/rules.js'teki buildCtx notu). */
+
+/* features — seat_kind'den BAĞIMSIZ ikinci eksen (erişim/görüş özelliği,
+   0..N). Aynı koltukta birden fazla bulunabilir; eskiden "wheel"/"comp" bu
+   ikisinin ("bir tekerlekli sandalye yeri" + "erişilebilir") ayrılamayan
+   tek karşılığıydı, "obstr" da "görüş kısıtlı"nın (artık burada) hem
+   tür hem özellik karışığıydı. */
+const FEATURES = {
+  accessible:     { label: "Erişilebilir",  short: "Erişilebilir", color: "#5AC8FA", glyph: "A" },
+  restrictedView: { label: "Görüş kısıtlı", short: "Görüş kıs.",   color: "#F5A623", glyph: "!" },
+};
+
+/** Bir koltuğun ROZETİ: seat_kind öncelikli ("single" hariç, boyanacak bir
+ *  şeyi yok), yoksa İLK feature. Koltuk kenarlığı/glyph/marquee vurgusu gibi
+ *  TEK renk/glyph gösterecek her yerin ORTAK karar noktası — aksi hâlde bu
+ *  öncelik sırası render kodunun birkaç yerinde ayrı ayrı elle kopyalanır,
+ *  biri güncellenince öteki unutulur. */
+const seatBadge = (s) => (s.seatKind !== DEFAULT_SEAT_KIND && ATTRS[s.seatKind])
+  || (s.seatFeatures[0] && FEATURES[s.seatFeatures[0]]) || null;
+
+/* features dizisini FEATURES'in kanonik anahtar sırasına göre sıralar +
+   tekilleştirir — brush/panelde biriken toggle'lar HER ZAMAN aynı sırada
+   dursun diye (sameAttr'ın dizi eşitliği buna güvenir, sırasız bir Set
+   kıyası değil). */
+const FEATURE_ORDER = Object.keys(FEATURES);
+const sortFeatures = (arr) => [...new Set(arr)].sort((a, b) => FEATURE_ORDER.indexOf(a) - FEATURE_ORDER.indexOf(b));
+const toggleFeature = (arr, k) => sortFeatures(arr.includes(k) ? arr.filter((f) => f !== k) : [...arr, k]);
+const sameAttr = (a, b) => a.seatKind === b.seatKind && a.seatFeatures.length === b.seatFeatures.length
+  && a.seatFeatures.every((f, i) => f === b.seatFeatures[i]);
+
+/** Bir koltuk istisnasına (b.ov[r,c]) fırça/panel değerini YAZAR. Blok
+ *  varsayılanıYLA (resolveSeatKind(b,{})) AYNIysa istisnayı SİLER — eski
+ *  `brush==="" && !b.attr` kısayolunun aynı fikri, artık iki alan için.
+ *  Eski tek-alan `at` bu koltuk için HER ZAMAN silinir: PlanEditor bundan
+ *  sonra SADECE yeni alanları (seatKind/seatFeatures) yazar — `at` yalnız
+ *  venue dosyalarından/göçmemiş kayıtlardan OKUNUR (core/geometry.js'teki
+ *  resolveSeatKind), editörün kendisi onu bir daha hiç ÜRETMEZ. */
+function paintOv(cur, b, seatKind, seatFeatures) {
+  const nx = { ...cur };
+  delete nx.at;
+  if (sameAttr({ seatKind, seatFeatures }, resolveSeatKind(b, {}))) { delete nx.seatKind; delete nx.seatFeatures; }
+  else { nx.seatKind = seatKind; nx.seatFeatures = seatFeatures; }
+  return nx;
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
    DEPOLAMA KATMANI
@@ -483,24 +553,24 @@ const SHAPES = {
 export const newGrid = (x, y, cols, rows) => ({
   id: nid(), label: "A", name: "", level: "", kind: "grid", x, y, rot: 0,
   cols, rows, counts: "", align: "center", seatGap: DEF.seatGap, rowGap: DEF.rowGap,
-  curve: 0, taper: 0, color: "", attr: "", num: { ...DEF_NUM, rowScheme: "letter" }, ov: {},
+  curve: 0, taper: 0, color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [], num: { ...DEF_NUM, rowScheme: "letter" }, ov: {},
 });
 export const newFan = (x, y, r0) => ({
   id: nid(), label: "A", name: "", level: "", kind: "fan", x, y, rot: 0, mode: "span",
   r0, rowGap: DEF.rowGap, aStart: -40, aEnd: 40, aCenter: 0, rows: 8,
-  seatGap: DEF.seatGap, counts: "", align: "center", color: "", attr: "",
+  seatGap: DEF.seatGap, counts: "", align: "center", color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [],
   num: { ...DEF_NUM }, ov: {},
 });
 export const newTable = (x, y) => ({
   id: nid(), label: "M1", name: "", level: "", kind: "table", x, y, rot: 0,
   tShape: "round", tW: 90, tH: 90, seats: 4, a0: 0, clear: 12, pad: 40,
   seatGap: DEF.seatGap, rowGap: DEF.rowGap, counts: "", align: "center",
-  cols: 1, rows: 1, curve: 0, taper: 0, color: "", attr: "",
+  cols: 1, rows: 1, curve: 0, taper: 0, color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [],
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
 export const newFree = (x, y) => ({
   id: nid(), label: "S", name: "", level: "", kind: "free", x, y, rot: 0, pts: [],
-  seatGap: DEF.seatGap, counts: "", align: "center", color: "", attr: "",
+  seatGap: DEF.seatGap, counts: "", align: "center", color: "", seatKind: DEFAULT_SEAT_KIND, seatFeatures: [],
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
 
@@ -535,9 +605,18 @@ export function mirrorBlock(b, label) {
    gerçek fonksiyonu çağırıp bunu bir daha geri gelmeyeceğini doğruluyor. */
 export function adoptPlan(raw, key) {
   if (!raw || !Array.isArray(raw.blocks)) throw new Error("blocks dizisi yok");
+  /* seatKind/seatFeatures (ya da eski attr) BİLEREK burada varsayılanla
+     doldurulmuyor: resolveSeatKind (core/geometry.js) zaten "hiçbiri yoksa
+     single" kuralını kendisi uyguluyor. Burada bir varsayılan YAZILSAYDI
+     (ör. seatKind:"single") — resolveSeatKind seatKind'i her zaman ÖNCE
+     kontrol ettiği için — dışarıdan gelen ESKİ biçimli bir plan.json'un
+     (attr:"wheel" gibi, ör. bir venue'nun kendi plan.json'u) attr'ı hiç
+     görülmeden GÖLGELENİRDİ. ...b spread'i ne varsa (attr, ya da
+     seatKind/seatFeatures) olduğu gibi taşır, resolveSeatKind ikisini de
+     çalışma anında doğru yorumlar. */
   const blocks = raw.blocks.map((b) => ({
     kind: "grid", x: 0, y: 0, rot: 0, cols: 10, rows: 5, counts: "", align: "center",
-    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "", attr: "",
+    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "",
     mode: "span", r0: 500, aStart: -40, aEnd: 40, aCenter: 0, pts: [],
     ...b, id: nid(), ov: b.ov || {}, num: { ...DEF_NUM, ...(b.num || {}) },
     label: String(b.label ?? "A"), level: b.level || "",
@@ -567,7 +646,7 @@ export function adoptPlan(raw, key) {
    gerektirirdi (tam da bu görevin ortadan kaldırmaya çalıştığı türden
    bir kopya). */
 function validate(plan, metas, gates) {
-  const ctx = buildCtx(plan, metas, gates, { wideAttrs: WIDE_ATTRS });
+  const ctx = buildCtx(plan, metas, gates);
   /* runRules() her bulguya hangi kuraldan geldiğini söyleyen `id` ekliyor
      (canlı taraf breach'i collide'dan bu alanla ayırıyor). validate()'in
      dönüş şekli tarihsel olarak { t, m, d, ids } — o alanı burada atarak
@@ -780,7 +859,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
      birbirine bağlı değil — reducer'a GİRMİYORLAR. Okuma tarafı yine
      düz const'lara açılıyor ki aşağıdaki kod DEĞİŞMEDEN çalışsın. */
   const [toolPrefs, setToolPrefs] = useState({
-    tool: "select", shapeType: "stage", sport: "football", brush: "wheel", poiKind: "wc",
+    /* Fırça artık İKİ eksen: brushKind (tek seçim, ATTRS'in İLK anahtarı —
+       eski `brush:"wheel"` varsayılanıyla AYNI fikir, "en çok boyanan tür
+       en başta hazır") + brushFeatures (0..N işaretlenebilir). */
+    tool: "select", shapeType: "stage", sport: "football",
+    brushKind: Object.keys(ATTRS)[0], brushFeatures: [], poiKind: "wc",
     snapOn: true, gridStep: 50,
     lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
     wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
@@ -796,7 +879,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     footOpen: false, numOpen: false, advOpen: false,
   });
   const {
-    tool, shapeType, sport, brush, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
+    tool, shapeType, sport, brushKind, brushFeatures, poiKind, snapOn, gridStep, lin, rad, wheelPref, theme, legend, plates, q,
     toolsOpen, propsOpen, footOpen, numOpen, advOpen, colorChan,
   } = toolPrefs;
   const setToolPref = useCallback((key, v) =>
@@ -804,7 +887,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const setTool = useCallback((v) => setToolPref("tool", v), [setToolPref]);
   const setShapeType = useCallback((v) => setToolPref("shapeType", v), [setToolPref]);
   const setSport = useCallback((v) => setToolPref("sport", v), [setToolPref]);
-  const setBrush = useCallback((v) => setToolPref("brush", v), [setToolPref]);
+  const setBrushKind = useCallback((v) => setToolPref("brushKind", v), [setToolPref]);
+  const setBrushFeatures = useCallback((v) => setToolPref("brushFeatures", v), [setToolPref]);
   const setPoiKind = useCallback((v) => setToolPref("poiKind", v), [setToolPref]);
   const setSnapOn = useCallback((v) => setToolPref("snapOn", v), [setToolPref]);
   const setGridStep = useCallback((v) => setToolPref("gridStep", v), [setToolPref]);
@@ -1056,9 +1140,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
     return { err: [...err], warn: [...warn] };
   }, [colorChan, report, breach, collide]);
 
-  const attrTotals = useMemo(() => {
+  /* Lejantın "Nitelik" kanalı iki ayrı toplam gösterir — tür (kind, m.kinds)
+     VE özellik (feature, m.features), planın TÜMÜNDE. buildMeta zaten
+     blok başına bu ikisini hesaplıyor (bkz. core/geometry.js), burada
+     sadece TÜM bloklar üzerinde topluyoruz. */
+  const kindTotals = useMemo(() => {
     const t = {};
-    metas.forEach(({ m }) => Object.entries(m.attrs || {})
+    metas.forEach(({ m }) => Object.entries(m.kinds || {})
+      .forEach(([k, v]) => { t[k] = (t[k] || 0) + v; }));
+    return t;
+  }, [metas]);
+  const featureTotals = useMemo(() => {
+    const t = {};
+    metas.forEach(({ m }) => Object.entries(m.features || {})
       .forEach(([k, v]) => { t[k] = (t[k] || 0) + v; }));
     return t;
   }, [metas]);
@@ -1802,9 +1896,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
           if (!list) return b;
           const ov = { ...b.ov };
           list.forEach((rc) => {
-            const cur = { ...(ov[rc] || {}) };
-            if (brush === "" && !b.attr) delete cur.at; else cur.at = brush;
-            Object.keys(cur).length ? (ov[rc] = cur) : delete ov[rc];
+            const nx = paintOv(ov[rc] || {}, b, brushKind, brushFeatures);
+            Object.keys(nx).length ? (ov[rc] = nx) : delete ov[rc];
           });
           return { ...b, ov };
         }) });
@@ -1961,9 +2054,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
       const b = pl.blocks.find((x) => x.id === bid);
       if (!b) return vs;
       const k = `${r},${c}`, cur = b.ov[k] || {};
-      if ((cur.at ?? (b.attr || "")) === brush) return vs;
-      const nx = { ...cur };
-      if (brush === "" && !b.attr) delete nx.at; else nx.at = brush;
+      if (sameAttr(resolveSeatKind(b, cur), { seatKind: brushKind, seatFeatures: brushFeatures })) return vs;
+      const nx = paintOv(cur, b, brushKind, brushFeatures);
       const ov = { ...b.ov };
       Object.keys(nx).length ? (ov[k] = nx) : delete ov[k];
       return { ...vs, [vk]: { ...pl, blocks: pl.blocks.map((x) => (x.id === bid ? { ...x, ov } : x)) } };
@@ -2147,8 +2239,17 @@ export default function PlanEditor({ cssText = "" } = {}) {
                ["poi", "İşaret", "I", "info"]]],
     ["Referans", [["cal", "Kalibre et", "K", "cal"], ["measure", "Ölç", "M", "measure"]]],
   ];
-  const seatOv = selSeat
-    ? plan.blocks.find((b) => b.id === selSeat.bid)?.ov[`${selSeat.r},${selSeat.c}`] || {} : null;
+  const seatOvBlock = selSeat ? plan.blocks.find((b) => b.id === selSeat.bid) : null;
+  const seatOv = selSeat ? seatOvBlock?.ov[`${selSeat.r},${selSeat.c}`] || {} : null;
+  /* SeatPanel'in gösterdiği "şu an ne seçili" değeri — seatOv PARÇALI
+     olabilir (bkz. resolveSeatKind'in bağımsız override notu), panel yine
+     de TEK bir somut {seatKind, seatFeatures} göstermeli. seatOvBlock
+     bulunamazsa (selSeat, silinmiş bir bloğa işaret eden BAYAT bir
+     referansla kalmışsa — eski seatOv da AYNI durumda sessizce {}'e
+     düşüyordu, bkz. yukarıdaki satır) resolveSeatKind({}, {}) güvenle
+     "single" varsayılanına döner; SeatPanel eff.seatKind'i KOŞULSUZ okur,
+     null asla geçmemeli. */
+  const seatEffAttr = selSeat ? resolveSeatKind(seatOvBlock || {}, seatOv || {}) : null;
   const lodFont = 17 * U;
   const hSize = Math.max(24, 9 / (pxPerCm || 0.01));
   const arrProps = { lin, setLin, rad, setRad, onArrayL: doLinear, onArrayR: doRadial,
@@ -2295,16 +2396,31 @@ export default function PlanEditor({ cssText = "" } = {}) {
             </div>
           )}
 
+          {/* Nitelik boya: artık İKİ eksen (bkz. görev tanımı — tek eksenli
+              seçici iki eksene döndü). Tür (brushKind) TEK seçim — bir
+              koltuk aynı anda yalnız bir fiziksel birimdir. Özellikler
+              (brushFeatures) 0..N işaretlenebilir, türden BAĞIMSIZ —
+              paintOv ikisini HER fırça darbesinde birlikte (bir "hedef
+              değer" olarak) yazar (bkz. paintOv'un dosya başı notu). */}
           {tool === "attr" && (
             <div className="brush">
+              <button className={brushKind === DEFAULT_SEAT_KIND ? "on" : ""} onClick={() => setBrushKind(DEFAULT_SEAT_KIND)}>
+                <i style={{ background: "transparent", border: "1px solid #5A5F70" }} />Tekli (temizle)
+              </button>
               {Object.entries(ATTRS).map(([k, a]) => (
-                <button key={k} className={brush === k ? "on" : ""} onClick={() => setBrush(k)}>
+                <button key={k} className={brushKind === k ? "on" : ""} onClick={() => setBrushKind(k)}>
                   <i style={{ background: a.color }} />{a.short}
                 </button>
               ))}
-              <button className={brush === "" ? "on" : ""} onClick={() => setBrush("")}>
-                <i style={{ background: "transparent", border: "1px solid #5A5F70" }} />Temizle
-              </button>
+              <div className="sep" />
+              <p className="lab">Özellikler</p>
+              {Object.entries(FEATURES).map(([k, f]) => (
+                <label key={k} className="chk">
+                  <input type="checkbox" checked={brushFeatures.includes(k)}
+                    onChange={() => setBrushFeatures(toggleFeature(brushFeatures, k))} />
+                  {f.label}
+                </label>
+              ))}
             </div>
           )}
           {poly && <button className="pri sm" onClick={finishPoly}>Poligonu kapat ({poly.pts.length})</button>}
@@ -2555,8 +2671,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
             {seatMode && drawn.map(({ b, seats, labels }) => (
               <g key={b.id} className={selIds.includes(b.id) ? "blk on" : "blk"}>
                 {seats.map((s) => {
-                  const A = s.at ? ATTRS[s.at] : null;
-                  const w = A?.wide ? 86 : DEF.seatW;
+                  const A = seatBadge(s);
+                  const w = seatKindWidth(s.seatKind);
+                  /* isWheel: SADECE kozmetik (dolgusuz/boş gövde) — eski
+                     `A?.wide` ile AYNI görsel özel durum, hâlâ ATTRS'ten
+                     (bkz. dosya başı notu), yalnız wheelchair_space'te
+                     true. Fiziksel genişlik (w, yukarıda) SEAT_KINDS'ten
+                     geliyor ve TÜM türler için doğru — bu ikisi kasıtlı
+                     ayrı: biri çizim tercihi, öteki ölçü. */
+                  const isWheel = ATTRS[s.seatKind]?.wide;
                   const isSel = selSeats.has(`${b.id}|${s.r},${s.c}`);
                   return (
                     <rect key={s.key} data-b={b.id} data-r={s.r} data-c={s.c}
@@ -2565,27 +2688,38 @@ export default function PlanEditor({ cssText = "" } = {}) {
                     style={selIds.includes(b.id) || isSel
                       ? { strokeWidth: (isSel ? 2.6 : 1.4) * U } : undefined}
                       transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
-                      fill={s.gap ? "none" : s.at === "tech" ? "var(--seatoff)"
-                        : A?.wide ? "none" : chanColor(b)}
-                      fillOpacity={A?.wide ? 0 : 1}
+                      fill={s.gap ? "none" : s.seatKind === "tech" ? "var(--seatoff)"
+                        : isWheel ? "none" : chanColor(b)}
+                      fillOpacity={isWheel ? 0 : 1}
                       stroke={s.gap ? "var(--mut)" : A ? (colorChan === "attr" ? A.color : NEUTRAL) : s.tweak ? "var(--acc)" : "none"}
                       strokeWidth={s.gap ? 1.1 * U : A ? 1.8 * U : 1.2 * U}
                       strokeDasharray={s.gap ? `${3 * U} ${2.4 * U}` : ""} />
                   );
                 })}
-                {seats.filter((s) => ATTRS[s.at]?.wide && !s.gap).map((s) => (
-                  <rect key={`w${s.key}`} x={-43} y={-DEF.seatH / 2 - 3} width={86}
-                    height={DEF.seatH + 6} rx={6}
-                    fill={colorChan === "attr" ? ATTRS[s.at].color : NEUTRAL} fillOpacity={0.14}
-                    transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
-                    pointerEvents="none" />
-                ))}
-                {seatNums && seats.filter((s) => s.at && !s.gap).map((s) => (
-                  <text key={`a${s.key}`} className="atg" x={s.x} y={s.y + 3.4 * U}
-                    style={{ fontSize: 9.5 * U }}
-                    fill={colorChan === "attr" ? ATTRS[s.at].color : NEUTRAL}>{ATTRS[s.at].glyph}</text>
-                ))}
-                {seatNums && seats.filter((s) => !s.gap && !s.at &&
+                {/* boyut halesi: eskiden SADECE wheelchair (86cm sabit), artık
+                    genişliği DEF.seatW'dan farklı olan HER tür (loveseat/
+                    stool dahil) — "bu koltuk standart ölçüde değil" sinyali
+                    artık tek bir türe özel değil. */}
+                {seats.filter((s) => !s.gap && seatKindWidth(s.seatKind) !== DEF.seatW).map((s) => {
+                  const A = seatBadge(s);
+                  const hw = seatKindWidth(s.seatKind);
+                  return (
+                    <rect key={`w${s.key}`} x={-hw / 2} y={-DEF.seatH / 2 - 3} width={hw}
+                      height={DEF.seatH + 6} rx={6}
+                      fill={colorChan === "attr" && A ? A.color : NEUTRAL} fillOpacity={0.14}
+                      transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)}) rotate(${s.rot.toFixed(1)})`}
+                      pointerEvents="none" />
+                  );
+                })}
+                {seatNums && seats.filter((s) => !s.gap && seatBadge(s)).map((s) => {
+                  const A = seatBadge(s);
+                  return (
+                    <text key={`a${s.key}`} className="atg" x={s.x} y={s.y + 3.4 * U}
+                      style={{ fontSize: 9.5 * U }}
+                      fill={colorChan === "attr" ? A.color : NEUTRAL}>{A.glyph}</text>
+                  );
+                })}
+                {seatNums && seats.filter((s) => !s.gap && !seatBadge(s) &&
                   s.x > view.x && s.x < view.x + view.w && s.y > view.y && s.y < view.y + view.h)
                   .map((s) => (
                     <text key={`n${s.key}`} className="snum" fill={onColor(chanColor(b))}
@@ -2709,14 +2843,28 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 </div>
               ))}
 
-              {colorChan === "attr" && Object.entries(attrTotals).filter(([k]) => ATTRS[k]).map(([k, v]) => (
+              {/* Nitelik kanalı artık İKİ liste: tür (seat_kind) + özellik
+                  (features) — raporun ayrımını lejanta da taşıyoruz, aksi
+                  hâlde "3 refakatçi + 1 erişilebilir" gibi bir koltuğun
+                  hem türü hem özelliği aynı satırda karışırdı. */}
+              {colorChan === "attr" && Object.entries(kindTotals).filter(([k]) => ATTRS[k]).map(([k, v]) => (
                 <div key={k} className="at">
                   <i style={{ background: "transparent", border: `2px solid ${ATTRS[k].color}` }} />
                   <span>{ATTRS[k].short}</span>
                   <b className="n">{v.toLocaleString("tr-TR")}</b>
                 </div>
               ))}
-              {colorChan === "attr" && !Object.keys(attrTotals).length && (
+              {colorChan === "attr" && Object.keys(featureTotals).length > 0 && (
+                <p className="lab">Özellikler</p>
+              )}
+              {colorChan === "attr" && Object.entries(featureTotals).filter(([k]) => FEATURES[k]).map(([k, v]) => (
+                <div key={k} className="at">
+                  <i style={{ background: "transparent", border: `2px solid ${FEATURES[k].color}` }} />
+                  <span>{FEATURES[k].short}</span>
+                  <b className="n">{v.toLocaleString("tr-TR")}</b>
+                </div>
+              ))}
+              {colorChan === "attr" && !Object.keys(kindTotals).length && !Object.keys(featureTotals).length && (
                 <p className="mut sm">Hiç nitelik atanmamış</p>
               )}
 
@@ -2972,7 +3120,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <MultiSeatPanel n={selSeats.size} onOps={seatOps}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
           ) : selSeat && seatOv ? (
-            <SeatPanel sel={selSeat} info={selSeatInfo} ov={seatOv} onToggle={(k) => toggleOv(selSeat, k)}
+            <SeatPanel sel={selSeat} info={selSeatInfo} ov={seatOv} eff={seatEffAttr} onToggle={(k) => toggleOv(selSeat, k)}
               onSet={(p) => setOv(selSeat, p)} onClose={() => setSelSeat(null)} />
           ) : selShape ? (
             <ShapePanel s={selShape} blocks={plan.blocks} metas={metaById} onAuto={doAutoGates}
@@ -3020,15 +3168,48 @@ function MultiSeatPanel({ n, onOps, onClear }) {
         <button className="link" onClick={onClear}>bırak</button>
       </div>
 
+      {/* İki AYRI toplu eylem, iki AYRI eksen (bkz. görev tanımı): tür
+          BLOK VARSAYILANINA döner ya da belli bir türe SABİTLENİR (eskiden
+          "Normal koltuk"in delete o.at ile yaptığı — istisnayı SİLMEK,
+          FORCE-etmek değil, bkz. paintOv/SeatPanel'deki AYRI "sıfırla"
+          fikriyle karıştırma). Özellik EKLE/KALDIR ise türe hiç dokunmadan
+          seatFeatures'ı bağımsız değiştirir (resolveSeatKind'in kısmi
+          override desteği tam bunun için var). */}
       <section>
-        <p className="lab">Nitelik ata</p>
+        <p className="lab">Tür ata</p>
         <select className="full" defaultValue="_"
           onChange={(e) => { if (e.target.value === "_") return;
-            const v = e.target.value === "-" ? "" : e.target.value;
-            onOps((o) => { if (v) o.at = v; else delete o.at; return o; }); e.target.value = "_"; }}>
+            const v = e.target.value === "-" ? null : e.target.value;
+            onOps((o) => {
+              delete o.at;
+              if (v === null) { delete o.seatKind; delete o.seatFeatures; }
+              else o.seatKind = v;
+              return o;
+            }); e.target.value = "_"; }}>
           <option value="_">seç…</option>
-          <option value="-">Normal koltuk</option>
+          <option value="-">Bloğun varsayılanı</option>
+          <option value={DEFAULT_SEAT_KIND}>Tekli (sabitle)</option>
           {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
+        </select>
+      </section>
+
+      <section>
+        <p className="lab">Özellik ekle/kaldır</p>
+        <select className="full" defaultValue="_"
+          onChange={(e) => { if (e.target.value === "_") return;
+            const [action, key] = e.target.value.split(":");
+            onOps((o) => {
+              const cur = o.seatFeatures !== undefined ? o.seatFeatures
+                : (o.at !== undefined ? legacyAtToKind(o.at).seatFeatures : []);
+              delete o.at;
+              o.seatFeatures = action === "add" ? sortFeatures([...cur, key]) : cur.filter((f) => f !== key);
+              return o;
+            }); e.target.value = "_"; }}>
+          <option value="_">seç…</option>
+          {Object.entries(FEATURES).flatMap(([k, f]) => [
+            <option key={`a${k}`} value={`add:${k}`}>{f.label} ekle</option>,
+            <option key={`r${k}`} value={`remove:${k}`}>{f.label} kaldır</option>,
+          ])}
         </select>
       </section>
 
@@ -3290,10 +3471,11 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
               onBlur={(e) => e.target.value !== "" && onSet({ pad: Math.max(0, +e.target.value) })} />
           </Row>
         </div>
-        <Row label="Varsayılan nitelik">
-          <select defaultValue="_" onChange={(e) => e.target.value !== "_" && onSet({ attr: e.target.value })}>
+        <Row label="Varsayılan tür">
+          <select defaultValue="_" onChange={(e) => e.target.value !== "_"
+            && onSet({ seatKind: e.target.value, seatFeatures: [], attr: undefined })}>
             <option value="_">değiştirme</option>
-            <option value="">Normal koltuk</option>
+            <option value={DEFAULT_SEAT_KIND}>Tekli (normal)</option>
             {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
           </select>
         </Row>
@@ -3306,7 +3488,7 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
   );
 }
 
-function SeatPanel({ sel, info, ov, onToggle, onSet, onClose }) {
+function SeatPanel({ sel, info, ov, eff, onToggle, onSet, onClose }) {
   return (
     <div className="panel">
       <div className="phead">
@@ -3327,12 +3509,31 @@ function SeatPanel({ sel, info, ov, onToggle, onSet, onClose }) {
           <Row label="Etiket"><input value={ov.label ?? ""} placeholder="otomatik" onChange={(e) => onSet({ label: e.target.value })} /></Row>
         </div>
       </section>
+      {/* İki eksen: tür (tek seçim, eff.seatKind gösterir/yazar) + özellik
+          (0..N, eff.seatFeatures gösterir/toggler). Değişiklik HER İKİSİ de
+          doğrudan koltuğa yazılır (ov.seatKind/ov.seatFeatures) — blok
+          varsayılanına geri dönmek isteyen "Sıfırla"yı DEĞİL, türü elle
+          "Bloğun varsayılanı"na çevirmek yerine burada YOK (eskiden de
+          yoktu — bkz. görev raporu, bu panel her zaman somut bir değer
+          yazdı, MultiSeatPanel'in "Bloğun varsayılanı"na dönen toplu
+          eylemi ayrı bir şey). */}
       <section>
-        <p className="lab">Nitelik</p>
-        <select className="full" value={ov.at ?? ""} onChange={(e) => onSet({ at: e.target.value })}>
-          <option value="">Bloğun varsayılanı / normal</option>
+        <p className="lab">Tür</p>
+        <select className="full" value={eff.seatKind}
+          onChange={(e) => onSet({ seatKind: e.target.value, at: undefined })}>
+          <option value={DEFAULT_SEAT_KIND}>Tekli (normal)</option>
           {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
         </select>
+      </section>
+      <section>
+        <p className="lab">Özellikler</p>
+        {Object.entries(FEATURES).map(([k, f]) => (
+          <label key={k} className="chk">
+            <input type="checkbox" checked={eff.seatFeatures.includes(k)}
+              onChange={() => onSet({ seatFeatures: toggleFeature(eff.seatFeatures, k), at: undefined })} />
+            {f.label}
+          </label>
+        ))}
       </section>
       <section className="acts">
         <button className={ov.gap ? "on" : ""} onClick={() => onToggle("gap")}>Boşluk</button>
@@ -3449,6 +3650,11 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
   const setNum = (p) => onChange({ num: { ...n, ...p } });
   const kindLabel = b.kind === "fan" ? "Yelpaze" : b.kind === "free" ? "Serbest"
     : b.kind === "table" ? "Masa" : "Izgara";
+  /* b.attr (ESKİ, venue dosyaları hâlâ yazıyor — ör. CSO'nun "obstr"
+     bloğu) doğrudan OKUNMAZ: resolveSeatKind ikisini de (yeni seatKind/
+     seatFeatures ya da eski attr) doğru yorumlar, panel HER ZAMAN
+     çözülmüş, somut değeri gösterir. */
+  const blockDefault = resolveSeatKind(b, {});
   /* A6.2'den beri rot/cols/rows/curve/r0/aStart/aEnd tuvaldeki tutamaçla
      doğrudan ayarlanabiliyor (bkz. handlesFor) — panelde ikinci kez tam
      genişlikte sunulmaları artık zorunlu değil, "Gelişmiş" altına inerler.
@@ -3510,17 +3716,30 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
               ))}
             </div>
           </Row>
-          <Row label="Varsayılan nitelik">
-            <select value={b.attr || ""} onChange={(e) => onChange({ attr: e.target.value })}>
-              <option value="">Normal koltuk</option>
+          <Row label="Varsayılan tür">
+            <select value={blockDefault.seatKind}
+              onChange={(e) => onChange({ seatKind: e.target.value, seatFeatures: blockDefault.seatFeatures, attr: undefined })}>
+              <option value={DEFAULT_SEAT_KIND}>Tekli (normal)</option>
               {Object.entries(ATTRS).map(([k, a]) => <option key={k} value={k}>{a.label}</option>)}
             </select>
           </Row>
+          <Row label="Varsayılan özellikler">
+            {Object.entries(FEATURES).map(([k, f]) => (
+              <label key={k} className="chk">
+                <input type="checkbox" checked={blockDefault.seatFeatures.includes(k)}
+                  onChange={() => onChange({ seatFeatures: toggleFeature(blockDefault.seatFeatures, k), attr: undefined })} />
+                {f.label}
+              </label>
+            ))}
+          </Row>
         </div>
-        {meta && Object.keys(meta.attrs || {}).length > 0 && (
+        {meta && (Object.keys(meta.kinds || {}).length > 0 || Object.keys(meta.features || {}).length > 0) && (
           <div className="chips">
-            {Object.entries(meta.attrs).map(([k, v]) => ATTRS[k] && (
+            {Object.entries(meta.kinds || {}).map(([k, v]) => ATTRS[k] && (
               <span key={k}><i style={{ background: ATTRS[k].color }} />{ATTRS[k].short} {v}</span>
+            ))}
+            {Object.entries(meta.features || {}).map(([k, v]) => FEATURES[k] && (
+              <span key={`f${k}`}><i style={{ background: FEATURES[k].color }} />{FEATURES[k].short} {v}</span>
             ))}
           </div>
         )}
