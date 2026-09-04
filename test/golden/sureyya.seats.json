@@ -59,6 +59,7 @@
       ]
     }
   ],
+  "groups": [],
   "seats": [
     {
       "id": "P-1-1",
@@ -71,7 +72,8 @@
       "y": -206.3,
       "rot": -49.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-2",
@@ -84,7 +86,8 @@
       "y": -239.5,
       "rot": -41.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-3",
@@ -97,7 +100,8 @@
       "y": -267.7,
       "rot": -33.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-4",
@@ -110,7 +114,8 @@
       "y": -290.2,
       "rot": -24.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-5",
@@ -123,7 +128,8 @@
       "y": -306.6,
       "rot": -16.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-6",
@@ -136,7 +142,8 @@
       "y": -316.6,
       "rot": -8.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-7",
@@ -149,7 +156,8 @@
       "y": -320,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-8",
@@ -162,7 +170,8 @@
       "y": -316.6,
       "rot": 8.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-9",
@@ -175,7 +184,8 @@
       "y": -306.6,
       "rot": 16.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-10",
@@ -188,7 +198,8 @@
       "y": -290.2,
       "rot": 24.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-11",
@@ -201,7 +212,8 @@
       "y": -267.7,
       "rot": 33.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-12",
@@ -214,7 +226,8 @@
       "y": -239.5,
       "rot": 41.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-1-13",
@@ -227,7 +240,8 @@
       "y": -206.3,
       "rot": 49.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-1",
@@ -240,7 +254,8 @@
       "y": -255,
       "rot": -50.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-2",
@@ -253,7 +268,8 @@
       "y": -289.8,
       "rot": -43.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-3",
@@ -266,7 +282,8 @@
       "y": -320.5,
       "rot": -37.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-4",
@@ -279,7 +296,8 @@
       "y": -346.8,
       "rot": -30.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-5",
@@ -292,7 +310,8 @@
       "y": -368.3,
       "rot": -23.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-6",
@@ -305,7 +324,8 @@
       "y": -384.7,
       "rot": -16.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-7",
@@ -318,7 +338,8 @@
       "y": -395.7,
       "rot": -10.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-8",
@@ -331,7 +352,8 @@
       "y": -401.3,
       "rot": -3.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-9",
@@ -344,7 +366,8 @@
       "y": -401.3,
       "rot": 3.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-10",
@@ -357,7 +380,8 @@
       "y": -395.7,
       "rot": 10.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-11",
@@ -370,7 +394,8 @@
       "y": -384.7,
       "rot": 16.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-12",
@@ -383,7 +408,8 @@
       "y": -368.3,
       "rot": 23.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-13",
@@ -396,7 +422,8 @@
       "y": -346.8,
       "rot": 30.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-14",
@@ -409,7 +436,8 @@
       "y": -320.5,
       "rot": 37.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-15",
@@ -422,7 +450,8 @@
       "y": -289.8,
       "rot": 43.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-2-16",
@@ -435,7 +464,8 @@
       "y": -255,
       "rot": 50.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-1",
@@ -448,7 +478,8 @@
       "y": -303.6,
       "rot": -51.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-2",
@@ -461,7 +492,8 @@
       "y": -339.4,
       "rot": -45.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-3",
@@ -474,7 +506,8 @@
       "y": -371.9,
       "rot": -39.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-4",
@@ -487,7 +520,8 @@
       "y": -400.8,
       "rot": -34.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-5",
@@ -500,7 +534,8 @@
       "y": -425.7,
       "rot": -28.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-6",
@@ -513,7 +548,8 @@
       "y": -446.4,
       "rot": -22.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-7",
@@ -526,7 +562,8 @@
       "y": -462.7,
       "rot": -17.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-8",
@@ -539,7 +576,8 @@
       "y": -474.5,
       "rot": -11.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-9",
@@ -552,7 +590,8 @@
       "y": -481.6,
       "rot": -5.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-10",
@@ -565,7 +604,8 @@
       "y": -484,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-11",
@@ -578,7 +618,8 @@
       "y": -481.6,
       "rot": 5.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-12",
@@ -591,7 +632,8 @@
       "y": -474.5,
       "rot": 11.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-13",
@@ -604,7 +646,8 @@
       "y": -462.7,
       "rot": 17.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-14",
@@ -617,7 +660,8 @@
       "y": -446.4,
       "rot": 22.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-15",
@@ -630,7 +674,8 @@
       "y": -425.7,
       "rot": 28.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-16",
@@ -643,7 +688,8 @@
       "y": -400.8,
       "rot": 34.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-17",
@@ -656,7 +702,8 @@
       "y": -371.9,
       "rot": 39.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-18",
@@ -669,7 +716,8 @@
       "y": -339.4,
       "rot": 45.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-3-19",
@@ -682,7 +730,8 @@
       "y": -303.6,
       "rot": 51.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-1",
@@ -695,7 +744,8 @@
       "y": -351.2,
       "rot": -51.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-2",
@@ -708,7 +758,8 @@
       "y": -386.3,
       "rot": -47,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-3",
@@ -721,7 +772,8 @@
       "y": -418.9,
       "rot": -42.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-4",
@@ -734,7 +786,8 @@
       "y": -448.6,
       "rot": -37.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-5",
@@ -747,7 +800,8 @@
       "y": -475.4,
       "rot": -32.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-6",
@@ -760,7 +814,8 @@
       "y": -498.9,
       "rot": -28.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-7",
@@ -773,7 +828,8 @@
       "y": -519.1,
       "rot": -23.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-8",
@@ -786,7 +842,8 @@
       "y": -535.9,
       "rot": -18.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-9",
@@ -799,7 +856,8 @@
       "y": -549,
       "rot": -14.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-10",
@@ -812,7 +870,8 @@
       "y": -558.4,
       "rot": -9.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-11",
@@ -825,7 +884,8 @@
       "y": -564.1,
       "rot": -4.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-12",
@@ -838,7 +898,8 @@
       "y": -566,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-13",
@@ -851,7 +912,8 @@
       "y": -564.1,
       "rot": 4.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-14",
@@ -864,7 +926,8 @@
       "y": -558.4,
       "rot": 9.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-15",
@@ -877,7 +940,8 @@
       "y": -549,
       "rot": 14.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-16",
@@ -890,7 +954,8 @@
       "y": -535.9,
       "rot": 18.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-17",
@@ -903,7 +968,8 @@
       "y": -519.1,
       "rot": 23.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-18",
@@ -916,7 +982,8 @@
       "y": -498.9,
       "rot": 28.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-19",
@@ -929,7 +996,8 @@
       "y": -475.4,
       "rot": 32.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-20",
@@ -942,7 +1010,8 @@
       "y": -448.6,
       "rot": 37.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-21",
@@ -955,7 +1024,8 @@
       "y": -418.9,
       "rot": 42.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-22",
@@ -968,7 +1038,8 @@
       "y": -386.3,
       "rot": 47,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-4-23",
@@ -981,7 +1052,8 @@
       "y": -351.2,
       "rot": 51.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-1",
@@ -994,7 +1066,8 @@
       "y": -399.6,
       "rot": -51.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-2",
@@ -1007,7 +1080,8 @@
       "y": -435.5,
       "rot": -47.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-3",
@@ -1020,7 +1094,8 @@
       "y": -469.1,
       "rot": -43.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-4",
@@ -1033,7 +1108,8 @@
       "y": -500.3,
       "rot": -39.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-5",
@@ -1046,7 +1122,8 @@
       "y": -528.8,
       "rot": -35.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-6",
@@ -1059,7 +1136,8 @@
       "y": -554.5,
       "rot": -31.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-7",
@@ -1072,7 +1150,8 @@
       "y": -577.4,
       "rot": -27,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-8",
@@ -1085,7 +1164,8 @@
       "y": -597.2,
       "rot": -22.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-9",
@@ -1098,7 +1178,8 @@
       "y": -613.8,
       "rot": -18.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-10",
@@ -1111,7 +1192,8 @@
       "y": -627.3,
       "rot": -14.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-11",
@@ -1124,7 +1206,8 @@
       "y": -637.4,
       "rot": -10.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-12",
@@ -1137,7 +1220,8 @@
       "y": -644.2,
       "rot": -6.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-13",
@@ -1150,7 +1234,8 @@
       "y": -647.6,
       "rot": -2.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-14",
@@ -1163,7 +1248,8 @@
       "y": -647.6,
       "rot": 2.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-15",
@@ -1176,7 +1262,8 @@
       "y": -644.2,
       "rot": 6.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-16",
@@ -1189,7 +1276,8 @@
       "y": -637.4,
       "rot": 10.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-17",
@@ -1202,7 +1290,8 @@
       "y": -627.3,
       "rot": 14.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-18",
@@ -1215,7 +1304,8 @@
       "y": -613.8,
       "rot": 18.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-19",
@@ -1228,7 +1318,8 @@
       "y": -597.2,
       "rot": 22.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-20",
@@ -1241,7 +1332,8 @@
       "y": -577.4,
       "rot": 27,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-21",
@@ -1254,7 +1346,8 @@
       "y": -554.5,
       "rot": 31.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-22",
@@ -1267,7 +1360,8 @@
       "y": -528.8,
       "rot": 35.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-23",
@@ -1280,7 +1374,8 @@
       "y": -500.3,
       "rot": 39.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-24",
@@ -1293,7 +1388,8 @@
       "y": -469.1,
       "rot": 43.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-25",
@@ -1306,7 +1402,8 @@
       "y": -435.5,
       "rot": 47.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-5-26",
@@ -1319,7 +1416,8 @@
       "y": -399.6,
       "rot": 51.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-1",
@@ -1332,7 +1430,8 @@
       "y": -448,
       "rot": -52.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-2",
@@ -1345,7 +1444,8 @@
       "y": -484.5,
       "rot": -48.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-3",
@@ -1358,7 +1458,8 @@
       "y": -519,
       "rot": -44.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-4",
@@ -1371,7 +1472,8 @@
       "y": -551.2,
       "rot": -41,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-5",
@@ -1384,7 +1486,8 @@
       "y": -581.1,
       "rot": -37.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-6",
@@ -1397,7 +1500,8 @@
       "y": -608.6,
       "rot": -33.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-7",
@@ -1410,7 +1514,8 @@
       "y": -633.5,
       "rot": -29.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-8",
@@ -1423,7 +1528,8 @@
       "y": -655.7,
       "rot": -26.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-9",
@@ -1436,7 +1542,8 @@
       "y": -675.2,
       "rot": -22.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-10",
@@ -1449,7 +1556,8 @@
       "y": -691.8,
       "rot": -18.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-11",
@@ -1462,7 +1570,8 @@
       "y": -705.5,
       "rot": -14.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-12",
@@ -1475,7 +1584,8 @@
       "y": -716.2,
       "rot": -11.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-13",
@@ -1488,7 +1598,8 @@
       "y": -723.8,
       "rot": -7.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-14",
@@ -1501,7 +1612,8 @@
       "y": -728.5,
       "rot": -3.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-15",
@@ -1514,7 +1626,8 @@
       "y": -730,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-16",
@@ -1527,7 +1640,8 @@
       "y": -728.5,
       "rot": 3.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-17",
@@ -1540,7 +1654,8 @@
       "y": -723.8,
       "rot": 7.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-18",
@@ -1553,7 +1668,8 @@
       "y": -716.2,
       "rot": 11.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-19",
@@ -1566,7 +1682,8 @@
       "y": -705.5,
       "rot": 14.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-20",
@@ -1579,7 +1696,8 @@
       "y": -691.8,
       "rot": 18.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-21",
@@ -1592,7 +1710,8 @@
       "y": -675.2,
       "rot": 22.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-22",
@@ -1605,7 +1724,8 @@
       "y": -655.7,
       "rot": 26.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-23",
@@ -1618,7 +1738,8 @@
       "y": -633.5,
       "rot": 29.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-24",
@@ -1631,7 +1752,8 @@
       "y": -608.6,
       "rot": 33.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-25",
@@ -1644,7 +1766,8 @@
       "y": -581.1,
       "rot": 37.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-26",
@@ -1657,7 +1780,8 @@
       "y": -551.2,
       "rot": 41,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-27",
@@ -1670,7 +1794,8 @@
       "y": -519,
       "rot": 44.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-28",
@@ -1683,7 +1808,8 @@
       "y": -484.5,
       "rot": 48.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-6-29",
@@ -1696,7 +1822,8 @@
       "y": -448,
       "rot": 52.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-1",
@@ -1711,7 +1838,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "P-7-2",
@@ -1726,7 +1854,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "P-7-3",
@@ -1741,7 +1870,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "P-7-4",
@@ -1756,7 +1886,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "P-7-5",
@@ -1769,7 +1900,8 @@
       "y": -628.6,
       "rot": -39.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-6",
@@ -1782,7 +1914,8 @@
       "y": -656.9,
       "rot": -36,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-7",
@@ -1795,7 +1928,8 @@
       "y": -683.1,
       "rot": -32.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-8",
@@ -1808,7 +1942,8 @@
       "y": -707,
       "rot": -29.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-9",
@@ -1821,7 +1956,8 @@
       "y": -728.7,
       "rot": -26.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-10",
@@ -1834,7 +1970,8 @@
       "y": -748,
       "rot": -22.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-11",
@@ -1847,7 +1984,8 @@
       "y": -764.8,
       "rot": -19.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-12",
@@ -1860,7 +1998,8 @@
       "y": -779.1,
       "rot": -16.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-13",
@@ -1873,7 +2012,8 @@
       "y": -790.9,
       "rot": -13.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-14",
@@ -1886,7 +2026,8 @@
       "y": -800.1,
       "rot": -9.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-15",
@@ -1899,7 +2040,8 @@
       "y": -806.7,
       "rot": -6.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-16",
@@ -1912,7 +2054,8 @@
       "y": -810.7,
       "rot": -3.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-17",
@@ -1925,7 +2068,8 @@
       "y": -812,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-18",
@@ -1938,7 +2082,8 @@
       "y": -810.7,
       "rot": 3.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-19",
@@ -1951,7 +2096,8 @@
       "y": -806.7,
       "rot": 6.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-20",
@@ -1964,7 +2110,8 @@
       "y": -800.1,
       "rot": 9.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-21",
@@ -1977,7 +2124,8 @@
       "y": -790.9,
       "rot": 13.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-22",
@@ -1990,7 +2138,8 @@
       "y": -779.1,
       "rot": 16.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-23",
@@ -2003,7 +2152,8 @@
       "y": -764.8,
       "rot": 19.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-24",
@@ -2016,7 +2166,8 @@
       "y": -748,
       "rot": 22.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-25",
@@ -2029,7 +2180,8 @@
       "y": -728.7,
       "rot": 26.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-26",
@@ -2042,7 +2194,8 @@
       "y": -707,
       "rot": 29.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-27",
@@ -2055,7 +2208,8 @@
       "y": -683.1,
       "rot": 32.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-28",
@@ -2068,7 +2222,8 @@
       "y": -656.9,
       "rot": 36,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-29",
@@ -2081,7 +2236,8 @@
       "y": -628.6,
       "rot": 39.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-30",
@@ -2094,7 +2250,8 @@
       "y": -598.2,
       "rot": 42.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-31",
@@ -2107,7 +2264,8 @@
       "y": -565.9,
       "rot": 45.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-32",
@@ -2120,7 +2278,8 @@
       "y": -531.7,
       "rot": 49.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "P-7-33",
@@ -2133,7 +2292,8 @@
       "y": -495.8,
       "rot": 52.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "ZL1-1-1",
@@ -2148,7 +2308,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL1-1-2",
@@ -2163,7 +2324,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL1-1-3",
@@ -2176,7 +2338,8 @@
       "y": -85.9,
       "rot": -79.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "ZL1-2-1",
@@ -2191,7 +2354,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL1-2-2",
@@ -2206,7 +2370,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL1-2-3",
@@ -2219,7 +2384,8 @@
       "y": -92.8,
       "rot": -80.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "ZL2-1-1",
@@ -2234,7 +2400,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL2-1-2",
@@ -2249,7 +2416,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL2-1-3",
@@ -2262,7 +2430,8 @@
       "y": 5.6,
       "rot": 90.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "ZL2-2-1",
@@ -2277,7 +2446,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL2-2-2",
@@ -2292,7 +2462,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": null
     },
     {
       "id": "ZL2-2-3",
@@ -2305,7 +2476,8 @@
       "y": -1.3,
       "rot": 89.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-1",
@@ -2318,7 +2490,8 @@
       "y": -784.2,
       "rot": -32.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-2",
@@ -2331,7 +2504,8 @@
       "y": -808.9,
       "rot": -29.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-3",
@@ -2344,7 +2518,8 @@
       "y": -831.5,
       "rot": -26.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-4",
@@ -2357,7 +2532,8 @@
       "y": -851.9,
       "rot": -23.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-5",
@@ -2370,7 +2546,8 @@
       "y": -870,
       "rot": -20.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-6",
@@ -2383,7 +2560,8 @@
       "y": -885.8,
       "rot": -17.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-7",
@@ -2396,7 +2574,8 @@
       "y": -899.2,
       "rot": -14.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-8",
@@ -2409,7 +2588,8 @@
       "y": -910.3,
       "rot": -11.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-9",
@@ -2422,7 +2602,8 @@
       "y": -918.9,
       "rot": -8.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-10",
@@ -2435,7 +2616,8 @@
       "y": -925.1,
       "rot": -5.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-11",
@@ -2448,7 +2630,8 @@
       "y": -928.8,
       "rot": -3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-12",
@@ -2461,7 +2644,8 @@
       "y": -930,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-13",
@@ -2474,7 +2658,8 @@
       "y": -928.8,
       "rot": 3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-14",
@@ -2487,7 +2672,8 @@
       "y": -925.1,
       "rot": 5.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-15",
@@ -2500,7 +2686,8 @@
       "y": -918.9,
       "rot": 8.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-16",
@@ -2513,7 +2700,8 @@
       "y": -910.3,
       "rot": 11.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-17",
@@ -2526,7 +2714,8 @@
       "y": -899.2,
       "rot": 14.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-18",
@@ -2539,7 +2728,8 @@
       "y": -885.8,
       "rot": 17.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-19",
@@ -2552,7 +2742,8 @@
       "y": -870,
       "rot": 20.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-20",
@@ -2565,7 +2756,8 @@
       "y": -851.9,
       "rot": 23.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-21",
@@ -2578,7 +2770,8 @@
       "y": -831.5,
       "rot": 26.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-22",
@@ -2591,7 +2784,8 @@
       "y": -808.9,
       "rot": 29.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-A-23",
@@ -2604,7 +2798,8 @@
       "y": -784.2,
       "rot": 32.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-1",
@@ -2617,7 +2812,8 @@
       "y": -835.3,
       "rot": -32.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-2",
@@ -2630,7 +2826,8 @@
       "y": -859.8,
       "rot": -29.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-3",
@@ -2643,7 +2840,8 @@
       "y": -882.3,
       "rot": -27.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-4",
@@ -2656,7 +2854,8 @@
       "y": -902.8,
       "rot": -24.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-5",
@@ -2669,7 +2868,8 @@
       "y": -921.3,
       "rot": -21.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-6",
@@ -2682,7 +2882,8 @@
       "y": -937.7,
       "rot": -19,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-7",
@@ -2695,7 +2896,8 @@
       "y": -952,
       "rot": -16.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-8",
@@ -2708,7 +2910,8 @@
       "y": -964.2,
       "rot": -13.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-9",
@@ -2721,7 +2924,8 @@
       "y": -974.2,
       "rot": -10.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-10",
@@ -2734,7 +2938,8 @@
       "y": -982,
       "rot": -8.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-11",
@@ -2747,7 +2952,8 @@
       "y": -987.5,
       "rot": -5.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-12",
@@ -2760,7 +2966,8 @@
       "y": -990.9,
       "rot": -2.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-13",
@@ -2773,7 +2980,8 @@
       "y": -992,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-14",
@@ -2786,7 +2994,8 @@
       "y": -990.9,
       "rot": 2.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-15",
@@ -2799,7 +3008,8 @@
       "y": -987.5,
       "rot": 5.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-16",
@@ -2812,7 +3022,8 @@
       "y": -982,
       "rot": 8.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-17",
@@ -2825,7 +3036,8 @@
       "y": -974.2,
       "rot": 10.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-18",
@@ -2838,7 +3050,8 @@
       "y": -964.2,
       "rot": 13.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-19",
@@ -2851,7 +3064,8 @@
       "y": -952,
       "rot": 16.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-20",
@@ -2864,7 +3078,8 @@
       "y": -937.7,
       "rot": 19,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-21",
@@ -2877,7 +3092,8 @@
       "y": -921.3,
       "rot": 21.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-22",
@@ -2890,7 +3106,8 @@
       "y": -902.8,
       "rot": 24.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-23",
@@ -2903,7 +3120,8 @@
       "y": -882.3,
       "rot": 27.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-24",
@@ -2916,7 +3134,8 @@
       "y": -859.8,
       "rot": 29.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-B-25",
@@ -2929,7 +3148,8 @@
       "y": -835.3,
       "rot": 32.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-1",
@@ -2942,7 +3162,8 @@
       "y": -887,
       "rot": -32.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-2",
@@ -2955,7 +3176,8 @@
       "y": -912.1,
       "rot": -30.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-3",
@@ -2968,7 +3190,8 @@
       "y": -935.2,
       "rot": -27.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-4",
@@ -2981,7 +3204,8 @@
       "y": -956.4,
       "rot": -24.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-5",
@@ -2994,7 +3218,8 @@
       "y": -975.7,
       "rot": -22.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-6",
@@ -3007,7 +3232,8 @@
       "y": -992.8,
       "rot": -19.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-7",
@@ -3020,7 +3246,8 @@
       "y": -1007.9,
       "rot": -17,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-8",
@@ -3033,7 +3260,8 @@
       "y": -1021,
       "rot": -14.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-9",
@@ -3046,7 +3274,8 @@
       "y": -1031.8,
       "rot": -11.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-10",
@@ -3059,7 +3288,8 @@
       "y": -1040.6,
       "rot": -9.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-11",
@@ -3072,7 +3302,8 @@
       "y": -1047.1,
       "rot": -6.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-12",
@@ -3085,7 +3316,8 @@
       "y": -1051.5,
       "rot": -3.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-13",
@@ -3098,7 +3330,8 @@
       "y": -1053.7,
       "rot": -1.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-14",
@@ -3111,7 +3344,8 @@
       "y": -1053.7,
       "rot": 1.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-15",
@@ -3124,7 +3358,8 @@
       "y": -1051.5,
       "rot": 3.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-16",
@@ -3137,7 +3372,8 @@
       "y": -1047.1,
       "rot": 6.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-17",
@@ -3150,7 +3386,8 @@
       "y": -1040.6,
       "rot": 9.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-18",
@@ -3163,7 +3400,8 @@
       "y": -1031.8,
       "rot": 11.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-19",
@@ -3176,7 +3414,8 @@
       "y": -1021,
       "rot": 14.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-20",
@@ -3189,7 +3428,8 @@
       "y": -1007.9,
       "rot": 17,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-21",
@@ -3202,7 +3442,8 @@
       "y": -992.8,
       "rot": 19.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-22",
@@ -3215,7 +3456,8 @@
       "y": -975.7,
       "rot": 22.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-23",
@@ -3228,7 +3470,8 @@
       "y": -956.4,
       "rot": 24.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-24",
@@ -3241,7 +3484,8 @@
       "y": -935.2,
       "rot": 27.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-25",
@@ -3254,7 +3498,8 @@
       "y": -912.1,
       "rot": 30.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-C-26",
@@ -3267,7 +3512,8 @@
       "y": -887,
       "rot": 32.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-1",
@@ -3280,7 +3526,8 @@
       "y": -938.2,
       "rot": -32.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-2",
@@ -3293,7 +3540,8 @@
       "y": -963,
       "rot": -30.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-3",
@@ -3306,7 +3554,8 @@
       "y": -986,
       "rot": -27.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-4",
@@ -3319,7 +3568,8 @@
       "y": -1007.3,
       "rot": -25.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-5",
@@ -3332,7 +3582,8 @@
       "y": -1026.7,
       "rot": -23.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-6",
@@ -3345,7 +3596,8 @@
       "y": -1044.3,
       "rot": -20.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-7",
@@ -3358,7 +3610,8 @@
       "y": -1060.1,
       "rot": -18.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-8",
@@ -3371,7 +3624,8 @@
       "y": -1073.9,
       "rot": -15.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-9",
@@ -3384,7 +3638,8 @@
       "y": -1085.8,
       "rot": -13.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-10",
@@ -3397,7 +3652,8 @@
       "y": -1095.8,
       "rot": -10.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-11",
@@ -3410,7 +3666,8 @@
       "y": -1103.7,
       "rot": -8.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-12",
@@ -3423,7 +3680,8 @@
       "y": -1109.7,
       "rot": -6.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-13",
@@ -3436,7 +3694,8 @@
       "y": -1113.7,
       "rot": -3.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-14",
@@ -3449,7 +3708,8 @@
       "y": -1115.7,
       "rot": -1.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-15",
@@ -3462,7 +3722,8 @@
       "y": -1115.7,
       "rot": 1.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-16",
@@ -3475,7 +3736,8 @@
       "y": -1113.7,
       "rot": 3.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-17",
@@ -3488,7 +3750,8 @@
       "y": -1109.7,
       "rot": 6.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-18",
@@ -3501,7 +3764,8 @@
       "y": -1103.7,
       "rot": 8.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-19",
@@ -3514,7 +3778,8 @@
       "y": -1095.8,
       "rot": 10.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-20",
@@ -3527,7 +3792,8 @@
       "y": -1085.8,
       "rot": 13.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-21",
@@ -3540,7 +3806,8 @@
       "y": -1073.9,
       "rot": 15.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-22",
@@ -3553,7 +3820,8 @@
       "y": -1060.1,
       "rot": 18.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-23",
@@ -3566,7 +3834,8 @@
       "y": -1044.3,
       "rot": 20.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-24",
@@ -3579,7 +3848,8 @@
       "y": -1026.7,
       "rot": 23.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-25",
@@ -3592,7 +3862,8 @@
       "y": -1007.3,
       "rot": 25.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-26",
@@ -3605,7 +3876,8 @@
       "y": -986,
       "rot": 27.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-27",
@@ -3618,7 +3890,8 @@
       "y": -963,
       "rot": 30.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-D-28",
@@ -3631,7 +3904,8 @@
       "y": -938.2,
       "rot": 32.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-1",
@@ -3644,7 +3918,8 @@
       "y": -989.9,
       "rot": -32.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-2",
@@ -3657,7 +3932,8 @@
       "y": -1015.2,
       "rot": -30.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-3",
@@ -3670,7 +3946,8 @@
       "y": -1038.8,
       "rot": -28.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-4",
@@ -3683,7 +3960,8 @@
       "y": -1060.6,
       "rot": -25.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-5",
@@ -3696,7 +3974,8 @@
       "y": -1080.7,
       "rot": -23.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-6",
@@ -3709,7 +3988,8 @@
       "y": -1099,
       "rot": -21.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-7",
@@ -3722,7 +4002,8 @@
       "y": -1115.4,
       "rot": -18.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-8",
@@ -3735,7 +4016,8 @@
       "y": -1130,
       "rot": -16.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-9",
@@ -3748,7 +4030,8 @@
       "y": -1142.7,
       "rot": -14.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-10",
@@ -3761,7 +4044,8 @@
       "y": -1153.4,
       "rot": -11.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-11",
@@ -3774,7 +4058,8 @@
       "y": -1162.3,
       "rot": -9.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-12",
@@ -3787,7 +4072,8 @@
       "y": -1169.1,
       "rot": -7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-13",
@@ -3800,7 +4086,8 @@
       "y": -1174.1,
       "rot": -4.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-14",
@@ -3813,7 +4100,8 @@
       "y": -1177,
       "rot": -2.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-15",
@@ -3826,7 +4114,8 @@
       "y": -1178,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-16",
@@ -3839,7 +4128,8 @@
       "y": -1177,
       "rot": 2.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-17",
@@ -3852,7 +4142,8 @@
       "y": -1174.1,
       "rot": 4.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-18",
@@ -3865,7 +4156,8 @@
       "y": -1169.1,
       "rot": 7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-19",
@@ -3878,7 +4170,8 @@
       "y": -1162.3,
       "rot": 9.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-20",
@@ -3891,7 +4184,8 @@
       "y": -1153.4,
       "rot": 11.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-21",
@@ -3904,7 +4198,8 @@
       "y": -1142.7,
       "rot": 14.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-22",
@@ -3917,7 +4212,8 @@
       "y": -1130,
       "rot": 16.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-23",
@@ -3930,7 +4226,8 @@
       "y": -1115.4,
       "rot": 18.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-24",
@@ -3943,7 +4240,8 @@
       "y": -1099,
       "rot": 21.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-25",
@@ -3956,7 +4254,8 @@
       "y": -1080.7,
       "rot": 23.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-26",
@@ -3969,7 +4268,8 @@
       "y": -1060.6,
       "rot": 25.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-27",
@@ -3982,7 +4282,8 @@
       "y": -1038.8,
       "rot": 28.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-28",
@@ -3995,7 +4296,8 @@
       "y": -1015.2,
       "rot": 30.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "A-E-29",
@@ -4008,7 +4310,8 @@
       "y": -989.9,
       "rot": 32.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L1-1-1",
@@ -4021,7 +4324,8 @@
       "y": -310.9,
       "rot": -70.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L1-1-2",
@@ -4034,7 +4338,8 @@
       "y": -353.9,
       "rot": -67.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L1-1-3",
@@ -4047,7 +4352,8 @@
       "y": -396,
       "rot": -64.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L1-2-1",
@@ -4060,7 +4366,8 @@
       "y": -340.7,
       "rot": -70.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L1-2-2",
@@ -4073,7 +4380,8 @@
       "y": -383.6,
       "rot": -67.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L1-2-3",
@@ -4086,7 +4394,8 @@
       "y": -425.7,
       "rot": -65,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L3-1-1",
@@ -4099,7 +4408,8 @@
       "y": -396,
       "rot": 64.8,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L3-1-2",
@@ -4112,7 +4422,8 @@
       "y": -353.9,
       "rot": 67.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L3-1-3",
@@ -4125,7 +4436,8 @@
       "y": -310.9,
       "rot": 70.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L3-2-1",
@@ -4138,7 +4450,8 @@
       "y": -425.7,
       "rot": 65,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L3-2-2",
@@ -4151,7 +4464,8 @@
       "y": -383.6,
       "rot": 67.6,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L3-2-3",
@@ -4164,7 +4478,8 @@
       "y": -340.7,
       "rot": 70.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L2-1-1",
@@ -4177,7 +4492,8 @@
       "y": -69.2,
       "rot": -85.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L2-1-2",
@@ -4190,7 +4506,8 @@
       "y": -115,
       "rot": -82.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L2-1-3",
@@ -4203,7 +4520,8 @@
       "y": -160.4,
       "rot": -80.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L2-2-1",
@@ -4216,7 +4534,8 @@
       "y": -78.8,
       "rot": -85.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L2-2-2",
@@ -4229,7 +4548,8 @@
       "y": -124.6,
       "rot": -82.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L2-2-3",
@@ -4242,7 +4562,8 @@
       "y": -170.1,
       "rot": -80.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L4-1-1",
@@ -4255,7 +4576,8 @@
       "y": -160.4,
       "rot": 80.1,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L4-1-2",
@@ -4268,7 +4590,8 @@
       "y": -115,
       "rot": 82.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L4-1-3",
@@ -4281,7 +4604,8 @@
       "y": -69.2,
       "rot": 85.7,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L4-2-1",
@@ -4294,7 +4618,8 @@
       "y": -170.1,
       "rot": 80.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L4-2-2",
@@ -4307,7 +4632,8 @@
       "y": -124.6,
       "rot": 82.9,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "1L4-2-3",
@@ -4320,7 +4646,8 @@
       "y": -78.8,
       "rot": 85.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L1-1-1",
@@ -4333,7 +4660,8 @@
       "y": -864.3,
       "rot": -47.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L1-1-2",
@@ -4346,7 +4674,8 @@
       "y": -897.7,
       "rot": -45.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L1-1-3",
@@ -4359,7 +4688,8 @@
       "y": -929.9,
       "rot": -43.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L1-2-1",
@@ -4372,7 +4702,8 @@
       "y": -913.4,
       "rot": -47.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L1-2-2",
@@ -4385,7 +4716,8 @@
       "y": -946.7,
       "rot": -45.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L1-2-3",
@@ -4398,7 +4730,8 @@
       "y": -979,
       "rot": -43.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L6-1-1",
@@ -4411,7 +4744,8 @@
       "y": -929.9,
       "rot": 43.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L6-1-2",
@@ -4424,7 +4758,8 @@
       "y": -897.7,
       "rot": 45.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L6-1-3",
@@ -4437,7 +4772,8 @@
       "y": -864.3,
       "rot": 47.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L6-2-1",
@@ -4450,7 +4786,8 @@
       "y": -979,
       "rot": 43.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L6-2-2",
@@ -4463,7 +4800,8 @@
       "y": -946.7,
       "rot": 45.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L6-2-3",
@@ -4476,7 +4814,8 @@
       "y": -913.4,
       "rot": 47.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L2-1-1",
@@ -4489,7 +4828,8 @@
       "y": -669.4,
       "rot": -58.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L2-1-2",
@@ -4502,7 +4842,8 @@
       "y": -708.2,
       "rot": -56.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L2-1-3",
@@ -4515,7 +4856,8 @@
       "y": -746.1,
       "rot": -54.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L2-2-1",
@@ -4528,7 +4870,8 @@
       "y": -708.2,
       "rot": -58.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L2-2-2",
@@ -4541,7 +4884,8 @@
       "y": -746.9,
       "rot": -56.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L2-2-3",
@@ -4554,7 +4898,8 @@
       "y": -784.8,
       "rot": -54.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L7-1-1",
@@ -4567,7 +4912,8 @@
       "y": -746.1,
       "rot": 54.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L7-1-2",
@@ -4580,7 +4926,8 @@
       "y": -708.2,
       "rot": 56.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L7-1-3",
@@ -4593,7 +4940,8 @@
       "y": -669.4,
       "rot": 58.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L7-2-1",
@@ -4606,7 +4954,8 @@
       "y": -784.8,
       "rot": 54.5,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L7-2-2",
@@ -4619,7 +4968,8 @@
       "y": -746.9,
       "rot": 56.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L7-2-3",
@@ -4632,7 +4982,8 @@
       "y": -708.2,
       "rot": 58.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L3-1-1",
@@ -4645,7 +4996,8 @@
       "y": -450.3,
       "rot": -69.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L3-1-2",
@@ -4658,7 +5010,8 @@
       "y": -493,
       "rot": -67.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L3-1-3",
@@ -4671,7 +5024,8 @@
       "y": -535.1,
       "rot": -65.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L3-2-1",
@@ -4684,7 +5038,8 @@
       "y": -477.2,
       "rot": -69.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L3-2-2",
@@ -4697,7 +5052,8 @@
       "y": -520,
       "rot": -67.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L3-2-3",
@@ -4710,7 +5066,8 @@
       "y": -562.1,
       "rot": -65.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L8-1-1",
@@ -4723,7 +5080,8 @@
       "y": -535.1,
       "rot": 65.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L8-1-2",
@@ -4736,7 +5094,8 @@
       "y": -493,
       "rot": 67.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L8-1-3",
@@ -4749,7 +5108,8 @@
       "y": -450.3,
       "rot": 69.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L8-2-1",
@@ -4762,7 +5122,8 @@
       "y": -562.1,
       "rot": 65.4,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L8-2-2",
@@ -4775,7 +5136,8 @@
       "y": -520,
       "rot": 67.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L8-2-3",
@@ -4788,7 +5150,8 @@
       "y": -477.2,
       "rot": 69.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L4-1-1",
@@ -4801,7 +5164,8 @@
       "y": -214.7,
       "rot": -80.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L4-1-2",
@@ -4814,7 +5178,8 @@
       "y": -259.9,
       "rot": -78.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L4-1-3",
@@ -4827,7 +5192,8 @@
       "y": -304.8,
       "rot": -76.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L4-2-1",
@@ -4840,7 +5206,8 @@
       "y": -229,
       "rot": -80.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L4-2-2",
@@ -4853,7 +5220,8 @@
       "y": -274.1,
       "rot": -78.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L4-2-3",
@@ -4866,7 +5234,8 @@
       "y": -319,
       "rot": -76.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L9-1-1",
@@ -4879,7 +5248,8 @@
       "y": -304.8,
       "rot": 76.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L9-1-2",
@@ -4892,7 +5262,8 @@
       "y": -259.9,
       "rot": 78.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L9-1-3",
@@ -4905,7 +5276,8 @@
       "y": -214.7,
       "rot": 80.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L9-2-1",
@@ -4918,7 +5290,8 @@
       "y": -319,
       "rot": 76.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L9-2-2",
@@ -4931,7 +5304,8 @@
       "y": -274.1,
       "rot": 78.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L9-2-3",
@@ -4944,7 +5318,8 @@
       "y": -229,
       "rot": 80.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L5-1-1",
@@ -4957,7 +5332,8 @@
       "y": 28.6,
       "rot": -91.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L5-1-2",
@@ -4970,7 +5346,8 @@
       "y": -17.4,
       "rot": -89.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L5-1-3",
@@ -4983,7 +5360,8 @@
       "y": -63.4,
       "rot": -87.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L5-2-1",
@@ -4996,7 +5374,8 @@
       "y": 27.7,
       "rot": -91.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L5-2-2",
@@ -5009,7 +5388,8 @@
       "y": -18.3,
       "rot": -89.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L5-2-3",
@@ -5022,7 +5402,8 @@
       "y": -64.3,
       "rot": -87.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L10-1-1",
@@ -5035,7 +5416,8 @@
       "y": -63.4,
       "rot": 87.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L10-1-2",
@@ -5048,7 +5430,8 @@
       "y": -17.4,
       "rot": 89.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L10-1-3",
@@ -5061,7 +5444,8 @@
       "y": 28.6,
       "rot": 91.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L10-2-1",
@@ -5074,7 +5458,8 @@
       "y": -64.3,
       "rot": 87.3,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L10-2-2",
@@ -5087,7 +5472,8 @@
       "y": -18.3,
       "rot": 89.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "2L10-2-3",
@@ -5100,7 +5486,8 @@
       "y": 27.7,
       "rot": 91.2,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     }
   ]
 }

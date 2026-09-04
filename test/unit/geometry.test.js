@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { parseCounts, countAt, prep, offsetFor, footprintPad, tableCells,
-  SEAT_KINDS, DEF, DEFAULT_SEAT_KIND, seatKindWidth, legacyAtToKind, resolveSeatKind, buildSeats }
+  SEAT_KINDS, DEF, DEFAULT_SEAT_KIND, seatKindWidth, legacyAtToKind, resolveSeatKind, buildSeats,
+  tableGroupId, resolveSeatGroup, resolvePlanGroups }
   from "../../src/core/geometry.js";
 
 describe("parseCounts — sayım şartnamesi metni", () => {
@@ -219,5 +220,66 @@ describe("buildSeats — SADECE eski attr/at alanlarıyla kurulmuş bir blok (ve
   });
   it("hiçbir koltuk eski `at` alanını TAŞIMAZ — çıktı tamamen yeni model", () => {
     seats.forEach((s) => expect(s).not.toHaveProperty("at"));
+  });
+});
+
+/* resolveSeatGroup — resolveSeatKind'in seat_group eşi (rapor §5.3).
+   Öncelik: ov istisnası (null dahil) > masa bloğu varsayılanı > grupsuz. */
+describe("resolveSeatGroup — masa varsayılanı + ov istisnası önceliği", () => {
+  it("masa DIŞI bir blokta istisna yoksa grup yok (null)", () => {
+    expect(resolveSeatGroup({ id: "b1", kind: "grid" }, {})).toBeNull();
+  });
+  it("kind:\"table\" bloğunda istisna yoksa grup, bloğun KENDİ id'si (tableGroupId)", () => {
+    const b = { id: "b7", kind: "table" };
+    expect(resolveSeatGroup(b, {})).toBe("b7");
+    expect(resolveSeatGroup(b, {})).toBe(tableGroupId(b));
+  });
+  it("ov.groupId TANIMLIYSA masa varsayılanını da geçersiz kılar", () => {
+    const b = { id: "b7", kind: "table" };
+    expect(resolveSeatGroup(b, { groupId: "grp-companion-1" })).toBe("grp-companion-1");
+  });
+  it("ov.groupId AÇIKÇA null ise koltuk masa grubundan ÇIKARILIR (undefined'dan farklı)", () => {
+    const b = { id: "b7", kind: "table" };
+    expect(resolveSeatGroup(b, { groupId: null })).toBeNull();
+  });
+  it("masa DIŞI bir blokta ov.groupId yine de atanabilir (box/loveseat/companion_group — elle atıf)", () => {
+    expect(resolveSeatGroup({ id: "b1", kind: "grid" }, { groupId: "grp-box-1" })).toBe("grp-box-1");
+  });
+  it("ov'daki ALAKASIZ anahtarlar (dx/label) grup atfını etkilemez", () => {
+    expect(resolveSeatGroup({ id: "b1", kind: "grid" }, { dx: 5 })).toBeNull();
+  });
+});
+
+/* resolvePlanGroups — kayıtlı (plan.groups) + masa-türevi grupların
+   BİRLEŞTİRİLMİŞ listesi. export.js VE rules.js'in companion_group
+   kuralı TEK bu fonksiyonu okur (bkz. o dosyaların notu). */
+describe("resolvePlanGroups — kayıtlı + masa-türevi grupların birleşimi", () => {
+  it("plan.groups yoksa (venue dosyaları, hiç migrate() görmez) çökmez, boş listeden başlar", () => {
+    expect(resolvePlanGroups({ blocks: [] })).toEqual([]);
+  });
+  it("kayıtlı bir grup (companion_group) OLDUĞU GİBİ listede yer alır", () => {
+    const plan = { groups: [{ id: "g1", code: "REF-1", name: "Refakatçi 1", kind: "companion_group" }], blocks: [] };
+    expect(resolvePlanGroups(plan)).toEqual(plan.groups);
+  });
+  it("kind:\"table\" bloğu SAKLANMADAN türetilir: id=blok id'si, code=label, name=name||label, kind='table'", () => {
+    const plan = { groups: [], blocks: [
+      { id: "b1", kind: "table", label: "M1", name: "Masa 1" },
+      { id: "b2", kind: "table", label: "M2" }, // name yok → label'a düşer
+      { id: "b3", kind: "grid", label: "A" },   // masa DEĞİL, listeye girmez
+    ] };
+    expect(resolvePlanGroups(plan)).toEqual([
+      { id: "b1", code: "M1", name: "Masa 1", kind: "table" },
+      { id: "b2", code: "M2", name: "M2", kind: "table" },
+    ]);
+  });
+  it("kayıtlı gruplar + masa grupları AYNI listede, kayıtlılar ÖNCE gelir", () => {
+    const plan = {
+      groups: [{ id: "g1", code: "REF-1", name: "Refakatçi 1", kind: "companion_group" }],
+      blocks: [{ id: "b1", kind: "table", label: "M1" }],
+    };
+    const groups = resolvePlanGroups(plan);
+    expect(groups).toHaveLength(2);
+    expect(groups[0].kind).toBe("companion_group");
+    expect(groups[1]).toEqual({ id: "b1", code: "M1", name: "M1", kind: "table" });
   });
 });

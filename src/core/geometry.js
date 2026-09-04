@@ -14,8 +14,9 @@ export const DEF = { seatGap: 50, rowGap: 90, seatW: 41, seatH: 38 };
      features   = bu yerin erişim/görüş özelliği (0..N) — sözlüğü (etiket/
                   renk) PlanEditor.jsx'teki FEATURES'ta, burası sadece
                   değerleri (legacyAtToKind) bilir.
-     seat_group = hangi yerler birlikte seçilir/satılır — BU GÖREVİN VE BU
-                  DOSYANIN KAPSAMI DIŞINDA, raporun kendi ayrımı, sonraki iş.
+     seat_group = hangi yerler birlikte TEK birim sayılır (masa, loca,
+                  love-seat çifti, refakatçi grubu...) — bu dosyada AŞAĞIDA,
+                  resolveSeatGroup/resolvePlanGroups, §5.3.
    width: koltuğun çizilen GENİŞLİĞİ (cm). Eskiden ATTRS[k].wide → sabit 86
    tek bir "geniş" bayrağıydı (bkz. eski v8 notu); artık her tür kendi
    ölçüsünü taşıyor — core/rules.js (seatCorners) ve PlanEditor.jsx (render)
@@ -86,6 +87,60 @@ export function resolveSeatKind(b, o) {
     seatKind: o && o.seatKind !== undefined ? o.seatKind : base.seatKind,
     seatFeatures: o && o.seatFeatures !== undefined ? o.seatFeatures : base.seatFeatures,
   };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   KOLTUK GRUBU (seat_group) — rapor §5.3. Üçüncü ve son sorumluluk:
+   seat_kind ("bu ne") ve features ("bu ne özellikte") koltuğun KENDİ
+   nitelikleri; seat_group koltuklar ARASI bir İLİŞKİ — "bu koltuk hangi
+   diğer koltuklarla birlikte tek birim sayılır" (masa, loca, love-seat
+   çifti, refakatçi grubu...). Tür sözlüğü: table · box · loveseat · pod ·
+   companion_group.
+
+   Grubun kendisi (id/code/name/kind) PLAN seviyesinde yaşar (plan.groups,
+   şema v3, bkz. core/schema.js) — bir blok DEĞİL, bloklar arası/üstü bir
+   varlık: bir refakatçi grubu iki AYRI bloktaki iki koltuğu eşleyebilir;
+   bir box/loca birden fazla koltuk içerir ama kendi geometrik bloğu
+   değildir. Koltuğun HANGİ gruba ait olduğu ise seat_kind/features ile
+   AYNI mekanizmaya oturur: b.ov[key] istisnası — resolveSeatGroup,
+   resolveSeatKind'in yanına, aynı imza (b, o), aynı öncelik kuralı (o
+   tanımlıysa o kazanır, yoksa blok varsayılanına düşer). Yeni bir
+   mekanizma AÇILMADI: rapor zaten üç sorumluluğu ayırıyor, taşıma
+   mekanizmasını değil.
+
+   TEK istisna — kind:"table": bir masa bloğu ZATEN fiziksel bir masadır,
+   etrafındaki koltuklar TANIM GEREĞİ ona aittir (görev tanımı). Bunu
+   kullanıcıya elle işaretletmek hem gereksiz hem hataya açık (bir koltuk
+   unutulursa masa "yarım" gruplanır). O yüzden masa grubu HİÇ SAKLANMAZ:
+   b.kind==="table" olan her blok için id/code/name/kind HER OKUMADA
+   burada yeniden türetilir; src/venues/** (DOKUNMA) tek satır bile
+   değişmedi, salon dosyaları bunun varlığından habersiz. Blok zaten kendi
+   id'sini taşıdığı için grubun id'si de ONUN id'si (tableGroupId) — masa
+   ile grubu arasında 1:1 bir ilişki var, ayrı bir kimlik uydurmak sahte
+   bir ayrım eklerdi. */
+export const tableGroupId = (b) => b.id;
+
+/** Bir KOLTUĞUN ait olduğu grup — resolveSeatKind'in birebir eşi. Öncelik:
+ *  ov istisnası (o.groupId, TANIMLIYSA — null dahil: "bu koltuğu
+ *  varsayılan masa grubundan çıkar" demek, bkz. resolveSeatKind'deki aynı
+ *  bağımsız-override deseni) > blok varsayılanı (yalnız masa bloklarında
+ *  var) > hiç grup yok (null). */
+export function resolveSeatGroup(b, o) {
+  if (o && o.groupId !== undefined) return o.groupId;
+  return b.kind === "table" ? tableGroupId(b) : null;
+}
+
+/** Bir planın TÜM gruplarının listesi: kayıtlı olanlar (plan.groups —
+ *  kullanıcının/arayüzün box/loveseat/pod/companion_group için elle
+ *  kuracağı liste, BU TURDA arayüzü yok, veri modeli hazır) + masa
+ *  bloklarından türetilenler (asla saklanmaz, her çağrıda üretilir).
+ *  export.js (seats.json) ve rules.js (companion_group doğrulaması) TEK
+ *  bu fonksiyonu çağırır — ikisi ayrı ayrı "masayı grupla" mantığı YAZMAZ. */
+export function resolvePlanGroups(plan) {
+  const tableGroups = (plan.blocks || [])
+    .filter((b) => b.kind === "table")
+    .map((b) => ({ id: tableGroupId(b), code: b.label, name: b.name || b.label, kind: "table" }));
+  return [...(plan.groups || []), ...tableGroups];
 }
 
 /* ─────────────────────────  YARDIMCILAR  ───────────────────────── */
@@ -426,7 +481,7 @@ export function buildSeats(b, meta, tpl) {
       seats.push({ key: `${b.id}:${r},${c}`, id: o.id || gen, gen, adopted: !!o.id,
         block: b.label, level: b.level || "", row: rl, num: label,
         r, c, gap: f.gap, tweak: !!(o.dx || o.dy || o.rot || o.label || o.id),
-        ...resolveSeatKind(b, o),
+        ...resolveSeatKind(b, o), groupId: resolveSeatGroup(b, o),
         x: w.x, y: w.y, rot: p.a + b.rot + (o.rot || 0), color: b.color });
     });
     if (b.kind !== "free" && b.kind !== "table" && row.length && P.counts.length > 1) {

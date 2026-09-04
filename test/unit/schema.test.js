@@ -106,3 +106,25 @@ describe("migrate — seat_kind + features göçü, koltuk istisnası (ov[key].a
     expect(b.ov["0,0"]).toEqual({ dx: 5 });
   });
 });
+
+/* migrations[2] (2 → 3): seat_group (bkz. görev raporu §5.3, core/
+   geometry.js'teki resolvePlanGroups notu). Yeni alan PLAN seviyesinde
+   (plan.groups) — eskiden hiç yoktu, göç yalnız EKLER. */
+describe("migrate — seat_group göçü (plan.groups EKLENİR)", () => {
+  it("groups alanı hiç yoksa boş dizi ile tamamlanır", () => {
+    const plan = { schemaVersion: 2, blocks: [], shapes: [] };
+    expect(migrate(plan).groups).toEqual([]);
+  });
+  it("groups zaten VARSA (ör. bir önceki göçten) dokunulmadan KORUNUR", () => {
+    const existing = [{ id: "g1", code: "REF-1", name: "Refakatçi 1", kind: "companion_group" }];
+    const plan = { schemaVersion: 2, blocks: [], shapes: [], groups: existing };
+    expect(migrate(plan).groups).toEqual(existing);
+  });
+  it("v0'dan başlayan bir kayıt da (attr/seatKind göçlerinden SONRA) groups ile çıkar — zincirin son adımı", () => {
+    const legacy = { blocks: [{ id: "b1", kind: "grid", label: "A", num: {} }], shapes: [] };
+    const migrated = migrate(legacy);
+    expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+    expect(migrated.groups).toEqual([]);
+    expect(migrated.blocks[0].seatKind).toBe("single"); // önceki adımlar da hâlâ çalışıyor
+  });
+});

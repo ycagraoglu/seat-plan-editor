@@ -43,6 +43,80 @@
       ]
     }
   ],
+  "groups": [
+    {
+      "id": "b439",
+      "code": "M1",
+      "name": "Salon · M1",
+      "kind": "table"
+    },
+    {
+      "id": "b440",
+      "code": "M2",
+      "name": "Salon · M2",
+      "kind": "table"
+    },
+    {
+      "id": "b441",
+      "code": "M3",
+      "name": "Salon · M3",
+      "kind": "table"
+    },
+    {
+      "id": "b442",
+      "code": "M4",
+      "name": "Salon · M4",
+      "kind": "table"
+    },
+    {
+      "id": "b443",
+      "code": "M5",
+      "name": "Salon · M5",
+      "kind": "table"
+    },
+    {
+      "id": "b444",
+      "code": "M6",
+      "name": "Salon · M6",
+      "kind": "table"
+    },
+    {
+      "id": "b445",
+      "code": "M7",
+      "name": "Salon · M7",
+      "kind": "table"
+    },
+    {
+      "id": "b446",
+      "code": "M8",
+      "name": "Salon · M8",
+      "kind": "table"
+    },
+    {
+      "id": "b447",
+      "code": "M9",
+      "name": "Salon · M9",
+      "kind": "table"
+    },
+    {
+      "id": "b448",
+      "code": "M10",
+      "name": "Salon · M10",
+      "kind": "table"
+    },
+    {
+      "id": "b449",
+      "code": "M11",
+      "name": "Salon · M11",
+      "kind": "table"
+    },
+    {
+      "id": "b450",
+      "code": "M12",
+      "name": "Salon · M12",
+      "kind": "table"
+    }
+  ],
   "seats": [
     {
       "id": "M1-1",
@@ -57,7 +131,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M1"
     },
     {
       "id": "M1-2",
@@ -72,7 +147,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M1"
     },
     {
       "id": "M2-1",
@@ -85,7 +161,8 @@
       "y": -313.5,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M2"
     },
     {
       "id": "M2-2",
@@ -98,7 +175,8 @@
       "y": -186.5,
       "rot": 180,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M2"
     },
     {
       "id": "M3-1",
@@ -111,7 +189,8 @@
       "y": -313.5,
       "rot": 0,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M3"
     },
     {
       "id": "M3-2",
@@ -124,7 +203,8 @@
       "y": -186.5,
       "rot": 180,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M3"
     },
     {
       "id": "M4-1",
@@ -139,7 +219,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M4"
     },
     {
       "id": "M4-2",
@@ -154,7 +235,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M4"
     },
     {
       "id": "M5-1",
@@ -167,7 +249,8 @@
       "y": -73.7,
       "rot": 45,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M5"
     },
     {
       "id": "M5-2",
@@ -180,7 +263,8 @@
       "y": 33.7,
       "rot": 135,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M5"
     },
     {
       "id": "M5-3",
@@ -193,7 +277,8 @@
       "y": 33.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M5"
     },
     {
       "id": "M5-4",
@@ -206,7 +291,8 @@
       "y": -73.7,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M5"
     },
     {
       "id": "M6-1",
@@ -219,7 +305,8 @@
       "y": -73.7,
       "rot": 45,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M6"
     },
     {
       "id": "M6-2",
@@ -232,7 +319,8 @@
       "y": 33.7,
       "rot": 135,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M6"
     },
     {
       "id": "M6-3",
@@ -245,7 +333,8 @@
       "y": 33.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M6"
     },
     {
       "id": "M6-4",
@@ -258,7 +347,8 @@
       "y": -73.7,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M6"
     },
     {
       "id": "M7-1",
@@ -271,7 +361,8 @@
       "y": -73.7,
       "rot": 45,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M7"
     },
     {
       "id": "M7-2",
@@ -284,7 +375,8 @@
       "y": 33.7,
       "rot": 135,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M7"
     },
     {
       "id": "M7-3",
@@ -297,7 +389,8 @@
       "y": 33.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M7"
     },
     {
       "id": "M7-4",
@@ -310,7 +403,8 @@
       "y": -73.7,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M7"
     },
     {
       "id": "M8-1",
@@ -323,7 +417,8 @@
       "y": -73.7,
       "rot": 45,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M8"
     },
     {
       "id": "M8-2",
@@ -336,7 +431,8 @@
       "y": 33.7,
       "rot": 135,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M8"
     },
     {
       "id": "M8-3",
@@ -349,7 +445,8 @@
       "y": 33.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M8"
     },
     {
       "id": "M8-4",
@@ -362,7 +459,8 @@
       "y": -73.7,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M8"
     },
     {
       "id": "M9-1",
@@ -377,7 +475,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M9"
     },
     {
       "id": "M9-2",
@@ -392,7 +491,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M9"
     },
     {
       "id": "M9-3",
@@ -405,7 +505,8 @@
       "y": 263.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M9"
     },
     {
       "id": "M9-4",
@@ -418,7 +519,8 @@
       "y": 156.3,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M9"
     },
     {
       "id": "M10-1",
@@ -431,7 +533,8 @@
       "y": 156.3,
       "rot": 45,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M10"
     },
     {
       "id": "M10-2",
@@ -444,7 +547,8 @@
       "y": 263.7,
       "rot": 135,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M10"
     },
     {
       "id": "M10-3",
@@ -457,7 +561,8 @@
       "y": 263.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M10"
     },
     {
       "id": "M10-4",
@@ -470,7 +575,8 @@
       "y": 156.3,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M10"
     },
     {
       "id": "M11-1",
@@ -483,7 +589,8 @@
       "y": 156.3,
       "rot": 45,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M11"
     },
     {
       "id": "M11-2",
@@ -496,7 +603,8 @@
       "y": 263.7,
       "rot": 135,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M11"
     },
     {
       "id": "M11-3",
@@ -509,7 +617,8 @@
       "y": 263.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M11"
     },
     {
       "id": "M11-4",
@@ -522,7 +631,8 @@
       "y": 156.3,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M11"
     },
     {
       "id": "M12-1",
@@ -537,7 +647,8 @@
       "seat_kind": "wheelchair_space",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M12"
     },
     {
       "id": "M12-2",
@@ -552,7 +663,8 @@
       "seat_kind": "companion",
       "features": [
         "accessible"
-      ]
+      ],
+      "group": "M12"
     },
     {
       "id": "M12-3",
@@ -565,7 +677,8 @@
       "y": 263.7,
       "rot": 225,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M12"
     },
     {
       "id": "M12-4",
@@ -578,7 +691,8 @@
       "y": 156.3,
       "rot": 315,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": "M12"
     },
     {
       "id": "BAR-1",
@@ -591,7 +705,8 @@
       "y": 191,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "BAR-2",
@@ -604,7 +719,8 @@
       "y": 119,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "BAR-3",
@@ -617,7 +733,8 @@
       "y": 47,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "BAR-4",
@@ -630,7 +747,8 @@
       "y": -25,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "BAR-5",
@@ -643,7 +761,8 @@
       "y": -97,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "BAR-6",
@@ -656,7 +775,8 @@
       "y": -169,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     },
     {
       "id": "BAR-7",
@@ -669,7 +789,8 @@
       "y": -241,
       "rot": -90,
       "seat_kind": "single",
-      "features": []
+      "features": [],
+      "group": null
     }
   ]
 }

@@ -3,6 +3,7 @@ import { RULES, buildCtx, runRules, seatCorners } from "../../src/core/rules.js"
 import { buildMeta } from "../../src/core/geometry.js";
 
 const overlapRule = RULES.find((r) => r.id === "footprint-overlap-same-level");
+const companionGroupRule = RULES.find((r) => r.id === "companion-group-incomplete");
 
 /* outlineOverlapArea sadece köşe noktası listesi (m.outline) ve m.bbox
    bekliyor — testin buildMeta'nın gerçek koltuk geometrisini kurmasına
@@ -104,5 +105,76 @@ describe("wheelchair-adequacy / companion-seat-shortfall / obstructed-view-count
     const wSingle = seatCorners(singleSeat)[1].x - seatCorners(singleSeat)[0].x;
     expect(wWheel).toBeCloseTo(86, 6);
     expect(wSingle).toBeCloseTo(41, 6);
+  });
+});
+
+/* ─────────────────────────────────────────────────────────────────────
+   companion-group-incomplete — rapor §5.4: bir refakatçinin hangi
+   tekerlekli sandalye konumuyla ilişkili olduğu AÇIKÇA tanımlanmalı.
+   Grup atfı ov.groupId üzerinden (bkz. core/geometry.js resolveSeatGroup),
+   grubun kendisi plan.groups'ta (kind: "companion_group"). Blok, mevcut
+   dosyadaki wheelchairPlan() ile AYNI iskelet (grid, 10 sütun, 1 sıra) —
+   yalnız ov'un içeriği ve plan.groups farklı. ───────────────────────── */
+function companionGroupPlan(groups, ov) {
+  const block = {
+    id: "b1", kind: "grid", label: "A", name: "A", level: "", x: 0, y: 0, rot: 0,
+    cols: 10, rows: 1, taper: 0, curve: 0, seatGap: 50, rowGap: 90, counts: "",
+    align: "center", color: "", attr: "", num: {}, ov,
+  };
+  const metas = [{ b: block, m: buildMeta(block) }];
+  return buildCtx({ blocks: [block], shapes: [], idTemplate: undefined, groups }, metas, new Map());
+}
+
+describe("companion-group-incomplete — refakatçi grubu tekerlekli sandalye + refakatçi ikisini de içermeli", () => {
+  it("plan.groups'ta hiç companion_group yoksa kural sessiz kalır (9 örnek salonun temiz kalma nedeni budur — hiçbirinde companion_group yok)", () => {
+    const ctx = companionGroupPlan([{ id: "g1", code: "M1", name: "M1", kind: "table" }], {});
+    expect(companionGroupRule.check(ctx)).toEqual([]);
+  });
+
+  it("tekerlekli sandalye alanı VE refakatçi koltuğu ikisi de varsa geçer (bulgu yok)", () => {
+    const groups = [{ id: "g1", code: "REF-A", name: "Refakatçi A", kind: "companion_group" }];
+    const ov = { "0,0": { seatKind: "wheelchair_space", groupId: "g1" }, "0,1": { seatKind: "companion", groupId: "g1" } };
+    expect(companionGroupRule.check(companionGroupPlan(groups, ov))).toEqual([]);
+  });
+
+  /* TESTİN TESTİ (görev tanımının istediği "kasten eksik grup kur, kırmızı
+     dönüşü doğrula" senaryosu — kalıcı regresyon olarak burada sabitlendi):
+     refakatçisi hiç atanmamış bir companion_group. */
+  it("testin testi: yalnız tekerlekli sandalye alanı olan (refakatçisiz) bir companion_group KIRMIZI döner", () => {
+    const groups = [{ id: "g1", code: "REF-A", name: "Refakatçi A", kind: "companion_group" }];
+    const ov = { "0,0": { seatKind: "wheelchair_space", groupId: "g1" } }; // refakatçi KASITLI eksik
+    const [finding] = companionGroupRule.check(companionGroupPlan(groups, ov));
+    expect(finding).toBeDefined();
+    expect(finding.t).toBe("err");
+    expect(finding.m).toBe("1 refakatçi grubu eksik — tekerlekli sandalye alanı ve refakatçi koltuğunun ikisi de gerekir");
+    expect(finding.d).toBe("REF-A: refakatçi koltuğu yok");
+    expect(finding.ids).toEqual(["b1"]);
+  });
+
+  it("ters eksik: yalnız refakatçi koltuğu olan (tekerlekli sandalyesiz) bir grup da KIRMIZI döner", () => {
+    const groups = [{ id: "g1", code: "REF-B", name: "Refakatçi B", kind: "companion_group" }];
+    const ov = { "0,0": { seatKind: "companion", groupId: "g1" } };
+    const [finding] = companionGroupRule.check(companionGroupPlan(groups, ov));
+    expect(finding.d).toBe("REF-B: tekerlekli sandalye alanı yok");
+  });
+
+  it("hiçbir koltuk referans vermeyen (tamamen boş) bir companion_group ikisinin de eksik olduğunu söyler", () => {
+    const groups = [{ id: "g1", code: "REF-C", name: "Refakatçi C", kind: "companion_group" }];
+    const [finding] = companionGroupRule.check(companionGroupPlan(groups, {}));
+    expect(finding.d).toBe("REF-C: tekerlekli sandalye alanı ve refakatçi koltuğu yok");
+  });
+
+  it("birden çok companion_group varsa yalnız EKSİK olanlar sayılır/raporlanır (tamam olan sessiz kalır)", () => {
+    const groups = [
+      { id: "g1", code: "REF-A", name: "Refakatçi A", kind: "companion_group" },
+      { id: "g2", code: "REF-B", name: "Refakatçi B", kind: "companion_group" },
+    ];
+    const ov = {
+      "0,0": { seatKind: "wheelchair_space", groupId: "g1" }, "0,1": { seatKind: "companion", groupId: "g1" },
+      "0,2": { seatKind: "wheelchair_space", groupId: "g2" }, // g2'nin refakatçisi yok
+    };
+    const [finding] = companionGroupRule.check(companionGroupPlan(groups, ov));
+    expect(finding.m).toContain("1 refakatçi grubu");
+    expect(finding.d).toBe("REF-B: refakatçi koltuğu yok");
   });
 });

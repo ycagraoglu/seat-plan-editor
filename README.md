@@ -125,7 +125,7 @@ Editör raporun hedef modeline **kısmen** hizalı. Hizalanmamış olanlar:
 | Rapor | Editörde |
 |---|---|
 | §5.1 — N seviyeli bölüm hiyerarşisi (`parent_section_id`) | **2 seviye**: `level` + `label`. `Batı Tribünü → Alt Kat → H Blok` ifade edilemez |
-| §5.3 — `seat_groups` (masa, loca, love-seat, refakatçi grubu) | **yok**. `table` bloğu yalnız geometri, grup kimliği taşımıyor |
+| §5.3 — `seat_groups` | **model var, arayüz yok**. `plan.groups[]` + koltukta `groupId`; masa blokları otomatik gruplanıyor; `companion_group` doğrulaması çalışıyor. Koltuk seçip **elle** gruplama (loca, love-seat çifti) henüz yok |
 | §6.2 — `rounded_rect.v1`, `line.v1`, `bezier_path.v1` | yok (arc, polygon, rect, point var) |
 
 Raporun *"karşılanmıyor"* dediği üç şey ise editörde **var**: birden fazla

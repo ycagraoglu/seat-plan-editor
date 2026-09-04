@@ -20,7 +20,7 @@ import { legacyAtToKind } from "./geometry.js";
    atılmadan, kendi hızında göç eder (2).
    ══════════════════════════════════════════════════════════════════════════ */
 
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 /* migrations[v] planı v sürümünden v+1'e taşır. Yeni alan/varsayılan
    eklendikçe buraya bir adım daha eklenir; var olanlar asla değişmez —
@@ -73,6 +73,19 @@ const migrations = [
       return { ...b, seatKind: base.seatKind, seatFeatures: base.seatFeatures, ov: nextOv };
     }),
   }),
+  /* 2 → 3: seat_group (bkz. görev raporu §5.3, core/geometry.js'teki
+     resolveSeatGroup/resolvePlanGroups notu — TEK kaynak, kopyası yok).
+     Yeni alan PLAN seviyesinde: plan.groups, eskiden hiç yoktu — bu adım
+     yalnız EKLER, eksikse boş dizi ile tamamlar (migrations[0]'daki attr
+     tamamlamasıyla aynı fikir). Koltuk-seviyesi atıf (ov[key].groupId)
+     için AYRI bir dolgu adımı GEREKMEZ: ov zaten sparse bir sözlük
+     (rm/gap/dx/label gibi tanımsız anahtarlar normaldir), groupId'si
+     olmayan bir istisna "bu koltuğun blok varsayılanından farklı bir
+     grubu yok" demektir — resolveSeatGroup bunu zaten doğru yorumlar,
+     geriye dönük yazılacak bir "yok" değeri değildir. kind:"table"
+     bloklarının örtük grubu da bu göçü İLGİLENDİRMEZ: hiç saklanmaz,
+     resolvePlanGroups tarafından her okumada yeniden türetilir. */
+  (plan) => ({ ...plan, groups: plan.groups || [] }),
 ];
 
 /** Bir planı, hangi sürümden gelirse gelsin (schemaVersion yoksa 0 kabul

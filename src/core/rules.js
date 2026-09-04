@@ -14,7 +14,7 @@
    fazladan alanı yok sayar, bozulmaz). */
 import { inPoly, outlineOverlapArea } from "./polygon.js";
 import { boundaryPolys } from "./gates.js";
-import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND } from "./geometry.js";
+import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND, resolvePlanGroups } from "./geometry.js";
 
 export const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
 
@@ -51,6 +51,11 @@ export function seatCorners(s) {
 function computeSeatScan(plan, metas) {
   const list = [];
   const kinds = {}, features = {}; const seen = new Map();
+  /* groupId → { seatKind: count }: companion-group-incomplete kuralının
+     tek girdisi. Burada, kinds/features'la AYNI tek geçişte toplanıyor —
+     o kural kendi taramasını açmaz, computeSeatScan'in "tek kaynak"
+     ilkesi (bkz. dosya başı notu) grup üyeliği için de geçerli. */
+  const byGroup = new Map();
   let unlabeled = 0, total = 0;
   metas.forEach(({ b, m }) => {
     buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
@@ -58,11 +63,17 @@ function computeSeatScan(plan, metas) {
       total++;
       /* Yandan geçiş gerektirmeyen bloklar: masa (etrafı zaten bitişik
          oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi). */
-      list.push({ id: s.id, seatKind: s.seatKind, seatFeatures: s.seatFeatures, x: s.x, y: s.y, rot: s.rot,
+      list.push({ id: s.id, seatKind: s.seatKind, seatFeatures: s.seatFeatures, groupId: s.groupId,
+        x: s.x, y: s.y, rot: s.rot,
         block: b.label, bid: b.id, level: s.level, t: b.kind === "table" || !!b.noAisle,
         outline: m.outline });
       if (s.seatKind !== DEFAULT_SEAT_KIND) kinds[s.seatKind] = (kinds[s.seatKind] || 0) + 1;
       s.seatFeatures.forEach((f) => { features[f] = (features[f] || 0) + 1; });
+      if (s.groupId) {
+        if (!byGroup.has(s.groupId)) byGroup.set(s.groupId, {});
+        const g = byGroup.get(s.groupId);
+        g[s.seatKind] = (g[s.seatKind] || 0) + 1;
+      }
       if (s.num === "" || s.num == null) unlabeled++;
       seen.set(s.id, (seen.get(s.id) || 0) + 1);
     });
@@ -96,7 +107,7 @@ function computeSeatScan(plan, metas) {
     }
   });
 
-  return { list, kinds, features, seen, unlabeled, total, clash, clashPairs, clashIds, narrow };
+  return { list, kinds, features, byGroup, seen, unlabeled, total, clash, clashPairs, clashIds, narrow };
 }
 
 /** Kurallara ortak girdi. Her alan EN FAZLA bir kez hesaplanır — üç
@@ -314,6 +325,40 @@ export const RULES = [
       const wheel = kinds.wheelchair_space || 0;
       if (!wheel || (kinds.companion || 0) >= wheel) return [];
       return [{ t: "warn", m: `Refakatçi koltuğu tekerlekli sandalye alanından az (${kinds.companion || 0} < ${wheel})` }];
+    },
+  },
+  /* Rapor §5.4: bir refakatçinin hangi tekerlekli sandalye konumuyla
+     ilişkili olduğu AÇIKÇA tanımlanmalı — yukarıdaki iki kural toplam
+     SAYIYA bakıyor (kaç tane var), bu kural İLİŞKİYE bakıyor (hangileri
+     birbirine bağlı). companion_group bu bağı taşır (bkz. core/geometry.js
+     resolvePlanGroups): grup listesi kayıtlı (plan.groups) + masa-türevi
+     grupları birleştirir, yalnız kind==="companion_group" olanlar burada
+     ilgi konusu — masa grupları (kind:"table") bu kurala hiç girmez.
+     Üyelik sayımı ctx.seats.byGroup'tan (computeSeatScan'in tek geçişi,
+     kendi taraması AÇILMADI). BU TURDA hiçbir örnek salonda companion_group
+     YOK (elle gruplama arayüzü ayrı iş) — bu yüzden 9 salonun hiçbirinde
+     tetiklenmiyor, yalnız test/unit/rules.test.js'teki sentetik planda. */
+  {
+    id: "companion-group-incomplete", severity: "err", live: false,
+    check(ctx) {
+      const groups = resolvePlanGroups(ctx.plan).filter((g) => g.kind === "companion_group");
+      if (!groups.length) return [];
+      const { byGroup, list } = ctx.seats;
+      const bad = groups.filter((g) => {
+        const t = byGroup.get(g.id);
+        return !t || !t.wheelchair_space || !t.companion;
+      });
+      if (!bad.length) return [];
+      const ids = new Set();
+      list.forEach((s) => { if (s.groupId && bad.some((g) => g.id === s.groupId)) ids.add(s.bid); });
+      return [{ t: "err", m: `${bad.length} refakatçi grubu eksik — tekerlekli sandalye alanı ve refakatçi koltuğunun ikisi de gerekir`,
+        d: bad.map((g) => {
+          const t = byGroup.get(g.id) || {};
+          const missing = [!t.wheelchair_space && "tekerlekli sandalye alanı", !t.companion && "refakatçi koltuğu"]
+            .filter(Boolean).join(" ve ");
+          return `${g.code || g.name}: ${missing} yok`;
+        }).join(" · "),
+        ids: [...ids] }];
     },
   },
   /* "Görüş kısıtlı" artık bir KIND değil bir FEATURE (restrictedView) —
