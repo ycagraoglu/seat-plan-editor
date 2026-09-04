@@ -96,6 +96,24 @@ describe("invariant: şablon planları kural motorundan hatasız geçer", () => 
       .toHaveLength(0);
   });
 
+  /* Bu şablonların TEK var oluş nedeni operatörün üstüne kademe (kat)
+     eklemesi (bkz. templates.js başlığı) — PlanEditor.jsx'teki
+     cc(b) = b.color || LEVEL_COLORS[...] blok rengini üretirken açık
+     b.color'ı HER ZAMAN kat paletine tercih eder. Şablon bir bloğa açık
+     color yazarsa (bowl()'un colors.long/short/corner'ı veya tier()'ın
+     color'ı üzerinden) o blok kaç kat eklenirse eklensin hep aynı sabit
+     renkte kalır ve lejantın gösterdiği kat renkleriyle asla eşleşmez —
+     bu görevin ölçtüğü hata (Bursa Merinos AKKM Osmangazi Salonu: dört
+     kat, tuval 1.388 koltuğun hepsini tek renkte çiziyordu). Şablonlar bu
+     yüzden bloklara HİÇ açık color yazmamalı: tek kademeliyken
+     LEVEL_COLORS[0]'a düşsünler, operatör kademe ekleyince her yeni kat
+     kendi LEVEL_COLORS girdisini alsın. */
+  it.each(TEMPLATES)("%s şablonunda hiçbir blokta açık color alanı yok", (_name, build) => {
+    const offenders = build().blocks.filter((b) => "color" in b);
+    expect(offenders, JSON.stringify(offenders.map((b) => ({ label: b.label, color: b.color })), null, 2))
+      .toHaveLength(0);
+  });
+
   /* Görev tanımının boyut kısıtı ("stadyum birkaç bin koltuklu bir canavar
      olmasın, salon birkaç yüz-bin arası") bir tercih değil, kabul ölçütü —
      ileride biri parametreleri büyütüp bunu sessizce bozmasın diye alt/üst

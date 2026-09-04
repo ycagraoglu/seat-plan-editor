@@ -28,11 +28,19 @@ import { buildMeta } from "../core/geometry.js";
  *  boşluk; bu görevin çıkış noktası tam olarak buydu. */
 export function buildStadiumTemplate() {
   const rows = 9, rowGap = 85, seatGap = 50, Rc = 1000, W = 3200, H = 2200;
+  /* colors: {} — bowl() colors.long/short/corner'ı KOŞULSUZ okur (obje
+     hiç verilmezse TypeError), ama üçü de tanımsız kalınca her bloğa
+     color: undefined yazılıyor. O üçlü ayrım (uzun/kısa/köşe kenar) bir
+     BÖLÜM ayrımıydı, KAT ayrımı değil — tutulsaydı cc() = b.color ||
+     LEVEL_COLORS[...] hep b.color'da kalır, operatör üstüne kademe
+     ekleyince kat paleti hiç devreye girmezdi (bu görevin ölçtüğü hata,
+     bkz. Osmangazi Salonu). .map ile bowl()'un yine de yazdığı o alanı
+     bloktan TAMAMEN siliyoruz ki cc() kat paletine düşsün. */
   const raw = bowl({
     W, H, Rc, rows, rowGap, seatGap, nLong: 3, nShort: 2, nCorner: 1,
     first: 100, level: "Tribün", aisle: 200, pad: 70,
-    colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" },
-  });
+    colors: {},
+  }).map(({ color, ...b }) => b);
   /* withAccessible() cutVomitories'TEN ÖNCE uygulanmalı — sıra ÖNEMLİ.
      withAccessible bir koltuğun ov[r,c] girdisini {at:"wheel"} ile
      DEĞİŞTİRİR (üzerine yazar); cutVomitories ise aynı girdiye rm:true'yu
@@ -72,8 +80,13 @@ export function buildStadiumTemplate() {
  *  dışında hiç blok yok. */
 export function buildHallTemplate() {
   const r0 = 1000, rows = 10, rowGap = 95;
+  /* color YOK — LEVEL_COLORS[0] zaten aynı hex ("#3E7FBF"), taze/tek
+     kademeli görünüm DEĞİŞMİYOR; ama operatör kademe ekleyince her kat
+     kendi rengini alsın diye burada sabitlenmiyor (bkz. buildStadiumTemplate
+     notu — aynı gerekçe). .map, tier()'ın yine de yazdığı color: undefined
+     alanını bloktan siliyor. */
   const raw = tier({ r0, rows, rowGap, span: 30, count: 6, first: "A",
-    level: "Salon", color: "#3E7FBF", aisle: 160, pad: 60 });
+    level: "Salon", aisle: 160, pad: 60 }).map(({ color, ...b }) => b);
   const blocks = withAccessible(raw, ["A", "F"], 5);
 
   const metas0 = blocks.map((b) => buildMeta(b));
