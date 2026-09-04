@@ -84,3 +84,36 @@ describe("linearArray/radialArray — used kümesi ZATEN kullanılan ön ekleri 
     expect(linearArray(seed, { count: 2, dx: 100, dy: 0 }).map((b) => b.label)).toEqual(["B"]);
   });
 });
+
+/* ŞEMSİYE INVARIANT A (renk korunumu) — bkz. block-factories.test.js
+   başlığı. linearArray/radialArray her ikisi de kopyayı reLabel({...b,
+   id: nid(), ...}, label) ile üretiyor: spread b.color'ı (varsa/yoksa)
+   olduğu gibi taşır, reLabel de ona hiç dokunmuyor (core/labels.js) —
+   bu iki fonksiyon hiçbir zaman "#3E7FBF" sınıfı bir hataya düşmedi,
+   ama bunu varsaymak yerine burada ÖLÇÜYORUZ; ileride biri reLabel'e
+   veya buradaki spread'e dokunursa bu test kırmızıya döner. */
+describe("linearArray/radialArray renk KORUNUMU", () => {
+  it("linearArray: renksiz kaynak → renksiz kopyalar", () => {
+    const seed = [{ id: "seed", label: "A", x: 0, y: 0, rot: 0 }];
+    const extra = linearArray(seed, { count: 3, dx: 100, dy: 0 });
+    expect(extra.every((b) => !b.color)).toBe(true);
+  });
+
+  it("linearArray: renkli kaynak (kullanıcının seçtiği renk) → kopyalar AYNI rengi taşır", () => {
+    const seed = [{ id: "seed", label: "A", x: 0, y: 0, rot: 0, color: "#5F9142" }];
+    const extra = linearArray(seed, { count: 3, dx: 100, dy: 0 });
+    expect(extra.every((b) => b.color === "#5F9142")).toBe(true);
+  });
+
+  it("radialArray: renksiz kaynak → renksiz kopyalar", () => {
+    const seed = [{ id: "seed", label: "A", x: 100, y: 0, rot: 0 }];
+    const extra = radialArray(seed, { count: 3, cx: 0, cy: 0, step: 90 });
+    expect(extra.every((b) => !b.color)).toBe(true);
+  });
+
+  it("radialArray: renkli kaynak (kullanıcının seçtiği renk) → kopyalar AYNI rengi taşır", () => {
+    const seed = [{ id: "seed", label: "A", x: 100, y: 0, rot: 0, color: "#5F9142" }];
+    const extra = radialArray(seed, { count: 3, cx: 0, cy: 0, step: 90 });
+    expect(extra.every((b) => b.color === "#5F9142")).toBe(true);
+  });
+});

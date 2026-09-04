@@ -350,6 +350,71 @@ describe("selectBlocks koltuk seçimini bırakır (HATA 2)", () => {
   });
 });
 
+describe("invariant: seçim türleri birbirini dışlar (blok ↔ şekil ↔ koltuk)", () => {
+  /* Yukarıdaki "selectBlocks koltuk seçimini bırakır (HATA 2)" bloğu
+     KOORDİNATÖRÜN o an ölçtüğü tek belirtiyi (koltuk tarafını) sabitliyor.
+     Bu blok şemsiye kuralın HER YÖNÜNÜ kapsıyor — reducer.js'teki
+     "selectBlocks"/"selectShape" yorumunun anlattığı gibi, aynı hata
+     sınıfı selShapeId tarafında da vardı (PlanEditor.jsx'te setSelIds'i
+     selShapeId temizliği OLMADAN çağıran ≥5 yer), sadece o an ölçülmemişti.
+     İstisna TEK yönlü: koltuk seçmek diğer ikisini SİLMEZ (en alttaki
+     test, gerekçesiyle). */
+  it("blok seç → önceden seçili şekil VE çoklu/tek koltuk seçimi birlikte düşer", () => {
+    let s = initialState(venuesFixture(), "a");
+    s = reducer(s, { type: "selectShape", payload: "s1" });
+    /* Koltuk seçimini selectShape'İN ÜRETTİĞİ state'e state-surgery ile
+       ekliyoruz (checkpoint=false testindeki ~131 aynı teknik) — amaç
+       selectBlocks'un TEK BAŞINA hem şekli hem koltuğu düşürdüğünü
+       görmek; selectShape'in kendi düşürme etkisi buraya karışmasın. */
+    s = { ...s, selSeats: new Set(["b1|0,0", "b1|0,1"]), selSeat: { bid: "b1", r: 0, c: 0 } };
+    expect(s.selShapeId).toBe("s1");
+    expect(s.selSeats.size).toBe(2);
+
+    s = reducer(s, { type: "selectBlocks", payload: ["b2"] });
+    expect(s.selIds).toEqual(["b2"]);
+    expect(s.selShapeId).toBeNull();
+    expect(s.selSeat).toBeNull();
+    expect(s.selSeats.size).toBe(0);
+  });
+
+  it("şekil seç → önceden seçili blok(lar) VE çoklu/tek koltuk seçimi birlikte düşer (asıl HATA 2)", () => {
+    let s = initialState(venuesFixture(), "a");
+    s = reducer(s, { type: "selectBlocks", payload: ["b1", "b2"] });
+    s = { ...s, selSeats: new Set(["b1|0,0"]), selSeat: { bid: "b1", r: 0, c: 0 } };
+    expect(s.selIds).toEqual(["b1", "b2"]);
+
+    s = reducer(s, { type: "selectShape", payload: "s1" });
+    expect(s.selShapeId).toBe("s1");
+    expect(s.selIds).toEqual([]);
+    expect(s.selSeat).toBeNull();
+    expect(s.selSeats.size).toBe(0);
+  });
+
+  it("koltuk seç (selectSeat/selectSeats) → blok VE şekil seçimini SİLMEZ (kasıtlı istisna)", () => {
+    /* "Koltuk düzenle" aracı blok+koltuğu BİLEREK birlikte seçili tutar —
+       aşağıdaki "'seat' aracının..." testi bunu zaten koruyor. Burada
+       AYRICA şekil tarafı ölçülüyor: reducer.js'teki selectSeat/
+       selectSeats yorumunun söylediği gibi bu ikisi selShapeId'ye HİÇ
+       dokunmuyor. Gerçek akışta selShapeId zaten null'dır (tek çağıran
+       "seat" aracı, selectBlocks'u HEMEN ÖNCE dispatch eder ve o artık
+       selShapeId'yi kendisi temizler) — burada state-surgery ile
+       "asla olmaması gereken" bir şekil seçimini ELLE kuruyoruz ki
+       reducer'ın KENDİSİ (çağıranın disiplinine güvenmeden) bu alana
+       dokunmadığını izole doğrulayalım. */
+    let s = initialState(venuesFixture(), "a");
+    s = reducer(s, { type: "selectBlocks", payload: ["b1"] });
+    s = { ...s, selShapeId: "s1" };
+
+    s = reducer(s, { type: "selectSeat", payload: { bid: "b1", r: 0, c: 0 } });
+    expect(s.selIds).toEqual(["b1"]);
+    expect(s.selShapeId).toBe("s1");
+
+    s = reducer(s, { type: "selectSeats", payload: new Set(["b1|0,0"]) });
+    expect(s.selIds).toEqual(["b1"]);
+    expect(s.selShapeId).toBe("s1");
+  });
+});
+
 describe("value-veya-updater sözleşmesi (setState ile aynı)", () => {
   it("selectBlocks doğrudan değer VE fonksiyonel güncelleyici kabul eder", () => {
     let s = initialState(venuesFixture(), "a");

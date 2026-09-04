@@ -504,16 +504,40 @@ export const newFree = (x, y) => ({
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" }, ov: {},
 });
 
+/* mirror()'ın (aşağıda, component içinde) tek bir bloğu Y ekseninde
+   yansıtan SAF kısmı — etiket defterini (taken/freeLabel, TÜM seçime
+   göre kümülatif) tutan kabuktan AYRILDI ki newGrid/newFan/newTable/
+   newFree gibi test GERÇEK fonksiyonu çağırabilsin, hand-copy'e muhtaç
+   kalmasın (bkz. block-factories.test.js başlığı). reLabel color'a HİÇ
+   dokunmuyor (core/labels.js) — ...b spread'i girdinin renk alanını
+   (varsa/yoksa) olduğu gibi kopyaya taşır; bu fonksiyon ne enjekte eder
+   ne siler. */
+export function mirrorBlock(b, label) {
+  const cp = reLabel({ ...b, id: nid(), x: -b.x }, label);
+  if (b.kind === "fan") { cp.aCenter = -b.aCenter; cp.aStart = -b.aEnd; cp.aEnd = -b.aStart; }
+  else if (b.kind === "free") cp.pts = b.pts.map((p) => ({ ...p, x: -p.x, rot: -(p.rot || 0) }));
+  else { cp.rot = -b.rot; cp.align = b.align === "left" ? "right" : b.align === "right" ? "left" : "center"; }
+  return cp;
+}
+
 /* ─────────────────────────  İÇE AKTARMA  ─────────────────────────
    Dış dosyadaki kimlikler oturumdaki sayaçla çakışabilir; hepsi
    yeniden atanır. Eksik alanlar varsayılanla tamamlanır.
-   ─────────────────────────────────────────────────────────────── */
 
-function adoptPlan(raw, key) {
+   color: "" (kat paletine bırak) — newGrid/newFan/newTable/newFree'nin
+   AYNI varsayılanı (bkz. yukarıdaki not, ~475). Eskiden burada "#3E7FBF"
+   sabitleniyordu: renksiz (color alanı olmayan/boş) bir bloklu plan.json
+   içe aktarılınca operatörün TUVALE ÇİZDİĞİ blokla AYNI hataya düşüyordu
+   — ...b spread'i b.color VARSA onu korur (renkli girdi zaten güvenliydi),
+   ama YOKSA bu varsayılana düşer; "#3E7FBF" olduğu sürece dışarıdan gelen
+   renksiz blok içe aktarma yoluyla renk KAZANIYORDU (bkz. görev raporu,
+   HATA 1 — koordinatör ölçtü). export: test/unit/block-factories.test.js
+   gerçek fonksiyonu çağırıp bunu bir daha geri gelmeyeceğini doğruluyor. */
+export function adoptPlan(raw, key) {
   if (!raw || !Array.isArray(raw.blocks)) throw new Error("blocks dizisi yok");
   const blocks = raw.blocks.map((b) => ({
     kind: "grid", x: 0, y: 0, rot: 0, cols: 10, rows: 5, counts: "", align: "center",
-    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "#3E7FBF", attr: "",
+    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "", attr: "",
     mode: "span", r0: 500, aStart: -40, aEnd: 40, aCenter: 0, pts: [],
     ...b, id: nid(), ov: b.ov || {}, num: { ...DEF_NUM, ...(b.num || {}) },
     label: String(b.label ?? "A"), level: b.level || "",
@@ -2093,11 +2117,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const made = selBlocks.map((b) => {
       const label = freeLabel(b.label, selBlocks.length, taken);
       taken.add(label);
-      const cp = reLabel({ ...b, id: nid(), x: -b.x }, label);
-      if (b.kind === "fan") { cp.aCenter = -b.aCenter; cp.aStart = -b.aEnd; cp.aEnd = -b.aStart; }
-      else if (b.kind === "free") cp.pts = b.pts.map((p) => ({ ...p, x: -p.x, rot: -(p.rot || 0) }));
-      else { cp.rot = -b.rot; cp.align = b.align === "left" ? "right" : b.align === "right" ? "left" : "center"; }
-      return cp;
+      return mirrorBlock(b, label);
     });
     commit({ ...plan, blocks: [...plan.blocks, ...made] });
     setSelIds(made.map((b) => b.id));

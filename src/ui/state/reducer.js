@@ -161,22 +161,47 @@ export function reducer(state, action) {
     }
 
     /* ── seçim ──────────────────────────────────────────────────── */
-    /* selectBlocks koltuk seçimini (selSeat/selSeats) KENDİLİĞİNDEN
-       bırakır — seçim türleri birbirini dışlar. Eskiden dokunmuyordu:
-       koltuk çoklu-seçimi açıkken (selSeats.size>1) blok ağacından/
-       tuvalden bir bloğa tıklamak selIds'i GÜNCELLİYORDU ama panel
-       selSeats.size>1'i selBlock'tan önce gösterdiği için (PlanEditor.jsx
-       aside/props ~2939) tıklama Esc'e kadar GÖRÜNMEZ kalıyordu — operatör
-       tıklıyor, panelde hiçbir şey değişmiyor sanıyordu (bkz. görev
-       raporu, HATA 2). Tek koltuk+bloğun BİRLİKTE seçildiği "seat" aracı
-       (PlanEditor.jsx tool==="seat" pointerdown'ı) bu yüzden artık ÖNCE
-       selectBlocks, SONRA selectSeat/selectSeats dispatch ediyor — aynı
-       olaydaki ardışık dispatch'ler sırayla işlendiği için (useReducer'ın
-       standart davranışı) son yazan kazanır ve koltuk seçimi kalır. */
+    /* Kural: seçim türleri (blok/şekil/koltuk) birbirini dışlar — biri
+       etkinleşince DİĞER İKİSİ kendiliğinden düşer. Tek istisna aşağıda,
+       selectSeat/selectSeats'in üstündeki notta.
+
+       selectBlocks ESKİDEN sadece koltuk seçimini (selSeat/selSeats)
+       bırakıyordu, selShapeId'ye HİÇ dokunmuyordu (bkz. görev raporu,
+       HATA 2 — o zaman ölçülen tek belirti koltuk tarafıydı: koltuk
+       çoklu-seçimi açıkken bir bloğa tıklamak selIds'i güncelliyordu ama
+       panel selSeats.size>1'i selBlock'tan önce gösterdiği için —
+       PlanEditor.jsx aside/props ~2970 — tıklama Esc'e kadar GÖRÜNMEZ
+       kalıyordu). selShapeId tarafı da AYNI sınıf hataydı, sadece
+       ölçülmemişti: PlanEditor.jsx'te setSelIds'i selShapeId temizliği
+       OLMADAN çağıran en az 5 yer var — blok ağacı tıklaması (~2330),
+       "kata göre seç" (~1980), "shape" aracıyla dikdörtgen çizme (~1853),
+       finishPoly (~1897), "seat" aracının koltuğa tıklama dalı (~1648).
+       Her biri kuralı AYRI AYRI unutmuş — bu görevin "kuralı bir yere
+       yaz, her üretim noktasında geçerli olduğunu KANITLA" dersi tam
+       burada bir daha çıktı. Kural artık TEK yerde: selectBlocks kendi
+       karşıtı olan selShapeId'yi de temizliyor, çağıranın hatırlaması
+       gerekmiyor (yukarıdaki 5 yerin çoğunda duran elle setSelShapeId(null)
+       çağrıları artık gereksiz ama zararsız no-op — DOKUNMA listesindeki
+       PlanEditor.jsx'i bu görev başka sebeple değiştirmediği sürece
+       silinmedi).
+
+       selectShape BİREBİR simetrik: blok VE koltuk seçimini bırakır
+       (asıl HATA 2 — eskiden ikisine de dokunmuyordu, bir şekil seçmek
+       önceki çoklu-koltuk seçimini panelde sessizce yutabiliyordu). */
     case "selectBlocks":
-      return { ...state, selIds: resolve(action.payload, state.selIds), selSeat: null, selSeats: new Set() };
+      return { ...state, selIds: resolve(action.payload, state.selIds), selShapeId: null, selSeat: null, selSeats: new Set() };
     case "selectShape":
-      return { ...state, selShapeId: resolve(action.payload, state.selShapeId) };
+      return { ...state, selShapeId: resolve(action.payload, state.selShapeId), selIds: [], selSeat: null, selSeats: new Set() };
+    /* selectSeat/selectSeats BİLEREK selIds'e dokunmuyor — "seat" aracı
+       blok+koltuğu BİRLİKTE seçili tutar (PlanEditor.jsx tool==="seat"
+       pointerdown'ı: ÖNCE selectBlocks, SONRA selectSeat/selectSeats
+       dispatch eder — sıra ÖNEMLİ, tersi olsaydı selectBlocks'un yeni
+       selSeat temizliği az önce yazılan koltuk seçimini SİLERDİ; bkz.
+       test/unit/reducer.test.js "'seat' aracının blok+tek-koltuk birlikte
+       seçimi bozulmaz"). Aynı sebeple selShapeId'ye de dokunmuyor: tek
+       gerçek çağıran zaten selectBlocks'tan HEMEN SONRA geliyor, o da artık
+       selShapeId'yi kendisi temizliyor (yukarıda) — burada AYRICA temizlemek
+       fazladan, davranışı değiştirmeyen bir no-op olurdu. */
     case "selectSeat":
       return { ...state, selSeat: resolve(action.payload, state.selSeat) };
     case "selectSeats":
