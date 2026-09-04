@@ -1,23 +1,35 @@
 import { RAD } from "./geometry.js";
-import { reLabel, incLabel } from "./labels.js";
+import { reLabel, freeLabel } from "./labels.js";
 import { nid } from "./ids.js";
 
-export function linearArray(blocks, { count, dx, dy }) {
-  const out = [], step = blocks.length;
+/* `used`: planda o an kullanılan etiket kümesi — bu modül saf kalsın diye
+   çağıran taraftan (PlanEditor.jsx) parametre olarak gelir, plan'a bağımlı
+   hale gelmez. Salon üreteçleri (venues/builders.js) hiç çakışma olmayan
+   taze bloklar kurduğundan bu parametreyi vermez; varsayılan boş küme o
+   çağrılarda davranışı DEĞİŞTİRMEZ (bkz. arrays.test.js). Yerelde bir kopya
+   (`taken`) tutulur ki hem çağıranın kümesi mutasyona uğramasın hem de AYNI
+   çağrıda üretilen etiketler birbiriyle çakışmasın (kümülatif izleme). */
+export function linearArray(blocks, { count, dx, dy }, used = new Set()) {
+  const out = [], step = blocks.length, taken = new Set(used);
   for (let i = 1; i < count; i++)
-    blocks.forEach((b) => out.push(reLabel(
-      { ...b, id: nid(), x: b.x + dx * i, y: b.y + dy * i }, incLabel(b.label, step * i))));
+    blocks.forEach((b) => {
+      const label = freeLabel(b.label, step * i, taken);
+      taken.add(label);
+      out.push(reLabel({ ...b, id: nid(), x: b.x + dx * i, y: b.y + dy * i }, label));
+    });
   return out;
 }
-export function radialArray(blocks, { count, cx, cy, step }) {
-  const out = [], lstep = blocks.length;
+export function radialArray(blocks, { count, cx, cy, step }, used = new Set()) {
+  const out = [], lstep = blocks.length, taken = new Set(used);
   for (let i = 1; i < count; i++) {
     const t = step * i, c = Math.cos(t * RAD), s = Math.sin(t * RAD);
     blocks.forEach((b) => {
       const px = b.x - cx, py = b.y - cy;
+      const label = freeLabel(b.label, lstep * i, taken);
+      taken.add(label);
       out.push(reLabel({ ...b, id: nid(),
         x: cx + px * c - py * s, y: cy + px * s + py * c, rot: b.rot + t },
-        incLabel(b.label, lstep * i)));
+        label));
     });
   }
   return out;

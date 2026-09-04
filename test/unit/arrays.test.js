@@ -42,3 +42,45 @@ describe("linearArray/radialArray — count = TOPLAM öğe sayısı (orijinal da
     expect(extra.map((b) => b.x)).toEqual([50, 60]);
   });
 });
+
+/* HATA 1: Salon şablonunda radyal çoğalt D'yi seçince yeni bloklar E/F
+   alıyordu — parterde ZATEN kullanılan harfler (A..F önceden kurulmuştu).
+   3. parametre (`used`) planda o an kullanılan etiketleri taşır; olmayan
+   çağrılarda (venues/builders.js) varsayılan boş küme davranışı DEĞİŞTİRMEZ
+   — üstteki testler hâlâ 3. argüman olmadan geçiyor. */
+describe("linearArray/radialArray — used kümesi ZATEN kullanılan ön ekleri atlar", () => {
+  it("linearArray: hedef etiket kullanımdaysa boş olana dek ilerler", () => {
+    const seed = [{ id: "seed", label: "D", x: 0, y: 0, rot: 0 }];
+    const used = new Set(["D", "E", "F"]); // Salon şablonu: A..F zaten var
+    const extra = linearArray(seed, { count: 2, dx: 100, dy: 0 }, used);
+    expect(extra.map((b) => b.label)).toEqual(["G"]);
+  });
+
+  it("radialArray: hedef etiket kullanımdaysa boş olana dek ilerler", () => {
+    const seed = [{ id: "seed", label: "D", x: 100, y: 0, rot: 0 }];
+    const used = new Set(["D", "E", "F"]);
+    const extra = radialArray(seed, { count: 2, cx: 0, cy: 0, step: 90 }, used);
+    expect(extra.map((b) => b.label)).toEqual(["G"]);
+  });
+
+  it("aynı çağrıda ÜRETİLEN etiketler de birbiriyle çakışmaz (kümülatif izleme)", () => {
+    const seed = [{ id: "seed", label: "D", x: 0, y: 0, rot: 0 }];
+    const used = new Set(["E", "F"]);
+    // i=1: D+1=E(dolu)->F(dolu)->G(boş). i=2: D+2=F(dolu)->G(i=1'in ürettiği,
+    // dolu)->H(boş). used'a bakıp kümülatif izlemeseydi ikisi de G'de çakışırdı.
+    const extra = linearArray(seed, { count: 3, dx: 100, dy: 0 }, used);
+    expect(extra.map((b) => b.label)).toEqual(["G", "H"]);
+  });
+
+  it("çağıranın used kümesi mutasyona uğramaz (saf kalır)", () => {
+    const seed = [{ id: "seed", label: "A", x: 0, y: 0, rot: 0 }];
+    const used = new Set(["B"]);
+    linearArray(seed, { count: 2, dx: 100, dy: 0 }, used);
+    expect(used).toEqual(new Set(["B"]));
+  });
+
+  it("used verilmezse (venues/builders.js çağrıları) davranış değişmez", () => {
+    const seed = [{ id: "seed", label: "A", x: 0, y: 0, rot: 0 }];
+    expect(linearArray(seed, { count: 2, dx: 100, dy: 0 }).map((b) => b.label)).toEqual(["B"]);
+  });
+});

@@ -1,7 +1,7 @@
 import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
 import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
-import { incLabel, reLabel, relabelPatch, DEF_NUM } from "./core/labels.js";
+import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
 import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
 import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
@@ -456,6 +456,13 @@ function badgeColor(hex) {
   return out;
 }
 
+/* EKSİK 4: çakışma büyüklüğünü canlı şeritte okunur birimde göster — operatör
+   bir eşiği (ör. yarıçap) el yordamıyla ararken sayının küçülüp büyüdüğünü
+   görüp yön bulabilsin. 1 m² = 10.000 cm²; küçük değerlerde cm² daha net. */
+const fmtOverlap = (cm2) => cm2 >= 10000
+  ? `${(cm2 / 10000).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} m²`
+  : `${Math.round(cm2).toLocaleString("tr-TR")} cm²`;
+
 const SHAPES = {
   stage:    { label: "Sahne",       fill: "var(--shapefill)", stroke: "var(--shapeline)" },
   pitch:    { label: "Saha",        fill: "#22452C",          stroke: "#3E6B4A" },
@@ -846,8 +853,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
     }
     commit({ ...plan, blocks: plan.blocks.map((x) => (x.id === id ? { ...x, ...patch } : x)) });
   };
+  /* patch.level varsa her blok için relevelPatch — toplu kat değişimi de
+     HATA 2'yle aynı sınıf: her bloğun adı KENDİ eski adına göre değerlendirilir. */
   const patchSelected = (patch) =>
-    commit({ ...plan, blocks: plan.blocks.map((b) => (selIds.includes(b.id) ? { ...b, ...patch } : b)) });
+    commit({ ...plan, blocks: plan.blocks.map((b) => (selIds.includes(b.id)
+      ? { ...b, ...patch, ...("level" in patch ? relevelPatch(b, patch.level) : null) } : b)) });
   const patchShape = (id, patch) =>
     commit({ ...plan, shapes: plan.shapes.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
   const undo = () => dispatch({ type: "undo" });
@@ -923,6 +933,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   const selBlocks = useMemo(() => selectSelectedBlocks(plan, selIds), [plan.blocks, selIds]);
   const selBlock = selBlocks.length === 1 ? selBlocks[0] : null;
+  /* Çoğaltma/dizi/aynalama planda ZATEN kullanılan bir ön eki bir daha
+     üretmesin diye (bkz. görev raporu) — tek kaynak: plandaki tüm etiketler. */
+  const usedLabels = useMemo(() => new Set(plan.blocks.map((b) => b.label)), [plan.blocks]);
   const selShape = plan.shapes.find((s) => s.id === selShapeId) || null;
   const handles = useMemo(() => {
     if (!selBlock || tool !== "select") return [];
@@ -986,6 +999,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
     liveFindings.find((f) => f.id === "footprint-overlap-same-level")?.ids || [],
     [liveFindings]);
   const collideSet = useMemo(() => new Set(collide), [collide]);
+  /* EKSİK 4: en büyük örtüşme büyüklüğü — kuralın zaten hesapladığı maxArea'yı
+     taşır, burada yeni bir geometri hesabı YOK (bkz. core/rules.js). */
+  const collideArea = useMemo(() =>
+    liveFindings.find((f) => f.id === "footprint-overlap-same-level")?.maxArea || 0,
+    [liveFindings]);
 
   /* "Doğrulama" kanalı canlı breach/collide'ı (yukarıda, HER kanalda zaten
      görünür) "vurgular": kanalın kendisi doğrulamaysa, son Doğrula
@@ -1116,7 +1134,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   const doLinear = () => {
     if (!selBlocks.length) return;
-    const made = linearArray(selBlocks, lin);
+    const made = linearArray(selBlocks, lin, usedLabels);
     commit({ ...plan, blocks: [...plan.blocks, ...made] });
     setSelIds([...selIds, ...made.map((b) => b.id)]);
     setArrPrev(null);
@@ -1124,7 +1142,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   };
   const doRadial = () => {
     if (!selBlocks.length) return;
-    const made = radialArray(selBlocks, rad);
+    const made = radialArray(selBlocks, rad, usedLabels);
     commit({ ...plan, blocks: [...plan.blocks, ...made] });
     setSelIds([...selIds, ...made.map((b) => b.id)]);
     setArrPrev(null);
@@ -2059,8 +2077,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   const mirror = () => {
     if (!selBlocks.length) return;
+    const taken = new Set(usedLabels);
     const made = selBlocks.map((b) => {
-      const cp = reLabel({ ...b, id: nid(), x: -b.x }, incLabel(b.label, selBlocks.length));
+      const label = freeLabel(b.label, selBlocks.length, taken);
+      taken.add(label);
+      const cp = reLabel({ ...b, id: nid(), x: -b.x }, label);
       if (b.kind === "fan") { cp.aCenter = -b.aCenter; cp.aStart = -b.aEnd; cp.aEnd = -b.aStart; }
       else if (b.kind === "free") cp.pts = b.pts.map((p) => ({ ...p, x: -p.x, rot: -(p.rot || 0) }));
       else { cp.rot = -b.rot; cp.align = b.align === "left" ? "right" : b.align === "right" ? "left" : "center"; }
@@ -2717,7 +2738,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </button></>}
             {collide.length > 0 && <><span className="tsep" />
               <button className="alert" onClick={() => { setSelIds(collide); setSelShapeId(null); }}>
-                {collide.length} blok birbirinin alanına giriyor
+                {collide.length} blok birbirinin alanına giriyor · en fazla {fmtOverlap(collideArea)}
               </button></>}
             {msg && <><span className="tsep" />
               <span className={msgErr ? "hi err" : "hi"} title={msg}>{msg}</span></>}
@@ -2938,7 +2959,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
               advOpen={advOpen} setAdvOpen={setAdvOpen}
               onZoom={() => zoomTo(metaById.get(selBlock.id))}
               onChange={(p) => patchBlock(selBlock.id, p)} onMirror={mirror}
-              onDup={() => { const cp = { ...selBlock, id: nid(), x: selBlock.x + 300, y: selBlock.y + 300 }; commit({ ...plan, blocks: [...plan.blocks, cp] }); setSelIds([cp.id]); }}
+              onDup={() => {
+                const label = freeLabel(selBlock.label, 1, usedLabels);
+                const cp = reLabel({ ...selBlock, id: nid(), x: selBlock.x + 300, y: selBlock.y + 300 }, label);
+                commit({ ...plan, blocks: [...plan.blocks, cp] }); setSelIds([cp.id]);
+              }}
               onDelete={() => { commit({ ...plan, blocks: plan.blocks.filter((x) => x.id !== selBlock.id) }); setSelIds([]); }} />
           ) : (
             <div className="empty">Bir blok, koltuk veya şekil seç</div>
@@ -3430,7 +3455,7 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
         <div className="g2">
           <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => onChange(relabelPatch(b, e.target.value))} /></Row>
           <Row label="Kat / kuşak">
-            <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange({ level: e.target.value })} />
+            <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange(relevelPatch(b, e.target.value))} />
             <datalist id="lv">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
           {!rotInAdv && (

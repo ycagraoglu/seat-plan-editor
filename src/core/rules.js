@@ -206,9 +206,16 @@ export const RULES = [
             }
           }
       if (!pairs.length) return [];
-      return [{ t: "err", m: `${pairs.length} blok dış hattı başka bir bloğun dış hattıyla çakışıyor`,
+      /* Mesaj BLOK sayısı versin (hit.size), çift sayısı (pairs.length) değil:
+         zincir çakışmada (A↔B, B↔C) 3 blok ama 2 çift var — canlı durum
+         çubuğu, tuvaldeki kırmızı dış hatlar ve ids alanı zaten bloğa
+         dayalı, ikisi aynı sayıyı söylemeli (bkz. görev raporu). d detayı
+         yine ÇİFT bazlı listelenir, o ayrı bir bilgi (hangi ikili çakışıyor).
+         maxArea: canlı şeritte "en fazla ne kadar" göstermek için kuralın
+         zaten hesapladığı en büyük örtüşme alanını taşır — yeni hesap yok. */
+      return [{ t: "err", m: `${hit.size} blok dış hattı başka bir bloğun dış hattıyla çakışıyor`,
         d: pairs.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
-        ids: [...hit] }];
+        ids: [...hit], maxArea: Math.max(...pairs.map((o) => o.area)) }];
     },
   },
   /* Kat-arası taban çakışması. Gerçek bir salonda balkon partere sarkabilir,

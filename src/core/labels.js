@@ -87,12 +87,17 @@ export function incLabel(label, n) {
   if (/^[A-Za-z]{1,3}$/.test(s)) return bumpAlpha(s, n);
   return `${s}-${n + 1}`;
 }
-export const reLabel = (b, l) => {
-  const nb = { ...b, label: l, name: b.level ? `${b.level} · ${l}` : l };
-  for (const k of ["x", "y", "rot", "aStart", "aEnd", "aCenter"])
-    if (typeof nb[k] === "number") nb[k] = R4(nb[k]);
-  return nb;
-};
+
+/** incLabel(label, n)'den başlar; sonuç `used` kümesinde ZATEN varsa (planda
+ *  başka bir blok o ön eki taşıyorsa) boş bir tane bulana dek birer birer
+ *  artırmaya devam eder. Çoğaltma/dizi/aynalama planda o an KULLANILMAYAN
+ *  bir kimlik ön eki üretsin diye — Salon şablonunda D'yi çoğaltınca zaten
+ *  var olan E/F'yi bir daha üretmemesi gerekiyordu (bkz. görev raporu). */
+export function freeLabel(label, n, used) {
+  let l = incLabel(label, n);
+  while (used.has(l)) l = incLabel(l, 1);
+  return l;
+}
 
 /** reLabel'den farkı: bu YENİ blok üretmiyor, VAR OLAN bir bloğun
  *  "Kimlik ön eki" alanı elle değiştirildiğinde çağrılır. name'i sadece
@@ -104,3 +109,25 @@ export function relabelPatch(b, label) {
   if (!b.name || b.name === autoName) patch.name = b.level ? `${b.level} · ${label}` : label;
   return patch;
 }
+
+/** relabelPatch'in KAT alanı için simetriği: "Kat / kuşak" elle
+ *  değiştirildiğinde çağrılır, aynı korumayla — ad hâlâ otomatik
+ *  türetilmişse (b.name === eski autoName) yeni kata göre günceller,
+ *  kullanıcı özelleştirdiyse dokunmaz. */
+export function relevelPatch(b, level) {
+  const autoName = b.level ? `${b.level} · ${b.label}` : b.label;
+  const patch = { level };
+  if (!b.name || b.name === autoName) patch.name = level ? `${level} · ${b.label}` : b.label;
+  return patch;
+}
+
+/** reLabel YENİ blok üretir (çoğaltma/dizi/aynalama): id/x/y/rot yenilenir,
+ *  ama adlandırma kuralı relabelPatch'le AYNI olmalı — kaynak bloğun adı
+ *  hâlâ otomatik türetilmişse yeni etikete göre güncellenir, kullanıcı
+ *  özelleştirmişse (ör. "VIP Loca") kopya da onu miras alır, ezilmez. */
+export const reLabel = (b, l) => {
+  const nb = { ...b, ...relabelPatch(b, l) };
+  for (const k of ["x", "y", "rot", "aStart", "aEnd", "aCenter"])
+    if (typeof nb[k] === "number") nb[k] = R4(nb[k]);
+  return nb;
+};
