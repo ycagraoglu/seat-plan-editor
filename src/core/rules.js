@@ -14,7 +14,7 @@
    fazladan alanı yok sayar, bozulmaz). */
 import { inPoly, outlineOverlapArea } from "./polygon.js";
 import { boundaryPolys } from "./gates.js";
-import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND, resolvePlanGroups, resolveBlockSectionId } from "./geometry.js";
+import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND, resolvePlanSections, resolvePlanGroups, resolveBlockSectionId } from "./geometry.js";
 
 export const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
 
@@ -490,6 +490,70 @@ export const RULES = [
       });
       if (!count) return [];
       return [{ t: "err", m: `${count} koltuğun köşesi salon sınırının dışına taşıyor`, ids: [...ids] }];
+    },
+  },
+  /* ── Bölüm ağacı bütünlüğü (mimari rapor §5.1) ────────────────────
+     Rapor plan yayımlanırken şunları zorunlu kılıyor: döngü olmaması,
+     azami derinliğin aşılmaması, ve kod benzersizliğinin plan genelinde
+     değil KARDEŞ düğümler arasında uygulanması. Üçü de aşağıda. */
+  {
+    id: "section-cycle", severity: "err", live: false,
+    check(ctx) {
+      const secs = resolvePlanSections(ctx.plan);
+      const byId = new Map(secs.map((s) => [s.id, s]));
+      const bad = [];
+      for (const s of secs) {
+        const gorulen = new Set([s.id]);
+        let cur = s.parentId;
+        while (cur) {
+          if (gorulen.has(cur)) { bad.push(s); break; }
+          gorulen.add(cur);
+          cur = byId.get(cur)?.parentId ?? null;
+        }
+      }
+      if (!bad.length) return [];
+      return [{ t: "err", m: `${bad.length} bölüm döngüsel — bir bölüm kendi atası olamaz`,
+        d: bad.slice(0, 6).map((s) => s.code || s.id).join(" · ") }];
+    },
+  },
+  {
+    /* Azami derinlik 5: raporun en derin örneği "Batı Tribünü → Alt Kat →
+       H Blok" üç bölüm seviyesi (blok bunun İÇİNDE durur); 5, gerçek
+       ihtiyacın belirgin üstünde ama sonsuz iç içe geçmeyi de engelliyor.
+       Sınır aşılırsa arayüz de, DB tarafındaki özyinelemeli sorgu da
+       öngörülebilir kalır. */
+    id: "section-depth", severity: "err", live: false,
+    check(ctx) {
+      const AZAMI = 5;
+      const secs = resolvePlanSections(ctx.plan);
+      const byId = new Map(secs.map((s) => [s.id, s]));
+      const derinlik = (s) => {
+        let d = 1, cur = s.parentId, adim = 0;
+        while (cur && adim++ <= AZAMI + 2) { d++; cur = byId.get(cur)?.parentId ?? null; }
+        return d;
+      };
+      const bad = secs.filter((s) => derinlik(s) > AZAMI);
+      if (!bad.length) return [];
+      return [{ t: "err", m: `${bad.length} bölüm ${AZAMI} seviyelik azami derinliği aşıyor`,
+        d: bad.slice(0, 6).map((s) => `${s.code || s.id} (${derinlik(s)} seviye)`).join(" · ") }];
+    },
+  },
+  {
+    /* Kod benzersizliği KARDEŞLER arasında — raporun SQL'i:
+       UNIQUE NULLS NOT DISTINCT (tenant_id, version_id, parent_section_id, code)
+       Yani "H Blok" iki farklı katta olabilir (özelliğin varlık sebebi
+       bu), ama aynı kat altında iki kez olamaz. */
+    id: "section-sibling-code", severity: "err", live: false,
+    check(ctx) {
+      const secs = resolvePlanSections(ctx.plan);
+      const gorulen = new Map(); const cakisan = [];
+      for (const s of secs) {
+        const k = `${s.parentId ?? ""}\u0000${s.code ?? ""}`;
+        if (gorulen.has(k)) cakisan.push(s); else gorulen.set(k, s);
+      }
+      if (!cakisan.length) return [];
+      return [{ t: "err", m: `${cakisan.length} bölüm kodu aynı üst bölüm altında tekrarlanıyor`,
+        d: cakisan.slice(0, 6).map((s) => s.code || s.id).join(" · ") }];
     },
   },
 ];

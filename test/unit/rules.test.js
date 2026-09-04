@@ -273,3 +273,50 @@ describe("narrow-aisle bölüm anahtarını kullanır", () => {
     expect(aisleFinding([a, b])).toBeUndefined();  // ama bölüm farklı
   });
 });
+
+/* ── Bölüm ağacı bütünlüğü (mimari rapor §5.1) ────────────────────────
+   Rapor plan yayımlanırken üç şeyi zorunlu kılıyor: döngü olmaması,
+   azami derinliğin aşılmaması, kod benzersizliğinin plan genelinde değil
+   KARDEŞLER arasında uygulanması. Aşağıdaki testler üçünün de gerçekten
+   öttüğünü sabitliyor — dokuz örnek salonun hiçbirinde bu durumlar yok,
+   dolayısıyla kurallar yalnız sentetik plana karşı kanıtlanabilir. */
+const sectionFinding = (sections, id) => {
+  const plan = { name: "t", sections, blocks: [], shapes: [] };
+  return runRules(buildCtx(plan, [], new Map())).find((f) => f.id === id);
+};
+const sec = (id, code, parentId = null) => ({ id, code, name: code, kind: "section", parentId });
+
+describe("bölüm ağacı bütünlüğü", () => {
+  it("temiz ağaçta üç kural da susar", () => {
+    const t = [sec("a", "Batı"), sec("b", "Alt Kat", "a"), sec("c", "H", "b")];
+    expect(sectionFinding(t, "section-cycle")).toBeUndefined();
+    expect(sectionFinding(t, "section-depth")).toBeUndefined();
+    expect(sectionFinding(t, "section-sibling-code")).toBeUndefined();
+  });
+
+  it("döngüyü yakalar", () => {
+    const f = sectionFinding([sec("a", "A", "b"), sec("b", "B", "a")], "section-cycle");
+    expect(f?.t).toBe("err");
+    expect(f.m).toMatch(/döngüsel/);
+  });
+
+  it("azami derinliği (5) aşanı yakalar", () => {
+    const t = [sec("s1", "1"), sec("s2", "2", "s1"), sec("s3", "3", "s2"),
+      sec("s4", "4", "s3"), sec("s5", "5", "s4"), sec("s6", "6", "s5")];
+    const f = sectionFinding(t, "section-depth");
+    expect(f?.t).toBe("err");
+    expect(f.d).toMatch(/6 seviye/);
+  });
+
+  it("AYNI üst bölüm altında tekrarlanan kodu yakalar", () => {
+    const f = sectionFinding(
+      [sec("p", "Alt Kat"), sec("x", "H", "p"), sec("y", "H", "p")], "section-sibling-code");
+    expect(f?.t).toBe("err");
+  });
+
+  it("FARKLI üst bölümler altında aynı kod serbest — özelliğin varlık sebebi", () => {
+    const t = [sec("alt", "Alt Kat"), sec("ust", "Üst Kat"),
+      sec("h1", "H", "alt"), sec("h2", "H", "ust")];
+    expect(sectionFinding(t, "section-sibling-code")).toBeUndefined();
+  });
+});
