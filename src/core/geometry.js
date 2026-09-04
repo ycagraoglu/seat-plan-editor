@@ -143,6 +143,64 @@ export function resolvePlanGroups(plan) {
   return [...(plan.groups || []), ...tableGroups];
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   BÖLÜM AĞACI (seating.sections) — rapor §5.1, mimarinin bugüne kadarki EN
+   KRİTİK eksiği: yerleşim bölümleri düz bir liste, üst-alt ilişki hiç
+   kurulamıyordu (Batı Tribünü → Alt Kat/Üst Kat → H Blok gibi bir kırılım
+   temsil edilemiyordu — "aynı kod farklı katta" bugün mümkün değildi).
+   Bölüm id/code/name/kind/parentId taşıyan bir VARLIK (parentId null ise
+   kök); kind sözlüğü: floor · balcony · stand · tier · section · box ·
+   table_area · general_admission_area. BLOK ağacın yaprağı DEĞİL — blok
+   bölümün İÇİNDE durur (b.sectionId), bölüm ağacı blokların ÜSTÜNDE.
+
+   resolvePlanGroups (yukarıda) ile BİREBİR AYNI desen: kayıtlı bölümler
+   (plan.sections — göçmüş/elle kurulmuş bir plan) + göçmemiş bir bloğun
+   düz `level` dizesinden SENTETİK türetilen derinlik-1 bölüm. src/venues/**
+   (DOKUNMA) hâlâ düz level yazıyor ve hiçbir zaman migrate()'ten geçmiyor
+   (bkz. core/schema.js dosya başı notu) — 9 örnek salonun TAMAMI, ayrıca
+   BUILTINS'i çatallayıp stampSchema ile kaydedilmiş (ama migrate() zincirinden
+   hiç geçmemiş, bkz. PlanEditor.jsx otomatik kayıt efekti) bir kullanıcı
+   planı da bu ikinci daldan (sentetik) beslenir — o yüzden bu iki fonksiyon
+   "schemaVersion güncel mi" sorusundan TAMAMEN bağımsız çalışmak zorunda.
+
+   Sentetik id SAF bir fonksiyon: aynı level dizesi HER ZAMAN aynı id'yi
+   üretir, farklı dizeler HER ZAMAN farklı id — böylece "aynı bölüm"
+   gruplaması eski "aynı b.level" gruplamasıyla (rules.js'teki eski byLevel)
+   derinlik-1'de birebir örtüşür. "lvl:" öneki nid()'in ürettiği kayıtlı
+   section id'leriyle ("sec1", "sec2"...) çakışmayı imkânsız kılar — iki ayrı
+   isim uzayı, karışma riski yok. core/schema.js'in 3→4 göç adımı da id
+   üretmek için AYNI bu fonksiyonu çağırır (nid() DEĞİL): göçmüş ve
+   göçmemiş bir plan aynı level dizesi için HER ZAMAN aynı id'yi üretir. */
+export const syntheticSectionId = (level) => `lvl:${level || ""}`;
+
+/** Bir bloğun ait olduğu bölümün id'si. Açık atıf (b.sectionId) önce,
+ *  yoksa düz level'dan sentetik id'ye düşer — resolveSeatGroup'un blok
+ *  seviyesindeki eşi (bkz. dosya başı not): aynı imza (b), aynı öncelik
+ *  kuralı (açık alan tanımlıysa o kazanır, yoksa türetilmiş varsayılana
+ *  düşülür). */
+export function resolveBlockSectionId(b) {
+  return b.sectionId || syntheticSectionId(b.level);
+}
+
+/** Bir planın TÜM bölümlerinin listesi: kayıtlı olanlar (plan.sections) +
+ *  bir bloğun ATIF ETTİĞİ ama listede olmayan her id için sentetik bir
+ *  "floor" bölümü (derinlik-1, parentId: null) — resolvePlanGroups'un masa
+ *  grupları türetmesiyle AYNI fikir, burada blok değil LEVEL'dan türetiliyor.
+ *  export.js (seats.json) ve rules.js (footprint-overlap-same-level /
+ *  -cross-level) TEK bu fonksiyonu (ve resolveBlockSectionId'yi) çağırır. */
+export function resolvePlanSections(plan) {
+  const explicit = plan.sections || [];
+  const known = new Set(explicit.map((s) => s.id));
+  const out = [...explicit];
+  (plan.blocks || []).forEach((b) => {
+    const id = resolveBlockSectionId(b);
+    if (known.has(id)) return;
+    known.add(id);
+    out.push({ id, code: b.level || "", name: b.level || "", kind: "floor", parentId: null });
+  });
+  return out;
+}
+
 /* ─────────────────────────  YARDIMCILAR  ───────────────────────── */
 
 export function parseCounts(s) {

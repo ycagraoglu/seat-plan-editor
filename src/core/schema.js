@@ -1,6 +1,6 @@
 import { absorbIds } from "./ids.js";
 import { DEF_NUM } from "./labels.js";
-import { legacyAtToKind } from "./geometry.js";
+import { legacyAtToKind, syntheticSectionId } from "./geometry.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    ŞEMA SÜRÜMLEME
@@ -20,7 +20,7 @@ import { legacyAtToKind } from "./geometry.js";
    atılmadan, kendi hızında göç eder (2).
    ══════════════════════════════════════════════════════════════════════════ */
 
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 4;
 
 /* migrations[v] planı v sürümünden v+1'e taşır. Yeni alan/varsayılan
    eklendikçe buraya bir adım daha eklenir; var olanlar asla değişmez —
@@ -86,6 +86,42 @@ const migrations = [
      bloklarının örtük grubu da bu göçü İLGİLENDİRMEZ: hiç saklanmaz,
      resolvePlanGroups tarafından her okumada yeniden türetilir. */
   (plan) => ({ ...plan, groups: plan.groups || [] }),
+  /* 3 → 4: bölüm ağacı (bkz. görev raporu §5.1, core/geometry.js'teki
+     resolvePlanSections/resolveBlockSectionId notu — TEK kaynak, kopyası
+     yok). Yeni alanlar: PLAN seviyesinde plan.sections (eskiden hiç
+     yoktu), BLOK seviyesinde b.sectionId. Göç her FARKLI block.level
+     dizesini derinlik-1 (parentId: null, kind: "floor") bir bölüme çevirir
+     ve bloğu ona bağlar; aynı level dizesini paylaşan bloklar AYNI bölümü
+     paylaşır (rules.js'teki eski byLevel gruplamasıyla derinlik-1'de
+     birebir aynı davranış için şart).
+
+     Section id'si nid() İLE DEĞİL syntheticSectionId(level) ile üretilir:
+     migrations[] zincirinin geri kalanı gibi SAF kalsın (global uid
+     sayacına dokunmasın) diye — ve, daha önemlisi, göçmüş bir plan İLE
+     src/venues/** (hiç migrate() görmeyen, DOKUNMA) aynı level dizesi için
+     HER ZAMAN aynı id'yi üretsin diye: ikisi ayrı kod yolu ama TEK
+     üretici fonksiyon (bkz. resolvePlanSections'ın göçmemiş bir plan için
+     zaten bu fonksiyonu kullandığı not).
+
+     b.level SİLİNMİYOR (eklemeli göç — sütun eklenir, eskisi düşürülmez):
+     mevcut arayüz (PlanEditor.jsx) hâlâ b.level okuyup yazıyor, migrasyon
+     onu geriye dönük uyumlu bırakmak ZORUNDA. Zaten sectionId'si olan bir
+     blok (ör. daha önceki bir göçten ya da elle kurulmuş bir plandan)
+     DOKUNULMADAN bırakılır — bu adım yalnız EKSİK atıfları tamamlar. */
+  (plan) => {
+    const sections = plan.sections ? [...plan.sections] : [];
+    const known = new Set(sections.map((s) => s.id));
+    const blocks = (plan.blocks || []).map((b) => {
+      if (b.sectionId) return b;
+      const id = syntheticSectionId(b.level);
+      if (!known.has(id)) {
+        known.add(id);
+        sections.push({ id, code: b.level || "", name: b.level || "", kind: "floor", parentId: null });
+      }
+      return { ...b, sectionId: id };
+    });
+    return { ...plan, sections, blocks };
+  },
 ];
 
 /** Bir planı, hangi sürümden gelirse gelsin (schemaVersion yoksa 0 kabul

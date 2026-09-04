@@ -14,7 +14,7 @@
    fazladan alanı yok sayar, bozulmaz). */
 import { inPoly, outlineOverlapArea } from "./polygon.js";
 import { boundaryPolys } from "./gates.js";
-import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND, resolvePlanGroups } from "./geometry.js";
+import { buildSeats, DEF, seatKindWidth, DEFAULT_SEAT_KIND, resolvePlanGroups, resolveBlockSectionId } from "./geometry.js";
 
 export const inBounds = (x, y, polys) => !polys.length || polys.some((p) => inPoly(x, y, p));
 
@@ -122,11 +122,22 @@ function computeSeatScan(plan, metas) {
  *  BOZULMAZ, sadece artık okunmuyor. */
 export function buildCtx(plan, metas, gates) {
   const bounds = boundaryPolys(plan);
-  const byLevel = new Map();
+  /* "Aynı kat" artık "bloğun ait olduğu aynı BÖLÜM" (rapor §5.1,
+     core/geometry.js'teki resolveBlockSectionId). Göçmemiş bir planda
+     (9 örnek salonun TAMAMI, src/venues/** hiç migrate() görmez) bu
+     sentetik id b.level'ın SAF bir fonksiyonu — aynı level dizesi HER
+     ZAMAN aynı id'yi ürettiği için bu gruplama eski "b.level || ''"
+     anahtarıyla derinlik-1'de birebir örtüşür, davranış DEĞİŞMEZ. Fark
+     yalnız göçmüş/elle kurulmuş bir planda ortaya çıkar: aynı level
+     dizesini paylaşan iki blok FARKLI ebeveyne bağlıysa (bkz. görev
+     tanımındaki Batı Tribünü → Alt Kat/Üst Kat → H Blok örneği) artık
+     AYNI bölüm sayılmazlar — tam da bu ayrımı temsil edebilmek bu
+     modelin var oluş nedeni. */
+  const bySection = new Map();
   metas.forEach((x) => {
-    const key = x.b.level || "";
-    if (!byLevel.has(key)) byLevel.set(key, []);
-    byLevel.get(key).push(x);
+    const key = resolveBlockSectionId(x.b);
+    if (!bySection.has(key)) bySection.set(key, []);
+    bySection.get(key).push(x);
   });
   /* Blok taban hattı salon sınırının dışına taşıyor mu — bbox'sız, ucuz
      (blok sayısı × sınır köşe sayısı); canlı yolda her karede bunu
@@ -136,7 +147,7 @@ export function buildCtx(plan, metas, gates) {
     : [];
   const doors = (plan.shapes || []).filter((s) => s.type === "door");
 
-  const ctx = { plan, metas, gates, bounds, byLevel, blockBreaches, doors };
+  const ctx = { plan, metas, gates, bounds, bySection, blockBreaches, doors };
 
   let seatsCache = null;
   Object.defineProperty(ctx, "seats", {
@@ -212,7 +223,7 @@ export const RULES = [
     id: "footprint-overlap-same-level", severity: "err", live: true,
     check(ctx) {
       const hit = new Set(); const pairs = [];
-      for (const group of ctx.byLevel.values())
+      for (const group of ctx.bySection.values())
         for (let i = 0; i < group.length; i++)
           for (let j = i + 1; j < group.length; j++) {
             const A = group[i].m, B = group[j].m;
@@ -248,11 +259,11 @@ export const RULES = [
     id: "footprint-overlap-cross-level", severity: "warn", live: false,
     check(ctx) {
       const crossIds = new Set(); const crossPairs = [];
-      const lvKeys = [...ctx.byLevel.keys()];
-      for (let a = 0; a < lvKeys.length; a++)
-        for (let b2 = a + 1; b2 < lvKeys.length; b2++)
-          for (const A of ctx.byLevel.get(lvKeys[a]))
-            for (const B of ctx.byLevel.get(lvKeys[b2])) {
+      const secKeys = [...ctx.bySection.keys()];
+      for (let a = 0; a < secKeys.length; a++)
+        for (let b2 = a + 1; b2 < secKeys.length; b2++)
+          for (const A of ctx.bySection.get(secKeys[a]))
+            for (const B of ctx.bySection.get(secKeys[b2])) {
               const area = outlineOverlapArea(A.m.outline, B.m.outline);
               if (area > 50) {
                 crossPairs.push(`${A.b.name || A.b.label}↔${B.b.name || B.b.label}`);

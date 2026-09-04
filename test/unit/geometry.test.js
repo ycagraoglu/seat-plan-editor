@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { parseCounts, countAt, prep, offsetFor, footprintPad, tableCells,
   SEAT_KINDS, DEF, DEFAULT_SEAT_KIND, seatKindWidth, legacyAtToKind, resolveSeatKind, buildSeats,
-  tableGroupId, resolveSeatGroup, resolvePlanGroups }
+  tableGroupId, resolveSeatGroup, resolvePlanGroups,
+  syntheticSectionId, resolveBlockSectionId, resolvePlanSections }
   from "../../src/core/geometry.js";
 
 describe("parseCounts — sayım şartnamesi metni", () => {
@@ -281,5 +282,83 @@ describe("resolvePlanGroups — kayıtlı + masa-türevi grupların birleşimi",
     expect(groups).toHaveLength(2);
     expect(groups[0].kind).toBe("companion_group");
     expect(groups[1]).toEqual({ id: "b1", code: "M1", name: "M1", kind: "table" });
+  });
+});
+
+/* resolveBlockSectionId / resolvePlanSections — bölüm ağacı (rapor §5.1).
+   resolvePlanGroups'un DÖRDÜNCÜ eşi: kayıtlı (plan.sections) + göçmemiş
+   bir bloğun düz `level`'ından SENTETİK türetilen bölümlerin birleşimi.
+   export.js VE rules.js'in footprint-overlap-same-level/-cross-level
+   kuralları TEK bu iki fonksiyonu okur (bkz. o dosyaların notu). */
+describe("resolveBlockSectionId — bloğun ait olduğu bölümün id'si", () => {
+  it("açık sectionId varsa O KAZANIR, level'a bakılmaz", () => {
+    expect(resolveBlockSectionId({ level: "Parter", sectionId: "sec-42" })).toBe("sec-42");
+  });
+  it("sectionId yoksa level'dan sentetik id türetilir (syntheticSectionId ile AYNI)", () => {
+    expect(resolveBlockSectionId({ level: "1. Balkon" })).toBe(syntheticSectionId("1. Balkon"));
+  });
+  it("level de yoksa (boş dize varsayılanı) yine çökmez, tutarlı bir id döner", () => {
+    expect(resolveBlockSectionId({})).toBe(syntheticSectionId(""));
+    expect(resolveBlockSectionId({ level: "" })).toBe(resolveBlockSectionId({}));
+  });
+});
+
+describe("resolvePlanSections — göçmemiş bir planda düz level'dan derinlik-1 bölüm türetimi", () => {
+  it("plan.sections yoksa (venue dosyaları, hiç migrate() görmez) çökmez, her FARKLI level bir bölüm olur", () => {
+    const plan = { blocks: [
+      { id: "b1", level: "Alt Tribün" },
+      { id: "b2", level: "Üst Tribün" },
+      { id: "b3", level: "Alt Tribün" }, // b1 ile AYNI level → AYNI bölüm, ikinci kez EKLENMEZ
+    ] };
+    const sections = resolvePlanSections(plan);
+    expect(sections).toHaveLength(2);
+    expect(sections.every((s) => s.parentId === null && s.kind === "floor")).toBe(true);
+    expect(sections.map((s) => s.code).sort()).toEqual(["Alt Tribün", "Üst Tribün"]);
+    // AYNI level'ı paylaşan iki blok AYNI section id'sini üretmeli (rules.js'teki
+    // çakışma kuralının derinlik-1'de eski byLevel gruplamasıyla örtüşmesi buna dayanıyor).
+    expect(resolveBlockSectionId(plan.blocks[0])).toBe(resolveBlockSectionId(plan.blocks[2]));
+  });
+  it("level'sız bloklar (boş dize) da tek bir ortak bölüme düşer, çökmez", () => {
+    const plan = { blocks: [{ id: "b1" }, { id: "b2" }] };
+    expect(resolvePlanSections(plan)).toHaveLength(1);
+  });
+  it("kayıtlı bir bölüm (plan.sections) OLDUĞU GİBİ listede yer alır", () => {
+    const plan = { sections: [{ id: "sec-x", code: "X Locası", name: "X Locası", kind: "box", parentId: null }], blocks: [] };
+    expect(resolvePlanSections(plan)).toEqual(plan.sections);
+  });
+  it("açık sectionId'si OLAN bir blok, listede karşılığı YOKSA bile sentetik bir düşme (fallback) girişi üretir — çökmez", () => {
+    const plan = { blocks: [{ id: "b1", level: "Loca", sectionId: "hayalet-id" }] };
+    const sections = resolvePlanSections(plan);
+    expect(sections).toEqual([{ id: "hayalet-id", code: "Loca", name: "Loca", kind: "floor", parentId: null }]);
+  });
+});
+
+/* İki seviyeli bir ağaç: rapor'un motive edici örneği (Batı Tribünü →
+   Alt Kat/Üst Kat → H Blok) — AYNI kod (code) FARKLI ebeveyn (parentId)
+   altında yaşayabiliyor, bugün (düz level string) bu temsil edilemiyordu. */
+describe("resolvePlanSections — iki seviyeli ağaç: aynı kod, farklı ebeveyn", () => {
+  it("iki 'H Blok' bölümü FARKLI parentId ile AYNI listede bağımsız yaşar, bloklar doğru olana bağlanır", () => {
+    const plan = {
+      sections: [
+        { id: "bati", code: "Batı Tribünü", name: "Batı Tribünü", kind: "stand", parentId: null },
+        { id: "alt-kat", code: "Alt Kat", name: "Alt Kat", kind: "tier", parentId: "bati" },
+        { id: "ust-kat", code: "Üst Kat", name: "Üst Kat", kind: "tier", parentId: "bati" },
+        { id: "alt-h", code: "H Blok", name: "H Blok", kind: "section", parentId: "alt-kat" },
+        { id: "ust-h", code: "H Blok", name: "H Blok", kind: "section", parentId: "ust-kat" },
+      ],
+      blocks: [
+        { id: "b1", label: "H", level: "Alt Kat", sectionId: "alt-h" },
+        { id: "b2", label: "H", level: "Üst Kat", sectionId: "ust-h" },
+      ],
+    };
+    const sections = resolvePlanSections(plan);
+    expect(sections).toEqual(plan.sections); // hepsi zaten kayıtlı, sentetik EKLEME yok
+    const hBloks = sections.filter((s) => s.code === "H Blok");
+    expect(hBloks).toHaveLength(2);
+    expect(hBloks.map((s) => s.parentId).sort()).toEqual(["alt-kat", "ust-kat"]);
+    // aynı `label`i taşıyan iki blok, aynı KOD'lu ama FARKLI id'li iki ayrı bölüme doğru bağlanıyor
+    expect(resolveBlockSectionId(plan.blocks[0])).toBe("alt-h");
+    expect(resolveBlockSectionId(plan.blocks[1])).toBe("ust-h");
+    expect(resolveBlockSectionId(plan.blocks[0])).not.toBe(resolveBlockSectionId(plan.blocks[1]));
   });
 });

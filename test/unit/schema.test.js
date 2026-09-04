@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { migrate, CURRENT_SCHEMA_VERSION, stampSchema } from "../../src/core/schema.js";
 import { DEF_NUM } from "../../src/core/labels.js";
+import { syntheticSectionId } from "../../src/core/geometry.js";
 
 /* validate-interactions.mjs (mevcut CI betiği) migrate()'i zaten kapsıyor
    — bu dosya AYNI davranışı vitest'in hızlı birim-test katmanında da
@@ -120,11 +121,75 @@ describe("migrate — seat_group göçü (plan.groups EKLENİR)", () => {
     const plan = { schemaVersion: 2, blocks: [], shapes: [], groups: existing };
     expect(migrate(plan).groups).toEqual(existing);
   });
-  it("v0'dan başlayan bir kayıt da (attr/seatKind göçlerinden SONRA) groups ile çıkar — zincirin son adımı", () => {
+  it("v0'dan başlayan bir kayıt da (attr/seatKind göçlerinden SONRA) groups ile çıkar — zincirin bir adımı", () => {
     const legacy = { blocks: [{ id: "b1", kind: "grid", label: "A", num: {} }], shapes: [] };
     const migrated = migrate(legacy);
     expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
     expect(migrated.groups).toEqual([]);
     expect(migrated.blocks[0].seatKind).toBe("single"); // önceki adımlar da hâlâ çalışıyor
+  });
+});
+
+/* migrations[3] (3 → 4): bölüm ağacı (bkz. görev raporu §5.1, core/
+   geometry.js'teki resolvePlanSections/resolveBlockSectionId notu). Yeni
+   alanlar PLAN seviyesinde (plan.sections) VE blok seviyesinde
+   (b.sectionId) — eskiden hiçbiri yoktu, göç yalnız EKLER. */
+describe("migrate — bölüm ağacı göçü (plan.sections + b.sectionId EKLENİR)", () => {
+  it("düz level'lı bloklar derinlik-1 bölümlere döner, AYNI level'ı paylaşan bloklar AYNI bölüme bağlanır", () => {
+    const plan = {
+      schemaVersion: 3, shapes: [], groups: [],
+      blocks: [
+        { id: "b1", kind: "grid", label: "A", level: "Alt Tribün", num: {} },
+        { id: "b2", kind: "grid", label: "B", level: "Üst Tribün", num: {} },
+        { id: "b3", kind: "grid", label: "C", level: "Alt Tribün", num: {} },
+      ],
+    };
+    const migrated = migrate(plan);
+    expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+    expect(migrated.sections).toHaveLength(2); // iki farklı level → iki bölüm
+    const alt = migrated.sections.find((s) => s.code === "Alt Tribün");
+    const ust = migrated.sections.find((s) => s.code === "Üst Tribün");
+    expect(alt).toMatchObject({ name: "Alt Tribün", kind: "floor", parentId: null });
+    expect(ust).toMatchObject({ name: "Üst Tribün", kind: "floor", parentId: null });
+    expect(migrated.blocks[0].sectionId).toBe(alt.id); // b1 · Alt Tribün
+    expect(migrated.blocks[2].sectionId).toBe(alt.id); // b3 · AYNI level → AYNI bölüm
+    expect(migrated.blocks[1].sectionId).toBe(ust.id); // b2 · Üst Tribün
+    expect(migrated.blocks[0].level).toBe("Alt Tribün"); // level SİLİNMEDİ (eklemeli göç)
+  });
+
+  it("zaten sectionId'si olan blok DOKUNULMADAN kalır, yeni bir bölüm EKLENMEZ", () => {
+    const plan = {
+      schemaVersion: 3, shapes: [], groups: [],
+      sections: [{ id: "sec-x", code: "X", name: "X", kind: "box", parentId: null }],
+      blocks: [{ id: "b1", kind: "grid", label: "A", level: "", sectionId: "sec-x", num: {} }],
+    };
+    const migrated = migrate(plan);
+    expect(migrated.blocks[0].sectionId).toBe("sec-x");
+    expect(migrated.sections).toEqual(plan.sections);
+  });
+
+  it("blok level'sızsa (alan hiç yok) da bir bölüme düşer, çökmez", () => {
+    const plan = { schemaVersion: 3, shapes: [], groups: [], blocks: [{ id: "b1", kind: "grid", label: "A", num: {} }] };
+    const migrated = migrate(plan);
+    expect(migrated.sections).toHaveLength(1);
+    expect(migrated.blocks[0].sectionId).toBe(migrated.sections[0].id);
+  });
+
+  it("v0'dan başlayan bir kayıt da (önceki tüm göçlerden SONRA) sections/sectionId ile çıkar — zincirin son adımı", () => {
+    const legacy = { blocks: [{ id: "b1", kind: "grid", label: "A", level: "Parter", num: {} }], shapes: [] };
+    const migrated = migrate(legacy);
+    expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+    expect(migrated.groups).toEqual([]); // önceki adım da hâlâ çalışıyor
+    expect(migrated.blocks[0].seatKind).toBe("single"); // ve ondan önceki
+    expect(migrated.sections).toHaveLength(1);
+    expect(migrated.blocks[0].sectionId).toBe(migrated.sections[0].id);
+  });
+
+  it("aynı level dizesi göçmüş bir plan İLE göçmemiş bir venue'da (resolveBlockSectionId) AYNI id'yi üretir", () => {
+    // core/schema.js'in 3→4 adımı nid() DEĞİL syntheticSectionId() kullanıyor —
+    // tam da bu denklik İÇİN (bkz. migrations dizisindeki yorum).
+    const migrated = migrate({ schemaVersion: 3, shapes: [], groups: [],
+      blocks: [{ id: "b1", kind: "grid", label: "A", level: "Loca", num: {} }] });
+    expect(migrated.blocks[0].sectionId).toBe(syntheticSectionId("Loca"));
   });
 });

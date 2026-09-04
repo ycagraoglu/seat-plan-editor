@@ -59,6 +59,43 @@
       ]
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:Parter",
+      "code": "Parter",
+      "name": "Parter",
+      "kind": "floor",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:Zemin Loca",
+      "code": "Zemin Loca",
+      "name": "Zemin Loca",
+      "kind": "floor",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:1. Kat",
+      "code": "1. Kat",
+      "name": "1. Kat",
+      "kind": "floor",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:1. Kat Loca",
+      "code": "1. Kat Loca",
+      "name": "1. Kat Loca",
+      "kind": "floor",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:2. Kat Loca",
+      "code": "2. Kat Loca",
+      "name": "2. Kat Loca",
+      "kind": "floor",
+      "parent_id": null
+    }
+  ],
   "groups": [],
   "seats": [
     {
@@ -73,7 +110,8 @@
       "rot": -49.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-2",
@@ -87,7 +125,8 @@
       "rot": -41.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-3",
@@ -101,7 +140,8 @@
       "rot": -33.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-4",
@@ -115,7 +155,8 @@
       "rot": -24.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-5",
@@ -129,7 +170,8 @@
       "rot": -16.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-6",
@@ -143,7 +185,8 @@
       "rot": -8.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-7",
@@ -157,7 +200,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-8",
@@ -171,7 +215,8 @@
       "rot": 8.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-9",
@@ -185,7 +230,8 @@
       "rot": 16.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-10",
@@ -199,7 +245,8 @@
       "rot": 24.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-11",
@@ -213,7 +260,8 @@
       "rot": 33.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-12",
@@ -227,7 +275,8 @@
       "rot": 41.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-1-13",
@@ -241,7 +290,8 @@
       "rot": 49.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-1",
@@ -255,7 +305,8 @@
       "rot": -50.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-2",
@@ -269,7 +320,8 @@
       "rot": -43.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-3",
@@ -283,7 +335,8 @@
       "rot": -37.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-4",
@@ -297,7 +350,8 @@
       "rot": -30.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-5",
@@ -311,7 +365,8 @@
       "rot": -23.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-6",
@@ -325,7 +380,8 @@
       "rot": -16.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-7",
@@ -339,7 +395,8 @@
       "rot": -10.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-8",
@@ -353,7 +410,8 @@
       "rot": -3.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-9",
@@ -367,7 +425,8 @@
       "rot": 3.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-10",
@@ -381,7 +440,8 @@
       "rot": 10.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-11",
@@ -395,7 +455,8 @@
       "rot": 16.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-12",
@@ -409,7 +470,8 @@
       "rot": 23.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-13",
@@ -423,7 +485,8 @@
       "rot": 30.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-14",
@@ -437,7 +500,8 @@
       "rot": 37.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-15",
@@ -451,7 +515,8 @@
       "rot": 43.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-2-16",
@@ -465,7 +530,8 @@
       "rot": 50.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-1",
@@ -479,7 +545,8 @@
       "rot": -51.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-2",
@@ -493,7 +560,8 @@
       "rot": -45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-3",
@@ -507,7 +575,8 @@
       "rot": -39.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-4",
@@ -521,7 +590,8 @@
       "rot": -34.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-5",
@@ -535,7 +605,8 @@
       "rot": -28.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-6",
@@ -549,7 +620,8 @@
       "rot": -22.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-7",
@@ -563,7 +635,8 @@
       "rot": -17.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-8",
@@ -577,7 +650,8 @@
       "rot": -11.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-9",
@@ -591,7 +665,8 @@
       "rot": -5.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-10",
@@ -605,7 +680,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-11",
@@ -619,7 +695,8 @@
       "rot": 5.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-12",
@@ -633,7 +710,8 @@
       "rot": 11.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-13",
@@ -647,7 +725,8 @@
       "rot": 17.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-14",
@@ -661,7 +740,8 @@
       "rot": 22.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-15",
@@ -675,7 +755,8 @@
       "rot": 28.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-16",
@@ -689,7 +770,8 @@
       "rot": 34.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-17",
@@ -703,7 +785,8 @@
       "rot": 39.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-18",
@@ -717,7 +800,8 @@
       "rot": 45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-3-19",
@@ -731,7 +815,8 @@
       "rot": 51.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-1",
@@ -745,7 +830,8 @@
       "rot": -51.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-2",
@@ -759,7 +845,8 @@
       "rot": -47,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-3",
@@ -773,7 +860,8 @@
       "rot": -42.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-4",
@@ -787,7 +875,8 @@
       "rot": -37.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-5",
@@ -801,7 +890,8 @@
       "rot": -32.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-6",
@@ -815,7 +905,8 @@
       "rot": -28.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-7",
@@ -829,7 +920,8 @@
       "rot": -23.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-8",
@@ -843,7 +935,8 @@
       "rot": -18.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-9",
@@ -857,7 +950,8 @@
       "rot": -14.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-10",
@@ -871,7 +965,8 @@
       "rot": -9.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-11",
@@ -885,7 +980,8 @@
       "rot": -4.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-12",
@@ -899,7 +995,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-13",
@@ -913,7 +1010,8 @@
       "rot": 4.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-14",
@@ -927,7 +1025,8 @@
       "rot": 9.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-15",
@@ -941,7 +1040,8 @@
       "rot": 14.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-16",
@@ -955,7 +1055,8 @@
       "rot": 18.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-17",
@@ -969,7 +1070,8 @@
       "rot": 23.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-18",
@@ -983,7 +1085,8 @@
       "rot": 28.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-19",
@@ -997,7 +1100,8 @@
       "rot": 32.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-20",
@@ -1011,7 +1115,8 @@
       "rot": 37.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-21",
@@ -1025,7 +1130,8 @@
       "rot": 42.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-22",
@@ -1039,7 +1145,8 @@
       "rot": 47,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-4-23",
@@ -1053,7 +1160,8 @@
       "rot": 51.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-1",
@@ -1067,7 +1175,8 @@
       "rot": -51.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-2",
@@ -1081,7 +1190,8 @@
       "rot": -47.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-3",
@@ -1095,7 +1205,8 @@
       "rot": -43.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-4",
@@ -1109,7 +1220,8 @@
       "rot": -39.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-5",
@@ -1123,7 +1235,8 @@
       "rot": -35.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-6",
@@ -1137,7 +1250,8 @@
       "rot": -31.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-7",
@@ -1151,7 +1265,8 @@
       "rot": -27,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-8",
@@ -1165,7 +1280,8 @@
       "rot": -22.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-9",
@@ -1179,7 +1295,8 @@
       "rot": -18.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-10",
@@ -1193,7 +1310,8 @@
       "rot": -14.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-11",
@@ -1207,7 +1325,8 @@
       "rot": -10.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-12",
@@ -1221,7 +1340,8 @@
       "rot": -6.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-13",
@@ -1235,7 +1355,8 @@
       "rot": -2.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-14",
@@ -1249,7 +1370,8 @@
       "rot": 2.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-15",
@@ -1263,7 +1385,8 @@
       "rot": 6.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-16",
@@ -1277,7 +1400,8 @@
       "rot": 10.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-17",
@@ -1291,7 +1415,8 @@
       "rot": 14.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-18",
@@ -1305,7 +1430,8 @@
       "rot": 18.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-19",
@@ -1319,7 +1445,8 @@
       "rot": 22.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-20",
@@ -1333,7 +1460,8 @@
       "rot": 27,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-21",
@@ -1347,7 +1475,8 @@
       "rot": 31.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-22",
@@ -1361,7 +1490,8 @@
       "rot": 35.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-23",
@@ -1375,7 +1505,8 @@
       "rot": 39.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-24",
@@ -1389,7 +1520,8 @@
       "rot": 43.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-25",
@@ -1403,7 +1535,8 @@
       "rot": 47.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-5-26",
@@ -1417,7 +1550,8 @@
       "rot": 51.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-1",
@@ -1431,7 +1565,8 @@
       "rot": -52.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-2",
@@ -1445,7 +1580,8 @@
       "rot": -48.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-3",
@@ -1459,7 +1595,8 @@
       "rot": -44.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-4",
@@ -1473,7 +1610,8 @@
       "rot": -41,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-5",
@@ -1487,7 +1625,8 @@
       "rot": -37.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-6",
@@ -1501,7 +1640,8 @@
       "rot": -33.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-7",
@@ -1515,7 +1655,8 @@
       "rot": -29.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-8",
@@ -1529,7 +1670,8 @@
       "rot": -26.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-9",
@@ -1543,7 +1685,8 @@
       "rot": -22.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-10",
@@ -1557,7 +1700,8 @@
       "rot": -18.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-11",
@@ -1571,7 +1715,8 @@
       "rot": -14.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-12",
@@ -1585,7 +1730,8 @@
       "rot": -11.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-13",
@@ -1599,7 +1745,8 @@
       "rot": -7.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-14",
@@ -1613,7 +1760,8 @@
       "rot": -3.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-15",
@@ -1627,7 +1775,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-16",
@@ -1641,7 +1790,8 @@
       "rot": 3.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-17",
@@ -1655,7 +1805,8 @@
       "rot": 7.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-18",
@@ -1669,7 +1820,8 @@
       "rot": 11.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-19",
@@ -1683,7 +1835,8 @@
       "rot": 14.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-20",
@@ -1697,7 +1850,8 @@
       "rot": 18.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-21",
@@ -1711,7 +1865,8 @@
       "rot": 22.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-22",
@@ -1725,7 +1880,8 @@
       "rot": 26.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-23",
@@ -1739,7 +1895,8 @@
       "rot": 29.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-24",
@@ -1753,7 +1910,8 @@
       "rot": 33.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-25",
@@ -1767,7 +1925,8 @@
       "rot": 37.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-26",
@@ -1781,7 +1940,8 @@
       "rot": 41,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-27",
@@ -1795,7 +1955,8 @@
       "rot": 44.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-28",
@@ -1809,7 +1970,8 @@
       "rot": 48.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-6-29",
@@ -1823,7 +1985,8 @@
       "rot": 52.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-1",
@@ -1839,7 +2002,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-2",
@@ -1855,7 +2019,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-3",
@@ -1871,7 +2036,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-4",
@@ -1887,7 +2053,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-5",
@@ -1901,7 +2068,8 @@
       "rot": -39.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-6",
@@ -1915,7 +2083,8 @@
       "rot": -36,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-7",
@@ -1929,7 +2098,8 @@
       "rot": -32.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-8",
@@ -1943,7 +2113,8 @@
       "rot": -29.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-9",
@@ -1957,7 +2128,8 @@
       "rot": -26.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-10",
@@ -1971,7 +2143,8 @@
       "rot": -22.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-11",
@@ -1985,7 +2158,8 @@
       "rot": -19.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-12",
@@ -1999,7 +2173,8 @@
       "rot": -16.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-13",
@@ -2013,7 +2188,8 @@
       "rot": -13.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-14",
@@ -2027,7 +2203,8 @@
       "rot": -9.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-15",
@@ -2041,7 +2218,8 @@
       "rot": -6.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-16",
@@ -2055,7 +2233,8 @@
       "rot": -3.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-17",
@@ -2069,7 +2248,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-18",
@@ -2083,7 +2263,8 @@
       "rot": 3.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-19",
@@ -2097,7 +2278,8 @@
       "rot": 6.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-20",
@@ -2111,7 +2293,8 @@
       "rot": 9.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-21",
@@ -2125,7 +2308,8 @@
       "rot": 13.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-22",
@@ -2139,7 +2323,8 @@
       "rot": 16.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-23",
@@ -2153,7 +2338,8 @@
       "rot": 19.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-24",
@@ -2167,7 +2353,8 @@
       "rot": 22.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-25",
@@ -2181,7 +2368,8 @@
       "rot": 26.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-26",
@@ -2195,7 +2383,8 @@
       "rot": 29.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-27",
@@ -2209,7 +2398,8 @@
       "rot": 32.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-28",
@@ -2223,7 +2413,8 @@
       "rot": 36,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-29",
@@ -2237,7 +2428,8 @@
       "rot": 39.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-30",
@@ -2251,7 +2443,8 @@
       "rot": 42.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-31",
@@ -2265,7 +2458,8 @@
       "rot": 45.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-32",
@@ -2279,7 +2473,8 @@
       "rot": 49.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "P-7-33",
@@ -2293,7 +2488,8 @@
       "rot": 52.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Parter"
     },
     {
       "id": "ZL1-1-1",
@@ -2309,7 +2505,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL1-1-2",
@@ -2325,7 +2522,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL1-1-3",
@@ -2339,7 +2537,8 @@
       "rot": -79.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL1-2-1",
@@ -2355,7 +2554,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL1-2-2",
@@ -2371,7 +2571,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL1-2-3",
@@ -2385,7 +2586,8 @@
       "rot": -80.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL2-1-1",
@@ -2401,7 +2603,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL2-1-2",
@@ -2417,7 +2620,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL2-1-3",
@@ -2431,7 +2635,8 @@
       "rot": 90.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL2-2-1",
@@ -2447,7 +2652,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL2-2-2",
@@ -2463,7 +2669,8 @@
       "features": [
         "accessible"
       ],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "ZL2-2-3",
@@ -2477,7 +2684,8 @@
       "rot": 89.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "Zemin Loca"
     },
     {
       "id": "A-A-1",
@@ -2491,7 +2699,8 @@
       "rot": -32.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-2",
@@ -2505,7 +2714,8 @@
       "rot": -29.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-3",
@@ -2519,7 +2729,8 @@
       "rot": -26.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-4",
@@ -2533,7 +2744,8 @@
       "rot": -23.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-5",
@@ -2547,7 +2759,8 @@
       "rot": -20.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-6",
@@ -2561,7 +2774,8 @@
       "rot": -17.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-7",
@@ -2575,7 +2789,8 @@
       "rot": -14.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-8",
@@ -2589,7 +2804,8 @@
       "rot": -11.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-9",
@@ -2603,7 +2819,8 @@
       "rot": -8.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-10",
@@ -2617,7 +2834,8 @@
       "rot": -5.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-11",
@@ -2631,7 +2849,8 @@
       "rot": -3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-12",
@@ -2645,7 +2864,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-13",
@@ -2659,7 +2879,8 @@
       "rot": 3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-14",
@@ -2673,7 +2894,8 @@
       "rot": 5.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-15",
@@ -2687,7 +2909,8 @@
       "rot": 8.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-16",
@@ -2701,7 +2924,8 @@
       "rot": 11.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-17",
@@ -2715,7 +2939,8 @@
       "rot": 14.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-18",
@@ -2729,7 +2954,8 @@
       "rot": 17.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-19",
@@ -2743,7 +2969,8 @@
       "rot": 20.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-20",
@@ -2757,7 +2984,8 @@
       "rot": 23.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-21",
@@ -2771,7 +2999,8 @@
       "rot": 26.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-22",
@@ -2785,7 +3014,8 @@
       "rot": 29.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-A-23",
@@ -2799,7 +3029,8 @@
       "rot": 32.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-1",
@@ -2813,7 +3044,8 @@
       "rot": -32.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-2",
@@ -2827,7 +3059,8 @@
       "rot": -29.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-3",
@@ -2841,7 +3074,8 @@
       "rot": -27.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-4",
@@ -2855,7 +3089,8 @@
       "rot": -24.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-5",
@@ -2869,7 +3104,8 @@
       "rot": -21.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-6",
@@ -2883,7 +3119,8 @@
       "rot": -19,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-7",
@@ -2897,7 +3134,8 @@
       "rot": -16.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-8",
@@ -2911,7 +3149,8 @@
       "rot": -13.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-9",
@@ -2925,7 +3164,8 @@
       "rot": -10.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-10",
@@ -2939,7 +3179,8 @@
       "rot": -8.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-11",
@@ -2953,7 +3194,8 @@
       "rot": -5.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-12",
@@ -2967,7 +3209,8 @@
       "rot": -2.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-13",
@@ -2981,7 +3224,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-14",
@@ -2995,7 +3239,8 @@
       "rot": 2.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-15",
@@ -3009,7 +3254,8 @@
       "rot": 5.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-16",
@@ -3023,7 +3269,8 @@
       "rot": 8.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-17",
@@ -3037,7 +3284,8 @@
       "rot": 10.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-18",
@@ -3051,7 +3299,8 @@
       "rot": 13.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-19",
@@ -3065,7 +3314,8 @@
       "rot": 16.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-20",
@@ -3079,7 +3329,8 @@
       "rot": 19,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-21",
@@ -3093,7 +3344,8 @@
       "rot": 21.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-22",
@@ -3107,7 +3359,8 @@
       "rot": 24.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-23",
@@ -3121,7 +3374,8 @@
       "rot": 27.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-24",
@@ -3135,7 +3389,8 @@
       "rot": 29.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-B-25",
@@ -3149,7 +3404,8 @@
       "rot": 32.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-1",
@@ -3163,7 +3419,8 @@
       "rot": -32.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-2",
@@ -3177,7 +3434,8 @@
       "rot": -30.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-3",
@@ -3191,7 +3449,8 @@
       "rot": -27.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-4",
@@ -3205,7 +3464,8 @@
       "rot": -24.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-5",
@@ -3219,7 +3479,8 @@
       "rot": -22.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-6",
@@ -3233,7 +3494,8 @@
       "rot": -19.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-7",
@@ -3247,7 +3509,8 @@
       "rot": -17,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-8",
@@ -3261,7 +3524,8 @@
       "rot": -14.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-9",
@@ -3275,7 +3539,8 @@
       "rot": -11.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-10",
@@ -3289,7 +3554,8 @@
       "rot": -9.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-11",
@@ -3303,7 +3569,8 @@
       "rot": -6.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-12",
@@ -3317,7 +3584,8 @@
       "rot": -3.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-13",
@@ -3331,7 +3599,8 @@
       "rot": -1.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-14",
@@ -3345,7 +3614,8 @@
       "rot": 1.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-15",
@@ -3359,7 +3629,8 @@
       "rot": 3.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-16",
@@ -3373,7 +3644,8 @@
       "rot": 6.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-17",
@@ -3387,7 +3659,8 @@
       "rot": 9.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-18",
@@ -3401,7 +3674,8 @@
       "rot": 11.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-19",
@@ -3415,7 +3689,8 @@
       "rot": 14.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-20",
@@ -3429,7 +3704,8 @@
       "rot": 17,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-21",
@@ -3443,7 +3719,8 @@
       "rot": 19.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-22",
@@ -3457,7 +3734,8 @@
       "rot": 22.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-23",
@@ -3471,7 +3749,8 @@
       "rot": 24.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-24",
@@ -3485,7 +3764,8 @@
       "rot": 27.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-25",
@@ -3499,7 +3779,8 @@
       "rot": 30.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-C-26",
@@ -3513,7 +3794,8 @@
       "rot": 32.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-1",
@@ -3527,7 +3809,8 @@
       "rot": -32.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-2",
@@ -3541,7 +3824,8 @@
       "rot": -30.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-3",
@@ -3555,7 +3839,8 @@
       "rot": -27.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-4",
@@ -3569,7 +3854,8 @@
       "rot": -25.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-5",
@@ -3583,7 +3869,8 @@
       "rot": -23.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-6",
@@ -3597,7 +3884,8 @@
       "rot": -20.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-7",
@@ -3611,7 +3899,8 @@
       "rot": -18.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-8",
@@ -3625,7 +3914,8 @@
       "rot": -15.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-9",
@@ -3639,7 +3929,8 @@
       "rot": -13.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-10",
@@ -3653,7 +3944,8 @@
       "rot": -10.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-11",
@@ -3667,7 +3959,8 @@
       "rot": -8.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-12",
@@ -3681,7 +3974,8 @@
       "rot": -6.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-13",
@@ -3695,7 +3989,8 @@
       "rot": -3.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-14",
@@ -3709,7 +4004,8 @@
       "rot": -1.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-15",
@@ -3723,7 +4019,8 @@
       "rot": 1.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-16",
@@ -3737,7 +4034,8 @@
       "rot": 3.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-17",
@@ -3751,7 +4049,8 @@
       "rot": 6.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-18",
@@ -3765,7 +4064,8 @@
       "rot": 8.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-19",
@@ -3779,7 +4079,8 @@
       "rot": 10.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-20",
@@ -3793,7 +4094,8 @@
       "rot": 13.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-21",
@@ -3807,7 +4109,8 @@
       "rot": 15.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-22",
@@ -3821,7 +4124,8 @@
       "rot": 18.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-23",
@@ -3835,7 +4139,8 @@
       "rot": 20.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-24",
@@ -3849,7 +4154,8 @@
       "rot": 23.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-25",
@@ -3863,7 +4169,8 @@
       "rot": 25.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-26",
@@ -3877,7 +4184,8 @@
       "rot": 27.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-27",
@@ -3891,7 +4199,8 @@
       "rot": 30.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-D-28",
@@ -3905,7 +4214,8 @@
       "rot": 32.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-1",
@@ -3919,7 +4229,8 @@
       "rot": -32.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-2",
@@ -3933,7 +4244,8 @@
       "rot": -30.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-3",
@@ -3947,7 +4259,8 @@
       "rot": -28.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-4",
@@ -3961,7 +4274,8 @@
       "rot": -25.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-5",
@@ -3975,7 +4289,8 @@
       "rot": -23.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-6",
@@ -3989,7 +4304,8 @@
       "rot": -21.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-7",
@@ -4003,7 +4319,8 @@
       "rot": -18.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-8",
@@ -4017,7 +4334,8 @@
       "rot": -16.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-9",
@@ -4031,7 +4349,8 @@
       "rot": -14.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-10",
@@ -4045,7 +4364,8 @@
       "rot": -11.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-11",
@@ -4059,7 +4379,8 @@
       "rot": -9.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-12",
@@ -4073,7 +4394,8 @@
       "rot": -7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-13",
@@ -4087,7 +4409,8 @@
       "rot": -4.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-14",
@@ -4101,7 +4424,8 @@
       "rot": -2.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-15",
@@ -4115,7 +4439,8 @@
       "rot": 0,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-16",
@@ -4129,7 +4454,8 @@
       "rot": 2.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-17",
@@ -4143,7 +4469,8 @@
       "rot": 4.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-18",
@@ -4157,7 +4484,8 @@
       "rot": 7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-19",
@@ -4171,7 +4499,8 @@
       "rot": 9.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-20",
@@ -4185,7 +4514,8 @@
       "rot": 11.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-21",
@@ -4199,7 +4529,8 @@
       "rot": 14.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-22",
@@ -4213,7 +4544,8 @@
       "rot": 16.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-23",
@@ -4227,7 +4559,8 @@
       "rot": 18.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-24",
@@ -4241,7 +4574,8 @@
       "rot": 21.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-25",
@@ -4255,7 +4589,8 @@
       "rot": 23.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-26",
@@ -4269,7 +4604,8 @@
       "rot": 25.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-27",
@@ -4283,7 +4619,8 @@
       "rot": 28.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-28",
@@ -4297,7 +4634,8 @@
       "rot": 30.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "A-E-29",
@@ -4311,7 +4649,8 @@
       "rot": 32.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat"
     },
     {
       "id": "1L1-1-1",
@@ -4325,7 +4664,8 @@
       "rot": -70.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L1-1-2",
@@ -4339,7 +4679,8 @@
       "rot": -67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L1-1-3",
@@ -4353,7 +4694,8 @@
       "rot": -64.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L1-2-1",
@@ -4367,7 +4709,8 @@
       "rot": -70.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L1-2-2",
@@ -4381,7 +4724,8 @@
       "rot": -67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L1-2-3",
@@ -4395,7 +4739,8 @@
       "rot": -65,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L3-1-1",
@@ -4409,7 +4754,8 @@
       "rot": 64.8,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L3-1-2",
@@ -4423,7 +4769,8 @@
       "rot": 67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L3-1-3",
@@ -4437,7 +4784,8 @@
       "rot": 70.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L3-2-1",
@@ -4451,7 +4799,8 @@
       "rot": 65,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L3-2-2",
@@ -4465,7 +4814,8 @@
       "rot": 67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L3-2-3",
@@ -4479,7 +4829,8 @@
       "rot": 70.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L2-1-1",
@@ -4493,7 +4844,8 @@
       "rot": -85.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L2-1-2",
@@ -4507,7 +4859,8 @@
       "rot": -82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L2-1-3",
@@ -4521,7 +4874,8 @@
       "rot": -80.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L2-2-1",
@@ -4535,7 +4889,8 @@
       "rot": -85.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L2-2-2",
@@ -4549,7 +4904,8 @@
       "rot": -82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L2-2-3",
@@ -4563,7 +4919,8 @@
       "rot": -80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L4-1-1",
@@ -4577,7 +4934,8 @@
       "rot": 80.1,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L4-1-2",
@@ -4591,7 +4949,8 @@
       "rot": 82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L4-1-3",
@@ -4605,7 +4964,8 @@
       "rot": 85.7,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L4-2-1",
@@ -4619,7 +4979,8 @@
       "rot": 80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L4-2-2",
@@ -4633,7 +4994,8 @@
       "rot": 82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "1L4-2-3",
@@ -4647,7 +5009,8 @@
       "rot": 85.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "1. Kat Loca"
     },
     {
       "id": "2L1-1-1",
@@ -4661,7 +5024,8 @@
       "rot": -47.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L1-1-2",
@@ -4675,7 +5039,8 @@
       "rot": -45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L1-1-3",
@@ -4689,7 +5054,8 @@
       "rot": -43.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L1-2-1",
@@ -4703,7 +5069,8 @@
       "rot": -47.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L1-2-2",
@@ -4717,7 +5084,8 @@
       "rot": -45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L1-2-3",
@@ -4731,7 +5099,8 @@
       "rot": -43.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L6-1-1",
@@ -4745,7 +5114,8 @@
       "rot": 43.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L6-1-2",
@@ -4759,7 +5129,8 @@
       "rot": 45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L6-1-3",
@@ -4773,7 +5144,8 @@
       "rot": 47.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L6-2-1",
@@ -4787,7 +5159,8 @@
       "rot": 43.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L6-2-2",
@@ -4801,7 +5174,8 @@
       "rot": 45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L6-2-3",
@@ -4815,7 +5189,8 @@
       "rot": 47.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L2-1-1",
@@ -4829,7 +5204,8 @@
       "rot": -58.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L2-1-2",
@@ -4843,7 +5219,8 @@
       "rot": -56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L2-1-3",
@@ -4857,7 +5234,8 @@
       "rot": -54.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L2-2-1",
@@ -4871,7 +5249,8 @@
       "rot": -58.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L2-2-2",
@@ -4885,7 +5264,8 @@
       "rot": -56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L2-2-3",
@@ -4899,7 +5279,8 @@
       "rot": -54.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L7-1-1",
@@ -4913,7 +5294,8 @@
       "rot": 54.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L7-1-2",
@@ -4927,7 +5309,8 @@
       "rot": 56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L7-1-3",
@@ -4941,7 +5324,8 @@
       "rot": 58.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L7-2-1",
@@ -4955,7 +5339,8 @@
       "rot": 54.5,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L7-2-2",
@@ -4969,7 +5354,8 @@
       "rot": 56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L7-2-3",
@@ -4983,7 +5369,8 @@
       "rot": 58.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L3-1-1",
@@ -4997,7 +5384,8 @@
       "rot": -69.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L3-1-2",
@@ -5011,7 +5399,8 @@
       "rot": -67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L3-1-3",
@@ -5025,7 +5414,8 @@
       "rot": -65.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L3-2-1",
@@ -5039,7 +5429,8 @@
       "rot": -69.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L3-2-2",
@@ -5053,7 +5444,8 @@
       "rot": -67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L3-2-3",
@@ -5067,7 +5459,8 @@
       "rot": -65.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L8-1-1",
@@ -5081,7 +5474,8 @@
       "rot": 65.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L8-1-2",
@@ -5095,7 +5489,8 @@
       "rot": 67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L8-1-3",
@@ -5109,7 +5504,8 @@
       "rot": 69.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L8-2-1",
@@ -5123,7 +5519,8 @@
       "rot": 65.4,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L8-2-2",
@@ -5137,7 +5534,8 @@
       "rot": 67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L8-2-3",
@@ -5151,7 +5549,8 @@
       "rot": 69.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L4-1-1",
@@ -5165,7 +5564,8 @@
       "rot": -80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L4-1-2",
@@ -5179,7 +5579,8 @@
       "rot": -78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L4-1-3",
@@ -5193,7 +5594,8 @@
       "rot": -76.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L4-2-1",
@@ -5207,7 +5609,8 @@
       "rot": -80.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L4-2-2",
@@ -5221,7 +5624,8 @@
       "rot": -78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L4-2-3",
@@ -5235,7 +5639,8 @@
       "rot": -76.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L9-1-1",
@@ -5249,7 +5654,8 @@
       "rot": 76.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L9-1-2",
@@ -5263,7 +5669,8 @@
       "rot": 78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L9-1-3",
@@ -5277,7 +5684,8 @@
       "rot": 80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L9-2-1",
@@ -5291,7 +5699,8 @@
       "rot": 76.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L9-2-2",
@@ -5305,7 +5714,8 @@
       "rot": 78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L9-2-3",
@@ -5319,7 +5729,8 @@
       "rot": 80.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L5-1-1",
@@ -5333,7 +5744,8 @@
       "rot": -91.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L5-1-2",
@@ -5347,7 +5759,8 @@
       "rot": -89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L5-1-3",
@@ -5361,7 +5774,8 @@
       "rot": -87.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L5-2-1",
@@ -5375,7 +5789,8 @@
       "rot": -91.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L5-2-2",
@@ -5389,7 +5804,8 @@
       "rot": -89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L5-2-3",
@@ -5403,7 +5819,8 @@
       "rot": -87.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L10-1-1",
@@ -5417,7 +5834,8 @@
       "rot": 87.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L10-1-2",
@@ -5431,7 +5849,8 @@
       "rot": 89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L10-1-3",
@@ -5445,7 +5864,8 @@
       "rot": 91.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L10-2-1",
@@ -5459,7 +5879,8 @@
       "rot": 87.3,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L10-2-2",
@@ -5473,7 +5894,8 @@
       "rot": 89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     },
     {
       "id": "2L10-2-3",
@@ -5487,7 +5909,8 @@
       "rot": 91.2,
       "seat_kind": "single",
       "features": [],
-      "group": null
+      "group": null,
+      "section": "2. Kat Loca"
     }
   ]
 }

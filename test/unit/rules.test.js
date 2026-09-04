@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { RULES, buildCtx, runRules, seatCorners } from "../../src/core/rules.js";
-import { buildMeta } from "../../src/core/geometry.js";
+import { buildMeta, syntheticSectionId } from "../../src/core/geometry.js";
 
 const overlapRule = RULES.find((r) => r.id === "footprint-overlap-same-level");
+const crossLevelRule = RULES.find((r) => r.id === "footprint-overlap-cross-level");
 const companionGroupRule = RULES.find((r) => r.id === "companion-group-incomplete");
 
 /* outlineOverlapArea sadece köşe noktası listesi (m.outline) ve m.bbox
@@ -176,5 +177,57 @@ describe("companion-group-incomplete — refakatçi grubu tekerlekli sandalye + 
     const [finding] = companionGroupRule.check(companionGroupPlan(groups, ov));
     expect(finding.m).toContain("1 refakatçi grubu");
     expect(finding.d).toBe("REF-B: refakatçi koltuğu yok");
+  });
+});
+
+/* ─────────────────────────────────────────────────────────────────────
+   Bölüm ağacı (rapor §5.1) sonrası: "aynı kat" artık "bloğun ait olduğu
+   AYNI BÖLÜM" (buildCtx'teki bySection, core/geometry.js'teki
+   resolveBlockSectionId). İki iddia:
+   1. Göçmemiş bir planda (level string, sectionId YOK — 9 örnek salonun
+      TAMAMININ hali) davranış eski byLevel gruplamasıyla derinlik-1'de
+      BİREBİR AYNI kalmalı.
+   2. Yeni model, eskisinin temsil EDEMEDİĞİ durumu temsil edebilmeli: AYNI
+      level dizesini paylaşan iki blok, FARKLI bir ebeveyne (sectionId)
+      açıkça bağlıysa artık AYNI bölüm SAYILMAMALI (görev tanımındaki Batı
+      Tribünü → Alt Kat/Üst Kat → H Blok örneği — bugün "aynı kod farklı
+      katta" mümkün değildi). ───────────────────────────────────────── */
+describe("footprint-overlap-same-level / -cross-level — derinlik 1'de section tabanlı gruplama eski byLevel ile AYNI davranıyor", () => {
+  /* twin(): iki blok TAM üst üste (100×100 = 10000 cm² örtüşme, eşik 50'yi
+     rahatça aşıyor) — overlapRule.check devreye girsin diye YETERLİ, kaç
+     cm² olduğu bu testlerin ilgisi dışında (bkz. yukarıdaki chainPlan). */
+  const twin = (id, patch) => ({ b: { id, label: id, name: id, level: "", ...patch }, m: rectMeta(0, 100, 0, 100) });
+
+  it("AYNI level dizesi, sectionId YOK (göçmemiş) → bugünkü gibi HATA (same-level)", () => {
+    const metas = [twin("A", { level: "Parter" }), twin("B", { level: "Parter" })];
+    const ctx = buildCtx({ blocks: metas.map((x) => x.b) }, metas, new Map());
+    expect(overlapRule.check(ctx)).toHaveLength(1);
+    expect(crossLevelRule.check(ctx)).toEqual([]);
+  });
+
+  it("FARKLI level dizesi, sectionId YOK (göçmemiş) → bugünkü gibi UYARI (cross-level), HATA değil", () => {
+    const metas = [twin("A", { level: "Parter" }), twin("B", { level: "1. Balkon" })];
+    const ctx = buildCtx({ blocks: metas.map((x) => x.b) }, metas, new Map());
+    expect(overlapRule.check(ctx)).toEqual([]);
+    expect(crossLevelRule.check(ctx)).toHaveLength(1);
+  });
+
+  it("iki bloğun sentetik section id'si level'dan bağımsız DOĞRUDAN eşleşir (syntheticSectionId ile)", () => {
+    const metas = [twin("A", { level: "Parter" }), twin("B", { level: "Parter" })];
+    const ctx = buildCtx({ blocks: metas.map((x) => x.b) }, metas, new Map());
+    expect([...ctx.bySection.keys()]).toEqual([syntheticSectionId("Parter")]);
+  });
+
+  it("YENİ kapasite: AYNI level dizesi ('H Blok') ama AÇIK FARKLI sectionId (Alt Kat / Üst Kat) → artık AYNI bölüm SAYILMAZ", () => {
+    const metas = [
+      twin("h-alt", { level: "H Blok", sectionId: "alt-kat/h-blok" }),
+      twin("h-ust", { level: "H Blok", sectionId: "ust-kat/h-blok" }),
+    ];
+    const ctx = buildCtx({ blocks: metas.map((x) => x.b) }, metas, new Map());
+    // eski (yalnız level'a bakan) mantık bunu HATA sayardı — yeni model artık UYARI:
+    // iki AYRI ebeveynin altındaki iki "H Blok" fiziksel olarak üst üste binebilir
+    // (bkz. Batı Tribünü → Alt Kat/Üst Kat → H Blok, görev tanımı).
+    expect(overlapRule.check(ctx)).toEqual([]);
+    expect(crossLevelRule.check(ctx)).toHaveLength(1);
   });
 });
