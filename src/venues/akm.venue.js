@@ -94,7 +94,7 @@ export const AKM = {
     /* Sahneye en yakın küçük ön bant — tek parça (ÇİFT/TEK ayrımı bu
        yarıçapta ≥26°'lik bir koridor açısı ister, gereksiz daralma). */
     fanB({ label: "P.ON", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: T_ON.r0, rows: T_ON.rows, rowGap: T_ON.rowGap, aStart: -78, aEnd: 78, seatGap: T_ON.seatGap, color: "#3E7FBF",
+      r0: T_ON.r0, rows: T_ON.rows, rowGap: T_ON.rowGap, aStart: -78, aEnd: 78, seatGap: T_ON.seatGap,
       ov: {
         "4,8": { at: "wheel" }, "4,9": { at: "wheel" }, "4,10": { at: "wheel" },
         "4,11": { at: "wheel" }, "4,12": { at: "wheel" }, "4,13": { at: "wheel" },
@@ -104,13 +104,13 @@ export const AKM = {
         "3,14": { at: "comp" }, "3,15": { at: "comp" }, "3,16": { at: "comp" }, "3,17": { at: "comp" },
       } }),
     fanB({ label: "P.ORTA-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: -22, aEnd: 22, seatGap: T_PARTER.seatGap, color: "#3E7FBF" }),
+      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: -22, aEnd: 22, seatGap: T_PARTER.seatGap }),
     fanB({ label: "P.ÇİFT-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: -86, aEnd: -37, seatGap: T_PARTER.seatGap, color: "#3E7FBF" }),
+      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: -86, aEnd: -37, seatGap: T_PARTER.seatGap }),
     fanB({ label: "P.TEK-2", level: "Parter", mode: "span", x: 0, y: 0,
-      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: 37, aEnd: 86, seatGap: T_PARTER.seatGap, color: "#3E7FBF" }),
+      r0: T_PARTER.r0, rows: T_PARTER.rows, rowGap: T_PARTER.rowGap, aStart: 37, aEnd: 86, seatGap: T_PARTER.seatGap }),
     fanB({ label: "1B.ORTA", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: -16, aEnd: 16, seatGap: T_B1.seatGap, color: "#3E7FBF",
+      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: -16, aEnd: 16, seatGap: T_B1.seatGap,
       ov: {
         "6,8": { at: "wheel" }, "6,9": { at: "wheel" }, "6,10": { at: "wheel" }, "6,11": { at: "wheel" },
         "6,12": { at: "wheel" }, "6,13": { at: "wheel" }, "6,14": { at: "wheel" }, "6,15": { at: "wheel" },
@@ -121,7 +121,7 @@ export const AKM = {
        kademe-arası boşluğa 200cm'lik kapı sığmıyor, bkz. dosya başı A5
        notu) — o 13 koltuk kapı için oyuluyor. */
     fanB({ label: "1B.ÇİFT", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: -43, aEnd: -22, seatGap: T_B1.seatGap, color: "#3E7FBF",
+      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: -43, aEnd: -22, seatGap: T_B1.seatGap,
       ov: {
         "2,0": { rm: true }, "2,1": { rm: true }, "2,2": { rm: true }, "2,3": { rm: true },
         "3,0": { rm: true }, "3,1": { rm: true }, "3,2": { rm: true }, "3,3": { rm: true }, "3,4": { rm: true }, "3,5": { rm: true },
@@ -129,26 +129,26 @@ export const AKM = {
       } }),
     /* KAPI 4 — 1B.ÇİFT'in aynası, aynı gerekçe. */
     fanB({ label: "1B.TEK", level: "1. Balkon", mode: "span", x: 0, y: 0,
-      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: 22, aEnd: 43, seatGap: T_B1.seatGap, color: "#3E7FBF",
+      r0: T_B1.r0, rows: T_B1.rows, rowGap: T_B1.rowGap, aStart: 22, aEnd: 43, seatGap: T_B1.seatGap,
       ov: {
         "2,12": { rm: true }, "2,13": { rm: true }, "2,14": { rm: true }, "2,15": { rm: true },
         "3,11": { rm: true }, "3,12": { rm: true }, "3,13": { rm: true }, "3,14": { rm: true }, "3,15": { rm: true }, "3,16": { rm: true },
         "4,14": { rm: true }, "4,15": { rm: true }, "4,16": { rm: true },
       } }),
     fanB({ label: "2B.ORTA", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: -21, aEnd: 21, seatGap: T_B2.seatGap, color: "#3E7FBF" }),
+      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: -21, aEnd: 21, seatGap: T_B2.seatGap }),
     /* KAPI 5 tam bu bloğun ÖN (r=0,1) satırlarının altına düşüyor (1.
        Balkon ↔ 2. Balkon arası 69cm boşluk, 200cm'lik kapıya dar — bkz.
        dosya başı A5 notu) — o 7 koltuk kapı için oyuluyor. */
     fanB({ label: "2B.ÇİFT", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: -52, aEnd: -27, seatGap: T_B2.seatGap, color: "#3E7FBF",
+      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: -52, aEnd: -27, seatGap: T_B2.seatGap,
       ov: {
         "0,1": { rm: true }, "0,2": { rm: true }, "0,3": { rm: true }, "0,4": { rm: true }, "0,5": { rm: true },
         "1,3": { rm: true }, "1,4": { rm: true },
       } }),
     /* KAPI 6 — 2B.ÇİFT'in aynası, aynı gerekçe. */
     fanB({ label: "2B.TEK", level: "2. Balkon", mode: "span", x: 0, y: 0,
-      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: 27, aEnd: 52, seatGap: T_B2.seatGap, color: "#3E7FBF",
+      r0: T_B2.r0, rows: T_B2.rows, rowGap: T_B2.rowGap, aStart: 27, aEnd: 52, seatGap: T_B2.seatGap,
       ov: {
         "0,19": { rm: true }, "0,20": { rm: true }, "0,21": { rm: true }, "0,22": { rm: true }, "0,23": { rm: true },
         "1,20": { rm: true }, "1,21": { rm: true },

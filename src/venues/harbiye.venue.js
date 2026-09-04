@@ -70,13 +70,13 @@ export const HARBIYE = {
     /* Protokol locası — sahnenin hemen önünde, iki sıra */
     reLabel({ id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: 0,
       r0: T_PR.r0, rows: T_PR.rows, rowGap: T_PR.rowGap, seatGap: T_PR.seatGap, counts: "15,15", align: "center",
-      aStart: -20, aEnd: 20, aCenter: 0, color: "#B79A32", pad: T_PR.pad,
+      aStart: -20, aEnd: 20, aCenter: 0, pad: T_PR.pad,
       level: "Protokol", ov: {}, num: { ...DEF_NUM } }, "PR"),
 
     ...tier({ r0: T_ALT.r0, rows: T_ALT.rows, rowGap: T_ALT.rowGap, span: 35, count: 5,
-      first: "A", level: "Alt Kademe", color: "#3E7FBF", aisle: 150, pad: T_ALT.pad }),
+      first: "A", level: "Alt Kademe", aisle: 150, pad: T_ALT.pad }),
     ...tier({ r0: T_ORTA.r0, rows: T_ORTA.rows, rowGap: T_ORTA.rowGap, span: 30, count: 6,
-      first: "F", level: "Orta Kademe", color: "#5F9142", aisle: 160, pad: T_ORTA.pad }),
+      first: "F", level: "Orta Kademe", aisle: 160, pad: T_ORTA.pad }),
     /* KAPI 1/2, Orta↔Üst Kademe arasındaki 39cm'lik boşluğa (bkz. dosya
        başı r0 notu) sığmayacak kadar büyük (300cm) — hangi yöne
        kaydırılsa bir kademenin koltuklarına giriyor (ölçüldü, bkz. görev
@@ -87,7 +87,7 @@ export const HARBIYE = {
        İKİ UCU olduğundan (o fonksiyon TEK ortalanmış boşluk varsayıyor)
        burada tier()'ın çıktısına hedefe özel `ov` ile sonradan eklendi. */
     ...tier({ r0: T_UST.r0, rows: T_UST.rows, rowGap: T_UST.rowGap, span: 30, count: 5,
-      first: "M", level: "Üst Kademe", color: "#C1743C", aisle: 180, pad: T_UST.pad })
+      first: "M", level: "Üst Kademe", aisle: 180, pad: T_UST.pad })
       .map((b) => ({ ...b, ov: { ...b.ov, ...(UST_KAPI_OV[b.label] || {}) } })),
 
     /* Erişilebilir platformlar — üst kademenin arkasındaki düz alan.
@@ -95,7 +95,7 @@ export const HARBIYE = {
     ...[-1, 1].map((sd, k) => reLabel({
       id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: sd * 52,
       r0: T_ERI.r0, rows: T_ERI.rows, rowGap: T_ERI.rowGap, seatGap: T_ERI.seatGap, counts: "18,18", align: "center",
-      aStart: -13, aEnd: 13, aCenter: 0, color: "#3E9092", pad: T_ERI.pad,
+      aStart: -13, aEnd: 13, aCenter: 0, pad: T_ERI.pad,
       level: "Erişilebilir Platform",
       ov: Object.fromEntries(Array.from({ length: 36 }, (_, i) =>
         [`${Math.floor(i / 18)},${i % 18}`, { at: i % 2 === 0 ? "wheel" : "comp" }])),

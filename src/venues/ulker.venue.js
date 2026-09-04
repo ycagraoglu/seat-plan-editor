@@ -47,14 +47,11 @@ const [T_ALT, T_LOCA, T_UST] = solveBowlTiers([
 ]);
 
 const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: T_ALT.W, H: T_ALT.H, Rc: 900, rows: T_ALT.rows, rowGap: T_ALT.rowGap, seatGap: T_ALT.seatGap,
-  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: T_ALT.pad,
-  colors: { long: "#C1743C", short: "#3E9092", corner: "#7C5BA8" } }));
+  nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: T_ALT.pad }));
 const ulkerLoca = bowl({ W: T_LOCA.W, H: T_LOCA.H, Rc: 2600, rows: T_LOCA.rows, rowGap: T_LOCA.rowGap, seatGap: T_LOCA.seatGap,
-  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: T_LOCA.pad,
-  colors: { long: "#B79A32", short: "#B79A32", corner: "#B79A32" } });
+  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: T_LOCA.pad });
 const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: T_UST.W, H: T_UST.H, Rc: 2800, rows: T_UST.rows, rowGap: T_UST.rowGap, seatGap: T_UST.seatGap,
-  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: T_UST.pad,
-  colors: { long: "#5F9142", short: "#6E7787", corner: "#3E7FBF" } }),
+  nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: T_UST.pad }),
   ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
 
 export const ULKER = {
@@ -69,11 +66,11 @@ export const ULKER = {
     /* Parket kenarı — sahaya paralel iki tek sıra (courtside) */
     { id: nid(), kind: "grid", label: "P1", name: "Parket Kenarı · P1", level: "Parket Kenarı",
       x: 0, y: 950, rot: 0, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
+      seatGap: 55, rowGap: 90, curve: 0, taper: 0, attr: "",
       num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
     { id: nid(), kind: "grid", label: "P2", name: "Parket Kenarı · P2", level: "Parket Kenarı",
       x: 0, y: -950, rot: 180, cols: 30, rows: 2, counts: "", align: "center",
-      seatGap: 55, rowGap: 90, curve: 0, taper: 0, color: "#C2415A", attr: "",
+      seatGap: 55, rowGap: 90, curve: 0, taper: 0, attr: "",
       num: { ...DEF_NUM, rowScheme: "letter" }, ov: {} },
 
     ...ulkerAlt, ...ulkerLoca, ...ulkerUst,

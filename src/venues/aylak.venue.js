@@ -33,14 +33,14 @@ export const AYLAK = {
   ],
   blocks: [
     /* Sahne önü — iki kişilik masalar */
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 1}`, x, -250, 2, 65, 0, "#C2415A")),
+    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 1}`, x, -250, 2, 65, 0)),
     /* Salon — dört kişilik masalar, iki sıra */
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 5}`, x, -20, 4, 90, 45, "#3E7FBF")),
-    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 9}`, x, 210, 4, 90, 45, "#3E7FBF")),
+    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 5}`, x, -20, 4, 90, 45)),
+    ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 9}`, x, 210, 4, 90, 45)),
     /* Bar tezgâhı taburesi — tek sıra, tezgâha dönük */
     reLabel({ id: nid(), kind: "grid", x: -370, y: -25, rot: -90,
       cols: 7, rows: 1, counts: "", align: "center", seatGap: 72, rowGap: 90,
-      curve: 0, taper: 0, color: "#B79A32", pad: 30, level: "Bar", attr: "", ov: {},
+      curve: 0, taper: 0, pad: 30, level: "Bar", attr: "", ov: {},
       num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "B", seatStart: 1 } }, "BAR"),
   ],
 };

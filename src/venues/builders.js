@@ -15,19 +15,37 @@ import { linearArray, radialArray } from "../core/arrays.js";
 import { incLabel, reLabel, DEF_NUM } from "../core/labels.js";
 import { nid } from "../core/ids.js";
 
+/* Bu üreteçler bloklara artık SABİT `color` yazmıyor (fanB/gr/bowl/tier/tbl
+   hepsinden kaldırıldı — templates.js'in bowl() için zaten yaptığı şeyin
+   aynısı, kaynağında). PlanEditor.jsx'teki cc(b) = b.color || LEVEL_COLORS[...]
+   açık b.color'ı HER ZAMAN kat paletine tercih ediyor; üreteç her bloğa
+   kendi rengini basarsa "Kat rengini kullan" hiç devreye giremiyor ve kaç
+   kat eklenirse eklensin tuval hep aynı sabit renklerde kalıyordu (bkz.
+   görev raporu — GS/Ülker/Zorlu/Harbiye/AKM'de kat sayısı ile tuvaldeki
+   renk sayısı hiç eşleşmiyordu, AKM'de üç kat tek renkti). locaWing()
+   (yalnız Süreyya) bilerek İSTİSNA: orada kat başına zaten tek renk var,
+   çelişki yok — dokunmadık (bkz. görev raporu). */
+
 /* ══════════════  CSO  ══════════════ */
 
+/* color: undefined (SİLİNMİYOR, `undefined`e düşürülüyor): CSO hâlâ HER
+   çağrıda kendi color'ını veriyor (bilerek dokunulmadı, bkz. görev raporu)
+   — o override `...o` ile buradaki anahtarın YERİNE değil ÜSTÜNE yazıldığı
+   için anahtarı burada TAMAMEN silmek CSO'nun rengini değil golden
+   dosyasındaki alan SIRASINI değiştirirdi (color en sona kayar). AKM ise
+   artık hiç color vermiyor: JSON.stringify undefined alanı zaten atlar,
+   yani onda anahtar fiilen hiç yokmuş gibi davranır. */
 export const fanB = (o) => ({
   id: nid(), kind: "fan", name: "", level: "Ana Salon", rot: 0, mode: "pitch",
   seatGap: 50, rowGap: 105, aStart: -40, aEnd: 40, aCenter: 0, counts: "",
-  align: "center", color: "#3E7FBF", num: { ...DEF_NUM }, ov: {}, ...o,
+  align: "center", color: undefined, num: { ...DEF_NUM }, ov: {}, ...o,
 });
 
 /* ══════════════  ZORLU  ══════════════ */
 
 export const gr = (o) => ({
   id: nid(), kind: "grid", name: "", rot: 0, cols: 10, taper: 0, curve: 0,
-  seatGap: 50, rowGap: 90, counts: "", align: "center", color: "#3E7FBF",
+  seatGap: 50, rowGap: 90, counts: "", align: "center",
   num: { ...DEF_NUM }, ov: {}, ...o,
 });
 
@@ -41,7 +59,7 @@ export const nTek  = (rows) => ({ ...DEF_NUM, rowScheme: "custom", rowCustom: ro
    Yarıçap büyüdükçe aynı açı metrelerce boşluk demek; oysa insanın
    geçmesi için gereken şey sabit bir genişlik. */
 export function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
-                first, level, colors, aisle = 240, pad = 80 }) {
+                first, level, aisle = 240, pad = 80 }) {
   const along = W - Rc, aside = H - Rc;
   const seg = (2 * along) / nLong, segS = (2 * aside) / nShort;
   const cStep = 90 / nCorner;
@@ -54,19 +72,19 @@ export function bowl({ W, H, Rc, rows, rowGap, seatGap, nLong, nShort, nCorner,
   const colsFor = (s) => Math.max(3, Math.floor((s - aisle) / seatGap));
 
   const c1 = seed({ kind: "fan", mode: "span", x: -along, y: aside, r0: Rc, rows,
-    aStart: -90 - cStep + cAisle / 2, aEnd: -90 - cAisle / 2, color: colors.corner }, L(0));
+    aStart: -90 - cStep + cAisle / 2, aEnd: -90 - cAisle / 2 }, L(0));
   const g1 = [c1, ...radialArray([c1], { count: nCorner, cx: -along, cy: aside, step: -cStep })];
 
   const s1 = seed({ kind: "grid", x: -along + seg / 2, y: H, rows,
-    cols: colsFor(seg), color: colors.long }, L(nCorner));
+    cols: colsFor(seg) }, L(nCorner));
   const g2 = [s1, ...linearArray([s1], { count: nLong, dx: seg, dy: 0 })];
 
   const c2 = seed({ kind: "fan", mode: "span", x: along, y: aside, r0: Rc, rows,
-    aStart: 180 - cStep + cAisle / 2, aEnd: 180 - cAisle / 2, color: colors.corner }, L(nCorner + nLong));
+    aStart: 180 - cStep + cAisle / 2, aEnd: 180 - cAisle / 2 }, L(nCorner + nLong));
   const g3 = [c2, ...radialArray([c2], { count: nCorner, cx: along, cy: aside, step: -cStep })];
 
   const s2 = seed({ kind: "grid", x: W, y: aside - segS / 2, rot: -90, rows,
-    cols: colsFor(segS), color: colors.short }, L(2 * nCorner + nLong));
+    cols: colsFor(segS) }, L(2 * nCorner + nLong));
   const g4 = [s2, ...linearArray([s2], { count: nShort, dx: 0, dy: -segS })];
 
   const half = [...g1, ...g2, ...g3, ...g4];
@@ -131,7 +149,7 @@ export const labelGates = (gates) => gates.map((d, i) => ({ ...d, label: `KAPI $
 /* ══════════════  HARBİYE  ══════════════ */
 
 /** Amfi kademesi: eşit açı adımlarıyla radyal dizi, soldan sağa harflenir. */
-export function tier({ r0, rows, rowGap, span, count, first, level, color, aisle = 160, pad = 60 }) {
+export function tier({ r0, rows, rowGap, span, count, first, level, aisle = 160, pad = 60 }) {
   /* Koridor cm olarak verilir; ilk sıranın yarıçapında açıya çevrilir.
      Kademe geriye gittikçe koridor açısal olarak daralmaz, genişler —
      gerçekte de merdiven yukarı doğru açılır. */
@@ -142,7 +160,7 @@ export function tier({ r0, rows, rowGap, span, count, first, level, color, aisle
     id: nid(), kind: "fan", mode: "span", x: 0, y: 0, rot: start + step * i,
     r0, rows, rowGap, seatGap: 50, counts: "", align: "center",
     aStart: -(span - aDeg) / 2, aEnd: (span - aDeg) / 2, aCenter: 0,
-    color, pad, level, ov: {}, num: { ...DEF_NUM },
+    pad, level, ov: {}, num: { ...DEF_NUM },
   }, incLabel(first, i)));
 }
 
@@ -202,9 +220,9 @@ export function withAccessible(blocks, match, pairs = 2) {
 
 /* ══════════════  AYLAK  ══════════════ */
 
-export const tbl = (label, x, y, seats, tW, a0, color) => reLabel({
+export const tbl = (label, x, y, seats, tW, a0) => reLabel({
   id: nid(), kind: "table", x, y, rot: 0, tShape: "round",
-  tW, tH: tW, seats, a0, clear: 12, pad: 10, color, level: "Salon",
+  tW, tH: tW, seats, a0, clear: 12, pad: 10, level: "Salon",
   cols: 1, rows: 1, counts: "", align: "center", curve: 0, taper: 0,
   seatGap: 50, rowGap: 90, attr: "", ov: {},
   num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "1" },

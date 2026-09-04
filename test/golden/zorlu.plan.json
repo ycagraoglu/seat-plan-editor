@@ -193,7 +193,6 @@
       "rowGap": 90,
       "counts": "18..20",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -225,7 +224,6 @@
       "rowGap": 90,
       "counts": "21..15",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -267,7 +265,6 @@
       "rowGap": 90,
       "counts": "19..28",
       "align": "center",
-      "color": "#C1743C",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -354,7 +351,6 @@
       "rowGap": 90,
       "counts": "5,5",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -386,7 +382,6 @@
       "rowGap": 90,
       "counts": "5..6",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -418,7 +413,6 @@
       "rowGap": 90,
       "counts": "4..3",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -450,7 +444,6 @@
       "rowGap": 90,
       "counts": "17..11",
       "align": "left",
-      "color": "#C1743C",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -482,7 +475,6 @@
       "rowGap": 90,
       "counts": "5,5",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -514,7 +506,6 @@
       "rowGap": 90,
       "counts": "5..6",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -546,7 +537,6 @@
       "rowGap": 90,
       "counts": "4..3",
       "align": "center",
-      "color": "#3E7FBF",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -578,7 +568,6 @@
       "rowGap": 90,
       "counts": "17..11",
       "align": "right",
-      "color": "#C1743C",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -610,7 +599,6 @@
       "rowGap": 90,
       "counts": "20,21,21,22,22,22,23,23,23,23,23,23,8",
       "align": "center",
-      "color": "#C1743C",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -697,7 +685,6 @@
       "rowGap": 90,
       "counts": "19..5",
       "align": "center",
-      "color": "#3E9092",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -729,7 +716,6 @@
       "rowGap": 90,
       "counts": "19..5",
       "align": "center",
-      "color": "#3E9092",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -761,7 +747,6 @@
       "rowGap": 90,
       "counts": "21..23",
       "align": "center",
-      "color": "#3E9092",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -793,7 +778,6 @@
       "rowGap": 90,
       "counts": "17..5",
       "align": "center",
-      "color": "#5F9142",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,
@@ -825,7 +809,6 @@
       "rowGap": 90,
       "counts": "17..5",
       "align": "center",
-      "color": "#5F9142",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,

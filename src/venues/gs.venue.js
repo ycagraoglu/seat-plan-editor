@@ -29,14 +29,11 @@ const [T_ALT, T_ORTA, T_UST] = solveBowlTiers([
    genişliğinde bırakıldı. Kapının hangi bloğu beslediği autoGates ile
    mesafeye göre çözülüyor. */
 const [gsAlt, gsAltDoors] = cutVomitories(bowl({ W: T_ALT.W, H: T_ALT.H, Rc: 2200, rows: T_ALT.rows, rowGap: T_ALT.rowGap, seatGap: T_ALT.seatGap, nLong: 6, nShort: 4, nCorner: 3,
-  first: 100, level: "Alt Tribün", aisle: 240, pad: T_ALT.pad,
-  colors: { long: "#3E7FBF", short: "#3E9092", corner: "#7C5BA8" } }));
+  first: 100, level: "Alt Tribün", aisle: 240, pad: T_ALT.pad }));
 const [gsOrta, gsOrtaDoors] = cutVomitories(bowl({ W: T_ORTA.W, H: T_ORTA.H, Rc: 4800, rows: T_ORTA.rows, rowGap: T_ORTA.rowGap, seatGap: T_ORTA.seatGap, nLong: 6, nShort: 4, nCorner: 3,
-  first: 200, level: "Orta Tribün", aisle: 260, pad: T_ORTA.pad,
-  colors: { long: "#C1743C", short: "#6E7787", corner: "#5F9142" } }));
+  first: 200, level: "Orta Tribün", aisle: 260, pad: T_ORTA.pad }));
 const [gsUst, gsUstDoors] = cutVomitories(bowl({ W: T_UST.W, H: T_UST.H, Rc: 6550, rows: T_UST.rows, rowGap: T_UST.rowGap, seatGap: T_UST.seatGap, nLong: 6, nShort: 4, nCorner: 3,
-  first: 400, level: "Üst Tribün", aisle: 280, pad: T_UST.pad,
-  colors: { long: "#5F9142", short: "#B79A32", corner: "#6E7787" } })
+  first: 400, level: "Üst Tribün", aisle: 280, pad: T_UST.pad })
   .map((b) => (["402","404","406","408","410","412","414","416","418","420","422","424","426","428","430",
     "401","403","405","407","409","411","413","415","417","419","421","423","425","427","429"].includes(b.label)
     ? withAccessible([b], [b.label], 9)[0] : b)));

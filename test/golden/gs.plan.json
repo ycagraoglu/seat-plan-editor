@@ -1702,7 +1702,6 @@
       "rows": 21,
       "aStart": -116.8748,
       "aEnd": -93.1252,
-      "color": "#7C5BA8",
       "label": "100",
       "name": "Alt Tribün · 100"
     },
@@ -1793,7 +1792,6 @@
       "rows": 21,
       "aStart": -116.8748,
       "aEnd": -93.1252,
-      "color": "#7C5BA8",
       "label": "101",
       "name": "Alt Tribün · 101"
     },
@@ -1884,7 +1882,6 @@
       "rows": 21,
       "aStart": -116.8748,
       "aEnd": -93.1252,
-      "color": "#7C5BA8",
       "label": "102",
       "name": "Alt Tribün · 102"
     },
@@ -1972,7 +1969,6 @@
       "y": 4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "103",
       "name": "Alt Tribün · 103"
     },
@@ -2060,7 +2056,6 @@
       "y": 4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "104",
       "name": "Alt Tribün · 104"
     },
@@ -2148,7 +2143,6 @@
       "y": 4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "105",
       "name": "Alt Tribün · 105"
     },
@@ -2236,7 +2230,6 @@
       "y": 4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "106",
       "name": "Alt Tribün · 106"
     },
@@ -2324,7 +2317,6 @@
       "y": 4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "107",
       "name": "Alt Tribün · 107"
     },
@@ -2412,7 +2404,6 @@
       "y": 4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "108",
       "name": "Alt Tribün · 108"
     },
@@ -2503,7 +2494,6 @@
       "rows": 21,
       "aStart": 153.1252,
       "aEnd": 176.8748,
-      "color": "#7C5BA8",
       "label": "109",
       "name": "Alt Tribün · 109"
     },
@@ -2594,7 +2584,6 @@
       "rows": 21,
       "aStart": 153.1252,
       "aEnd": 176.8748,
-      "color": "#7C5BA8",
       "label": "110",
       "name": "Alt Tribün · 110"
     },
@@ -2685,7 +2674,6 @@
       "rows": 21,
       "aStart": 153.1252,
       "aEnd": 176.8748,
-      "color": "#7C5BA8",
       "label": "111",
       "name": "Alt Tribün · 111"
     },
@@ -2773,7 +2761,6 @@
       "y": 1800,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "112",
       "name": "Alt Tribün · 112"
     },
@@ -2861,7 +2848,6 @@
       "y": 600,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "113",
       "name": "Alt Tribün · 113"
     },
@@ -2949,7 +2935,6 @@
       "y": -600,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "114",
       "name": "Alt Tribün · 114"
     },
@@ -3037,7 +3022,6 @@
       "y": -1800,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "115",
       "name": "Alt Tribün · 115"
     },
@@ -3128,7 +3112,6 @@
       "rows": 21,
       "aStart": -116.8748,
       "aEnd": -93.1252,
-      "color": "#7C5BA8",
       "label": "116",
       "name": "Alt Tribün · 116"
     },
@@ -3219,7 +3202,6 @@
       "rows": 21,
       "aStart": -116.8748,
       "aEnd": -93.1252,
-      "color": "#7C5BA8",
       "label": "117",
       "name": "Alt Tribün · 117"
     },
@@ -3310,7 +3292,6 @@
       "rows": 21,
       "aStart": -116.8748,
       "aEnd": -93.1252,
-      "color": "#7C5BA8",
       "label": "118",
       "name": "Alt Tribün · 118"
     },
@@ -3398,7 +3379,6 @@
       "y": -4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "119",
       "name": "Alt Tribün · 119"
     },
@@ -3486,7 +3466,6 @@
       "y": -4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "120",
       "name": "Alt Tribün · 120"
     },
@@ -3574,7 +3553,6 @@
       "y": -4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "121",
       "name": "Alt Tribün · 121"
     },
@@ -3662,7 +3640,6 @@
       "y": -4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "122",
       "name": "Alt Tribün · 122"
     },
@@ -3750,7 +3727,6 @@
       "y": -4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "123",
       "name": "Alt Tribün · 123"
     },
@@ -3838,7 +3814,6 @@
       "y": -4600,
       "rows": 21,
       "cols": 24,
-      "color": "#3E7FBF",
       "label": "124",
       "name": "Alt Tribün · 124"
     },
@@ -3929,7 +3904,6 @@
       "rows": 21,
       "aStart": 153.1252,
       "aEnd": 176.8748,
-      "color": "#7C5BA8",
       "label": "125",
       "name": "Alt Tribün · 125"
     },
@@ -4020,7 +3994,6 @@
       "rows": 21,
       "aStart": 153.1252,
       "aEnd": 176.8748,
-      "color": "#7C5BA8",
       "label": "126",
       "name": "Alt Tribün · 126"
     },
@@ -4111,7 +4084,6 @@
       "rows": 21,
       "aStart": 153.1252,
       "aEnd": 176.8748,
-      "color": "#7C5BA8",
       "label": "127",
       "name": "Alt Tribün · 127"
     },
@@ -4199,7 +4171,6 @@
       "y": -1800,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "128",
       "name": "Alt Tribün · 128"
     },
@@ -4287,7 +4258,6 @@
       "y": -600,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "129",
       "name": "Alt Tribün · 129"
     },
@@ -4375,7 +4345,6 @@
       "y": 600,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "130",
       "name": "Alt Tribün · 130"
     },
@@ -4463,7 +4432,6 @@
       "y": 1800,
       "rows": 21,
       "cols": 19,
-      "color": "#3E9092",
       "label": "131",
       "name": "Alt Tribün · 131"
     },
@@ -4554,7 +4522,6 @@
       "rows": 13,
       "aStart": -118.4482,
       "aEnd": -91.5518,
-      "color": "#5F9142",
       "label": "200",
       "name": "Orta Tribün · 200"
     },
@@ -4645,7 +4612,6 @@
       "rows": 13,
       "aStart": -118.4482,
       "aEnd": -91.5518,
-      "color": "#5F9142",
       "label": "201",
       "name": "Orta Tribün · 201"
     },
@@ -4736,7 +4702,6 @@
       "rows": 13,
       "aStart": -118.4482,
       "aEnd": -91.5518,
-      "color": "#5F9142",
       "label": "202",
       "name": "Orta Tribün · 202"
     },
@@ -4824,7 +4789,6 @@
       "y": 7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "203",
       "name": "Orta Tribün · 203"
     },
@@ -4912,7 +4876,6 @@
       "y": 7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "204",
       "name": "Orta Tribün · 204"
     },
@@ -5000,7 +4963,6 @@
       "y": 7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "205",
       "name": "Orta Tribün · 205"
     },
@@ -5088,7 +5050,6 @@
       "y": 7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "206",
       "name": "Orta Tribün · 206"
     },
@@ -5176,7 +5137,6 @@
       "y": 7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "207",
       "name": "Orta Tribün · 207"
     },
@@ -5264,7 +5224,6 @@
       "y": 7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "208",
       "name": "Orta Tribün · 208"
     },
@@ -5355,7 +5314,6 @@
       "rows": 13,
       "aStart": 151.5518,
       "aEnd": 178.4482,
-      "color": "#5F9142",
       "label": "209",
       "name": "Orta Tribün · 209"
     },
@@ -5446,7 +5404,6 @@
       "rows": 13,
       "aStart": 151.5518,
       "aEnd": 178.4482,
-      "color": "#5F9142",
       "label": "210",
       "name": "Orta Tribün · 210"
     },
@@ -5537,7 +5494,6 @@
       "rows": 13,
       "aStart": 151.5518,
       "aEnd": 178.4482,
-      "color": "#5F9142",
       "label": "211",
       "name": "Orta Tribün · 211"
     },
@@ -5625,7 +5581,6 @@
       "y": 1800,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "212",
       "name": "Orta Tribün · 212"
     },
@@ -5713,7 +5668,6 @@
       "y": 600,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "213",
       "name": "Orta Tribün · 213"
     },
@@ -5801,7 +5755,6 @@
       "y": -600,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "214",
       "name": "Orta Tribün · 214"
     },
@@ -5889,7 +5842,6 @@
       "y": -1800,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "215",
       "name": "Orta Tribün · 215"
     },
@@ -5980,7 +5932,6 @@
       "rows": 13,
       "aStart": -118.4482,
       "aEnd": -91.5518,
-      "color": "#5F9142",
       "label": "216",
       "name": "Orta Tribün · 216"
     },
@@ -6071,7 +6022,6 @@
       "rows": 13,
       "aStart": -118.4482,
       "aEnd": -91.5518,
-      "color": "#5F9142",
       "label": "217",
       "name": "Orta Tribün · 217"
     },
@@ -6162,7 +6112,6 @@
       "rows": 13,
       "aStart": -118.4482,
       "aEnd": -91.5518,
-      "color": "#5F9142",
       "label": "218",
       "name": "Orta Tribün · 218"
     },
@@ -6250,7 +6199,6 @@
       "y": -7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "219",
       "name": "Orta Tribün · 219"
     },
@@ -6338,7 +6286,6 @@
       "y": -7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "220",
       "name": "Orta Tribün · 220"
     },
@@ -6426,7 +6373,6 @@
       "y": -7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "221",
       "name": "Orta Tribün · 221"
     },
@@ -6514,7 +6460,6 @@
       "y": -7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "222",
       "name": "Orta Tribün · 222"
     },
@@ -6602,7 +6547,6 @@
       "y": -7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "223",
       "name": "Orta Tribün · 223"
     },
@@ -6690,7 +6634,6 @@
       "y": -7200,
       "rows": 13,
       "cols": 24,
-      "color": "#C1743C",
       "label": "224",
       "name": "Orta Tribün · 224"
     },
@@ -6781,7 +6724,6 @@
       "rows": 13,
       "aStart": 151.5518,
       "aEnd": 178.4482,
-      "color": "#5F9142",
       "label": "225",
       "name": "Orta Tribün · 225"
     },
@@ -6872,7 +6814,6 @@
       "rows": 13,
       "aStart": 151.5518,
       "aEnd": 178.4482,
-      "color": "#5F9142",
       "label": "226",
       "name": "Orta Tribün · 226"
     },
@@ -6963,7 +6904,6 @@
       "rows": 13,
       "aStart": 151.5518,
       "aEnd": 178.4482,
-      "color": "#5F9142",
       "label": "227",
       "name": "Orta Tribün · 227"
     },
@@ -7051,7 +6991,6 @@
       "y": -1800,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "228",
       "name": "Orta Tribün · 228"
     },
@@ -7139,7 +7078,6 @@
       "y": -600,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "229",
       "name": "Orta Tribün · 229"
     },
@@ -7227,7 +7165,6 @@
       "y": 600,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "230",
       "name": "Orta Tribün · 230"
     },
@@ -7315,7 +7252,6 @@
       "y": 1800,
       "rows": 13,
       "cols": 18,
-      "color": "#6E7787",
       "label": "231",
       "name": "Orta Tribün · 231"
     },
@@ -7406,7 +7342,6 @@
       "rows": 17,
       "aStart": -118.7754,
       "aEnd": -91.2246,
-      "color": "#6E7787",
       "label": "400",
       "name": "Üst Tribün · 400"
     },
@@ -7551,7 +7486,6 @@
       "rows": 17,
       "aStart": -118.7754,
       "aEnd": -91.2246,
-      "color": "#6E7787",
       "label": "401",
       "name": "Üst Tribün · 401"
     },
@@ -7696,7 +7630,6 @@
       "rows": 17,
       "aStart": -118.7754,
       "aEnd": -91.2246,
-      "color": "#6E7787",
       "label": "402",
       "name": "Üst Tribün · 402"
     },
@@ -7826,7 +7759,6 @@
       "y": 8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "403",
       "name": "Üst Tribün · 403"
     },
@@ -7956,7 +7888,6 @@
       "y": 8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "404",
       "name": "Üst Tribün · 404"
     },
@@ -8086,7 +8017,6 @@
       "y": 8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "405",
       "name": "Üst Tribün · 405"
     },
@@ -8216,7 +8146,6 @@
       "y": 8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "406",
       "name": "Üst Tribün · 406"
     },
@@ -8346,7 +8275,6 @@
       "y": 8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "407",
       "name": "Üst Tribün · 407"
     },
@@ -8476,7 +8404,6 @@
       "y": 8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "408",
       "name": "Üst Tribün · 408"
     },
@@ -8621,7 +8548,6 @@
       "rows": 17,
       "aStart": 151.2246,
       "aEnd": 178.7754,
-      "color": "#6E7787",
       "label": "409",
       "name": "Üst Tribün · 409"
     },
@@ -8766,7 +8692,6 @@
       "rows": 17,
       "aStart": 151.2246,
       "aEnd": 178.7754,
-      "color": "#6E7787",
       "label": "410",
       "name": "Üst Tribün · 410"
     },
@@ -8911,7 +8836,6 @@
       "rows": 17,
       "aStart": 151.2246,
       "aEnd": 178.7754,
-      "color": "#6E7787",
       "label": "411",
       "name": "Üst Tribün · 411"
     },
@@ -9041,7 +8965,6 @@
       "y": 1800,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "412",
       "name": "Üst Tribün · 412"
     },
@@ -9171,7 +9094,6 @@
       "y": 600,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "413",
       "name": "Üst Tribün · 413"
     },
@@ -9301,7 +9223,6 @@
       "y": -600,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "414",
       "name": "Üst Tribün · 414"
     },
@@ -9431,7 +9352,6 @@
       "y": -1800,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "415",
       "name": "Üst Tribün · 415"
     },
@@ -9576,7 +9496,6 @@
       "rows": 17,
       "aStart": -118.7754,
       "aEnd": -91.2246,
-      "color": "#6E7787",
       "label": "416",
       "name": "Üst Tribün · 416"
     },
@@ -9721,7 +9640,6 @@
       "rows": 17,
       "aStart": -118.7754,
       "aEnd": -91.2246,
-      "color": "#6E7787",
       "label": "417",
       "name": "Üst Tribün · 417"
     },
@@ -9866,7 +9784,6 @@
       "rows": 17,
       "aStart": -118.7754,
       "aEnd": -91.2246,
-      "color": "#6E7787",
       "label": "418",
       "name": "Üst Tribün · 418"
     },
@@ -9996,7 +9913,6 @@
       "y": -8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "419",
       "name": "Üst Tribün · 419"
     },
@@ -10126,7 +10042,6 @@
       "y": -8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "420",
       "name": "Üst Tribün · 420"
     },
@@ -10256,7 +10171,6 @@
       "y": -8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "421",
       "name": "Üst Tribün · 421"
     },
@@ -10386,7 +10300,6 @@
       "y": -8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "422",
       "name": "Üst Tribün · 422"
     },
@@ -10516,7 +10429,6 @@
       "y": -8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "423",
       "name": "Üst Tribün · 423"
     },
@@ -10646,7 +10558,6 @@
       "y": -8950,
       "rows": 17,
       "cols": 23,
-      "color": "#5F9142",
       "label": "424",
       "name": "Üst Tribün · 424"
     },
@@ -10791,7 +10702,6 @@
       "rows": 17,
       "aStart": 151.2246,
       "aEnd": 178.7754,
-      "color": "#6E7787",
       "label": "425",
       "name": "Üst Tribün · 425"
     },
@@ -10936,7 +10846,6 @@
       "rows": 17,
       "aStart": 151.2246,
       "aEnd": 178.7754,
-      "color": "#6E7787",
       "label": "426",
       "name": "Üst Tribün · 426"
     },
@@ -11081,7 +10990,6 @@
       "rows": 17,
       "aStart": 151.2246,
       "aEnd": 178.7754,
-      "color": "#6E7787",
       "label": "427",
       "name": "Üst Tribün · 427"
     },
@@ -11211,7 +11119,6 @@
       "y": -1800,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "428",
       "name": "Üst Tribün · 428"
     },
@@ -11341,7 +11248,6 @@
       "y": -600,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "429",
       "name": "Üst Tribün · 429"
     },
@@ -11471,7 +11377,6 @@
       "y": 600,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "430",
       "name": "Üst Tribün · 430"
     },
@@ -11559,7 +11464,6 @@
       "y": 1800,
       "rows": 17,
       "cols": 18,
-      "color": "#B79A32",
       "label": "431",
       "name": "Üst Tribün · 431"
     }
