@@ -65,7 +65,8 @@ function computeSeatScan(plan, metas) {
          oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi). */
       list.push({ id: s.id, seatKind: s.seatKind, seatFeatures: s.seatFeatures, groupId: s.groupId,
         x: s.x, y: s.y, rot: s.rot,
-        block: b.label, bid: b.id, level: s.level, t: b.kind === "table" || !!b.noAisle,
+        block: b.label, bid: b.id, level: s.level, sec: resolveBlockSectionId(b),
+        t: b.kind === "table" || !!b.noAisle,
         outline: m.outline });
       if (s.seatKind !== DEFAULT_SEAT_KIND) kinds[s.seatKind] = (kinds[s.seatKind] || 0) + 1;
       s.seatFeatures.forEach((f) => { features[f] = (features[f] || 0) + 1; });
@@ -99,8 +100,13 @@ function computeSeatScan(plan, metas) {
         const d = Math.hypot(q.x - w.x, q.y - w.y);
         if (d < 30) { clash++; clashPairs.add(q.block === w.block ? q.block : `${q.block}↔${w.block}`); clashIds.add(q.bid).add(w.bid); }
         /* İki masa arasında koridor aranmaz — sandalye sırtları bitişik
-           olabilir. Farklı katlardaki bloklar da aranmaz. */
-        if (q.block !== w.block && q.level === w.level && !(q.t && w.t) && d < narrow.min) {
+           olabilir. Farklı BÖLÜMDEKİ bloklar da aranmaz: aynı düzlemde
+           değiller (balkon parterin üstünde durur), aralarında yürünmez.
+           Karşılaştırma ham level yerine bölüm kimliği üzerinden — düz
+           level'lı planlarda ikisi aynı şeye çözülür, hiyerarşi
+           kurulduğunda ise "Alt Kat H" ile "Üst Kat G" doğru şekilde
+           ayrılır (bkz. footprint-overlap-* aynı anahtarı kullanıyor). */
+        if (q.block !== w.block && q.sec === w.sec && !(q.t && w.t) && d < narrow.min) {
           narrow.min = d; narrow.pair = `${q.block} ↔ ${w.block}`; narrow.ids = [q.bid, w.bid];
         }
       });

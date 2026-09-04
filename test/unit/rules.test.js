@@ -231,3 +231,45 @@ describe("footprint-overlap-same-level / -cross-level — derinlik 1'de section 
     expect(crossLevelRule.check(ctx)).toHaveLength(1);
   });
 });
+
+/* ── narrow-aisle: bölüm anahtarı ─────────────────────────────────────
+   Kural "iki blok arasında yürüme payı" arıyor. Farklı BÖLÜMDEKİ bloklar
+   aynı düzlemde değildir (balkon parterin üstünde durur), aralarında
+   yürünmez — dolayısıyla koridor aranmamalı. Karşılaştırma ham `level`
+   üzerinden yapılıyordu; hiyerarşi geldiğinde "Alt Kat H" ile "Üst Kat G"
+   aynı level string'ini paylaşıp farklı bölümde olabiliyor ve kural
+   yanlışlıkla ötüyordu (footprint-overlap-* çoktan bölüme geçmişti,
+   bu kural geride kalmıştı). */
+function aisleBlock(id, x, sectionId) {
+  return { id, kind: "grid", label: id, name: id, level: "Batı Tribünü",
+    ...(sectionId ? { sectionId } : {}),
+    x, y: 0, rot: 0, cols: 6, rows: 4, taper: 0, curve: 0,
+    seatGap: 50, rowGap: 90, counts: "", align: "center", color: "", attr: "",
+    num: {}, ov: {} };
+}
+const aisleFinding = (blocks) => {
+  const plan = { name: "t", blocks, shapes: [] };
+  const metas = plan.blocks.map((b) => ({ b, m: buildMeta(b) }));
+  return runRules(buildCtx(plan, metas, new Map()))
+    .find((f) => /yürüme payı|en dar açıklık/.test(f.m || ""));
+};
+
+describe("narrow-aisle bölüm anahtarını kullanır", () => {
+  it("aynı bölümdeki iki blok dar kalırsa uyarır (bugünkü 9 salonun hali)", () => {
+    expect(aisleFinding([aisleBlock("H", 0), aisleBlock("G", 120)])).toBeDefined();
+  });
+
+  it("farklı bölümdeki bloklar için koridor aramaz", () => {
+    const f = aisleFinding([
+      aisleBlock("H", 0, syntheticSectionId("Alt Kat")),
+      aisleBlock("G", 120, syntheticSectionId("Üst Kat")),
+    ]);
+    expect(f).toBeUndefined();
+  });
+
+  it("aynı level string'i paylaşsalar bile bölüm farklıysa ayrılır", () => {
+    const a = aisleBlock("H", 0, "s:alt"), b = aisleBlock("G", 120, "s:ust");
+    expect(a.level).toBe(b.level);          // ham level AYNI
+    expect(aisleFinding([a, b])).toBeUndefined();  // ama bölüm farklı
+  });
+});
