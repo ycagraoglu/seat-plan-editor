@@ -10,6 +10,7 @@ import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
 import { buildCtx, runRules } from "./core/rules.js";
 import { BUILTINS, EMPTY } from "./venues/index.js";
+import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
 import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks } from "./ui/state/selectors.js";
@@ -1236,6 +1237,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const newPlan = () => {
     const k = `p${Date.now().toString(36)}`;
     const p = { ...EMPTY, key: k, name: "Yeni plan", blocks: [], shapes: [], versions: [], published: null };
+    setVenues((v) => ({ ...v, [k]: p }));
+    switchVenue2(k, p);
+    setRev((r) => r + 1);
+  };
+  /* Şablondan yeni plan — newPlan() ile AYNI akış (p<timestamp> anahtarı,
+     versions/published sıfırlanır), tek fark boş EMPTY yerine şablon
+     üretecinin (src/venues/templates.js) döndürdüğü bloklar/şekillerle
+     başlaması. build() ÇAĞRILDIĞINDA nid() üretir — duplicatePlan()'daki
+     gibi kimlikler o an paylaşılan sayaçtan gelir, örnek salonların modül
+     yüklemede sabitlenmiş sırasına hiç dokunmaz (bkz. templates.js başlığı). */
+  const newPlanFromTemplate = (build, name) => {
+    const k = `p${Date.now().toString(36)}`;
+    const p = { ...build(), key: k, name, versions: [], published: null };
     setVenues((v) => ({ ...v, [k]: p }));
     switchVenue2(k, p);
     setRev((r) => r + 1);
@@ -2776,7 +2790,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <PlanSettings plan={plan} sample={metas[0]} onClose={() => setSetOpen(false)}
               onCsv={exportCSV} onSvg={exportSVG} onCsvImport={importCSV} saved={saved} venues={venues} vk={vk}
               theme={theme} onTheme={setThemePref} wheelPref={wheelPref} onWheelPref={setWheelPrefP}
-              onNew={newPlan} onDup={duplicatePlan} onDel={deletePlan}
+              onNew={newPlan} onNewStadium={() => newPlanFromTemplate(buildStadiumTemplate, "Yeni stadyum")}
+              onNewHall={() => newPlanFromTemplate(buildHallTemplate, "Yeni salon")}
+              onDup={duplicatePlan} onDel={deletePlan}
               onChange={(p) => commit({ ...plan, ...p })} />
           )}
 
@@ -2983,7 +2999,7 @@ function MultiSeatPanel({ n, onOps, onClear }) {
 }
 
 /** Seçim yokken: plan seviyesindeki ayarlar. */
-function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onDup, onDel, onChange }) {
+function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onNewStadium, onNewHall, onDup, onDel, onChange }) {
   const tpl = plan.idTemplate || DEF_TPL;
   const s = sample ? buildSeats(sample.b, sample.m, tpl).seats.find((x) => !x.gap) : null;
   return (
@@ -3016,13 +3032,17 @@ function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved,
       <div className="sec">
         <p className="lab">Planlar</p>
         <div className="acts">
-          <button onClick={onNew}>Yeni</button>
+          <button onClick={onNew}>Yeni (boş)</button>
+          <button onClick={onNewStadium}>Yeni (stadyum)</button>
+          <button onClick={onNewHall}>Yeni (salon)</button>
           <button onClick={onDup}>Kopyala</button>
           <button className="dgr" disabled={!saved.includes(vk) || Object.keys(venues).length < 2}
             onClick={() => onDel(vk)}>Sil</button>
         </div>
         <p className="mut sm">
-          Plan geçişi üstteki menüden. Düzenlemeler otomatik kaydediliyor; altlık görseli kaydedilmez.
+          Stadyum/salon, boş tuval yerine düzenlenebilir bir başlangıç iskeleti (tribün/kademe +
+          gerçek vomitorium ya da kapı) verir. Plan geçişi üstteki menüden. Düzenlemeler otomatik
+          kaydediliyor; altlık görseli kaydedilmez.
         </p>
       </div>
 
