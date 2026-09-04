@@ -14,7 +14,7 @@ export function buildSeatsPayload(plan, metas, levelCounts, gates) {
   all.forEach((s) => { if (s.at) at[s.at] = (at[s.at] || 0) + 1; });
   return {
     venue: plan.name, unit: "cm", version: plan.published || null,
-    seatCount: all.length, sellableCount: all.length - (at.tech || 0),
+    seatCount: all.length,
     levels: levelCounts, attributes: at,
     gates: plan.shapes.filter((s) => s.type === "door").map((d) => ({
       label: d.label,
@@ -23,7 +23,7 @@ export function buildSeatsPayload(plan, metas, levelCounts, gates) {
     seats: all.map((s) => ({
       id: s.id, level: s.level, block: s.block, row: s.row, seat: s.num,
       gate: s.gate, x: +s.x.toFixed(1), y: +s.y.toFixed(1), rot: +s.rot.toFixed(1),
-      attribute: s.at || null, sellable: s.at !== "tech",
+      attribute: s.at || null,
     })),
   };
 }

@@ -271,12 +271,10 @@ export const RULES = [
     },
   },
   {
-    id: "sellable-seat-count", severity: "info", live: false,
+    id: "seat-count", severity: "info", live: false,
     check(ctx) {
-      const { total, at } = ctx.seats;
-      const sellable = total - (at.tech || 0);
-      return [{ t: "info", m: `${sellable.toLocaleString("tr-TR")} satılabilir koltuk`,
-        d: at.tech ? `${at.tech} koltuk teknik/satışa kapalı` : null }];
+      const { total } = ctx.seats;
+      return [{ t: "info", m: `${total.toLocaleString("tr-TR")} koltuk` }];
     },
   },
   /* Gerekli tekerlekli sandalye yeri kademeli: ilk 500 koltuk için 6,

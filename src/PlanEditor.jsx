@@ -23,7 +23,7 @@ import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSe
    v7: plan.json içe aktarma · kalibrasyon · tuval tutamakları · doğrulama
    v8'de gelen:
    1. KOLTUK NİTELİKLERİ — tekerlekli sandalye, refakatçi, görüş kısıtlı,
-      teknik/satışa kapalı. Blok seviyesinde varsayılan, koltuk seviyesinde
+      teknik alan. Blok seviyesinde varsayılan, koltuk seviyesinde
       istisna, "Nitelik boya" aracıyla toplu uygulama.
       Kategoriden bağımsızdır: kategori fiyat etiketi, nitelik koltuğun
       fiziksel gerçeği. Biletleme sistemi ikisini ayrı kullanır.
@@ -151,7 +151,7 @@ const ATTRS = {
   wheel: { label: "Tekerlekli sandalye", short: "Tekerlekli", color: "#5AC8FA", glyph: "T", wide: true },
   comp:  { label: "Refakatçi",           short: "Refakatçi",  color: "#2FD07A", glyph: "R" },
   obstr: { label: "Görüş kısıtlı",       short: "Görüş kıs.", color: "#F5A623", glyph: "!" },
-  tech:  { label: "Teknik / satışa kapalı", short: "Kapalı",  color: "#6E6E70", glyph: "×" },
+  tech:  { label: "Teknik alan",         short: "Teknik",  color: "#6E6E70", glyph: "×" },
 };
 /* core/rules.js kendi görünüm sabitlerini (renk/etiket) bilmemeli — koltuk
    köşesi kontrolleri için ihtiyaç duyduğu tek fiziksel gerçek, hangi
@@ -2901,7 +2901,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                   </div>
                   {diff.added.length > 0 && <div className="info">{diff.added.length} yeni koltuk<em>{diff.added.slice(0, 5).join(", ")}</em></div>}
                   {diff.moved.length > 0 && <div className="warn">{diff.moved.length} koltuk yer değiştirdi (&gt;25 cm)</div>}
-                  {diff.changed.length > 0 && <div className="warn">{diff.changed.length} koltuğun kategorisi veya niteliği değişti</div>}
+                  {diff.changed.length > 0 && <div className="warn">{diff.changed.length} koltuğun niteliği değişti</div>}
                 </div>
               )}
             </div>

@@ -613,7 +613,7 @@ oluşturursunuz. Geçmiş sürümler asla değişmez, hep geri dönülebilir.
     kimliğinin **yok olacağını** (zaten satılmış bir bilete karşılık
     gelebileceği için en kritik uyarı budur), kaç yeni koltuk eklendiğini,
     kaç koltuğun 25 cm'den fazla yer değiştirdiğini, kaç koltuğun
-    kategori/niteliğinin değiştiğini gösterir.
+    niteliğinin değiştiğini gösterir.
   - **Geri yükle**: Taslağı o sürümdeki haline **döndürür** (şu anki
     taslaktaki kaydedilmemiş değişiklikler kaybolur — dikkatli kullanın).
 

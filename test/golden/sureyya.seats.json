@@ -3,7 +3,6 @@
   "unit": "cm",
   "version": null,
   "seatCount": 386,
-  "sellableCount": 386,
   "levels": {
     "Parter": 159,
     "Zemin Loca": 12,
@@ -68,8 +67,7 @@
       "x": -244.6,
       "y": -206.3,
       "rot": -49.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-2",
@@ -81,8 +79,7 @@
       "x": -212.2,
       "y": -239.5,
       "rot": -41.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-3",
@@ -94,8 +91,7 @@
       "x": -175.4,
       "y": -267.7,
       "rot": -33.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-4",
@@ -107,8 +103,7 @@
       "x": -134.8,
       "y": -290.2,
       "rot": -24.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-5",
@@ -120,8 +115,7 @@
       "x": -91.5,
       "y": -306.6,
       "rot": -16.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-6",
@@ -133,8 +127,7 @@
       "x": -46.2,
       "y": -316.6,
       "rot": -8.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-7",
@@ -146,8 +139,7 @@
       "x": 0,
       "y": -320,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-8",
@@ -159,8 +151,7 @@
       "x": 46.2,
       "y": -316.6,
       "rot": 8.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-9",
@@ -172,8 +163,7 @@
       "x": 91.5,
       "y": -306.6,
       "rot": 16.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-10",
@@ -185,8 +175,7 @@
       "x": 134.8,
       "y": -290.2,
       "rot": 24.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-11",
@@ -198,8 +187,7 @@
       "x": 175.4,
       "y": -267.7,
       "rot": 33.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-12",
@@ -211,8 +199,7 @@
       "x": 212.2,
       "y": -239.5,
       "rot": 41.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-1-13",
@@ -224,8 +211,7 @@
       "x": 244.6,
       "y": -206.3,
       "rot": 49.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-1",
@@ -237,8 +223,7 @@
       "x": -310.8,
       "y": -255,
       "rot": -50.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-2",
@@ -250,8 +235,7 @@
       "x": -278.6,
       "y": -289.8,
       "rot": -43.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-3",
@@ -263,8 +247,7 @@
       "x": -242.6,
       "y": -320.5,
       "rot": -37.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-4",
@@ -276,8 +259,7 @@
       "x": -203.3,
       "y": -346.8,
       "rot": -30.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-5",
@@ -289,8 +271,7 @@
       "x": -161.1,
       "y": -368.3,
       "rot": -23.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-6",
@@ -302,8 +283,7 @@
       "x": -116.7,
       "y": -384.7,
       "rot": -16.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-7",
@@ -315,8 +295,7 @@
       "x": -70.7,
       "y": -395.7,
       "rot": -10.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-8",
@@ -328,8 +307,7 @@
       "x": -23.7,
       "y": -401.3,
       "rot": -3.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-9",
@@ -341,8 +319,7 @@
       "x": 23.7,
       "y": -401.3,
       "rot": 3.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-10",
@@ -354,8 +331,7 @@
       "x": 70.7,
       "y": -395.7,
       "rot": 10.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-11",
@@ -367,8 +343,7 @@
       "x": 116.7,
       "y": -384.7,
       "rot": 16.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-12",
@@ -380,8 +355,7 @@
       "x": 161.1,
       "y": -368.3,
       "rot": 23.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-13",
@@ -393,8 +367,7 @@
       "x": 203.3,
       "y": -346.8,
       "rot": 30.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-14",
@@ -406,8 +379,7 @@
       "x": 242.6,
       "y": -320.5,
       "rot": 37.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-15",
@@ -419,8 +391,7 @@
       "x": 278.6,
       "y": -289.8,
       "rot": 43.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-2-16",
@@ -432,8 +403,7 @@
       "x": 310.8,
       "y": -255,
       "rot": 50.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-1",
@@ -445,8 +415,7 @@
       "x": -377,
       "y": -303.6,
       "rot": -51.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-2",
@@ -458,8 +427,7 @@
       "x": -345.1,
       "y": -339.4,
       "rot": -45.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-3",
@@ -471,8 +439,7 @@
       "x": -309.7,
       "y": -371.9,
       "rot": -39.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-4",
@@ -484,8 +451,7 @@
       "x": -271.4,
       "y": -400.8,
       "rot": -34.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-5",
@@ -497,8 +463,7 @@
       "x": -230.4,
       "y": -425.7,
       "rot": -28.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-6",
@@ -510,8 +475,7 @@
       "x": -187.1,
       "y": -446.4,
       "rot": -22.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-7",
@@ -523,8 +487,7 @@
       "x": -141.9,
       "y": -462.7,
       "rot": -17.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-8",
@@ -536,8 +499,7 @@
       "x": -95.4,
       "y": -474.5,
       "rot": -11.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-9",
@@ -549,8 +511,7 @@
       "x": -47.9,
       "y": -481.6,
       "rot": -5.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-10",
@@ -562,8 +523,7 @@
       "x": 0,
       "y": -484,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-11",
@@ -575,8 +535,7 @@
       "x": 47.9,
       "y": -481.6,
       "rot": 5.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-12",
@@ -588,8 +547,7 @@
       "x": 95.4,
       "y": -474.5,
       "rot": 11.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-13",
@@ -601,8 +559,7 @@
       "x": 141.9,
       "y": -462.7,
       "rot": 17.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-14",
@@ -614,8 +571,7 @@
       "x": 187.1,
       "y": -446.4,
       "rot": 22.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-15",
@@ -627,8 +583,7 @@
       "x": 230.4,
       "y": -425.7,
       "rot": 28.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-16",
@@ -640,8 +595,7 @@
       "x": 271.4,
       "y": -400.8,
       "rot": 34.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-17",
@@ -653,8 +607,7 @@
       "x": 309.7,
       "y": -371.9,
       "rot": 39.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-18",
@@ -666,8 +619,7 @@
       "x": 345.1,
       "y": -339.4,
       "rot": 45.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-3-19",
@@ -679,8 +631,7 @@
       "x": 377,
       "y": -303.6,
       "rot": 51.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-1",
@@ -692,8 +643,7 @@
       "x": -443.9,
       "y": -351.2,
       "rot": -51.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-2",
@@ -705,8 +655,7 @@
       "x": -413.7,
       "y": -386.3,
       "rot": -47,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-3",
@@ -718,8 +667,7 @@
       "x": -380.6,
       "y": -418.9,
       "rot": -42.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-4",
@@ -731,8 +679,7 @@
       "x": -345.1,
       "y": -448.6,
       "rot": -37.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-5",
@@ -744,8 +691,7 @@
       "x": -307.2,
       "y": -475.4,
       "rot": -32.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-6",
@@ -757,8 +703,7 @@
       "x": -267.2,
       "y": -498.9,
       "rot": -28.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-7",
@@ -770,8 +715,7 @@
       "x": -225.5,
       "y": -519.1,
       "rot": -23.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-8",
@@ -783,8 +727,7 @@
       "x": -182.2,
       "y": -535.9,
       "rot": -18.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-9",
@@ -796,8 +739,7 @@
       "x": -137.8,
       "y": -549,
       "rot": -14.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-10",
@@ -809,8 +751,7 @@
       "x": -92.4,
       "y": -558.4,
       "rot": -9.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-11",
@@ -822,8 +763,7 @@
       "x": -46.3,
       "y": -564.1,
       "rot": -4.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-12",
@@ -835,8 +775,7 @@
       "x": 0,
       "y": -566,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-13",
@@ -848,8 +787,7 @@
       "x": 46.3,
       "y": -564.1,
       "rot": 4.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-14",
@@ -861,8 +799,7 @@
       "x": 92.4,
       "y": -558.4,
       "rot": 9.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-15",
@@ -874,8 +811,7 @@
       "x": 137.8,
       "y": -549,
       "rot": 14.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-16",
@@ -887,8 +823,7 @@
       "x": 182.2,
       "y": -535.9,
       "rot": 18.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-17",
@@ -900,8 +835,7 @@
       "x": 225.5,
       "y": -519.1,
       "rot": 23.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-18",
@@ -913,8 +847,7 @@
       "x": 267.2,
       "y": -498.9,
       "rot": 28.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-19",
@@ -926,8 +859,7 @@
       "x": 307.2,
       "y": -475.4,
       "rot": 32.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-20",
@@ -939,8 +871,7 @@
       "x": 345.1,
       "y": -448.6,
       "rot": 37.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-21",
@@ -952,8 +883,7 @@
       "x": 380.6,
       "y": -418.9,
       "rot": 42.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-22",
@@ -965,8 +895,7 @@
       "x": 413.7,
       "y": -386.3,
       "rot": 47,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-4-23",
@@ -978,8 +907,7 @@
       "x": 443.9,
       "y": -351.2,
       "rot": 51.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-1",
@@ -991,8 +919,7 @@
       "x": -510.1,
       "y": -399.6,
       "rot": -51.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-2",
@@ -1004,8 +931,7 @@
       "x": -479.8,
       "y": -435.5,
       "rot": -47.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-3",
@@ -1017,8 +943,7 @@
       "x": -447,
       "y": -469.1,
       "rot": -43.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-4",
@@ -1030,8 +955,7 @@
       "x": -411.8,
       "y": -500.3,
       "rot": -39.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-5",
@@ -1043,8 +967,7 @@
       "x": -374.5,
       "y": -528.8,
       "rot": -35.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-6",
@@ -1056,8 +979,7 @@
       "x": -335.2,
       "y": -554.5,
       "rot": -31.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-7",
@@ -1069,8 +991,7 @@
       "x": -294.2,
       "y": -577.4,
       "rot": -27,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-8",
@@ -1082,8 +1003,7 @@
       "x": -251.6,
       "y": -597.2,
       "rot": -22.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-9",
@@ -1095,8 +1015,7 @@
       "x": -207.7,
       "y": -613.8,
       "rot": -18.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-10",
@@ -1108,8 +1027,7 @@
       "x": -162.7,
       "y": -627.3,
       "rot": -14.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-11",
@@ -1121,8 +1039,7 @@
       "x": -116.8,
       "y": -637.4,
       "rot": -10.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-12",
@@ -1134,8 +1051,7 @@
       "x": -70.3,
       "y": -644.2,
       "rot": -6.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-13",
@@ -1147,8 +1063,7 @@
       "x": -23.5,
       "y": -647.6,
       "rot": -2.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-14",
@@ -1160,8 +1075,7 @@
       "x": 23.5,
       "y": -647.6,
       "rot": 2.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-15",
@@ -1173,8 +1087,7 @@
       "x": 70.3,
       "y": -644.2,
       "rot": 6.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-16",
@@ -1186,8 +1099,7 @@
       "x": 116.8,
       "y": -637.4,
       "rot": 10.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-17",
@@ -1199,8 +1111,7 @@
       "x": 162.7,
       "y": -627.3,
       "rot": 14.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-18",
@@ -1212,8 +1123,7 @@
       "x": 207.7,
       "y": -613.8,
       "rot": 18.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-19",
@@ -1225,8 +1135,7 @@
       "x": 251.6,
       "y": -597.2,
       "rot": 22.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-20",
@@ -1238,8 +1147,7 @@
       "x": 294.2,
       "y": -577.4,
       "rot": 27,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-21",
@@ -1251,8 +1159,7 @@
       "x": 335.2,
       "y": -554.5,
       "rot": 31.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-22",
@@ -1264,8 +1171,7 @@
       "x": 374.5,
       "y": -528.8,
       "rot": 35.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-23",
@@ -1277,8 +1183,7 @@
       "x": 411.8,
       "y": -500.3,
       "rot": 39.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-24",
@@ -1290,8 +1195,7 @@
       "x": 447,
       "y": -469.1,
       "rot": 43.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-25",
@@ -1303,8 +1207,7 @@
       "x": 479.8,
       "y": -435.5,
       "rot": 47.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-5-26",
@@ -1316,8 +1219,7 @@
       "x": 510.1,
       "y": -399.6,
       "rot": 51.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-1",
@@ -1329,8 +1231,7 @@
       "x": -576.3,
       "y": -448,
       "rot": -52.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-2",
@@ -1342,8 +1243,7 @@
       "x": -546,
       "y": -484.5,
       "rot": -48.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-3",
@@ -1355,8 +1255,7 @@
       "x": -513.4,
       "y": -519,
       "rot": -44.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-4",
@@ -1368,8 +1267,7 @@
       "x": -478.6,
       "y": -551.2,
       "rot": -41,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-5",
@@ -1381,8 +1279,7 @@
       "x": -441.8,
       "y": -581.1,
       "rot": -37.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-6",
@@ -1394,8 +1291,7 @@
       "x": -403.1,
       "y": -608.6,
       "rot": -33.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-7",
@@ -1407,8 +1303,7 @@
       "x": -362.7,
       "y": -633.5,
       "rot": -29.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-8",
@@ -1420,8 +1315,7 @@
       "x": -320.8,
       "y": -655.7,
       "rot": -26.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-9",
@@ -1433,8 +1327,7 @@
       "x": -277.5,
       "y": -675.2,
       "rot": -22.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-10",
@@ -1446,8 +1339,7 @@
       "x": -233.1,
       "y": -691.8,
       "rot": -18.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-11",
@@ -1459,8 +1351,7 @@
       "x": -187.7,
       "y": -705.5,
       "rot": -14.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-12",
@@ -1472,8 +1363,7 @@
       "x": -141.4,
       "y": -716.2,
       "rot": -11.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-13",
@@ -1485,8 +1375,7 @@
       "x": -94.6,
       "y": -723.8,
       "rot": -7.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-14",
@@ -1498,8 +1387,7 @@
       "x": -47.4,
       "y": -728.5,
       "rot": -3.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-15",
@@ -1511,8 +1399,7 @@
       "x": 0,
       "y": -730,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-16",
@@ -1524,8 +1411,7 @@
       "x": 47.4,
       "y": -728.5,
       "rot": 3.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-17",
@@ -1537,8 +1423,7 @@
       "x": 94.6,
       "y": -723.8,
       "rot": 7.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-18",
@@ -1550,8 +1435,7 @@
       "x": 141.4,
       "y": -716.2,
       "rot": 11.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-19",
@@ -1563,8 +1447,7 @@
       "x": 187.7,
       "y": -705.5,
       "rot": 14.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-20",
@@ -1576,8 +1459,7 @@
       "x": 233.1,
       "y": -691.8,
       "rot": 18.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-21",
@@ -1589,8 +1471,7 @@
       "x": 277.5,
       "y": -675.2,
       "rot": 22.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-22",
@@ -1602,8 +1483,7 @@
       "x": 320.8,
       "y": -655.7,
       "rot": 26.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-23",
@@ -1615,8 +1495,7 @@
       "x": 362.7,
       "y": -633.5,
       "rot": 29.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-24",
@@ -1628,8 +1507,7 @@
       "x": 403.1,
       "y": -608.6,
       "rot": 33.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-25",
@@ -1641,8 +1519,7 @@
       "x": 441.8,
       "y": -581.1,
       "rot": 37.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-26",
@@ -1654,8 +1531,7 @@
       "x": 478.6,
       "y": -551.2,
       "rot": 41,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-27",
@@ -1667,8 +1543,7 @@
       "x": 513.4,
       "y": -519,
       "rot": 44.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-28",
@@ -1680,8 +1555,7 @@
       "x": 546,
       "y": -484.5,
       "rot": 48.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-6-29",
@@ -1693,8 +1567,7 @@
       "x": 576.3,
       "y": -448,
       "rot": 52.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-1",
@@ -1706,8 +1579,7 @@
       "x": -643,
       "y": -495.8,
       "rot": -52.4,
-      "attribute": "wheel",
-      "sellable": true
+      "attribute": "wheel"
     },
     {
       "id": "P-7-2",
@@ -1719,8 +1591,7 @@
       "x": -613.7,
       "y": -531.7,
       "rot": -49.1,
-      "attribute": "comp",
-      "sellable": true
+      "attribute": "comp"
     },
     {
       "id": "P-7-3",
@@ -1732,8 +1603,7 @@
       "x": -582.3,
       "y": -565.9,
       "rot": -45.8,
-      "attribute": "wheel",
-      "sellable": true
+      "attribute": "wheel"
     },
     {
       "id": "P-7-4",
@@ -1745,8 +1615,7 @@
       "x": -549.1,
       "y": -598.2,
       "rot": -42.5,
-      "attribute": "comp",
-      "sellable": true
+      "attribute": "comp"
     },
     {
       "id": "P-7-5",
@@ -1758,8 +1627,7 @@
       "x": -514,
       "y": -628.6,
       "rot": -39.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-6",
@@ -1771,8 +1639,7 @@
       "x": -477.3,
       "y": -656.9,
       "rot": -36,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-7",
@@ -1784,8 +1651,7 @@
       "x": -439,
       "y": -683.1,
       "rot": -32.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-8",
@@ -1797,8 +1663,7 @@
       "x": -399.3,
       "y": -707,
       "rot": -29.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-9",
@@ -1810,8 +1675,7 @@
       "x": -358.3,
       "y": -728.7,
       "rot": -26.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-10",
@@ -1823,8 +1687,7 @@
       "x": -316.1,
       "y": -748,
       "rot": -22.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-11",
@@ -1836,8 +1699,7 @@
       "x": -272.9,
       "y": -764.8,
       "rot": -19.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-12",
@@ -1849,8 +1711,7 @@
       "x": -228.8,
       "y": -779.1,
       "rot": -16.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-13",
@@ -1862,8 +1723,7 @@
       "x": -183.9,
       "y": -790.9,
       "rot": -13.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-14",
@@ -1875,8 +1735,7 @@
       "x": -138.5,
       "y": -800.1,
       "rot": -9.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-15",
@@ -1888,8 +1747,7 @@
       "x": -92.6,
       "y": -806.7,
       "rot": -6.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-16",
@@ -1901,8 +1759,7 @@
       "x": -46.4,
       "y": -810.7,
       "rot": -3.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-17",
@@ -1914,8 +1771,7 @@
       "x": 0,
       "y": -812,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-18",
@@ -1927,8 +1783,7 @@
       "x": 46.4,
       "y": -810.7,
       "rot": 3.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-19",
@@ -1940,8 +1795,7 @@
       "x": 92.6,
       "y": -806.7,
       "rot": 6.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-20",
@@ -1953,8 +1807,7 @@
       "x": 138.5,
       "y": -800.1,
       "rot": 9.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-21",
@@ -1966,8 +1819,7 @@
       "x": 183.9,
       "y": -790.9,
       "rot": 13.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-22",
@@ -1979,8 +1831,7 @@
       "x": 228.8,
       "y": -779.1,
       "rot": 16.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-23",
@@ -1992,8 +1843,7 @@
       "x": 272.9,
       "y": -764.8,
       "rot": 19.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-24",
@@ -2005,8 +1855,7 @@
       "x": 316.1,
       "y": -748,
       "rot": 22.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-25",
@@ -2018,8 +1867,7 @@
       "x": 358.3,
       "y": -728.7,
       "rot": 26.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-26",
@@ -2031,8 +1879,7 @@
       "x": 399.3,
       "y": -707,
       "rot": 29.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-27",
@@ -2044,8 +1891,7 @@
       "x": 439,
       "y": -683.1,
       "rot": 32.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-28",
@@ -2057,8 +1903,7 @@
       "x": 477.3,
       "y": -656.9,
       "rot": 36,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-29",
@@ -2070,8 +1915,7 @@
       "x": 514,
       "y": -628.6,
       "rot": 39.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-30",
@@ -2083,8 +1927,7 @@
       "x": 549.1,
       "y": -598.2,
       "rot": 42.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-31",
@@ -2096,8 +1939,7 @@
       "x": 582.3,
       "y": -565.9,
       "rot": 45.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-32",
@@ -2109,8 +1951,7 @@
       "x": 613.7,
       "y": -531.7,
       "rot": 49.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "P-7-33",
@@ -2122,8 +1963,7 @@
       "x": 643,
       "y": -495.8,
       "rot": 52.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "ZL1-1-1",
@@ -2135,8 +1975,7 @@
       "x": -460,
       "y": 5.6,
       "rot": -90.7,
-      "attribute": "wheel",
-      "sellable": true
+      "attribute": "wheel"
     },
     {
       "id": "ZL1-1-2",
@@ -2148,8 +1987,7 @@
       "x": -458.2,
       "y": -40.4,
       "rot": -85,
-      "attribute": "comp",
-      "sellable": true
+      "attribute": "comp"
     },
     {
       "id": "ZL1-1-3",
@@ -2161,8 +1999,7 @@
       "x": -451.9,
       "y": -85.9,
       "rot": -79.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "ZL1-2-1",
@@ -2174,8 +2011,7 @@
       "x": -538,
       "y": -1.3,
       "rot": -89.9,
-      "attribute": "wheel",
-      "sellable": true
+      "attribute": "wheel"
     },
     {
       "id": "ZL1-2-2",
@@ -2187,8 +2023,7 @@
       "x": -535.9,
       "y": -47.2,
       "rot": -85,
-      "attribute": "comp",
-      "sellable": true
+      "attribute": "comp"
     },
     {
       "id": "ZL1-2-3",
@@ -2200,8 +2035,7 @@
       "x": -529.9,
       "y": -92.8,
       "rot": -80.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "ZL2-1-1",
@@ -2213,8 +2047,7 @@
       "x": 451.9,
       "y": -85.9,
       "rot": 79.2,
-      "attribute": "wheel",
-      "sellable": true
+      "attribute": "wheel"
     },
     {
       "id": "ZL2-1-2",
@@ -2226,8 +2059,7 @@
       "x": 458.2,
       "y": -40.4,
       "rot": 85,
-      "attribute": "comp",
-      "sellable": true
+      "attribute": "comp"
     },
     {
       "id": "ZL2-1-3",
@@ -2239,8 +2071,7 @@
       "x": 460,
       "y": 5.6,
       "rot": 90.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "ZL2-2-1",
@@ -2252,8 +2083,7 @@
       "x": 529.9,
       "y": -92.8,
       "rot": 80.1,
-      "attribute": "wheel",
-      "sellable": true
+      "attribute": "wheel"
     },
     {
       "id": "ZL2-2-2",
@@ -2265,8 +2095,7 @@
       "x": 535.9,
       "y": -47.2,
       "rot": 85,
-      "attribute": "comp",
-      "sellable": true
+      "attribute": "comp"
     },
     {
       "id": "ZL2-2-3",
@@ -2278,8 +2107,7 @@
       "x": 538,
       "y": -1.3,
       "rot": 89.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-1",
@@ -2291,8 +2119,7 @@
       "x": -500,
       "y": -784.2,
       "rot": -32.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-2",
@@ -2304,8 +2131,7 @@
       "x": -458.9,
       "y": -808.9,
       "rot": -29.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-3",
@@ -2317,8 +2143,7 @@
       "x": -416.5,
       "y": -831.5,
       "rot": -26.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-4",
@@ -2330,8 +2155,7 @@
       "x": -373.1,
       "y": -851.9,
       "rot": -23.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-5",
@@ -2343,8 +2167,7 @@
       "x": -328.7,
       "y": -870,
       "rot": -20.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-6",
@@ -2356,8 +2179,7 @@
       "x": -283.4,
       "y": -885.8,
       "rot": -17.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-7",
@@ -2369,8 +2191,7 @@
       "x": -237.3,
       "y": -899.2,
       "rot": -14.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-8",
@@ -2382,8 +2203,7 @@
       "x": -190.6,
       "y": -910.3,
       "rot": -11.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-9",
@@ -2395,8 +2215,7 @@
       "x": -143.4,
       "y": -918.9,
       "rot": -8.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-10",
@@ -2408,8 +2227,7 @@
       "x": -95.8,
       "y": -925.1,
       "rot": -5.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-11",
@@ -2421,8 +2239,7 @@
       "x": -48,
       "y": -928.8,
       "rot": -3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-12",
@@ -2434,8 +2251,7 @@
       "x": 0,
       "y": -930,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-13",
@@ -2447,8 +2263,7 @@
       "x": 48,
       "y": -928.8,
       "rot": 3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-14",
@@ -2460,8 +2275,7 @@
       "x": 95.8,
       "y": -925.1,
       "rot": 5.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-15",
@@ -2473,8 +2287,7 @@
       "x": 143.4,
       "y": -918.9,
       "rot": 8.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-16",
@@ -2486,8 +2299,7 @@
       "x": 190.6,
       "y": -910.3,
       "rot": 11.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-17",
@@ -2499,8 +2311,7 @@
       "x": 237.3,
       "y": -899.2,
       "rot": 14.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-18",
@@ -2512,8 +2323,7 @@
       "x": 283.4,
       "y": -885.8,
       "rot": 17.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-19",
@@ -2525,8 +2335,7 @@
       "x": 328.7,
       "y": -870,
       "rot": 20.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-20",
@@ -2538,8 +2347,7 @@
       "x": 373.1,
       "y": -851.9,
       "rot": 23.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-21",
@@ -2551,8 +2359,7 @@
       "x": 416.5,
       "y": -831.5,
       "rot": 26.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-22",
@@ -2564,8 +2371,7 @@
       "x": 458.9,
       "y": -808.9,
       "rot": 29.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-A-23",
@@ -2577,8 +2383,7 @@
       "x": 500,
       "y": -784.2,
       "rot": 32.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-1",
@@ -2590,8 +2395,7 @@
       "x": -535,
       "y": -835.3,
       "rot": -32.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-2",
@@ -2603,8 +2407,7 @@
       "x": -494.8,
       "y": -859.8,
       "rot": -29.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-3",
@@ -2616,8 +2419,7 @@
       "x": -453.4,
       "y": -882.3,
       "rot": -27.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-4",
@@ -2629,8 +2431,7 @@
       "x": -411.1,
       "y": -902.8,
       "rot": -24.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-5",
@@ -2642,8 +2443,7 @@
       "x": -367.8,
       "y": -921.3,
       "rot": -21.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-6",
@@ -2655,8 +2455,7 @@
       "x": -323.6,
       "y": -937.7,
       "rot": -19,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-7",
@@ -2668,8 +2467,7 @@
       "x": -278.8,
       "y": -952,
       "rot": -16.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-8",
@@ -2681,8 +2479,7 @@
       "x": -233.3,
       "y": -964.2,
       "rot": -13.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-9",
@@ -2694,8 +2491,7 @@
       "x": -187.2,
       "y": -974.2,
       "rot": -10.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-10",
@@ -2707,8 +2503,7 @@
       "x": -140.8,
       "y": -982,
       "rot": -8.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-11",
@@ -2720,8 +2515,7 @@
       "x": -94,
       "y": -987.5,
       "rot": -5.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-12",
@@ -2733,8 +2527,7 @@
       "x": -47.1,
       "y": -990.9,
       "rot": -2.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-13",
@@ -2746,8 +2539,7 @@
       "x": 0,
       "y": -992,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-14",
@@ -2759,8 +2551,7 @@
       "x": 47.1,
       "y": -990.9,
       "rot": 2.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-15",
@@ -2772,8 +2563,7 @@
       "x": 94,
       "y": -987.5,
       "rot": 5.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-16",
@@ -2785,8 +2575,7 @@
       "x": 140.8,
       "y": -982,
       "rot": 8.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-17",
@@ -2798,8 +2587,7 @@
       "x": 187.2,
       "y": -974.2,
       "rot": 10.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-18",
@@ -2811,8 +2599,7 @@
       "x": 233.3,
       "y": -964.2,
       "rot": 13.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-19",
@@ -2824,8 +2611,7 @@
       "x": 278.8,
       "y": -952,
       "rot": 16.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-20",
@@ -2837,8 +2623,7 @@
       "x": 323.6,
       "y": -937.7,
       "rot": 19,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-21",
@@ -2850,8 +2635,7 @@
       "x": 367.8,
       "y": -921.3,
       "rot": 21.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-22",
@@ -2863,8 +2647,7 @@
       "x": 411.1,
       "y": -902.8,
       "rot": 24.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-23",
@@ -2876,8 +2659,7 @@
       "x": 453.4,
       "y": -882.3,
       "rot": 27.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-24",
@@ -2889,8 +2671,7 @@
       "x": 494.8,
       "y": -859.8,
       "rot": 29.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-B-25",
@@ -2902,8 +2683,7 @@
       "x": 535,
       "y": -835.3,
       "rot": 32.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-1",
@@ -2915,8 +2695,7 @@
       "x": -569.3,
       "y": -887,
       "rot": -32.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-2",
@@ -2928,8 +2707,7 @@
       "x": -528.2,
       "y": -912.1,
       "rot": -30.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-3",
@@ -2941,8 +2719,7 @@
       "x": -486.1,
       "y": -935.2,
       "rot": -27.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-4",
@@ -2954,8 +2731,7 @@
       "x": -442.9,
       "y": -956.4,
       "rot": -24.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-5",
@@ -2967,8 +2743,7 @@
       "x": -398.8,
       "y": -975.7,
       "rot": -22.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-6",
@@ -2980,8 +2755,7 @@
       "x": -353.8,
       "y": -992.8,
       "rot": -19.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-7",
@@ -2993,8 +2767,7 @@
       "x": -308.2,
       "y": -1007.9,
       "rot": -17,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-8",
@@ -3006,8 +2779,7 @@
       "x": -261.8,
       "y": -1021,
       "rot": -14.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-9",
@@ -3019,8 +2791,7 @@
       "x": -215,
       "y": -1031.8,
       "rot": -11.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-10",
@@ -3032,8 +2803,7 @@
       "x": -167.7,
       "y": -1040.6,
       "rot": -9.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-11",
@@ -3045,8 +2815,7 @@
       "x": -120,
       "y": -1047.1,
       "rot": -6.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-12",
@@ -3058,8 +2827,7 @@
       "x": -72.1,
       "y": -1051.5,
       "rot": -3.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-13",
@@ -3071,8 +2839,7 @@
       "x": -24.1,
       "y": -1053.7,
       "rot": -1.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-14",
@@ -3084,8 +2851,7 @@
       "x": 24.1,
       "y": -1053.7,
       "rot": 1.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-15",
@@ -3097,8 +2863,7 @@
       "x": 72.1,
       "y": -1051.5,
       "rot": 3.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-16",
@@ -3110,8 +2875,7 @@
       "x": 120,
       "y": -1047.1,
       "rot": 6.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-17",
@@ -3123,8 +2887,7 @@
       "x": 167.7,
       "y": -1040.6,
       "rot": 9.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-18",
@@ -3136,8 +2899,7 @@
       "x": 215,
       "y": -1031.8,
       "rot": 11.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-19",
@@ -3149,8 +2911,7 @@
       "x": 261.8,
       "y": -1021,
       "rot": 14.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-20",
@@ -3162,8 +2923,7 @@
       "x": 308.2,
       "y": -1007.9,
       "rot": 17,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-21",
@@ -3175,8 +2935,7 @@
       "x": 353.8,
       "y": -992.8,
       "rot": 19.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-22",
@@ -3188,8 +2947,7 @@
       "x": 398.8,
       "y": -975.7,
       "rot": 22.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-23",
@@ -3201,8 +2959,7 @@
       "x": 442.9,
       "y": -956.4,
       "rot": 24.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-24",
@@ -3214,8 +2971,7 @@
       "x": 486.1,
       "y": -935.2,
       "rot": 27.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-25",
@@ -3227,8 +2983,7 @@
       "x": 528.2,
       "y": -912.1,
       "rot": 30.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-C-26",
@@ -3240,8 +2995,7 @@
       "x": 569.3,
       "y": -887,
       "rot": 32.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-1",
@@ -3253,8 +3007,7 @@
       "x": -604.3,
       "y": -938.2,
       "rot": -32.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-2",
@@ -3266,8 +3019,7 @@
       "x": -564,
       "y": -963,
       "rot": -30.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-3",
@@ -3279,8 +3031,7 @@
       "x": -522.7,
       "y": -986,
       "rot": -27.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-4",
@@ -3292,8 +3043,7 @@
       "x": -480.5,
       "y": -1007.3,
       "rot": -25.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-5",
@@ -3305,8 +3055,7 @@
       "x": -437.3,
       "y": -1026.7,
       "rot": -23.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-6",
@@ -3318,8 +3067,7 @@
       "x": -393.4,
       "y": -1044.3,
       "rot": -20.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-7",
@@ -3331,8 +3079,7 @@
       "x": -348.8,
       "y": -1060.1,
       "rot": -18.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-8",
@@ -3344,8 +3091,7 @@
       "x": -303.6,
       "y": -1073.9,
       "rot": -15.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-9",
@@ -3357,8 +3103,7 @@
       "x": -257.8,
       "y": -1085.8,
       "rot": -13.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-10",
@@ -3370,8 +3115,7 @@
       "x": -211.6,
       "y": -1095.8,
       "rot": -10.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-11",
@@ -3383,8 +3127,7 @@
       "x": -165,
       "y": -1103.7,
       "rot": -8.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-12",
@@ -3396,8 +3139,7 @@
       "x": -118,
       "y": -1109.7,
       "rot": -6.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-13",
@@ -3409,8 +3151,7 @@
       "x": -70.9,
       "y": -1113.7,
       "rot": -3.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-14",
@@ -3422,8 +3163,7 @@
       "x": -23.6,
       "y": -1115.7,
       "rot": -1.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-15",
@@ -3435,8 +3175,7 @@
       "x": 23.6,
       "y": -1115.7,
       "rot": 1.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-16",
@@ -3448,8 +3187,7 @@
       "x": 70.9,
       "y": -1113.7,
       "rot": 3.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-17",
@@ -3461,8 +3199,7 @@
       "x": 118,
       "y": -1109.7,
       "rot": 6.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-18",
@@ -3474,8 +3211,7 @@
       "x": 165,
       "y": -1103.7,
       "rot": 8.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-19",
@@ -3487,8 +3223,7 @@
       "x": 211.6,
       "y": -1095.8,
       "rot": 10.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-20",
@@ -3500,8 +3235,7 @@
       "x": 257.8,
       "y": -1085.8,
       "rot": 13.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-21",
@@ -3513,8 +3247,7 @@
       "x": 303.6,
       "y": -1073.9,
       "rot": 15.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-22",
@@ -3526,8 +3259,7 @@
       "x": 348.8,
       "y": -1060.1,
       "rot": 18.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-23",
@@ -3539,8 +3271,7 @@
       "x": 393.4,
       "y": -1044.3,
       "rot": 20.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-24",
@@ -3552,8 +3283,7 @@
       "x": 437.3,
       "y": -1026.7,
       "rot": 23.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-25",
@@ -3565,8 +3295,7 @@
       "x": 480.5,
       "y": -1007.3,
       "rot": 25.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-26",
@@ -3578,8 +3307,7 @@
       "x": 522.7,
       "y": -986,
       "rot": 27.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-27",
@@ -3591,8 +3319,7 @@
       "x": 564,
       "y": -963,
       "rot": 30.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-D-28",
@@ -3604,8 +3331,7 @@
       "x": 604.3,
       "y": -938.2,
       "rot": 32.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-1",
@@ -3617,8 +3343,7 @@
       "x": -638.6,
       "y": -989.9,
       "rot": -32.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-2",
@@ -3630,8 +3355,7 @@
       "x": -597.6,
       "y": -1015.2,
       "rot": -30.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-3",
@@ -3643,8 +3367,7 @@
       "x": -555.5,
       "y": -1038.8,
       "rot": -28.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-4",
@@ -3656,8 +3379,7 @@
       "x": -512.6,
       "y": -1060.6,
       "rot": -25.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-5",
@@ -3669,8 +3391,7 @@
       "x": -468.8,
       "y": -1080.7,
       "rot": -23.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-6",
@@ -3682,8 +3403,7 @@
       "x": -424.1,
       "y": -1099,
       "rot": -21.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-7",
@@ -3695,8 +3415,7 @@
       "x": -378.8,
       "y": -1115.4,
       "rot": -18.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-8",
@@ -3708,8 +3427,7 @@
       "x": -332.9,
       "y": -1130,
       "rot": -16.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-9",
@@ -3721,8 +3439,7 @@
       "x": -286.4,
       "y": -1142.7,
       "rot": -14.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-10",
@@ -3734,8 +3451,7 @@
       "x": -239.4,
       "y": -1153.4,
       "rot": -11.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-11",
@@ -3747,8 +3463,7 @@
       "x": -192,
       "y": -1162.3,
       "rot": -9.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-12",
@@ -3760,8 +3475,7 @@
       "x": -144.3,
       "y": -1169.1,
       "rot": -7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-13",
@@ -3773,8 +3487,7 @@
       "x": -96.3,
       "y": -1174.1,
       "rot": -4.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-14",
@@ -3786,8 +3499,7 @@
       "x": -48.2,
       "y": -1177,
       "rot": -2.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-15",
@@ -3799,8 +3511,7 @@
       "x": 0,
       "y": -1178,
       "rot": 0,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-16",
@@ -3812,8 +3523,7 @@
       "x": 48.2,
       "y": -1177,
       "rot": 2.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-17",
@@ -3825,8 +3535,7 @@
       "x": 96.3,
       "y": -1174.1,
       "rot": 4.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-18",
@@ -3838,8 +3547,7 @@
       "x": 144.3,
       "y": -1169.1,
       "rot": 7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-19",
@@ -3851,8 +3559,7 @@
       "x": 192,
       "y": -1162.3,
       "rot": 9.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-20",
@@ -3864,8 +3571,7 @@
       "x": 239.4,
       "y": -1153.4,
       "rot": 11.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-21",
@@ -3877,8 +3583,7 @@
       "x": 286.4,
       "y": -1142.7,
       "rot": 14.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-22",
@@ -3890,8 +3595,7 @@
       "x": 332.9,
       "y": -1130,
       "rot": 16.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-23",
@@ -3903,8 +3607,7 @@
       "x": 378.8,
       "y": -1115.4,
       "rot": 18.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-24",
@@ -3916,8 +3619,7 @@
       "x": 424.1,
       "y": -1099,
       "rot": 21.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-25",
@@ -3929,8 +3631,7 @@
       "x": 468.8,
       "y": -1080.7,
       "rot": 23.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-26",
@@ -3942,8 +3643,7 @@
       "x": 512.6,
       "y": -1060.6,
       "rot": 25.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-27",
@@ -3955,8 +3655,7 @@
       "x": 555.5,
       "y": -1038.8,
       "rot": 28.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-28",
@@ -3968,8 +3667,7 @@
       "x": 597.6,
       "y": -1015.2,
       "rot": 30.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "A-E-29",
@@ -3981,8 +3679,7 @@
       "x": 638.6,
       "y": -989.9,
       "rot": 32.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L1-1-1",
@@ -3994,8 +3691,7 @@
       "x": -876.5,
       "y": -310.9,
       "rot": -70.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L1-1-2",
@@ -4007,8 +3703,7 @@
       "x": -860,
       "y": -353.9,
       "rot": -67.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L1-1-3",
@@ -4020,8 +3715,7 @@
       "x": -841.5,
       "y": -396,
       "rot": -64.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L1-2-1",
@@ -4033,8 +3727,7 @@
       "x": -948.7,
       "y": -340.7,
       "rot": -70.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L1-2-2",
@@ -4046,8 +3739,7 @@
       "x": -932.2,
       "y": -383.6,
       "rot": -67.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L1-2-3",
@@ -4059,8 +3751,7 @@
       "x": -913.7,
       "y": -425.7,
       "rot": -65,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L3-1-1",
@@ -4072,8 +3763,7 @@
       "x": 841.5,
       "y": -396,
       "rot": 64.8,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L3-1-2",
@@ -4085,8 +3775,7 @@
       "x": 860,
       "y": -353.9,
       "rot": 67.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L3-1-3",
@@ -4098,8 +3787,7 @@
       "x": 876.5,
       "y": -310.9,
       "rot": 70.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L3-2-1",
@@ -4111,8 +3799,7 @@
       "x": 913.7,
       "y": -425.7,
       "rot": 65,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L3-2-2",
@@ -4124,8 +3811,7 @@
       "x": 932.2,
       "y": -383.6,
       "rot": 67.6,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L3-2-3",
@@ -4137,8 +3823,7 @@
       "x": 948.7,
       "y": -340.7,
       "rot": 70.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L2-1-1",
@@ -4150,8 +3835,7 @@
       "x": -927.4,
       "y": -69.2,
       "rot": -85.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L2-1-2",
@@ -4163,8 +3847,7 @@
       "x": -922.9,
       "y": -115,
       "rot": -82.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L2-1-3",
@@ -4176,8 +3859,7 @@
       "x": -916.1,
       "y": -160.4,
       "rot": -80.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L2-2-1",
@@ -4189,8 +3871,7 @@
       "x": -1004.9,
       "y": -78.8,
       "rot": -85.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L2-2-2",
@@ -4202,8 +3883,7 @@
       "x": -1000.3,
       "y": -124.6,
       "rot": -82.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L2-2-3",
@@ -4215,8 +3895,7 @@
       "x": -993.5,
       "y": -170.1,
       "rot": -80.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L4-1-1",
@@ -4228,8 +3907,7 @@
       "x": 916.1,
       "y": -160.4,
       "rot": 80.1,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L4-1-2",
@@ -4241,8 +3919,7 @@
       "x": 922.9,
       "y": -115,
       "rot": 82.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L4-1-3",
@@ -4254,8 +3931,7 @@
       "x": 927.4,
       "y": -69.2,
       "rot": 85.7,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L4-2-1",
@@ -4267,8 +3943,7 @@
       "x": 993.5,
       "y": -170.1,
       "rot": 80.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L4-2-2",
@@ -4280,8 +3955,7 @@
       "x": 1000.3,
       "y": -124.6,
       "rot": 82.9,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "1L4-2-3",
@@ -4293,8 +3967,7 @@
       "x": 1004.9,
       "y": -78.8,
       "rot": 85.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L1-1-1",
@@ -4306,8 +3979,7 @@
       "x": -944.1,
       "y": -864.3,
       "rot": -47.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L1-1-2",
@@ -4319,8 +3991,7 @@
       "x": -912.5,
       "y": -897.7,
       "rot": -45.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L1-1-3",
@@ -4332,8 +4003,7 @@
       "x": -879.6,
       "y": -929.9,
       "rot": -43.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L1-2-1",
@@ -4345,8 +4015,7 @@
       "x": -994.1,
       "y": -913.4,
       "rot": -47.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L1-2-2",
@@ -4358,8 +4027,7 @@
       "x": -962.4,
       "y": -946.7,
       "rot": -45.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L1-2-3",
@@ -4371,8 +4039,7 @@
       "x": -929.6,
       "y": -979,
       "rot": -43.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L6-1-1",
@@ -4384,8 +4051,7 @@
       "x": 879.6,
       "y": -929.9,
       "rot": 43.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L6-1-2",
@@ -4397,8 +4063,7 @@
       "x": 912.5,
       "y": -897.7,
       "rot": 45.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L6-1-3",
@@ -4410,8 +4075,7 @@
       "x": 944.1,
       "y": -864.3,
       "rot": 47.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L6-2-1",
@@ -4423,8 +4087,7 @@
       "x": 929.6,
       "y": -979,
       "rot": 43.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L6-2-2",
@@ -4436,8 +4099,7 @@
       "x": 962.4,
       "y": -946.7,
       "rot": 45.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L6-2-3",
@@ -4449,8 +4111,7 @@
       "x": 994.1,
       "y": -913.4,
       "rot": 47.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L2-1-1",
@@ -4462,8 +4123,7 @@
       "x": -1091,
       "y": -669.4,
       "rot": -58.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L2-1-2",
@@ -4475,8 +4135,7 @@
       "x": -1066.2,
       "y": -708.2,
       "rot": -56.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L2-1-3",
@@ -4488,8 +4147,7 @@
       "x": -1040.1,
       "y": -746.1,
       "rot": -54.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L2-2-1",
@@ -4501,8 +4159,7 @@
       "x": -1149.3,
       "y": -708.2,
       "rot": -58.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L2-2-2",
@@ -4514,8 +4171,7 @@
       "x": -1124.5,
       "y": -746.9,
       "rot": -56.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L2-2-3",
@@ -4527,8 +4183,7 @@
       "x": -1098.4,
       "y": -784.8,
       "rot": -54.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L7-1-1",
@@ -4540,8 +4195,7 @@
       "x": 1040.1,
       "y": -746.1,
       "rot": 54.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L7-1-2",
@@ -4553,8 +4207,7 @@
       "x": 1066.2,
       "y": -708.2,
       "rot": 56.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L7-1-3",
@@ -4566,8 +4219,7 @@
       "x": 1091,
       "y": -669.4,
       "rot": 58.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L7-2-1",
@@ -4579,8 +4231,7 @@
       "x": 1098.4,
       "y": -784.8,
       "rot": 54.5,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L7-2-2",
@@ -4592,8 +4243,7 @@
       "x": 1124.5,
       "y": -746.9,
       "rot": 56.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L7-2-3",
@@ -4605,8 +4255,7 @@
       "x": 1149.3,
       "y": -708.2,
       "rot": 58.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L3-1-1",
@@ -4618,8 +4267,7 @@
       "x": -1198.2,
       "y": -450.3,
       "rot": -69.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L3-1-2",
@@ -4631,8 +4279,7 @@
       "x": -1181.2,
       "y": -493,
       "rot": -67.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L3-1-3",
@@ -4644,8 +4291,7 @@
       "x": -1162.8,
       "y": -535.1,
       "rot": -65.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L3-2-1",
@@ -4657,8 +4303,7 @@
       "x": -1262.8,
       "y": -477.2,
       "rot": -69.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L3-2-2",
@@ -4670,8 +4315,7 @@
       "x": -1245.8,
       "y": -520,
       "rot": -67.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L3-2-3",
@@ -4683,8 +4327,7 @@
       "x": -1227.4,
       "y": -562.1,
       "rot": -65.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L8-1-1",
@@ -4696,8 +4339,7 @@
       "x": 1162.8,
       "y": -535.1,
       "rot": 65.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L8-1-2",
@@ -4709,8 +4351,7 @@
       "x": 1181.2,
       "y": -493,
       "rot": 67.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L8-1-3",
@@ -4722,8 +4363,7 @@
       "x": 1198.2,
       "y": -450.3,
       "rot": 69.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L8-2-1",
@@ -4735,8 +4375,7 @@
       "x": 1227.4,
       "y": -562.1,
       "rot": 65.4,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L8-2-2",
@@ -4748,8 +4387,7 @@
       "x": 1245.8,
       "y": -520,
       "rot": 67.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L8-2-3",
@@ -4761,8 +4399,7 @@
       "x": 1262.8,
       "y": -477.2,
       "rot": 69.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L4-1-1",
@@ -4774,8 +4411,7 @@
       "x": -1261.9,
       "y": -214.7,
       "rot": -80.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L4-1-2",
@@ -4787,8 +4423,7 @@
       "x": -1253.3,
       "y": -259.9,
       "rot": -78.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L4-1-3",
@@ -4800,8 +4435,7 @@
       "x": -1243.2,
       "y": -304.8,
       "rot": -76.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L4-2-1",
@@ -4813,8 +4447,7 @@
       "x": -1330.4,
       "y": -229,
       "rot": -80.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L4-2-2",
@@ -4826,8 +4459,7 @@
       "x": -1321.9,
       "y": -274.1,
       "rot": -78.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L4-2-3",
@@ -4839,8 +4471,7 @@
       "x": -1311.8,
       "y": -319,
       "rot": -76.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L9-1-1",
@@ -4852,8 +4483,7 @@
       "x": 1243.2,
       "y": -304.8,
       "rot": 76.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L9-1-2",
@@ -4865,8 +4495,7 @@
       "x": 1253.3,
       "y": -259.9,
       "rot": 78.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L9-1-3",
@@ -4878,8 +4507,7 @@
       "x": 1261.9,
       "y": -214.7,
       "rot": 80.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L9-2-1",
@@ -4891,8 +4519,7 @@
       "x": 1311.8,
       "y": -319,
       "rot": 76.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L9-2-2",
@@ -4904,8 +4531,7 @@
       "x": 1321.9,
       "y": -274.1,
       "rot": 78.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L9-2-3",
@@ -4917,8 +4543,7 @@
       "x": 1330.4,
       "y": -229,
       "rot": 80.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L5-1-1",
@@ -4930,8 +4555,7 @@
       "x": -1279.7,
       "y": 28.6,
       "rot": -91.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L5-1-2",
@@ -4943,8 +4567,7 @@
       "x": -1279.9,
       "y": -17.4,
       "rot": -89.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L5-1-3",
@@ -4956,8 +4579,7 @@
       "x": -1278.4,
       "y": -63.4,
       "rot": -87.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L5-2-1",
@@ -4969,8 +4591,7 @@
       "x": -1349.7,
       "y": 27.7,
       "rot": -91.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L5-2-2",
@@ -4982,8 +4603,7 @@
       "x": -1349.9,
       "y": -18.3,
       "rot": -89.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L5-2-3",
@@ -4995,8 +4615,7 @@
       "x": -1348.5,
       "y": -64.3,
       "rot": -87.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L10-1-1",
@@ -5008,8 +4627,7 @@
       "x": 1278.4,
       "y": -63.4,
       "rot": 87.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L10-1-2",
@@ -5021,8 +4639,7 @@
       "x": 1279.9,
       "y": -17.4,
       "rot": 89.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L10-1-3",
@@ -5034,8 +4651,7 @@
       "x": 1279.7,
       "y": 28.6,
       "rot": 91.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L10-2-1",
@@ -5047,8 +4663,7 @@
       "x": 1348.5,
       "y": -64.3,
       "rot": 87.3,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L10-2-2",
@@ -5060,8 +4675,7 @@
       "x": 1349.9,
       "y": -18.3,
       "rot": 89.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     },
     {
       "id": "2L10-2-3",
@@ -5073,8 +4687,7 @@
       "x": 1349.7,
       "y": 27.7,
       "rot": 91.2,
-      "attribute": null,
-      "sellable": true
+      "attribute": null
     }
   ]
 }
