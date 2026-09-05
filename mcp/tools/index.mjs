@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { registerPlanTools } from "./plan.mjs";
 import { registerBlockTools } from "./blocks.mjs";
+import { registerVenueTools } from "./venue.mjs";
 
 /* Araç kaydı tek yerden. Konu başına bir dosya; yeni faz yeni dosya ekler,
    burası sadece toplar. */
@@ -15,4 +16,5 @@ export function registerTools(server, session) {
 
   registerPlanTools(server, session, z);
   registerBlockTools(server, session, z);
+  registerVenueTools(server, session, z);
 }
