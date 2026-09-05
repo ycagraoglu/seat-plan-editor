@@ -186,6 +186,77 @@ kullanıyor**. `skipAmbig` üçünü birden atladığı için işe yaramıyor;
 
 ---
 
+## Gerçek plan denemesi 2 — Bursa Tayyare Kültür Merkezi
+
+Bu, MCP sunucusunun **araç listesine bağlıyken** (Bash'ten değil) yürütülen
+ilk tur. Kaynak: Biletix'in mekân için yayımladığı resmî oturma planı
+(`Venue_BL.gif`, 975×600) — organizatörden gelecek görselin gerçek muadili.
+
+Görsel şematiktir: sıra aralığı ölçekli değil, yazılar koltukların üstüne
+biniyor. Sıra sayıları **piksel sayarak** çıkarıldı (göz kararı değil):
+kırmızı kareler bağlı bileşen olarak etiketlendi, yazı bindiren hücreler
+sabit adımlı kafes taramasıyla geri kazanıldı. İki bağımsız yöntem, planın
+**basılı numaralarıyla** çapraz doğrulandı.
+
+Sonuç: **594 koltuk · 19 blok · 5 kat · 24 bölüm**, doğrulama 0 hata.
+
+Turun bulduğu ve düzelttiği üç şey:
+
+**1. `seatDir` iki numaralandırma şemasında sessizce yok sayılıyordu.**
+Plan sol duvarda 1, merkezde 19|18 diyor; `center-in` ise sol yarıya çift
+veriyor. Aynası gerekiyordu ve `seatDir` alanı zaten vardı — ama
+`center`/`center-in` dalı onu hiç okumuyordu. Diziyi ters çevirmek de
+YETMİYOR: tek sayılı sırada fazlalık koltuk yine aynı yarıda kalıp merkezin
+paritesini bozuyor (kod 19 yerine 20 üretiyordu). Aynalanan şey, sayaçların
+hangi uçtan başladığı olmalıydı.
+
+```
+center-in ltr   2 4 … 18 20 | 17 … 1     Ege Ü. AKM
+center-in rtl   1 3 … 17 19 | 18 … 2     Bursa Tayyare   ← eklendi
+```
+
+**2. Araç açıklaması bunu anlatmıyordu.** Davranış düzelse de yalnız
+açıklamaya bakan bir model yine aynalı çizerdi; `set_numbering` metnine
+seatDir'in bu iki şemayı aynaladığı yazıldı.
+
+**3. `render` + altlık bindirmesi üç yapısal eksik gösterdi** — sayılar
+tutarken resim tutmuyordu:
+
+| Bindirmenin gösterdiği | Düzeltme |
+|---|---|
+| Balkonların **yan kanatları** yok (kaynakta bloğun dışında kırmızı alan) | Kanatlar ayrı blok; koltuk 1–6 onlarda, merkez 7'den başlıyor |
+| Salon arkasında **orta geçit** yok | K–L iki bloğa ayrıldı (odd/even + seatDir), M–O tek blok |
+| Kanat/geçit açıklıkları dar | Kural motoru hedef verdi (110 cm var, 120 gerekir), bloklar ötelendi |
+
+Kanatlar kozmetik değil: koltuk 1–6'yı onlar taşıyor, modellenmezse
+numaralandırma da yanlış oluyor.
+
+Taze bir süreçte üretilen koltuk listesi, plandaki **her basılı numarayı**
+birebir veriyor:
+
+```
+SALON  C sırası   1 3 5 … 19 | 18 16 … 2        plan: "1 —— 19 18 —— 2"
+SALON  K sırası   1 3 … 17  ‖  18 … 2           plan: "1 — 17   18 — 2"
+SALON  O sırası   1 3 … 27 | 26 … 2             plan: "1 —— 27 26 —— 2"
+BALKON A sırası   1 3 5 | 7 … 21 | 20 … 8 | 2 4 6
+```
+
+`db` çıktısı şemaya sorunsuz yüklendi: 24 bölüm, 68 sıra, 594 koltuk,
+7 refakatçi grubu, 14 koltuk özelliği.
+
+**Operatörün doğrulaması gereken varsayımlar** (kaynak söylemiyor):
+sıra başına koltuk sayıları ±1 (şematik görselden sayıldı) · tekerlekli
+sandalye yerlerinin KONUMU (kural 7 istiyor, plan yer göstermiyor) ·
+kapılar (plan hiç kapı göstermiyor, bu yüzden `validate` hâlâ uyarıyor) ·
+balkon kanatlarının basamaklı kenarı dikdörtgene sadeleştirildi.
+
+**Not — sunucu yeniden başlatma:** MCP sunucusu oturum başında ayağa
+kalkar ve `src/core/**` kodunu o an belleğe alır. Tur sırasında yapılan
+`labels.js` düzeltmesi bağlı sunucuya yansımadı; teslim dosyaları taze bir
+süreçte üretildi. Kod değiştiyse istemciyi yeniden başlat.
+
+---
+
 ## Uçtan uca deneme (yapıldı)
 
 CSO Ada Ankara planı "organizatörden gelmiş" gibi verildi (görsel + koltuk

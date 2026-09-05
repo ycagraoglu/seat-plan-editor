@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "seat-plan-editor": {
+      "command": "node",
+      "args": ["mcp/index.mjs"]
+    }
+  }
+}

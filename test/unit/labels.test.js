@@ -140,11 +140,40 @@ describe("center / center-in — 17 koltuklu sıra", () => {
     expect(diz("center")).not.toEqual(diz("center-in"));
   });
 
+  /* seatDir bu iki şemayı AYNALIYOR. Gerçek iki salon, ters gelenek:
+     Ege AKM'de sol yarı çift, Bursa Tayyare Kültür Merkezi'nde sol yarı
+     tek. Diziyi ters çevirmek YETMİYOR — 17 gibi tek sayılı sırada
+     fazlalık koltuk yine aynı yarıda kalıp merkezin paritesini bozuyordu
+     (Tayyare'nin resmî planı merkezde "19 18" derken kod 20 üretiyordu),
+     o yüzden aynalanan şey sayaçların hangi uçtan başladığı. */
+  const dizR = (sema) => {
+    const bayrak = Array.from({ length: 17 }, () => ({}));
+    const r = numberRow(bayrak, { ...DEF_NUM, seatScheme: sema, seatDir: "rtl" }, 17);
+    return Object.keys(r).sort((a, b) => a - b).map((k) => r[k]);
+  };
+
+  it("center-in + rtl: sol yarı TEK — Bursa Tayyare'nin resmî planı", () => {
+    expect(dizR("center-in")).toEqual([1, 3, 5, 7, 9, 11, 13, 15, 17, 16, 14, 12, 10, 8, 6, 4, 2]);
+  });
+
+  it("rtl AYNALIYOR: merkezdeki koltuğun paritesi de yer değiştiriyor", () => {
+    /* ltr'de merkez (9. koltuk) 18 — çift; rtl'de 17 — tek. Sadece dizi
+       ters çevrilseydi merkez iki durumda da çift kalırdı: asıl hata buydu. */
+    expect(diz("center-in")[8]).toBe(18);
+    expect(dizR("center-in")[8]).toBe(17);
+    expect(dizR("center-in")).toEqual([...diz("center-in")].map((n) => (n % 2 ? n + 1 : n - 1)));
+  });
+
+  it("ltr davranışı DEĞİŞMEDİ — Ege AKM planı hâlâ birebir", () => {
+    expect(diz("center-in")).toEqual([2, 4, 6, 8, 10, 12, 14, 16, 18, 15, 13, 11, 9, 7, 5, 3, 1]);
+  });
+
   it("her iki şema da tek sayıda koltukta tam sıra üretir (boşluk bırakmaz)", () => {
     ["center", "center-in"].forEach((s) => {
-      const d = diz(s);
-      expect(d).toHaveLength(17);
-      expect(new Set(d).size).toBe(17);        /* numara tekrarı yok */
+      [diz(s), dizR(s)].forEach((d) => {
+        expect(d).toHaveLength(17);
+        expect(new Set(d).size).toBe(17);      /* numara tekrarı yok */
+      });
     });
   });
 });

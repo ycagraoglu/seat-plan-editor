@@ -59,16 +59,30 @@ export function numberRow(flags, num, maxN) {
                   →  2 4 6 … 18 | 15 13 … 1
                   (Ege Ü. AKM Tiyatro Salonu'nun resmî planı böyle) */
   if (num.seatScheme === "center" || num.seatScheme === "center-in") {
+    /* seatDir bu iki şemayı AYNALAR — hangi yarıya tek, hangisine çift
+       düştüğü salona göre değişiyor: Ege Ü. AKM'de sol yarı ÇİFT, Bursa
+       Tayyare'de sol yarı TEK, ikisi de "1 ve 2 duvarlarda". Üçüncü bir
+       enum uydurmak yerine zaten var olan alanı çalıştırıyoruz; sıra ters
+       okununca tek/çift yarılar yer değiştiriyor. */
     const mid = (live.length - 1) / 2;
-    let odd = num.seatStart, even = num.seatStart + 1;
+    /* seatDir bu iki şemayı AYNALAR: sol yarıya tek mi çift mi düştüğü
+       salona göre değişiyor ve tek sayılı sırada ORTA KOLTUĞUN paritesini
+       de belirliyor. Diziyi ters çevirmek yetmez — fazlalık koltuk yine
+       aynı yarıda kalır; seçilmesi gereken şey hangi uçtan hangi sayacın
+       başladığı.
+         ltr  sol yarı ÇİFT  (Ege Ü. AKM: 2 4 … 20 | 17 … 1)
+         rtl  sol yarı TEK   (Bursa Tayyare: 1 3 … 19 | 18 … 2) */
+    const rtl = num.seatDir === "rtl";
+    let bas = rtl ? num.seatStart : num.seatStart + 1;
+    let son = rtl ? num.seatStart + 1 : num.seatStart;
     const put = (f, v) => { if (!f.gap) out[f.i] = v; };
     if (num.seatScheme === "center") {
-      for (let k = Math.ceil(mid); k < live.length; k++) { while (skip.has(odd)) odd += 2; put(live[k], odd); odd += 2; }
-      for (let k = Math.floor(mid); k >= 0; k--) { while (skip.has(even)) even += 2; put(live[k], even); even += 2; }
+      for (let k = Math.ceil(mid); k < live.length; k++) { while (skip.has(son)) son += 2; put(live[k], son); son += 2; }
+      for (let k = Math.floor(mid); k >= 0; k--) { while (skip.has(bas)) bas += 2; put(live[k], bas); bas += 2; }
     } else {
-      /* Duvardan içeri: sol uçtan merkeze çift, sağ uçtan merkeze tek. */
-      for (let k = 0; k <= Math.floor(mid); k++) { while (skip.has(even)) even += 2; put(live[k], even); even += 2; }
-      for (let k = live.length - 1; k > Math.floor(mid); k--) { while (skip.has(odd)) odd += 2; put(live[k], odd); odd += 2; }
+      /* Duvardan içeri: iki uçtan merkeze doğru. */
+      for (let k = 0; k <= Math.floor(mid); k++) { while (skip.has(bas)) bas += 2; put(live[k], bas); bas += 2; }
+      for (let k = live.length - 1; k > Math.floor(mid); k--) { while (skip.has(son)) son += 2; put(live[k], son); son += 2; }
     }
     return out;
   }

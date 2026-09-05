@@ -193,8 +193,14 @@ export function registerBlockTools(server, session, z) {
       "  iki gelenek var, plandaki sayılara bakıp seç:",
       "    center    → 18,16,…,2 | 3,5,…,17   (1 ve 2 MERKEZDE)",
       "    center-in → 2,4,…,18 | 15,13,…,1   (1 ve 2 DUVARLARDA)",
+      "  seatDir bu ikisini AYNALAR — hangi yarının TEK olduğu salona göre",
+      "  değişir, planda sol uçtaki sayıya bak:",
+      "    ltr → sol yarı ÇİFT (Ege Ü. AKM:      2,4,…,20 | 17,…,1)",
+      "    rtl → sol yarı TEK  (Bursa Tayyare:   1,3,…,19 | 18,…,2)",
+      "  Tek sayıda koltukta ORTA KOLTUĞUN paritesini de bu belirler.",
       "  Sırayı iki bloğa BÖLME; bölersen aradaki koltuk aralığı sahte bir",
-      "  \"dar geçit\" hatası doğurur.",
+      "  \"dar geçit\" hatası doğurur. (Gerçek geçit varsa bölmek DOĞRUDUR:",
+      "  o zaman iki yarıyı odd/even + seatDir ile numaralandır.)",
       "· seatScheme odd/even: tek/çift numaralandırma (101,103… / 102,104…).",
       "· rowCustom ile özel sıra listesi verilebilir: \"AA,BB,A,B,C\".",
       "",
@@ -220,6 +226,8 @@ export function registerBlockTools(server, session, z) {
           + "(2,4,…,18 | 15,13,…,1). "
           + "\"ÇİFT NUMARALAR / TEK NUMARALAR\" yazan planlar bu ikisinden "
           + "birini ister — HANGİSİ olduğunu plandaki sayılara bakarak seç. "
+          + "seatDir ikisini de AYNALAR: ltr sol yarıyı ÇİFT, rtl sol yarıyı "
+          + "TEK yapar (tek sayıda koltukta orta koltuğun paritesi de değişir). "
           + "Sırayı iki bloğa BÖLME; bölersen aradaki koltuk aralığı sahte "
           + "bir \"dar geçit\" hatası doğurur."),
       seatDir: z.enum(["ltr", "rtl"]).optional(),
