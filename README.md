@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 279 test
+npm test           # 332 test
 ```
 
 ---
@@ -63,11 +63,15 @@ neden öyle çizildiğini yorumlarında anlatır.
 ```
 plan
 ├── blocks[]     koltuk üreten bloklar (grid | fan | table | free)
-│   ├── level    kuşak/kat  →  seating.sections (üst düğüm)
-│   ├── label    blok kodu  →  seating.sections (yaprak düğüm)
+│   ├── level    bölüm YOLU → seating.sections zinciri
+│   │             "Alt Tribün" tek düğüm · "Batı / Alt Kat" iki düğüm
+│   ├── label    blok kodu — bölümün içindeki blok
 │   ├── geometri kind'e göre: rect | arc | çokgen taban
 │   ├── num      numaralandırma şeması → seating.rows
 │   └── ov       koltuk başına istisna (tip, özellik, kaydırma, silme)
+├── sections[]   bölüm ağacı (parentId ile) → seating.sections
+├── groups[]     koltuk grupları → seating.seat_groups
+│   masa (otomatik) · loca · love-seat · kapsül · refakatçi grubu
 ├── shapes[]     satılabilir olmayan nesneler → seating.shapes
 │   sahne · perde · saha · kapı · duvar · ayakta alan · ikon · not
 └── versions[]   sürümler + published → seating.seat_plan_versions
@@ -81,7 +85,8 @@ aktarım (`seats.json`) bu türetimin düzleştirilmiş hâlidir:
   "id": "112-1-1", "level": "Alt Tribün", "block": "112",
   "row": "1", "seat": 1, "gate": "KAPI 13",
   "x": 6600, "y": 2250, "rot": -90,
-  "seat_kind": "single", "features": []
+  "seat_kind": "single", "features": [], "group": null,
+  "section": "Alt Tribün"
 }
 ```
 
@@ -120,11 +125,11 @@ aktarım (`seats.json`) bu türetimin düzleştirilmiş hâlidir:
 
 ## Bilinen boşluklar (mimari rapora göre)
 
-Editör raporun hedef modeline **kısmen** hizalı. Hizalanmamış olanlar:
+Editörün veri modeli raporun hedefine hizalandı (§5.1 bölüm ağacı, §5.3 koltuk
+grupları, §5.4 `seat_kind`/`features`). Kalan boşluklar:
 
 | Rapor | Editörde |
 |---|---|
-| §5.3 — `seat_groups` | **model var, arayüz yok**. `plan.groups[]` + koltukta `groupId`; masa blokları otomatik gruplanıyor; `companion_group` doğrulaması çalışıyor. Koltuk seçip **elle** gruplama (loca, love-seat çifti) henüz yok |
 | §6.2 — `rounded_rect.v1`, `line.v1`, `bezier_path.v1` | yok (arc, polygon, rect, point var) |
 | §5.1 — bölüm `kind` sözlüğü | ağaç ve doğrulamalar var, ama sentetik bölümler tekdüze `floor` alıyor; `balcony`/`stand`/`box` elle seçilemiyor |
 
