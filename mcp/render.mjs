@@ -72,7 +72,23 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
      sınırı + pay. */
   let vb;
   if (scope === "all") {
+    /* Çerçeve ŞEKİLLERİ de kapsamalı. planHome yalnız bloklara bakıyor;
+       MCP ile kurulan bir planda (home bildirilmemiş) sahne blokların
+       dışındaysa hiç çizilmiyordu — LLM'e "çizimine bak" diyoruz ama
+       koyduğu sahneyi göremiyordu. Soğuk LLM testi buldu. */
     vb = planHome(plan);
+    const kutular = (plan.shapes || [])
+      .filter((s) => Number.isFinite(s.x) && Number.isFinite(s.y))
+      .map((s) => ({ x0: s.x - (s.w || 0) / 2, x1: s.x + (s.w || 0) / 2,
+        y0: s.y - (s.h || 0) / 2, y1: s.y + (s.h || 0) / 2 }));
+    if (kutular.length && !plan.home) {
+      const x0 = Math.min(vb.x, ...kutular.map((b) => b.x0));
+      const y0 = Math.min(vb.y, ...kutular.map((b) => b.y0));
+      const x1 = Math.max(vb.x + vb.w, ...kutular.map((b) => b.x1));
+      const y1 = Math.max(vb.y + vb.h, ...kutular.map((b) => b.y1));
+      const pay = Math.max(x1 - x0, y1 - y0) * 0.04;
+      vb = { x: x0 - pay, y: y0 - pay, w: x1 - x0 + 2 * pay, h: y1 - y0 + 2 * pay };
+    }
   } else {
     const bb = secili.map((x) => x.m.bbox);
     const x0 = Math.min(...bb.map((b) => b.x0)), x1 = Math.max(...bb.map((b) => b.x1));

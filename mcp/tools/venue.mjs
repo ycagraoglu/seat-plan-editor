@@ -174,8 +174,13 @@ export function registerVenueTools(server, session, z) {
       "yerleştirir (bloğun arka sıralarından başlayarak). Refakatçi asla",
       "grupsuz kalmaz — çift, companion_group olarak türetilir.",
       "",
-      "Kaç çift gerektiğini validate söyler: kapasiteye göre hedef verir",
-      "('52.838 koltuk için 276 tekerlekli sandalye yeri gerekiyor').",
+      "KOLTUK EKLEMEZ, MEVCUT KOLTUĞU DÖNÜŞTÜRÜR. Toplam koltuk sayısı",
+      "değişmez; bu yüzden organizatörün listesiyle eşleşmeyi bozmaz.",
+      "",
+      "pairs BLOK BAŞINA sayıdır, plan başına DEĞİL. Seçici üç bloğa",
+      "uyuyorsa pairs:3 → 9 tekerlekli sandalye yeri. validate'in verdiği",
+      "hedef ise PLAN çapındadır — bölerek ver. Kaç blok eşleştiğini",
+      "aracın yanıtı söyler.",
     ].join("\n"),
     inputSchema: {
       level: z.string().optional().describe("Bu kattaki bloklara"),
@@ -183,14 +188,19 @@ export function registerVenueTools(server, session, z) {
       labelPattern: z.string().optional().describe("Kod deseni (regex), ör. \"ÜST C$\""),
       pairs: z.number().int().positive().describe("Blok başına kaç ÇİFT"),
     },
-  }, async (a) => metin(session.mutate((plan) => {
+  }, async (a) => {
     const re = a.labelPattern ? new RegExp(a.labelPattern) : null;
     const secici = (b) => (a.labels ? a.labels.includes(b.label)
       : re ? re.test(b.label)
       : a.level ? b.level === a.level : false);
-    if (!plan.blocks.some(secici)) throw new Error("Eşleşen blok yok — seçiciyi kontrol et.");
+    /* Sayım mutate'ten ÖNCE: mutate'in başlık metni geri çağrımdan önce
+       hesaplanıyor, sonra atarsam başlıkta hep 0 görünüyordu. */
+    const eslesenBlok = session.need().blocks.filter(secici).length;
+    if (!eslesenBlok) throw new Error("Eşleşen blok yok — seçiciyi kontrol et.");
+    return metin(session.mutate((plan) => {
     return { ...plan, blocks: withAccessible(plan.blocks, secici, a.pairs) };
-  }, `Erişilebilir konumlar eklendi (blok başına ${a.pairs} çift)`)));
+  }, `Erişilebilir konumlar: ${eslesenBlok} blok × ${a.pairs} çift`
+     + ` = ${eslesenBlok * a.pairs} tekerlekli sandalye yeri (koltuk EKLENMEDİ, dönüştürüldü)`)); });
 
   /* ── bölüm ağacı ──────────────────────────────────────────────────── */
   server.registerTool("define_section", {
@@ -262,8 +272,10 @@ export function registerVenueTools(server, session, z) {
       "replace: false ise mevcut atamaya EKLER.",
     ].join("\n"),
     inputSchema: {
-      gate: z.string().describe("Kapı etiketi, ör. \"KAPI 26\""),
-      blocks: z.array(z.string()).describe("Blok kodları ya da kimlikleri"),
+      gate: z.string().describe("Kapının ETİKETİ (şekil kimliği DEĞİL), ör. \"KAPI 26\""),
+      blocks: z.array(z.string())
+        .describe("Blok kodları ya da kimlikleri — DİZİ olarak, ör. [\"A\",\"B\"]."
+          + " Virgüllü tek dize kabul edilmez."),
       replace: z.boolean().optional().describe("true: mevcut atamayı sil, varsayılan true"),
     },
   }, async (a) => metin(session.mutate((plan) => {

@@ -66,11 +66,15 @@ export function registerExportTools(server, session, z) {
 
     const govde = JSON.stringify(yuk, null, 2);
     await writeFile(dosya, govde, "utf8");
+    /* Üç biçim de JSON. ".csv" uzantısı verilirse sessizce JSON yazmak
+       yanıltıcı — dosyayı CSV sanıp okumaya çalışan taraf patlar. */
+    const uzantiNotu = /\.json$/i.test(dosya) ? ""
+      : `\nNOT: içerik JSON (üç biçim de JSON'dur), dosya adı .json değil.`;
 
     const { findings } = session.derive();
     const hata = findings.filter((f) => f.t === "err").length;
     return metin([
-      `${path.basename(dosya)} yazıldı · ${Math.round(govde.length / 1024)} KB`,
+      `${path.basename(dosya)} yazıldı · ${Math.round(govde.length / 1024)} KB${uzantiNotu}`,
       ozet,
       hata
         ? `\nDİKKAT: doğrulamada ${hata} hata var — bu plan yayına hazır DEĞİL.`

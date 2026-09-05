@@ -5,6 +5,13 @@ import { nid } from "../../src/core/ids.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
 
+/* Numaralandırmadan sonra sonucu GÖSTER. "ayarlandı" yazısı yanlış şema
+   uygulandığında da çıkıyordu; etiketleri görmeden doğrulanamıyordu. */
+function siraOzeti(session, id) {
+  const b = session.summaryData().blocks.find((x) => x.id === id || x.label === id);
+  return b ? `  sıralar: ${b.rowLabels.join(" · ")}` : "";
+}
+
 /* Blok araçları. Hepsi src/venues/builders.js'in ince sarmalayıcısı —
    burada yeni geometri kodu YOK, olmamalı da: aynı kural iki yere
    yazılırsa "editörde şöyle, MCP'de böyle" ayrışması başlar. */
@@ -182,6 +189,13 @@ export function registerBlockTools(server, session, z) {
       "· skipAmbig harf şemasında I, O, Q'yu atlar (1 ve 0 ile karışır) — standart.",
       "· seatScheme odd/even: tek/çift numaralandırma (101,103… / 102,104…).",
       "· rowCustom ile özel sıra listesi verilebilir: \"AA,BB,A,B,C\".",
+      "",
+      "DEĞERLER — rowScheme: number | letter | custom",
+      "           seatScheme: seq (1,2,3) | odd | even | mirror",
+      "           seatDir: ltr | rtl · anchor: order | column",
+      "",
+      "Yanıt, sonuçtaki SIRA ETİKETLERİNİ geri verir — doğru şemayı",
+      "uyguladığını oradan doğrula, \"ayarlandı\" yazısına güvenme.",
     ].join("\n"),
     inputSchema: {
       id: z.string().describe("Blok kimliği ya da kodu"),
@@ -204,5 +218,5 @@ export function registerBlockTools(server, session, z) {
       blocks: plan.blocks.map((b) => (b.id === hedef.id
         ? { ...b, num: { ...DEF_NUM, ...b.num, ...temiz } } : b)),
     };
-  }, `Numaralandırma ayarlandı: ${id}`)));
+  }, `Numaralandırma: ${id}`) + "\n" + siraOzeti(session, id)));
 }

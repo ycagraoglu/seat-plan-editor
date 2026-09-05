@@ -215,3 +215,58 @@ describe("eksik zorunlu alan REDDEDİLİR", () => {
     expect((await t.jsonCagir("plan_summary")).seatCount).toBe(50);
   });
 });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SOĞUK LLM TESTİNİN BULDUKLARI
+
+   Kod tabanını bilmeyen bir model, yalnız araç açıklamalarına bakarak bir
+   salon çizmeye çalıştı. Başardı (532/532) ama yolda takıldığı yerler
+   açıklamaların eksiklerini gösterdi. Doğrulananlar burada kilitli.
+   ══════════════════════════════════════════════════════════════════════════ */
+describe("soğuk LLM testinin bulduğu eksikler", () => {
+  beforeEach(async () => {
+    await t.cagir("create_plan", { name: "T" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 6, cols: 10 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 2000, y: 0, rows: 6, cols: 10 });
+  });
+
+  it("set_numbering sonucu SIRA ETİKETLERİYLE bildiriyor", async () => {
+    /* Önce yalnız "ayarlandı" diyordu; yanlış şema uygulandığında da aynı
+       yazı çıkıyor, model hatayı ancak çok sonra fark ediyordu. */
+    const r = await t.cagir("set_numbering", { id: "A", rowScheme: "letter", skipAmbig: true });
+    expect(r).toMatch(/sıralar:.*A · B · C/);
+  });
+
+  it("add_accessible KAÇ BLOĞA uygulandığını ve dönüştürdüğünü söylüyor", async () => {
+    /* pairs BLOK BAŞINA; validate'in hedefi PLAN çapında. İkisi karışırsa
+       model 3 hedefine karşı sessizce 3×blok kadar yer üretir. */
+    const once = (await t.jsonCagir("plan_summary")).seatCount;
+    const r = await t.cagir("add_accessible", { level: "P", pairs: 3 });
+    expect(r).toContain("2 blok × 3 çift = 6");
+    expect(r).toMatch(/EKLENMEDİ|dönüştürüldü/);
+    /* Koltuk sayısı DEĞİŞMEMELİ — yoksa liste eşleşmesini bozardı. */
+    expect((await t.jsonCagir("plan_summary")).seatCount).toBe(once);
+  });
+
+  it("export_plan .json olmayan uzantıda içeriğin JSON olduğunu SÖYLÜYOR", async () => {
+    const { mkdtempSync } = await import("node:fs");
+    const os = await import("node:os"); const p = await import("node:path");
+    const yol = p.join(mkdtempSync(p.join(os.tmpdir(), "uzanti-")), "x.csv");
+    expect(await t.cagir("export_plan", { format: "seats", path: yol })).toContain("içerik JSON");
+  });
+});
+
+describe("render çerçevesi ŞEKİLLERİ de kapsıyor", () => {
+  it("blokların dışındaki sahne çizim alanına giriyor", async () => {
+    /* LLM'e "çizimine bak" diyoruz; koyduğu sahne çerçevenin dışında
+       kalınca bakamıyordu. planHome yalnız bloklara bakıyor. */
+    await t.cagir("create_plan", { name: "T" });
+    await t.cagir("add_shape", { type: "stage", x: 0, y: -900, w: 1400, h: 600, label: "SAHNE" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 800, rows: 5, cols: 10 });
+    const { renderSvg } = await import("../../mcp/render.mjs");
+    const [vx, vy, vw, vh] = renderSvg(t.session.plan, { scope: "all" })
+      .svg.match(/viewBox="([^"]+)"/)[1].split(" ").map(Number);
+    expect(vy).toBeLessThanOrEqual(-1200);            /* sahnenin üst kenarı */
+    expect(vy + vh).toBeGreaterThan(800);
+  });
+});
