@@ -102,3 +102,25 @@ export function selectTotalSeats(metas) {
 export function selectSelectedBlocks(plan, selIds) {
   return plan.blocks.filter((b) => selIds.includes(b.id));
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SİLME HEDEFİ — Delete/Backspace neyi siler?
+
+   Bu sıralamanın kendisi bir HATANIN karşılığı. Eskiden klavye işleyicisi
+   yalnız selSeat'e (TEKİL koltuk) bakıyor, çoklu koltuk seçimini hiç
+   görmüyordu. Kementle iki koltuk seçilince selSeat null oluyor, akış
+   alttaki blok silmeye düşüyor ve selIds'te duran BLOĞUN TAMAMI siliniyordu:
+   kullanıcı iki koltuk silmek isterken 1.000 koltukluk tribününü
+   kaybediyordu.
+
+   Koltuk seçimi HER ZAMAN bloktan önce gelir. "Seçili koltuk varken blok
+   silmek" hiçbir zaman kullanıcının niyeti değildir — koltuk seçmek için
+   zaten o bloğa girmiş olmak gerekiyor.
+   ══════════════════════════════════════════════════════════════════════════ */
+export function deleteTarget({ selSeats, selSeat, selIds, selShapeId }) {
+  if (selSeats && selSeats.size) return "seats";
+  if (selSeat) return "seat";
+  if (selIds && selIds.length) return "blocks";
+  if (selShapeId) return "shape";
+  return null;
+}

@@ -15,7 +15,7 @@ import { BUILTINS, EMPTY } from "./venues/index.js";
 import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
-import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels } from "./ui/state/selectors.js";
+import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels, deleteTarget } from "./ui/state/selectors.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -1414,6 +1414,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
     setMsg("Eşit dağıtıldı");
   };
 
+  /* "bid|r,c" anahtarını koltuk nesnesine çevirir. Kement bitişinde de,
+     tıklamayla seçimde de gerekiyor — iki yere yazılmasın. */
+  const anahtarKoltuk = (k) => {
+    const [bid, rc] = k.split("|");
+    const [r, c] = rc.split(",");
+    return { bid, r: +r, c: +c };
+  };
+  /** Çoklu seçim değiştiğinde tekil seçimi ona göre tazeler (1 ise o, değilse yok). */
+  const seatSelSync = (next) => {
+    setSelSeats(next);
+    setSelSeat(next.size === 1 ? anahtarKoltuk([...next][0]) : null);
+  };
+
   /* ── seçili koltuklara toplu işlem ────────────────────────────── */
   const seatOps = (fn) => {
     if (!selSeats.size) return;
@@ -1751,13 +1764,30 @@ export default function PlanEditor({ cssText = "" } = {}) {
     }
     if (tool === "seat") {
       if (t?.b && t.r != null) {
+        const anahtar = `${t.b}|${t.r},${t.c}`;
+        /* Shift / Cmd / Ctrl ile tıklamak koltuğu seçime EKLER-ÇIKARIR.
+           Kement her zaman yetmiyor: bir sıranın iki ucu, farklı bloklardan
+           koltuklar, aradaki koltukları kapsamadan seçilemez. */
+        if (e.shiftKey || e.metaKey || e.ctrlKey) {
+          const next = new Set(selSeats);
+          if (next.has(anahtar)) next.delete(anahtar); else next.add(anahtar);
+          /* SIRA ÖNEMLİ, aşağıdaki düz tıklamayla AYNI gerekçe (bkz.
+             reducer.js "selectBlocks"): selectBlocks koltuk seçimini
+             temizliyor, o yüzden ÖNCE blok SONRA koltuk yazılmalı.
+             İlk yazışımda tersini yaptım ve seçim her cmd+tıkta
+             sıfırlanıyordu. */
+          if (!selIds.includes(t.b)) setSelIds([...selIds, t.b]);
+          seatSelSync(next);
+          drag.current = null;          /* sürükleme başlatma — seçim topluyoruz */
+          return;
+        }
         /* SIRA ÖNEMLİ: selectBlocks artık koltuk seçimini kendiliğinden
            bırakıyor (bkz. reducer.js "selectBlocks", HATA 2) — önce blok
            seçilip SONRA koltuk yazılmalı, yoksa setSelIds az önce alttaki
            iki satırın yazdığı koltuk seçimini siler. */
         setSelIds([t.b]);
         setSelSeat({ bid: t.b, r: +t.r, c: +t.c });
-        setSelSeats(new Set([`${t.b}|${t.r},${t.c}`]));
+        setSelSeats(new Set([anahtar]));
         const b = plan.blocks.find((x) => x.id === t.b);
         drag.current = { mode: "seat", bid: t.b, r: +t.r, c: +t.c, p: raw, ov: b.ov, blockRot: b.rot, snapshot: plan };
       } else {
@@ -1921,12 +1951,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       } else {
         const next = d.add ? new Set(d.base) : new Set();
         hits.forEach(({ bid, s }) => next.add(`${bid}|${s.r},${s.c}`));
-        setSelSeats(next);
-        setSelSeat(next.size === 1 ? (() => {
-          const [bid, rc] = [...next][0].split("|");
-          const [r, c] = rc.split(",");
-          return { bid, r: +r, c: +c };
-        })() : null);
+        seatSelSync(next);
         setMsg(`${next.size} koltuk seçildi`);
       }
       return;
@@ -2121,9 +2146,23 @@ export default function PlanEditor({ cssText = "" } = {}) {
       if (map[k]) setTool(map[k]);
       if (k === "y") setSnapOn((s) => !s);
       if (e.key === "Delete" || e.key === "Backspace") {
-        if (selSeat) { toggleOv(selSeat, "rm"); return; }
-        if (selIds.length) { commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) }); setSelIds([]); }
-        else if (selShapeId) { commit({ ...plan, shapes: plan.shapes.filter((s) => s.id !== selShapeId) }); setSelShapeId(null); }
+        /* Öncelik sırası ui/state/selectors.js'te (deleteTarget) — koltuk
+           seçimi HER ZAMAN bloktan önce. Sıra oradaki notta anlatılan bir
+           veri kaybı hatasının karşılığı, burada tekrar yazılmıyor. */
+        switch (deleteTarget({ selSeats, selSeat, selIds, selShapeId })) {
+          case "seats":
+            seatOps((o) => ({ ...o, rm: true, gap: false }));
+            setMsg(`${selSeats.size} koltuk silindi`);
+            return;
+          case "seat": toggleOv(selSeat, "rm"); return;
+          case "blocks":
+            commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) });
+            setSelIds([]); return;
+          case "shape":
+            commit({ ...plan, shapes: plan.shapes.filter((s) => s.id !== selShapeId) });
+            setSelShapeId(null); return;
+          default: return;
+        }
       }
     };
     window.addEventListener("keydown", h);

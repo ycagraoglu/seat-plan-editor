@@ -1,3 +1,4 @@
+import { deleteTarget } from "../../src/ui/state/selectors.js";
 import { describe, it, expect } from "vitest";
 import { reducer, initialState, MAX_HISTORY } from "../../src/ui/state/reducer.js";
 
@@ -434,5 +435,44 @@ describe("value-veya-updater sözleşmesi (setState ile aynı)", () => {
   it("tanınmayan eylem türünde state DEĞİŞMEDEN (aynı referansla) döner", () => {
     const s = initialState(venuesFixture(), "a");
     expect(reducer(s, { type: "bilinmeyen/eylem" })).toBe(s);
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SİLME HEDEFİ — veri kaybı hatasının regresyon kilidi
+
+   Kullanıcı bildirdi: stadyumda birkaç koltuk seçip Delete'e basınca
+   koltuklar değil, BLOĞUN TAMAMI siliniyordu. Sebep: klavye işleyicisi
+   yalnız TEKİL koltuk seçimine (selSeat) bakıyordu; kementle iki koltuk
+   seçilince selSeat null oluyor ve akış blok silmeye düşüyordu.
+
+   Sıra artık saf bir fonksiyonda ve burada kilitli.
+   ══════════════════════════════════════════════════════════════════════════ */
+describe("deleteTarget — koltuk seçimi HER ZAMAN bloktan önce", () => {
+  const bos = { selSeats: new Set(), selSeat: null, selIds: [], selShapeId: null };
+
+  it("hiçbir şey seçili değilse hedef yok", () => {
+    expect(deleteTarget(bos)).toBeNull();
+  });
+
+  it("ÇOKLU koltuk seçiliyken blok seçili OLSA BİLE koltuklar silinir", () => {
+    /* Asıl hata buydu: seat aracı bloğu da seçili tutuyor (selIds dolu),
+       çoklu koltuk görülmeyince blok siliniyordu. */
+    expect(deleteTarget({ ...bos, selSeats: new Set(["b1|0,0", "b1|0,1"]), selIds: ["b1"] }))
+      .toBe("seats");
+  });
+
+  it("tekil koltuk seçiliyken de blok değil koltuk", () => {
+    expect(deleteTarget({ ...bos, selSeat: { bid: "b1", r: 0, c: 0 }, selIds: ["b1"] }))
+      .toBe("seat");
+  });
+
+  it("koltuk yoksa blok, blok yoksa şekil", () => {
+    expect(deleteTarget({ ...bos, selIds: ["b1"] })).toBe("blocks");
+    expect(deleteTarget({ ...bos, selShapeId: "s1" })).toBe("shape");
+  });
+
+  it("boş Set 'koltuk seçili' saymaz — blok silmeyi engellemez", () => {
+    expect(deleteTarget({ ...bos, selSeats: new Set(), selIds: ["b1"] })).toBe("blocks");
   });
 });

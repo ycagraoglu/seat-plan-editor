@@ -817,3 +817,25 @@ kapıları atanmış tam bir sinema salonu planınız hazır. Buradan sonra
 aynı adımları tekrarlayarak sıra sayısını artırabilir, bir üst kat
 (balkon) ekleyebilir ya da **Kavis** değerini artırıp sıraları hafif bir
 yay haline getirebilirsiniz.
+
+## Koltuk seçme ve silme
+
+Koltuklara ancak **Koltuk düzenle** aracıyla (`E`) dokunulur. "Seç ve taşı"
+(`V`) aracında bir koltuğa tıklamak **bloğu** seçer — bu kasıtlı, blokları
+sürüklerken yanlışlıkla koltuk seçilmesin diye.
+
+Ayrıca koltukların **görünür olması** gerekir: büyük mekânlarda uzaktan
+bakarken editör blok görünümündedir (durum çubuğu *"blok görünümü ·
+yakınlaş"* der). Yakınlaştıkça *"koltuk görünümü"*ne geçer ve koltuklar
+tıklanabilir olur.
+
+| İşlem | Nasıl |
+|---|---|
+| Tek koltuk seç | `E` aracıyla koltuğa tıkla |
+| Seçime ekle / çıkar | **Cmd** (Mac) · **Ctrl** (Windows) · **Shift** + tıkla |
+| Alan seç | Boş yerden sürükle (kement); Shift ile mevcut seçime ekler |
+| Seçilenleri sil | `Delete` / `Backspace` |
+| Geri al | `⌘Z` |
+
+Silme koltuğu plandan kaldırmaz, **kapalı** işaretler — geri alınabilir ve
+kimlik üretimi bozulmaz.
