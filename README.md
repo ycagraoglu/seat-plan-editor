@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 332 test
+npm test           # 334 test
 ```
 
 ---
@@ -131,7 +131,6 @@ grupları, §5.4 `seat_kind`/`features`). Kalan boşluklar:
 | Rapor | Editörde |
 |---|---|
 | §6.2 — `rounded_rect.v1`, `line.v1`, `bezier_path.v1` | yok (arc, polygon, rect, point var) |
-| §5.1 — bölüm `kind` sözlüğü | ağaç ve doğrulamalar var, ama sentetik bölümler tekdüze `floor` alıyor; `balcony`/`stand`/`box` elle seçilemiyor |
 
 Raporun *"karşılanmıyor"* dediği üç şey ise editörde **var**: birden fazla
 ayakta alan (Yenikapı'da 4 alan / 39.500 kişi), kavisli geometri (145

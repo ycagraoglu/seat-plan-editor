@@ -402,3 +402,32 @@ describe("bölüm yolu", () => {
     expect(resolveBlockSectionId(a)).not.toBe(resolveBlockSectionId(b));
   });
 });
+
+/* Açık bölüm kaydı, yoldan TÜRETİLENİ geçersiz kılar — bölüm türünün
+   (balcony/box/stand…) kalıcı olabilmesi buna dayanıyor: bölümler kat
+   yolundan türetildiği için türü saklayacak başka yer yok, arayüz türü
+   seçince plan.sections'a açık kayıt yazıyor. */
+describe("açık bölüm kaydı türetilmişi geçersiz kılar", () => {
+  const blk = (id, level) => ({ id, label: id, level, kind: "grid",
+    x: 0, y: 0, rot: 0, cols: 2, rows: 1, counts: "", align: "center",
+    seatGap: 50, rowGap: 90, curve: 0, taper: 0, color: "", attr: "", num: {}, ov: {} });
+
+  it("açık kaydı olan bölüm kendi türünü korur, ötekiler floor kalır", () => {
+    const id = syntheticSectionId("1. Balkon");
+    const secs = resolvePlanSections({
+      sections: [{ id, code: "1. Balkon", name: "1. Balkon", kind: "balcony", parentId: null }],
+      blocks: [blk("A", "1. Balkon"), blk("B", "Parter")],
+    });
+    expect(secs.find((s) => s.code === "1. Balkon").kind).toBe("balcony");
+    expect(secs.find((s) => s.code === "Parter").kind).toBe("floor");
+  });
+
+  it("açık kayıt bölümü ikiye katlamaz", () => {
+    const id = syntheticSectionId("Loca");
+    const secs = resolvePlanSections({
+      sections: [{ id, code: "Loca", name: "Loca", kind: "box", parentId: null }],
+      blocks: [blk("A", "Loca"), blk("B", "Loca")],
+    });
+    expect(secs.filter((s) => s.id === id)).toHaveLength(1);
+  });
+});

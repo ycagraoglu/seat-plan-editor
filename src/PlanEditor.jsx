@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
-import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats, resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND, sectionPath } from "./core/geometry.js";
+import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats, resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND, sectionPath, resolveBlockSectionId, resolvePlanSections } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
@@ -1520,6 +1520,32 @@ export default function PlanEditor({ cssText = "" } = {}) {
       });
       return { ...b, ov };
     }) });
+  };
+
+  /* ── bölüm türü ───────────────────────────────────────────────────
+     Bölümler kat YOLUNDAN türetiliyor (resolvePlanSections), o yüzden
+     türü saklayacak yer yok — hepsi varsayılan "floor" alıyordu. Oysa
+     Yenikapı'nın "Loca"sı box, Ülker'in "Üst Tribün"ü stand. Tür
+     seçilince bölüm plan.sections'a AÇIKÇA yazılıyor; resolvePlanSections
+     açık kaydı türetilmişin önüne koyduğu için (ölçüldü) tür böylece
+     kalıcı oluyor. Adı tahmin etmeye çalışmıyoruz — bu kırılgan olurdu,
+     kullanıcı seçiyor. Sözlük raporun §5.1'inden. */
+  const SECTION_KINDS = { floor: "Kat / zemin", balcony: "Balkon", stand: "Tribün",
+    tier: "Kademe", section: "Bölüm", box: "Loca", table_area: "Masa alanı",
+    general_admission_area: "Ayakta alan" };
+
+  const setSectionKind = (kind) => {
+    const id = resolveBlockSectionId(selBlock);
+    const parts = sectionPath(selBlock.level);
+    const kod = parts[parts.length - 1] || "";
+    const ustler = parts.slice(0, -1);
+    const parentId = ustler.length ? `lvl:${ustler.join("/")}` : null;
+    const mevcut = plan.sections || [];
+    const idx = mevcut.findIndex((x) => x.id === id);
+    const kayit = { id, code: kod, name: kod, kind, parentId };
+    commit({ ...plan, sections: idx >= 0
+      ? mevcut.map((x, i) => (i === idx ? { ...x, kind } : x))
+      : [...mevcut, kayit] });
   };
 
   /* ── koltuk grupları: elle gruplama ───────────────────────────────
@@ -3191,6 +3217,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
               onDelete={() => { commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) }); setSelIds([]); }} />
           ) : selBlock ? (
             <BlockPanel b={selBlock} levels={levels} meta={metaById.get(selBlock.id)} arr={arrProps}
+              sectionKinds={SECTION_KINDS} onSectionKind={setSectionKind}
+              sectionKind={(resolvePlanSections(plan).find((x) => x.id === resolveBlockSectionId(selBlock)) || {}).kind || "floor"}
               doors={gates.get(selBlock.id)}
               onFootDraw={footStart} onFootSeed={footSeed} onFootClear={footClear}
               footOpen={footOpen} setFootOpen={setFootOpen}
@@ -3719,7 +3747,7 @@ function ShapePanel({ s, blocks, metas, onChange, onDelete, onAuto }) {
   );
 }
 
-function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFootClear, onChange, onMirror, onDup, onDelete, onZoom,
+function BlockPanel({ b, levels, meta, arr, doors, sectionKinds, sectionKind, onSectionKind, onFootDraw, onFootSeed, onFootClear, onChange, onMirror, onDup, onDelete, onZoom,
   footOpen, setFootOpen, numOpen, setNumOpen, advOpen, setAdvOpen }) {
   const n = b.num;
   const setNum = (p) => onChange({ num: { ...n, ...p } });
@@ -3780,6 +3808,14 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
           {sectionPath(b.level).length > 1 && (
             <p className="hint">{sectionPath(b.level).join(" › ")} — {sectionPath(b.level).length} seviye</p>
           )}
+          {/* Bölümün TÜRÜ (rapor §5.1 sözlüğü). Bloğun ait olduğu YAPRAK
+              bölüme yazılır; üst düğümlerin türü onlara ait bir blok
+              seçilince ayarlanır. */}
+          <Row label="Bölüm türü">
+            <select value={sectionKind} onChange={(e) => onSectionKind(e.target.value)}>
+              {Object.entries(sectionKinds).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+            </select>
+          </Row>
           {!rotInAdv && (
             <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>
           )}
