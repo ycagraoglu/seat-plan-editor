@@ -210,6 +210,10 @@ export function registerVenueTools(server, session, z) {
       "kuruyor; bu araç o düğüme anlam ekler (bir tribün mü, balkon mı, loca mı).",
       "Tür sözlüğü mimari rapordan gelir ve veritabanı CHECK kısıtıdır —",
       "sözlük dışı değer yayımda reddedilir.",
+      "",
+      "TÜRLER: floor (parter/zemin) · balcony (balkon) · stand (tribün) ·",
+      "tier (kademe) · section (genel bölüm) · box (loca) · table_area ·",
+      "general_admission_area (ayakta alan).",
     ].join(" "),
     inputSchema: {
       level: z.string().describe("Kat yolu, ör. \"Maraton\" ya da \"Maraton / Üst\""),

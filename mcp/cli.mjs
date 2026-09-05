@@ -61,10 +61,17 @@ try {
     console.log(INSTRUCTIONS);
     console.log(`\n${"═".repeat(70)}\nARAÇLAR (${tools.length})\n${"═".repeat(70)}\n`);
     tools.forEach((t) => {
-      const alanlar = Object.keys(t.inputSchema?.properties || {});
+      /* Yalnız alan ADLARINI yazmak yetmiyordu: enum değerleri ve zorunlu
+         olup olmadıkları görünmeyince deneyerek bulmak gerekiyordu. */
+      const pr = t.inputSchema?.properties || {};
+      const zorunlu = new Set(t.inputSchema?.required || []);
+      const alanlar = Object.entries(pr).map(([ad, ş]) => {
+        const tip = ş.enum ? ş.enum.join("|") : (ş.type || "?");
+        return `${ad}${zorunlu.has(ad) ? "*" : ""}: ${tip}`;
+      });
       console.log(`── ${t.name} ── ${t.title || ""}`);
       console.log(t.description || "");
-      console.log(`  girdi: ${alanlar.length ? alanlar.join(", ") : "(yok)"}\n`);
+      console.log(`  girdi (* = zorunlu): ${alanlar.length ? alanlar.join(" · ") : "(yok)"}\n`);
     });
   } else if (komut === "describe") {
     const { tools } = await client.listTools();

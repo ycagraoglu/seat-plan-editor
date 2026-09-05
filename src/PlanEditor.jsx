@@ -3987,7 +3987,8 @@ function BlockPanel({ b, levels, meta, arr, doors, sectionKinds, sectionKind, on
               <option value="seq">Ardışık (1, 2, 3)</option>
               <option value="odd">Sadece tek (101, 103…)</option>
               <option value="even">Sadece çift (102, 104…)</option>
-              <option value="center">Merkezden dışa · tek/çift</option>
+              <option value="center">Merkezden dışa · tek/çift (1-2 ortada)</option>
+              <option value="center-in">Duvardan içeri · tek/çift (1-2 kenarda)</option>
             </select>
           </Row>
           <Row label="Yön">

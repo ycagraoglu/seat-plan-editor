@@ -108,3 +108,43 @@ describe("relevelPatch — relabelPatch'in KAT alanı için simetriği", () => {
     expect(relevelPatch(b, "Balkon")).toEqual({ level: "Balkon", name: "Balkon · D" });
   });
 });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ORTADAN TEK/ÇİFT BÖLÜNEN SIRA — iki AYRI gelenek
+
+   Gerçek bir plan (Ege Ü. AKM Tiyatro Salonu, 340 koltuk) soğuk bir LLM'e
+   verildiğinde ortaya çıktı: model bu düzeni ifade edemedi, sırayı iki
+   bloğa bölmek zorunda kaldı ve aradaki koltuk aralığı SAHTE bir "dar
+   geçit" hatası doğurdu — yani araç, olmayan bir orta geçidi olan bir
+   salon tarif ediyordu.
+
+   İkisi de gerçek ve karıştırılırsa biletin koltuğu yanlış yeri gösterir.
+   ══════════════════════════════════════════════════════════════════════════ */
+describe("center / center-in — 17 koltuklu sıra", () => {
+  const diz = (sema) => {
+    const bayrak = Array.from({ length: 17 }, () => ({}));
+    const r = numberRow(bayrak, { ...DEF_NUM, seatScheme: sema }, 17);
+    return Object.keys(r).sort((a, b) => a - b).map((k) => r[k]);
+  };
+
+  it("center: 1 ve 2 MERKEZDE, numara duvarlara doğru büyür", () => {
+    expect(diz("center")).toEqual([18, 16, 14, 12, 10, 8, 6, 4, 2, 3, 5, 7, 9, 11, 13, 15, 17]);
+  });
+
+  it("center-in: 1 ve 2 DUVARLARDA, numara merkeze doğru büyür", () => {
+    /* Ege Ü. AKM Tiyatro Salonu'nun resmî planındaki dizinin BİREBİR aynısı. */
+    expect(diz("center-in")).toEqual([2, 4, 6, 8, 10, 12, 14, 16, 18, 15, 13, 11, 9, 7, 5, 3, 1]);
+  });
+
+  it("ikisi birbirinin aynısı DEĞİL — karıştırmak bileti yanlış koltuğa gönderir", () => {
+    expect(diz("center")).not.toEqual(diz("center-in"));
+  });
+
+  it("her iki şema da tek sayıda koltukta tam sıra üretir (boşluk bırakmaz)", () => {
+    ["center", "center-in"].forEach((s) => {
+      const d = diz(s);
+      expect(d).toHaveLength(17);
+      expect(new Set(d).size).toBe(17);        /* numara tekrarı yok */
+    });
+  });
+});

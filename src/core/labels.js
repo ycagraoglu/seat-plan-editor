@@ -49,12 +49,27 @@ export function numberRow(flags, num, maxN) {
     });
     return out;
   }
-  if (num.seatScheme === "center") {
+  /* Sıranın ortadan tek/çift bölündüğü iki AYRI gelenek var; ikisi de
+     gerçek salonlarda kullanılıyor ve karıştırılırsa biletin koltuğu
+     yanlış yeri gösterir:
+
+       center     1 ve 2 MERKEZDE, numaralar duvarlara doğru büyür
+                  →  18 16 14 … 2 | 3 5 … 17
+       center-in  1 ve 2 DUVARLARDA, numaralar merkeze doğru büyür
+                  →  2 4 6 … 18 | 15 13 … 1
+                  (Ege Ü. AKM Tiyatro Salonu'nun resmî planı böyle) */
+  if (num.seatScheme === "center" || num.seatScheme === "center-in") {
     const mid = (live.length - 1) / 2;
     let odd = num.seatStart, even = num.seatStart + 1;
     const put = (f, v) => { if (!f.gap) out[f.i] = v; };
-    for (let k = Math.ceil(mid); k < live.length; k++) { while (skip.has(odd)) odd += 2; put(live[k], odd); odd += 2; }
-    for (let k = Math.floor(mid); k >= 0; k--) { while (skip.has(even)) even += 2; put(live[k], even); even += 2; }
+    if (num.seatScheme === "center") {
+      for (let k = Math.ceil(mid); k < live.length; k++) { while (skip.has(odd)) odd += 2; put(live[k], odd); odd += 2; }
+      for (let k = Math.floor(mid); k >= 0; k--) { while (skip.has(even)) even += 2; put(live[k], even); even += 2; }
+    } else {
+      /* Duvardan içeri: sol uçtan merkeze çift, sağ uçtan merkeze tek. */
+      for (let k = 0; k <= Math.floor(mid); k++) { while (skip.has(even)) even += 2; put(live[k], even); even += 2; }
+      for (let k = live.length - 1; k > Math.floor(mid); k--) { while (skip.has(odd)) odd += 2; put(live[k], odd); odd += 2; }
+    }
     return out;
   }
   let v = num.seatScheme === "even" ? Math.max(2, num.seatStart) : num.seatStart;

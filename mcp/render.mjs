@@ -123,9 +123,14 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   if (underlay) {
     altlikKonumlu = !!(underlayRect && underlayRect.w > 0 && underlayRect.h > 0);
     const u = altlikKonumlu ? underlayRect : vb;
+    /* Açık dikdörtgen verilmişse GER (preserveAspectRatio=none). Oturma
+       planı şemaları ölçekli değildir — yatay ve dikey ölçek farklı olur
+       (Ege AKM planında 1,39 cm/px yatay, 3,65 cm/px dikey). "meet" ile
+       en/boy korunuyordu ve altlık verilen kutuya OTURMUYORDU; açıklama
+       "oturur" diye söz veriyordu. Kutu verilmemişse sığdırmak doğru. */
     parca.push(`<image href="${underlay}" x="${num(u.x)}" y="${num(u.y)}"`
       + ` width="${num(u.w)}" height="${num(u.h)}" opacity="0.55"`
-      + ` preserveAspectRatio="xMidYMid meet"/>`);
+      + ` preserveAspectRatio="${altlikKonumlu ? "none" : "xMidYMid meet"}"/>`);
   }
 
   /* 2 — salon sınırı */

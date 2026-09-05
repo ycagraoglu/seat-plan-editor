@@ -156,6 +156,35 @@ Yayına sen göndermezsin. Ürettiğin şey taslaktır.
 
 ---
 
+## Gerçek plan denemesi — Ege Ü. AKM Tiyatro Salonu
+
+İnternetten indirilen resmî bir plan görseli ([akm.ege.edu.tr](https://akm.ege.edu.tr/tr-5048/),
+340 koltuk) bu depoyu hiç görmemiş bir modele verildi. Yalnız görsel ve
+`mcp/cli.mjs` — kaynak koda erişim yok.
+
+Model 340'ı tutturdu ama **plandaki numaralandırmayı ifade edemedi** ve
+sırayı iki bloğa bölmek zorunda kaldı; aradaki koltuk aralığı sahte bir
+"dar geçit" hatası doğurdu — araç, olmayan bir orta geçidi olan bir salon
+tarif ediyordu.
+
+Sebep: `seatScheme` sözlüğüne olmayan bir değer (`mirror`) yazılmış, gerçek
+şema (`center`) hiç açılmamıştı. Üstelik bu salon `center`'ın da tersini
+kullanıyor. İkisi de eklendi:
+
+```
+center     18,16,…,2 | 3,5,…,17     1 ve 2 MERKEZDE
+center-in   2,4,…,18 | 15,13,…,1    1 ve 2 DUVARLARDA   ← bu salon
+```
+
+Düzeltmeden sonra salon **tek blokta, 340 koltuk, koltuk numaraları resmî
+planla birebir** kuruldu; sahte geçit ve çakışma hataları kayboldu.
+
+Bu salonun ikinci dersi: sıra harfleri **Q'yu atlıyor ama I ve O'yu
+kullanıyor**. `skipAmbig` üçünü birden atladığı için işe yaramıyor;
+`rowCustom` ile harfler tek tek yazılıyor.
+
+---
+
 ## Uçtan uca deneme (yapıldı)
 
 CSO Ada Ankara planı "organizatörden gelmiş" gibi verildi (görsel + koltuk

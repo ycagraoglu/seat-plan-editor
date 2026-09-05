@@ -40,8 +40,10 @@ export function registerBlockTools(server, session, z) {
       kind: z.enum(["grid", "fan", "table"]).describe("Blok türü"),
       label: z.string().describe("Blok kodu — kat içinde tekil olmalı, ör. \"A\", \"112\""),
       level: z.string().describe("Kat/bölüm yolu, ör. \"Parter\" ya da \"Maraton / Üst\""),
-      x: z.number().describe("Merkez X (cm)"),
-      y: z.number().describe("Merkez Y (cm)"),
+      x: z.number().describe("Bloğun yatay MERKEZİ (cm)"),
+      y: z.number().describe("İLK SIRANIN çizgisi (cm) — bloğun merkezi DEĞİL."
+        + " Sıralar +y yönünde geriye doğru dizilir; blok y'den aşağı uzar."
+        + " Gerçek yerini plan_summary'deki bbox'tan oku."),
       name: z.string().optional().describe("Okunur ad, ör. \"Maraton Üst A Blok\""),
       rot: z.number().optional().describe("Dönüş (derece)"),
       rows: z.number().int().positive().optional().describe("Sıra sayısı (grid/fan)"),
@@ -187,11 +189,17 @@ export function registerBlockTools(server, session, z) {
       "· rowStart 1 olmak ZORUNDA DEĞİL (Şükrü Saracoğlu Maraton Alt: 4–25).",
       "· rowRev true ise numara sahadan GERİYE akar (sıra 25 sahaya en yakın).",
       "· skipAmbig harf şemasında I, O, Q'yu atlar (1 ve 0 ile karışır) — standart.",
+      "· Sıra ortadan tek/çift bölünüyorsa (\"ÇİFT NUMARALAR / TEK NUMARALAR\")",
+      "  iki gelenek var, plandaki sayılara bakıp seç:",
+      "    center    → 18,16,…,2 | 3,5,…,17   (1 ve 2 MERKEZDE)",
+      "    center-in → 2,4,…,18 | 15,13,…,1   (1 ve 2 DUVARLARDA)",
+      "  Sırayı iki bloğa BÖLME; bölersen aradaki koltuk aralığı sahte bir",
+      "  \"dar geçit\" hatası doğurur.",
       "· seatScheme odd/even: tek/çift numaralandırma (101,103… / 102,104…).",
       "· rowCustom ile özel sıra listesi verilebilir: \"AA,BB,A,B,C\".",
       "",
       "DEĞERLER — rowScheme: number | letter | custom",
-      "           seatScheme: seq (1,2,3) | odd | even | mirror",
+      "           seatScheme: seq | odd | even | center | center-in",
       "           seatDir: ltr | rtl · anchor: order | column",
       "",
       "Yanıt, sonuçtaki SIRA ETİKETLERİNİ geri verir — doğru şemayı",
@@ -204,7 +212,16 @@ export function registerBlockTools(server, session, z) {
       rowRev: z.boolean().optional().describe("Sıra numarası ters aksın mı"),
       rowCustom: z.string().optional().describe("Özel sıra listesi, virgülle"),
       skipAmbig: z.boolean().optional().describe("Harf şemasında I/O/Q atla"),
-      seatScheme: z.enum(["seq", "odd", "even", "mirror"]).optional(),
+      seatScheme: z.enum(["seq", "odd", "even", "center", "center-in"]).optional()
+        .describe("seq: 1,2,3 · odd: 1,3,5 · even: 2,4,6 · "
+          + "center: 1 ve 2 MERKEZDE, numara duvarlara doğru büyür "
+          + "(18,16,…,2 | 3,5,…,17) · "
+          + "center-in: 1 ve 2 DUVARLARDA, numara merkeze doğru büyür "
+          + "(2,4,…,18 | 15,13,…,1). "
+          + "\"ÇİFT NUMARALAR / TEK NUMARALAR\" yazan planlar bu ikisinden "
+          + "birini ister — HANGİSİ olduğunu plandaki sayılara bakarak seç. "
+          + "Sırayı iki bloğa BÖLME; bölersen aradaki koltuk aralığı sahte "
+          + "bir \"dar geçit\" hatası doğurur."),
       seatDir: z.enum(["ltr", "rtl"]).optional(),
       seatStart: z.number().int().optional(),
       skip: z.string().optional().describe("Atlanacak koltuk numaraları"),
