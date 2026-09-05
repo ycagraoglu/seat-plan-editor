@@ -24,7 +24,7 @@
 
    API'ye bağlama (referans ekibin yapacağı iş):
 
-     export export const Store = {
+     export export const LocalStore = {
        async list()        { return (await fetch("/api/plans")).json(); },
        async load(key)     { const r = await fetch(`/api/plans/${key}`);
                              return r.ok ? r.json() : null; },
@@ -38,6 +38,8 @@
    (çerez, başlık) işi, editörün değil.
    ══════════════════════════════════════════════════════════════════════════ */
 
+import { apiStore } from "./api.js";
+
 export const SKEY = (k) => `plan:${k}`;
 
 /* window.storage yoksa (ör. Vercel/Netlify/S3 gibi düz statik barındırma —
@@ -48,7 +50,7 @@ const hasLS = (() => {
   catch { return false; }
 })();
 
-export const Store = {
+export const LocalStore = {
   driver: (typeof window !== "undefined" && window.storage) ? "kv" : hasLS ? "ls" : "memory",
   mem: new Map(),
 
@@ -118,3 +120,11 @@ export const Store = {
     this.mem.set(key, v); return v;
   },
 };
+
+/* Sunucu yapılandırılmışsa (VITE_API_BASE) API sürücüsü kazanır — editör
+   farkı görmez, ikisi de aynı sözleşmeyi karşılıyor (test/store-contract.js).
+   Yapılandırılmamışsa tarayıcı depolaması: bu depo bir referans proje,
+   sunucusuz da açılıp çalışması gerekiyor. */
+const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) || null;
+
+export const Store = API_BASE ? apiStore(API_BASE) : LocalStore;

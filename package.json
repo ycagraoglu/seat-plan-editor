@@ -15,7 +15,9 @@
     "test:interactions": "node scripts/validate-interactions.mjs",
     "test": "npm run test:unit && npm run test:geometry && npm run test:interactions",
     "snapshot:golden": "node scripts/snapshot-golden.mjs",
-    "check:golden": "node scripts/check-golden.mjs"
+    "check:golden": "node scripts/check-golden.mjs",
+    "db:build": "node scripts/db-build.mjs",
+    "server": "node server/index.mjs"
   },
   "dependencies": {
     "react": "^18.3.1",

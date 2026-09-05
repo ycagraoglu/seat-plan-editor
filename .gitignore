@@ -4,3 +4,6 @@ dist-ssr
 *.local
 .DS_Store
 .tmp-planeditor-test-*.mjs
+
+# uretilen veritabani (npm run db:build ile yeniden kurulur)
+db/*.db

@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 551 test
+npm test           # 584 test
 ```
 
 ---
@@ -200,6 +200,63 @@ satılan birim locadır.
 
 ---
 
+## Rapordaki sistem, çalışır hâlde
+
+Editör artık yalnız çizmiyor; mimari raporun şemasına **yazıyor**.
+
+```bash
+npm run db:build     # 9 salonu şemaya yükle (db/seating.db)
+npm run server       # http://localhost:8787
+VITE_API_BASE=http://localhost:8787/api npm run dev
+```
+
+**[`db/schema.sql`](db/schema.sql)** raporun §5–§7'sinin çalıştırılabilir
+hâli. Sözlükler `CHECK`, §5.1'in kardeş-tekil kod kuralı `UNIQUE`, §5.4'ün
+"başka sürümün tipine bağlanamaz" kuralı composite `FOREIGN KEY`. Fiyat,
+satış, müsaitlik, envanter **yok** — rapor §4.3 onları başka sahiplere
+veriyor ve şema bunu bir tablo eksikliğiyle değil, bilinçli bir sınırla
+temsil ediyor.
+
+Bunun anlamı şu: *"dışa aktarım rapora uygun"* artık benim iddiam değil,
+**veritabanının reddedebileceği bir olgu**. Dokuz salon gerçekten `INSERT`
+ediliyor:
+
+```
+TOPLAM  bölüm 297 · satır 3126 · koltuk 73.016 · şekil 230 · kapı 179
+kırık referans: 0
+```
+
+`test/invariants/db-schema.test.js` bunu her koşuda tekrarlıyor — ve
+şemanın gerçekten *reddettiğini* de sınıyor: sözlük dışı `seat_kind`,
+sürümsüz `geometry_kind`, tekrarlanan kardeş kod, çözülmeyen tip referansı,
+tanınmayan `feature`. Reddedilen yükleme yarım kayıt bırakmıyor.
+
+### Taslak ile kanonik veri ayrı
+
+Editörün planı bir **üretim tarifi**dir ("20 sıra, 21..15 koltuk, 8° kavis");
+koltuklar ondan türetilir. Tarifi satır satır ilişkiselleştirmek anlamsız —
+belge olarak durur ([`db/editor.sql`](db/editor.sql), raporun şemasının
+parçası **değil**, ayrı dosyada olması bu yüzden).
+
+**Yayımlama** sınırdır: tarif çalıştırılır, sonucu `seating_*` tablolarına
+yazılır, o sürüm dondurulur (rapor §5.4). Yeniden yayımlamak yeni sürüm
+açar, eskisi `superseded` olur.
+
+```
+POST /api/plans/:key/publish → {"versionId":"ver:aylak:1","version":1,"seats":47}
+GET  /api/versions/:id/seats → {"code":"BAR-1","section_code":"BAR",
+                                "row_code":"B","label":"1","seat_kind":"stool"}
+```
+
+Şemaya oturmayan bir plan `422` ve **sebebiyle** döner — sessiz başarısızlık
+bu projedeki en pahalı hata sınıfıydı.
+
+Sunucu ([`server/index.mjs`](server/index.mjs)) `node:http` + `node:sqlite`,
+**sıfır bağımlılık**. Tenant tek bir sabitte duruyor; gerçek kurulumda
+oturum katmanından gelir, editörden değil.
+
+---
+
 ## Depolama dikişi
 
 Editörün dış dünyaya değdiği **tek** yer `src/store/index.js`. Çekirdek
@@ -217,11 +274,12 @@ Kurallar sözleşmenin parçası: hiçbiri throw etmez (gizli sekme, kota dolu,
 ağ yok → null/false), `save`/`load` simetriktir, anahtar uzayları ayrıktır
 (`plan:` / `pref:`), altlık görseli kaydedilmez.
 
-Sözleşme **makineyle sınanıyor**: `test/unit/store.test.js` aynı paketi iki
-uygulamaya birden koşuyor — editörün bellek sürücüsü ve on satırlık sahte
-bir API sürücüsü. İkincisi olmasa sözleşme bir iddia olurdu; onunla birlikte
-"sürücü gerçekten değiştirilebilir" ölçülmüş bir olgu. Kendi `fetch` tabanlı
-sürücünüzü yazınca test paketini ona doğrultun.
+Sözleşme **makineyle sınanıyor** ve paket ([`test/store-contract.js`](test/store-contract.js))
+üç uygulamaya birden koşuyor: bellek sürücüsü, sahte API sürücüsü ve
+**gerçek HTTP + SQLite sunucusu** (`test/integration/store-api.test.js`).
+Üçüncüsü belirleyici — "sürücü değiştirilebilir" cümlesi ancak çalışan bir
+veritabanı uygulaması aynı paketi geçerse ölçülmüş bir olgu olur. Kendi
+`fetch` sürücünüzü yazınca paketi ona doğrultun.
 
 Bu paketin ilk koşusu gerçek bir hata buldu: bellek sürücüsü planları çıplak
 anahtarla yazıp `list()`'te Map'in tamamını döküyordu, yani tercihler plan
@@ -268,13 +326,16 @@ src/
     plan       diffPlans — iki sürüm arası kimlik farkı
     schema     şema sürümü + göç zinciri
     export     seats.json veri şekli
-  store/       depolama dikişi — kv · localStorage · bellek sürücüleri
+  store/       depolama dikişi — kv · localStorage · bellek · api sürücüleri
   venues/      9 gerçek mekân + builders + 2 şablon (stadyum, salon)
   ui/          ErrorBoundary + state/ (reducer + selector, saf)
   styles/      tokens.css (tasarım sistemi) + app.css
   PlanEditor.jsx
+db/          schema.sql (raporun şeması) · editor.sql · load.mjs
+server/      node:http + node:sqlite, sıfır bağımlılık
 test/
   unit/        saf fonksiyonlar
+  integration/ gerçek sunucu + şema
   invariants/  9 salonda otomatik geçen değişmezler
   golden/      9 salon × {plan.json, seats.json, render.svg}
 ```
