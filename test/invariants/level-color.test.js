@@ -24,7 +24,7 @@
    bu test onda da yeşil kalmalı, aksi hâlde birileri Süreyya'nın elle
    seçilmiş renklerinden birini bir başka katla çakıştırmış demektir. */
 import { describe, it, expect } from "vitest";
-import { selectLevels } from "../../src/ui/state/selectors.js";
+import { selectLevels, selectBlockLevels } from "../../src/ui/state/selectors.js";
 import { VENUES } from "./helpers.js";
 
 /* PlanEditor.jsx'ten (satır ~409) BİREBİR kopya. İçe aktarılamıyor: orada
@@ -37,11 +37,15 @@ import { VENUES } from "./helpers.js";
    ponytail: LEVEL_COLORS değişirse (yeni renk eklenir/sıra değişir) bu
    satır da PlanEditor.jsx ile elle senkron tutulmalı. */
 const LEVEL_COLORS = ["#3E7FBF", "#5F9142", "#C1743C", "#7C5BA8", "#3E9092", "#C2415A"];
+/* PlanEditor.jsx levelColor: altıdan sonrası ton döndürülerek üretilir,
+   böylece kaç kat olursa olsun iki kat aynı renge DÜŞEMEZ. */
+const levelColor = (i) =>
+  i < LEVEL_COLORS.length ? LEVEL_COLORS[i] : `hsl(${(i * 137.508) % 360} 46% 46%)`;
 
 /* cc(b) = b.color || LEVEL_COLORS[...] — PlanEditor.jsx satır ~953-954,
    BİREBİR aynı formül. */
 function cc(b, levels) {
-  return b.color || LEVEL_COLORS[Math.max(0, levels.indexOf(b.level || "")) % LEVEL_COLORS.length];
+  return b.color || levelColor(Math.max(0, levels.indexOf(b.level || "")));
 }
 
 /* Kat sayısı ≤1 olan örnek salonlar (bkz. dosya başı notu) — kat-arası bir
@@ -50,10 +54,15 @@ const MULTI_FLOOR = VENUES.filter(([, venue]) => selectLevels(venue).length > 1)
 
 describe("invariant: kat rengi kanalı her çok katlı salonda gerçekten kat gösteriyor", () => {
   it.each(MULTI_FLOOR)("%s: cc() farklı renk sayısı == kat sayısı", (_key, venue) => {
-    const levels = selectLevels(venue);
+    const levels = selectBlockLevels(venue);
+    /* Karşılaştırma BLOKLARIN KULLANDIĞI katlara göre: selectLevels artık
+       ara düğümleri de listeliyor (bkz. ui/state/selectors.js) ve hiçbir
+       blok "Maraton" katında durmuyor — o bir üst bölüm. Renk kanalının
+       ayırt etmesi gereken şey blokların gerçekten bulunduğu katlar. */
+    const kullanilan = new Set(venue.blocks.map((b) => b.level || ""));
     const colors = new Set(venue.blocks.map((b) => cc(b, levels)));
-    expect(colors.size, `katlar: ${JSON.stringify(levels)}, renkler: ${JSON.stringify([...colors])}`)
-      .toBe(levels.length);
+    expect(colors.size, `kullanılan katlar: ${JSON.stringify([...kullanilan])}, renkler: ${JSON.stringify([...colors])}`)
+      .toBe(kullanilan.size);
   });
 
   /* testin testi: AKM'nin asıl hatasının aynısı — iki kat, ama HER bloğa

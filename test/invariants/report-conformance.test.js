@@ -3,6 +3,7 @@ import { buildDbPayload } from "../../src/core/db-export.js";
 import { buildMeta } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import * as V from "../../src/venues/index.js";
+import { VENUE_NAMES } from "./helpers.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    INVARIANT: dışa aktarım mimari raporun SÖZLÜKLERİNİN dışına çıkmaz.
@@ -35,7 +36,7 @@ const SHAPE_KIND = ["stage", "screen", "field", "court", "goal", "table", // §6
    listeleniyor ki sessizce kaçmasın. */
 const EDITOR_UZANTISI = ["tech"];
 
-const VENUES = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI"];
+const VENUES = VENUE_NAMES;
 const payload = (k) => {
   const v = V[k];
   return buildDbPayload(v, v.blocks.map((b) => ({ b, m: buildMeta(b) })), gateMap(v));

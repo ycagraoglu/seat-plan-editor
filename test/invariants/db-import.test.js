@@ -4,6 +4,7 @@ import { buildMeta, buildSeats } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import { seatKey } from "../../src/core/identity.js";
 import * as V from "../../src/venues/index.js";
+import { VENUE_NAMES } from "./helpers.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    INVARIANT: db.json GİDİŞ-DÖNÜŞÜ kimliği kaybetmez.
@@ -19,7 +20,7 @@ import * as V from "../../src/venues/index.js";
    görür, sebebini göremez.
    ══════════════════════════════════════════════════════════════════════════ */
 
-const VENUES = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI"];
+const VENUES = VENUE_NAMES;
 
 describe.each(VENUES)("%s · db.json gidiş-dönüşü", (k) => {
   const v = V[k];

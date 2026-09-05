@@ -1,3 +1,4 @@
+import { planHome } from "../../core/plan.js";
 /* ══════════════════════════════════════════════════════════════════════════
    BELGE DURUMU — reducer (A6.1)
    --------------------------------------------------------------------------
@@ -39,7 +40,7 @@ export function initialState(venues, vk) {
     venues, vk,
     past: [], future: [], rev: 0,
     selIds: [], selShapeId: null, selSeat: null, selSeats: new Set(),
-    view: venues[vk].home,
+    view: planHome(venues[vk]),
     levelFilter: "*",
     report: null, calib: null, match: null,
     saveState: "idle",
@@ -155,7 +156,7 @@ export function reducer(state, action) {
         past: [], future: [],
         selIds: [], selShapeId: null, selSeat: null, selSeats: new Set(),
         levelFilter: "*",
-        view: state.venues[k].home,
+        view: planHome(state.venues[k]),
         report: null, calib: null, match: null,
       };
     }

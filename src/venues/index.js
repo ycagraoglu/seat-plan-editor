@@ -27,8 +27,12 @@ import { SUREYYA } from "./sureyya.venue.js";
 import { AKM } from "./akm.venue.js";
 import { YENIKAPI } from "./yenikapi.venue.js";
 import { EMPTY } from "./empty.venue.js";
+/* FENER EN SONDA — id üretimi import sırasına bağlı (bkz. dosya başı
+   uyarısı). Sona eklemek mevcut dokuz salonun tek bir id'sini bile
+   kaydırmaz; araya sokmak test/golden'ı 9/9 FARKLI'ya düşürürdü. */
+import { FENER } from "./fener.venue.js";
 
-export { CSO, ZORLU, GS, ULKER, HARBIYE, AYLAK, SUREYYA, AKM, YENIKAPI, EMPTY };
+export { CSO, ZORLU, GS, ULKER, HARBIYE, AYLAK, SUREYYA, AKM, YENIKAPI, EMPTY, FENER };
 
 /* Anahtar → salon. Kod-kaynaklı örnek salonlar (empty hariç) burada
    toplanır; core/schema.js bu nesneyi "hangi anahtarlar salt-okunur
@@ -42,5 +46,5 @@ export { CSO, ZORLU, GS, ULKER, HARBIYE, AYLAK, SUREYYA, AKM, YENIKAPI, EMPTY };
    tutuldu — tek amaç açılır listenin görünümünü birebir korumak. */
 export const BUILTINS = {
   sureyya: SUREYYA, aylak: AYLAK, harbiye: HARBIYE, gs: GS, ulker: ULKER,
-  zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, empty: EMPTY,
+  zorlu: ZORLU, cso: CSO, akm: AKM, yenikapi: YENIKAPI, fener: FENER, empty: EMPTY,
 };

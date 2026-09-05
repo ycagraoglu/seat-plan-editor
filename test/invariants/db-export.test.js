@@ -3,6 +3,7 @@ import { buildDbPayload } from "../../src/core/db-export.js";
 import { buildMeta, buildSeats } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import * as V from "../../src/venues/index.js";
+import { VENUE_NAMES } from "./helpers.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    INVARIANT: tablo biçimli dışa aktarım referans bütünlüğünü korur.
@@ -15,7 +16,7 @@ import * as V from "../../src/venues/index.js";
    dışa aktarım şekli değiştiğinde bu test onu da kapsar.
    ══════════════════════════════════════════════════════════════════════════ */
 
-const VENUES = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI"];
+const VENUES = VENUE_NAMES;
 const payload = (k) => {
   const v = V[k];
   return buildDbPayload(v, v.blocks.map((b) => ({ b, m: buildMeta(b) })), gateMap(v));

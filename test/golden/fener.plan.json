@@ -1,0 +1,4003 @@
+{
+  "key": "fener",
+  "name": "Fenerbahçe Şükrü Saracoğlu Stadyumu · Kadıköy",
+  "unit": "cm",
+  "home": {
+    "x": -15800,
+    "y": -12200,
+    "w": 31600,
+    "h": 24400
+  },
+  "underlay": null,
+  "schemaVersion": 4,
+  "published": null,
+  "versions": [],
+  "sections": [
+    {
+      "id": "lvl:Maraton",
+      "code": "Maraton",
+      "name": "Maraton",
+      "kind": "stand",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Fenerium",
+      "code": "Fenerium",
+      "name": "Fenerium",
+      "kind": "stand",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Kuzey",
+      "code": "Kuzey",
+      "name": "Kuzey",
+      "kind": "stand",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Spor Toto",
+      "code": "Spor Toto",
+      "name": "Spor Toto",
+      "kind": "stand",
+      "parentId": null
+    }
+  ],
+  "shapes": [
+    {
+      "id": "s568",
+      "kind": "rect",
+      "type": "pitch",
+      "sport": "football",
+      "x": 0,
+      "y": 0,
+      "w": 10500,
+      "h": 6800,
+      "rot": 0,
+      "label": "",
+      "capacity": 0,
+      "fs": 200
+    },
+    {
+      "id": "s569",
+      "kind": "rect",
+      "type": "note",
+      "x": 0,
+      "y": 10800,
+      "w": 10,
+      "h": 10,
+      "rot": 0,
+      "label": "MARATON",
+      "capacity": 0,
+      "fs": 300
+    },
+    {
+      "id": "s570",
+      "kind": "rect",
+      "type": "note",
+      "x": 0,
+      "y": -10800,
+      "w": 10,
+      "h": 10,
+      "rot": 0,
+      "label": "FENERIUM",
+      "capacity": 0,
+      "fs": 300
+    },
+    {
+      "id": "s571",
+      "kind": "rect",
+      "type": "note",
+      "x": -13800,
+      "y": 0,
+      "w": 10,
+      "h": 10,
+      "rot": 90,
+      "label": "KUZEY",
+      "capacity": 0,
+      "fs": 300
+    },
+    {
+      "id": "s572",
+      "kind": "rect",
+      "type": "note",
+      "x": 13800,
+      "y": 0,
+      "w": 10,
+      "h": 10,
+      "rot": -90,
+      "label": "SPOR TOTO",
+      "capacity": 0,
+      "fs": 300
+    },
+    {
+      "id": "s573",
+      "kind": "rect",
+      "type": "door",
+      "x": -5800,
+      "y": 10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 26",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b512",
+        "b517",
+        "b516",
+        "b515",
+        "b514",
+        "b513",
+        "b549",
+        "b548",
+        "b547",
+        "b546",
+        "b545"
+      ]
+    },
+    {
+      "id": "s574",
+      "kind": "rect",
+      "type": "door",
+      "x": -2900,
+      "y": 10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 27",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b520",
+        "b519",
+        "b518",
+        "b517",
+        "b516",
+        "b515",
+        "b514",
+        "b513",
+        "b549",
+        "b548",
+        "b547",
+        "b546",
+        "b545"
+      ]
+    },
+    {
+      "id": "s575",
+      "kind": "rect",
+      "type": "door",
+      "x": 2900,
+      "y": 10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 32",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b521",
+        "b520",
+        "b519",
+        "b518",
+        "b517",
+        "b516",
+        "b515",
+        "b514",
+        "b544",
+        "b543",
+        "b542",
+        "b541"
+      ]
+    },
+    {
+      "id": "s576",
+      "kind": "rect",
+      "type": "door",
+      "x": 5800,
+      "y": 10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 33",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b521",
+        "b520",
+        "b519",
+        "b518",
+        "b522",
+        "b544",
+        "b543",
+        "b542",
+        "b541"
+      ]
+    },
+    {
+      "id": "s577",
+      "kind": "rect",
+      "type": "door",
+      "x": -5800,
+      "y": -10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 8",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b536",
+        "b535",
+        "b534",
+        "b533",
+        "b532",
+        "b531",
+        "b563",
+        "b562",
+        "b561"
+      ]
+    },
+    {
+      "id": "s578",
+      "kind": "rect",
+      "type": "door",
+      "x": -2900,
+      "y": -10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 9",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b535",
+        "b534",
+        "b533",
+        "b532",
+        "b531",
+        "b530",
+        "b529",
+        "b528",
+        "b562",
+        "b561",
+        "b560",
+        "b559"
+      ]
+    },
+    {
+      "id": "s579",
+      "kind": "rect",
+      "type": "door",
+      "x": 2900,
+      "y": -10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 14",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b534",
+        "b533",
+        "b532",
+        "b531",
+        "b530",
+        "b529",
+        "b528",
+        "b527",
+        "b559",
+        "b558",
+        "b557",
+        "b556"
+      ]
+    },
+    {
+      "id": "s580",
+      "kind": "rect",
+      "type": "door",
+      "x": 5800,
+      "y": -10600,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 15",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b526",
+        "b530",
+        "b529",
+        "b528",
+        "b527",
+        "b557",
+        "b556",
+        "b555"
+      ]
+    },
+    {
+      "id": "s581",
+      "kind": "rect",
+      "type": "door",
+      "x": -13400,
+      "y": 3000,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 1",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b537",
+        "b512",
+        "b539",
+        "b538",
+        "b513",
+        "b540",
+        "b567"
+      ]
+    },
+    {
+      "id": "s582",
+      "kind": "rect",
+      "type": "door",
+      "x": -13400,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 2",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b537",
+        "b536",
+        "b512",
+        "b539",
+        "b538",
+        "b565",
+        "b567",
+        "b566"
+      ]
+    },
+    {
+      "id": "s583",
+      "kind": "rect",
+      "type": "door",
+      "x": -13400,
+      "y": -3000,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 3",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b537",
+        "b536",
+        "b539",
+        "b538",
+        "b535",
+        "b565",
+        "b564"
+      ]
+    },
+    {
+      "id": "s584",
+      "kind": "rect",
+      "type": "door",
+      "x": 13400,
+      "y": 3000,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 19",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b521",
+        "b525",
+        "b524",
+        "b523",
+        "b522",
+        "b551",
+        "b550"
+      ]
+    },
+    {
+      "id": "s585",
+      "kind": "rect",
+      "type": "door",
+      "x": 13400,
+      "y": 0,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 20",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b526",
+        "b525",
+        "b524",
+        "b523",
+        "b522",
+        "b553",
+        "b552",
+        "b551"
+      ]
+    },
+    {
+      "id": "s586",
+      "kind": "rect",
+      "type": "door",
+      "x": 13400,
+      "y": -3000,
+      "w": 320,
+      "h": 320,
+      "rot": 0,
+      "label": "KAPI 21",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b526",
+        "b525",
+        "b524",
+        "b523",
+        "b527",
+        "b554",
+        "b553"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "id": "b537",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "20,0": {
+          "at": "wheel"
+        },
+        "20,1": {
+          "at": "comp"
+        },
+        "20,2": {
+          "at": "wheel"
+        },
+        "20,3": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -7000,
+      "y": -1066.6667,
+      "rows": 22,
+      "cols": 16,
+      "label": "KUZEY ALT A",
+      "name": "Kuzey Alt A Blok"
+    },
+    {
+      "id": "b536",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -4400,
+      "y": -1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": 137.6444,
+      "aEnd": 177.3556,
+      "label": "KUZEY ALT B",
+      "name": "Kuzey Alt B Blok"
+    },
+    {
+      "id": "b512",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -4400,
+      "y": 1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": -132.3556,
+      "aEnd": -92.6444,
+      "label": "KUZEY ALT C",
+      "name": "Kuzey Alt C Blok"
+    },
+    {
+      "id": "b539",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "20,0": {
+          "at": "wheel"
+        },
+        "20,1": {
+          "at": "comp"
+        },
+        "20,2": {
+          "at": "wheel"
+        },
+        "20,3": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -7000,
+      "y": 1066.6666,
+      "rows": 22,
+      "cols": 16,
+      "label": "KUZEY ALT D",
+      "name": "Kuzey Alt D Blok"
+    },
+    {
+      "id": "b538",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "20,0": {
+          "at": "wheel"
+        },
+        "20,1": {
+          "at": "comp"
+        },
+        "20,2": {
+          "at": "wheel"
+        },
+        "20,3": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -7000,
+      "y": 0,
+      "rows": 22,
+      "cols": 16,
+      "label": "KUZEY ALT E",
+      "name": "Kuzey Alt E Blok"
+    },
+    {
+      "id": "b521",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 4400,
+      "y": 1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": 137.6444,
+      "aEnd": 177.3556,
+      "label": "MARATON ALT A",
+      "name": "Maraton Alt A Blok"
+    },
+    {
+      "id": "b520",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 3771.4285,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT B",
+      "name": "Maraton Alt B Blok"
+    },
+    {
+      "id": "b519",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 2514.2857,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT C",
+      "name": "Maraton Alt C Blok"
+    },
+    {
+      "id": "b518",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 1257.1428,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT D",
+      "name": "Maraton Alt D Blok"
+    },
+    {
+      "id": "b517",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 0,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT E",
+      "name": "Maraton Alt E Blok"
+    },
+    {
+      "id": "b516",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -1257.1429,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT F",
+      "name": "Maraton Alt F Blok"
+    },
+    {
+      "id": "b515",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -2514.2857,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT G",
+      "name": "Maraton Alt G Blok"
+    },
+    {
+      "id": "b514",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -3771.4286,
+      "y": 4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "MARATON ALT H",
+      "name": "Maraton Alt H Blok"
+    },
+    {
+      "id": "b513",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -4400,
+      "y": 1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": -132.3556,
+      "aEnd": -92.6444,
+      "label": "MARATON ALT I",
+      "name": "Maraton Alt I Blok"
+    },
+    {
+      "id": "b526",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 4400,
+      "y": -1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": -132.3556,
+      "aEnd": -92.6444,
+      "label": "SPOR TOTO ALT A",
+      "name": "Spor Toto Alt A Blok"
+    },
+    {
+      "id": "b525",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "20,0": {
+          "at": "wheel"
+        },
+        "20,1": {
+          "at": "comp"
+        },
+        "20,2": {
+          "at": "wheel"
+        },
+        "20,3": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 7000,
+      "y": -1066.6666,
+      "rows": 22,
+      "cols": 16,
+      "label": "SPOR TOTO ALT B",
+      "name": "Spor Toto Alt B Blok"
+    },
+    {
+      "id": "b524",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "20,0": {
+          "at": "wheel"
+        },
+        "20,1": {
+          "at": "comp"
+        },
+        "20,2": {
+          "at": "wheel"
+        },
+        "20,3": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 7000,
+      "y": 0,
+      "rows": 22,
+      "cols": 16,
+      "label": "SPOR TOTO ALT C",
+      "name": "Spor Toto Alt C Blok"
+    },
+    {
+      "id": "b523",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "20,0": {
+          "at": "wheel"
+        },
+        "20,1": {
+          "at": "comp"
+        },
+        "20,2": {
+          "at": "wheel"
+        },
+        "20,3": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 7000,
+      "y": 1066.6667,
+      "rows": 22,
+      "cols": 16,
+      "label": "SPOR TOTO ALT D",
+      "name": "Spor Toto Alt D Blok"
+    },
+    {
+      "id": "b522",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 4400,
+      "y": 1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": 137.6444,
+      "aEnd": 177.3556,
+      "label": "SPOR TOTO ALT E",
+      "name": "Spor Toto Alt E Blok"
+    },
+    {
+      "id": "b535",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -4400,
+      "y": -1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": 137.6444,
+      "aEnd": 177.3556,
+      "label": "FENERIUM ALT A",
+      "name": "Fenerium Alt A Blok"
+    },
+    {
+      "id": "b534",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -3771.4285,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT B",
+      "name": "Fenerium Alt B Blok"
+    },
+    {
+      "id": "b533",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -2514.2857,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT C",
+      "name": "Fenerium Alt C Blok"
+    },
+    {
+      "id": "b532",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": -1257.1428,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT D",
+      "name": "Fenerium Alt D Blok"
+    },
+    {
+      "id": "b531",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 0,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT E",
+      "name": "Fenerium Alt E Blok"
+    },
+    {
+      "id": "b530",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 1257.1429,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT F",
+      "name": "Fenerium Alt F Blok"
+    },
+    {
+      "id": "b529",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 2514.2857,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT G",
+      "name": "Fenerium Alt G Blok"
+    },
+    {
+      "id": "b528",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "grid",
+      "x": 3771.4286,
+      "y": -4200,
+      "rows": 22,
+      "cols": 20,
+      "label": "FENERIUM ALT H",
+      "name": "Fenerium Alt H Blok"
+    },
+    {
+      "id": "b527",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {
+        "21,0": {
+          "at": "wheel"
+        },
+        "21,1": {
+          "at": "comp"
+        },
+        "21,2": {
+          "at": "wheel"
+        },
+        "21,3": {
+          "at": "comp"
+        },
+        "21,4": {
+          "at": "wheel"
+        },
+        "21,5": {
+          "at": "comp"
+        },
+        "21,6": {
+          "at": "wheel"
+        },
+        "21,7": {
+          "at": "comp"
+        },
+        "21,8": {
+          "at": "wheel"
+        },
+        "21,9": {
+          "at": "comp"
+        },
+        "21,10": {
+          "at": "wheel"
+        },
+        "21,11": {
+          "at": "comp"
+        },
+        "21,12": {
+          "at": "wheel"
+        },
+        "21,13": {
+          "at": "comp"
+        },
+        "21,14": {
+          "at": "wheel"
+        },
+        "21,15": {
+          "at": "comp"
+        },
+        "21,16": {
+          "at": "wheel"
+        },
+        "21,17": {
+          "at": "comp"
+        },
+        "21,18": {
+          "at": "wheel"
+        },
+        "21,19": {
+          "at": "comp"
+        }
+      },
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 4,
+        "rowRev": true,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Alt",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 4400,
+      "y": -1600,
+      "r0": 2600,
+      "rows": 22,
+      "aStart": -132.3556,
+      "aEnd": -92.6444,
+      "label": "FENERIUM ALT I",
+      "name": "Fenerium Alt I Blok"
+    },
+    {
+      "id": "b565",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -9936,
+      "y": -2490.6667,
+      "rows": 29,
+      "cols": 45,
+      "label": "KUZEY ÜST A",
+      "name": "Kuzey Üst A Blok"
+    },
+    {
+      "id": "b564",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -6536,
+      "y": -3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": 137.0222,
+      "aEnd": 177.9778,
+      "label": "KUZEY ÜST B",
+      "name": "Kuzey Üst B Blok"
+    },
+    {
+      "id": "b540",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -6536,
+      "y": 3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": -132.9778,
+      "aEnd": -92.0222,
+      "label": "KUZEY ÜST C",
+      "name": "Kuzey Üst C Blok"
+    },
+    {
+      "id": "b567",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -9936,
+      "y": 2490.6666,
+      "rows": 29,
+      "cols": 45,
+      "label": "KUZEY ÜST D",
+      "name": "Kuzey Üst D Blok"
+    },
+    {
+      "id": "b566",
+      "rot": 90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Kuzey / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -9936,
+      "y": 0,
+      "rows": 29,
+      "cols": 45,
+      "label": "KUZEY ÜST E",
+      "name": "Kuzey Üst E Blok"
+    },
+    {
+      "id": "b549",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 6536,
+      "y": 3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": 137.0222,
+      "aEnd": 177.9778,
+      "label": "MARATON ÜST A",
+      "name": "Maraton Üst A Blok"
+    },
+    {
+      "id": "b548",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 5602.2857,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST B",
+      "name": "Maraton Üst B Blok"
+    },
+    {
+      "id": "b547",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 3734.8572,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST C",
+      "name": "Maraton Üst C Blok"
+    },
+    {
+      "id": "b546",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 1867.4286,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST D",
+      "name": "Maraton Üst D Blok"
+    },
+    {
+      "id": "b545",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 0,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST E",
+      "name": "Maraton Üst E Blok"
+    },
+    {
+      "id": "b544",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -1867.4286,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST F",
+      "name": "Maraton Üst F Blok"
+    },
+    {
+      "id": "b543",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -3734.8571,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST G",
+      "name": "Maraton Üst G Blok"
+    },
+    {
+      "id": "b542",
+      "rot": 0,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -5602.2857,
+      "y": 7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "MARATON ÜST H",
+      "name": "Maraton Üst H Blok"
+    },
+    {
+      "id": "b541",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Maraton / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -6536,
+      "y": 3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": -132.9778,
+      "aEnd": -92.0222,
+      "label": "MARATON ÜST I",
+      "name": "Maraton Üst I Blok"
+    },
+    {
+      "id": "b554",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 6536,
+      "y": -3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": -132.9778,
+      "aEnd": -92.0222,
+      "label": "SPOR TOTO ÜST A",
+      "name": "Spor Toto Üst A Blok"
+    },
+    {
+      "id": "b553",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 9936,
+      "y": -2490.6666,
+      "rows": 29,
+      "cols": 45,
+      "label": "SPOR TOTO ÜST B",
+      "name": "Spor Toto Üst B Blok"
+    },
+    {
+      "id": "b552",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 9936,
+      "y": 0,
+      "rows": 29,
+      "cols": 45,
+      "label": "SPOR TOTO ÜST C",
+      "name": "Spor Toto Üst C Blok"
+    },
+    {
+      "id": "b551",
+      "rot": -90,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 9936,
+      "y": 2490.6667,
+      "rows": 29,
+      "cols": 45,
+      "label": "SPOR TOTO ÜST D",
+      "name": "Spor Toto Üst D Blok"
+    },
+    {
+      "id": "b550",
+      "rot": -45,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Spor Toto / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 6536,
+      "y": 3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": 137.0222,
+      "aEnd": 177.9778,
+      "label": "SPOR TOTO ÜST E",
+      "name": "Spor Toto Üst E Blok"
+    },
+    {
+      "id": "b563",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": -6536,
+      "y": -3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": 137.0222,
+      "aEnd": 177.9778,
+      "label": "FENERIUM ÜST A",
+      "name": "Fenerium Üst A Blok"
+    },
+    {
+      "id": "b562",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -5602.2857,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST B",
+      "name": "Fenerium Üst B Blok"
+    },
+    {
+      "id": "b561",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -3734.8572,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST C",
+      "name": "Fenerium Üst C Blok"
+    },
+    {
+      "id": "b560",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": -1867.4286,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST D",
+      "name": "Fenerium Üst D Blok"
+    },
+    {
+      "id": "b559",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 0,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST E",
+      "name": "Fenerium Üst E Blok"
+    },
+    {
+      "id": "b558",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 1867.4286,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST F",
+      "name": "Fenerium Üst F Blok"
+    },
+    {
+      "id": "b557",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 3734.8571,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST G",
+      "name": "Fenerium Üst G Blok"
+    },
+    {
+      "id": "b556",
+      "rot": 180,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "grid",
+      "x": 5602.2857,
+      "y": -7136,
+      "rows": 29,
+      "cols": 32,
+      "label": "FENERIUM ÜST H",
+      "name": "Fenerium Üst H Blok"
+    },
+    {
+      "id": "b555",
+      "rot": 135,
+      "counts": "",
+      "align": "center",
+      "curve": 0,
+      "taper": 0,
+      "seatGap": 50,
+      "rowGap": 85,
+      "ov": {},
+      "num": {
+        "rowScheme": "number",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "level": "Fenerium / Üst",
+      "pad": 80,
+      "kind": "fan",
+      "mode": "span",
+      "x": 6536,
+      "y": -3736,
+      "r0": 3400,
+      "rows": 29,
+      "aStart": -132.9778,
+      "aEnd": -92.0222,
+      "label": "FENERIUM ÜST I",
+      "name": "Fenerium Üst I Blok"
+    }
+  ]
+}

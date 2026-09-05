@@ -8,7 +8,7 @@ import { gateMap } from "../src/core/gates.js";
 import * as V from "../src/venues/index.js";
 import { rmSync } from "node:fs";
 
-const NAMES = ["CSO","ZORLU","GS","ULKER","HARBIYE","AYLAK","SUREYYA","AKM","YENIKAPI"];
+const NAMES = Object.keys(V).filter((k) => k !== "EMPTY" && k !== "BUILTINS" && V[k]?.blocks);
 const file = process.argv[2] || "db/seating.db";
 rmSync(file, { force: true });
 
@@ -35,5 +35,5 @@ const kirik = db.prepare("PRAGMA foreign_key_check").all();
 console.log(`\nTOPLAM  bölüm ${toplam.sections} · satır ${toplam.rows} · koltuk ${toplam.seats}`
   + ` · şekil ${toplam.shapes} · kapı ${toplam.entrances}`);
 console.log(`kırık referans: ${kirik.length}`);
-console.log(hata || kirik.length ? "\nSONUÇ: şema planı REDDETTİ." : "\nSONUÇ: 9 salon da şemaya oturdu.");
+console.log(hata || kirik.length ? "\nSONUÇ: şema planı REDDETTİ." : `\nSONUÇ: ${NAMES.length} salon da şemaya oturdu.`);
 process.exit(hata || kirik.length ? 1 : 0);

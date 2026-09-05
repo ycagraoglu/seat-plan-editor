@@ -12,6 +12,7 @@
    ═══════════════════════════════════════════════════════════════════════ */
 import { buildMeta, buildSeats } from "../../src/core/geometry.js";
 import { BUILTINS } from "../../src/venues/index.js";
+import * as V from "../../src/venues/index.js";
 
 /* "empty" gerçek bir örnek salon değil, yeni-plan şablonu (bkz.
    core/schema.js'teki isProtectedSample istisnası) — boş planın ölçülecek
@@ -41,3 +42,10 @@ export function venueSeats(venue) {
   });
   return { metas, seats };
 }
+
+/* Dışa aktarım/şema testlerinin salon listesi (dışa aktarım ADI ile:
+   "GS", "FENER"...). BUILTINS'ten türetiliyor — elle yazılmış BEŞ ayrı
+   kopya vardı ve onuncu salon eklenince beşi de sessizce eski listeyi
+   kullanmaya devam etti; yeni salon test kapsamına hiç girmedi. */
+export const VENUE_NAMES = VENUES.map(([, plan]) =>
+  Object.keys(V).find((ad) => V[ad] === plan)).filter(Boolean);

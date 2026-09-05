@@ -55,4 +55,5 @@ export async function loadModule() {
 export const VENUE_KEYS = {
   cso: "CSO", zorlu: "ZORLU", gs: "GS", ulker: "ULKER", harbiye: "HARBIYE",
   aylak: "AYLAK", sureyya: "SUREYYA", akm: "AKM", yenikapi: "YENIKAPI",
+  fener: "FENER",
 };

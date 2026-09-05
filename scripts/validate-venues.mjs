@@ -33,8 +33,10 @@ const { validate, ATTRS } = mod;
    PlanEditor.jsx'in görünüm sabitinden gelir; core/rules.js kendi
    render/etiket sabitlerini bilmez. */
 const WIDE_ATTRS = new Set(Object.keys(ATTRS).filter((k) => ATTRS[k].wide));
-const VENUES = { CSO: mod.CSO, ZORLU: mod.ZORLU, GS: mod.GS, ULKER: mod.ULKER,
-  HARBIYE: mod.HARBIYE, AYLAK: mod.AYLAK, SUREYYA: mod.SUREYYA, AKM: mod.AKM, YENIKAPI: mod.YENIKAPI };
+/* Salon listesi elle yazılmıyordu ve onuncu salon eklenince bu betik
+   sessizce eskisini taramaya devam etmişti. Modülden türetiliyor. */
+const VENUES = Object.fromEntries(Object.entries(mod)
+  .filter(([k, v]) => k !== "EMPTY" && k !== "BUILTINS" && v && Array.isArray(v.blocks) && v.blocks.length));
 
 console.log("── 4. Gerçek render testi ──");
 try {

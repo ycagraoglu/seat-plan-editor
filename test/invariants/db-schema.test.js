@@ -4,6 +4,7 @@ import { buildDbPayload } from "../../src/core/db-export.js";
 import { buildMeta } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import * as V from "../../src/venues/index.js";
+import { VENUE_NAMES } from "./helpers.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    INVARIANT: dışa aktarım MİMARİ RAPORUN ŞEMASINA oturur.
@@ -17,14 +18,14 @@ import * as V from "../../src/venues/index.js";
    göstermeyen bir uyum testi, kendi kendini onaylayan bir tören olurdu.
    ══════════════════════════════════════════════════════════════════════════ */
 
-const NAMES = ["CSO", "ZORLU", "GS", "ULKER", "HARBIYE", "AYLAK", "SUREYYA", "AKM", "YENIKAPI"];
+const NAMES = VENUE_NAMES;
 const yuk = (k) => {
   const v = V[k];
   return buildDbPayload(v, v.blocks.map((b) => ({ b, m: buildMeta(b) })), gateMap(v));
 };
 const taze = () => createSchema(openDb(":memory:"));
 
-describe("dokuz salon şemaya oturuyor", () => {
+describe("her örnek salon şemaya oturuyor", () => {
   it.each(NAMES)("%s yükleniyor ve kırık referans bırakmıyor", (k) => {
     const db = taze();
     const r = loadPayload(db, yuk(k), { planKey: k });
@@ -34,13 +35,13 @@ describe("dokuz salon şemaya oturuyor", () => {
     expect(n).toBe(r.seats);
   });
 
-  it("dokuzu AYNI veritabanında yan yana durur (tenant/sürüm izolasyonu)", () => {
+  it("hepsi AYNI veritabanında yan yana durur (tenant/sürüm izolasyonu)", () => {
     const db = taze();
     let seats = 0;
     NAMES.forEach((k) => { seats += loadPayload(db, yuk(k), { planKey: k }).seats; });
     expect(db.prepare("PRAGMA foreign_key_check").all()).toEqual([]);
     expect(db.prepare("SELECT COUNT(*) c FROM seating_seats").get().c).toBe(seats);
-    expect(db.prepare("SELECT COUNT(*) c FROM seating_seat_plan_versions").get().c).toBe(9);
+    expect(db.prepare("SELECT COUNT(*) c FROM seating_seat_plan_versions").get().c).toBe(NAMES.length);
   });
 });
 

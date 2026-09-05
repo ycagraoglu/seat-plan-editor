@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 602 test
+npm test           # 633 test
 ```
 
 ---
@@ -51,11 +51,18 @@ Kural bulguları sadece "hata var" demez, **hedef değer** verir:
 - Koridor numara tüketmez: `A-1 … A-5 | koridor | A-6 … A-10` kesintisiz akar.
 - Çift/tek numaralandırma, merkeze göre sayma, özel sıra adları.
 
-**Dokuz gerçek mekân** (`src/venues/`) — çalışan örnek olarak, gerçek
-kapasitelerle: Galatasaray Türk Telekom Stadyumu (48.600), Ülker Spor
-Salonu (13.204), Harbiye Açıkhava (4.295), Zorlu PSM, CSO Ada Ankara, AKM
-Opera Salonu, Süreyya Operası, Aylak Bar, Yenikapı. Her salon dosyası
-neden öyle çizildiğini yorumlarında anlatır.
+**On gerçek mekân** (`src/venues/`) — çalışan örnek olarak, gerçek
+kapasitelerle: Galatasaray Türk Telekom Stadyumu (48.600), Fenerbahçe Şükrü
+Saracoğlu (52.838), Ülker Spor Salonu (13.204), Harbiye Açıkhava (4.295),
+Zorlu PSM, CSO Ada Ankara, AKM Opera Salonu, Süreyya Operası, Aylak Bar,
+Yenikapı. Her salon dosyası neden öyle çizildiğini yorumlarında anlatır.
+
+İki stadyum bilerek FARKLI yapıda: Türk Telekom tek parça bir kâse, numaralı
+bloklarla (101, 102…); Şükrü Saracoğlu ise dört ayrı tribün olarak satılır
+(Maraton · Fenerium · Kuzey · Spor Toto), her birinin kendi harf dizisi ve
+Alt/Üst kademesi var. Geometri kâse, KİMLİK dört parça — yol yazılmış
+`level` alanının (`"Maraton / Üst"`) gerçek karşılığı budur ve editörde
+hiyerarşiye dokunan her şeyi bu salon sınadı.
 
 ---
 
@@ -117,7 +124,7 @@ bir yaprak bölüm** olarak çıkıyor, üstünde kat yolundan gelen zincir. Yan
 §5.1'deki örneğinin birebir kendisi, ve koltuğun tam adresi zincirden
 okunabiliyor.
 
-Referans bütünlüğü `test/invariants/db-export.test.js`'te dokuz salon
+Referans bütünlüğü `test/invariants/db-export.test.js`'te her örnek salon
 üstünde otomatik sınanıyor: her `parent_id`, `section_id`, `row_id`,
 `seat_type_id`, `group_id` ve `entrance_id` var olan bir satıra çözülüyor;
 ayrıca şemanın benzersizlik kısıtları — kardeş bölüm kodu (§5.1'in
@@ -131,7 +138,7 @@ tahmindir; tahminle sessizce yanlış blok üretmektense hiç üretmemek doğrud
 Geri okunan şey **kimliktir** — kalıcı koltuk kodunun sahibi karşı sistemse
 editör kendi şablon-türevi kimliğini onunkiyle değiştirir. CSV içe
 aktarımıyla aynı eşleştiriciyi kullanır (tek kaynak, iki okuyucu); gidiş-dönüş
-dokuz salonda `test/invariants/db-import.test.js`'te kilitli.
+her salonda `test/invariants/db-import.test.js`'te kilitli.
 
 `test/invariants/report-conformance.test.js` ise raporun **sözlüklerini**
 tutuyor: `section.kind`, `seat_group.kind`, `seat_kind`, `features`,
@@ -210,7 +217,7 @@ satılan birim locadır.
 Editör artık yalnız çizmiyor; mimari raporun şemasına **yazıyor**.
 
 ```bash
-npm run db:build     # 9 salonu şemaya yükle (db/seating.db)
+npm run db:build     # 10 salonu şemaya yükle (db/seating.db)
 npm run server       # http://localhost:8787
 VITE_API_BASE=http://localhost:8787/api npm run dev
 ```
@@ -223,11 +230,10 @@ veriyor ve şema bunu bir tablo eksikliğiyle değil, bilinçli bir sınırla
 temsil ediyor.
 
 Bunun anlamı şu: *"dışa aktarım rapora uygun"* artık benim iddiam değil,
-**veritabanının reddedebileceği bir olgu**. Dokuz salon gerçekten `INSERT`
-ediliyor:
+**veritabanının reddedebileceği bir olgu**. On salon gerçekten `INSERT` ediliyor:
 
 ```
-TOPLAM  bölüm 297 · satır 3126 · koltuk 73.016 · şekil 230 · kapı 179
+TOPLAM  bölüm 365 · satır 4554 · koltuk 125.854 · şekil 249 · kapı 193
 kırık referans: 0
 ```
 
@@ -332,7 +338,7 @@ src/
     schema     şema sürümü + göç zinciri
     export     seats.json veri şekli
   store/       depolama dikişi — kv · localStorage · bellek · api sürücüleri
-  venues/      9 gerçek mekân + builders + 2 şablon (stadyum, salon)
+  venues/      10 gerçek mekân + builders + 2 şablon (stadyum, salon)
   ui/          ErrorBoundary + state/ (reducer + selector, saf)
   styles/      tokens.css (tasarım sistemi) + app.css
   PlanEditor.jsx
@@ -341,19 +347,19 @@ server/      node:http + node:sqlite, sıfır bağımlılık
 test/
   unit/        saf fonksiyonlar
   integration/ gerçek sunucu + şema
-  invariants/  9 salonda otomatik geçen değişmezler
-  golden/      9 salon × {plan.json, seats.json, render.svg}
+  invariants/  her salonda otomatik geçen değişmezler
+  golden/      10 salon × {plan.json, seats.json, render.svg}
 ```
 
 ## Doğrulama
 
 ```bash
 npm test                        # birim + değişmez + geometri + etkileşim
-node scripts/check-golden.mjs   # 9 salonun veri denkliği
+node scripts/check-golden.mjs   # 10 salonun veri denkliği
 npm run build
 ```
 
-**Altın dosyalar** yeniden yazımın denklik güvencesidir: 9 mekânın plan ve
+**Altın dosyalar** yeniden yazımın denklik güvencesidir: 10 mekânın plan ve
 koltuk çıktısı dosyada sabittir, her değişiklikte karşılaştırılır. Geometriye
 dokunmadan yapılan hiçbir değişiklik bunları oynatamaz — oynatıyorsa bir şey
 kırılmıştır.

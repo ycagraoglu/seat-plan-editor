@@ -4,7 +4,7 @@ import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
 import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
-import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
+import { diffPlans, stripUnderlay, planFingerprint, planHome } from "./core/plan.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
@@ -15,7 +15,7 @@ import { BUILTINS, EMPTY } from "./venues/index.js";
 import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
-import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks } from "./ui/state/selectors.js";
+import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels } from "./ui/state/selectors.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -386,6 +386,16 @@ const PALETTE = ["#C2415A", "#C1743C", "#B79A32", "#5F9142",
                  "#3E7FBF", "#6E7787", "#7C5BA8", "#3E9092"];
 const LEVEL_COLORS = ["#3E7FBF", "#5F9142", "#C1743C", "#7C5BA8", "#3E9092", "#C2415A"];
 
+/* Kat rengi. Altıdan fazla kat olduğunda `% LEVEL_COLORS.length` almak İKİ
+   FARKLI KATA AYNI RENGİ veriyordu — Şükrü Saracoğlu'nda sekiz kat var ve
+   dört tribünden ikisi ekranda ayırt edilemiyordu. Renk kanalının tek işi
+   ayırt ettirmek olduğu için bu, kanalın sessizce yalan söylemesiydi.
+   Fazlası altın açı (137.5°) ile ton döndürülerek üretiliyor: N kat her
+   zaman N ayrı renk. İlk altı küratörlü renk aynen korunuyor, yani mevcut
+   salonların hiçbirinin görünümü değişmiyor. */
+export const levelColor = (i) =>
+  i < LEVEL_COLORS.length ? LEVEL_COLORS[i] : `hsl(${(i * 137.508) % 360} 46% 46%)`;
+
 /* A6.4: tek renk kanalı. Aktif kanal (colorChan) DIŞINDAKİ her kaynak bu
    nötr griye düşer — LEVEL_COLORS/PALETTE/ATTRS/kapı renklerinin hiçbiriyle
    çakışmayan, iki temada da okunan ayrı bir ton. Amaç: ekranda her an TEK
@@ -530,18 +540,10 @@ export function adoptPlan(raw, key) {
     label: String(b.label ?? "A"), level: b.level || "",
   }));
   const shapes = (raw.shapes || []).map((s) => ({ ...s, id: nid("s") }));
-  let home = raw.home;
-  if (!home) {
-    const bb = blocks.map(buildMeta).map((m) => m.bbox);
-    if (bb.length) {
-      const x0 = Math.min(...bb.map((b) => b.x0)), x1 = Math.max(...bb.map((b) => b.x1));
-      const y0 = Math.min(...bb.map((b) => b.y0)), y1 = Math.max(...bb.map((b) => b.y1));
-      const pad = Math.max(x1 - x0, y1 - y0) * 0.1;
-      home = { x: x0 - pad, y: y0 - pad, w: x1 - x0 + 2 * pad, h: y1 - y0 + 2 * pad };
-    } else home = EMPTY.home;
-  }
+  /* home türetmesi core/plan.js'te TEK kaynak — burada kopyası vardı ve
+     bu yoldan geçmeyen (yerleşik salon, reducer) her giriş korumasızdı. */
   return { key, name: raw.name || "İçe aktarılan plan", unit: "cm",
-    home, underlay: null, blocks, shapes };
+    home: planHome({ ...raw, blocks }, EMPTY.home), underlay: null, blocks, shapes };
 }
 
 /* ─────────────────────────  DOĞRULAMA  ─────────────────────────
@@ -897,6 +899,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const metaById = useMemo(() => new Map(metas.map((x) => [x.b.id, x.m])), [metas]);
   const totalSeats = useMemo(() => selectTotalSeats(metas), [metas]);
   const levels = useMemo(() => selectLevels(plan), [plan.blocks]);
+  /* Renk indeksi yaprak katlara göre — bkz. selectBlockLevels. */
+  const renkKatlari = useMemo(() => selectBlockLevels(plan), [plan.blocks]);
   const levelCounts = useMemo(() => selectLevelCounts(metas), [metas]);
 
   const shown = useMemo(() => {
@@ -904,7 +908,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const vx0 = view.x - pad, vx1 = view.x + view.w + pad;
     const vy0 = view.y - pad, vy1 = view.y + view.h + pad;
     return metas.filter(({ b, m }) =>
-      (levelFilter === "*" || (b.level || "") === levelFilter) &&
+      levelMatches(b.level, levelFilter) &&
       m.bbox.x1 > vx0 && m.bbox.x0 < vx1 && m.bbox.y1 > vy0 && m.bbox.y0 < vy1);
   }, [metas, view, levelFilter]);
   /* Sadece kesişen değil, GERÇEKTEN görünen koltuk sayısı: yelpaze gibi
@@ -935,7 +939,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const pad = view.w * 0.08;
     const vx0 = view.x - pad, vx1 = view.x + view.w + pad;
     const vy0 = view.y - pad, vy1 = view.y + view.h + pad;
-    return metas.filter(({ b, m }) => (b.level || "") !== levelFilter &&
+    return metas.filter(({ b, m }) => !levelMatches(b.level, levelFilter) &&
       m.bbox.x1 > vx0 && m.bbox.x0 < vx1 && m.bbox.y1 > vy0 && m.bbox.y0 < vy1);
   }, [metas, view, levelFilter]);
 
@@ -974,8 +978,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
   }, [arrPrev, selBlocks, lin, rad]);
 
   /* Blok rengi yoksa kat sırasına göre otomatik — sadece görünüm. */
-  const cc = useCallback((b) => b.color || LEVEL_COLORS[
-    Math.max(0, levels.indexOf(b.level || "")) % LEVEL_COLORS.length], [levels]);
+  const cc = useCallback((b) => b.color || levelColor(
+    Math.max(0, renkKatlari.indexOf(b.level || ""))), [renkKatlari]);
   const gates = useMemo(() => gateMap(plan), [plan.shapes]);
 
   /* ── A6.4: tek renk kanalı ────────────────────────────────────────
@@ -1149,14 +1153,14 @@ export default function PlanEditor({ cssText = "" } = {}) {
   /* Sığdır: plan.home sabit bir değer — bir oturumda büyüyen bloklar onun
      dışına taştığında sessizce ekran dışında kalıyordu. Gerçek içerik
      sınırını hesapla; plan boşsa (Yeni plan) home'a düş. */
-  const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(plan.home));
+  const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(planHome(plan)));
   /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
      olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
      birimi paylaşmıyor). %100 = Sığdır'ın ürettiği görünüm — Sığdır'a
      basınca bu yüzden her zaman tam %100 görünür. */
   const homeRect = metas.length
     ? fitBBoxRect(metas.map((x) => x.m), canvasSize.h / canvasSize.w)
-    : plan.home;
+    : planHome(plan);
   const homePxPerCm = Math.min(canvasSize.w / homeRect.w, canvasSize.h / homeRect.h);
   const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
 
@@ -1332,7 +1336,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   };
   const switchVenue2 = (k, p) => {
     setVk(k); setPast([]); setFuture([]); setSelIds([]); setSelShapeId(null);
-    setSelSeat(null); setSelSeats(new Set()); setLevelFilter("*"); setView(p.home);
+    setSelSeat(null); setSelSeats(new Set()); setLevelFilter("*"); setView(planHome(p));
     setReport(null); setMatch(null);
   };
 
@@ -1933,7 +1937,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       const x0 = Math.min(q.x0, q.x1), x1 = Math.max(q.x0, q.x1);
       const y0 = Math.min(q.y0, q.y1), y1 = Math.max(q.y0, q.y1);
       const hit = metas.filter(({ b, m }) =>
-        (levelFilter === "*" || (b.level || "") === levelFilter) &&
+        levelMatches(b.level, levelFilter) &&
         m.bbox.x0 >= x0 && m.bbox.x1 <= x1 && m.bbox.y0 >= y0 && m.bbox.y1 <= y1).map((x) => x.b.id);
       setSelIds(d.add ? [...new Set([...d.base, ...hit])] : hit);
       return;
@@ -2081,7 +2085,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       if ((e.ctrlKey || e.metaKey) && k === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
       if ((e.ctrlKey || e.metaKey) && k === "a") {
         e.preventDefault();
-        setSelIds(metas.filter(({ b }) => levelFilter === "*" || (b.level || "") === levelFilter).map((x) => x.b.id));
+        setSelIds(metas.filter(({ b }) => levelMatches(b.level, levelFilter)).map((x) => x.b.id));
         return;
       }
       if (e.key === "Enter" && footDraft) { footFinish(); return; }
@@ -2190,7 +2194,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
         const p = adoptPlan(raw, key);
         setVenues((v) => ({ ...v, [key]: p }));
         setVk(key); setPast([]); setFuture([]); setSelIds([]); setSelShapeId(null);
-        setLevelFilter("*"); setView(p.home); setReport(null);
+        setLevelFilter("*"); setView(planHome(p)); setReport(null);
         setMsg(`${p.blocks.length} blok içe aktarıldı`);
       } catch (err) {
         console.error("Plan içe aktarma hatası:", err);
@@ -2463,11 +2467,14 @@ export default function PlanEditor({ cssText = "" } = {}) {
           </>)}
 
           <div className="sep" />
-          <p className="lab">Bloklar ({metas.length})</p>
+          {/* Filtre açıkken toplam sayıyı göstermek yanıltıcı: liste 18
+              satır gösterirken başlık 56 diyordu. Süzülmüş sayı + toplam. */}
+          <p className="lab">Bloklar ({levelFilter === "*" ? metas.length
+            : `${metas.filter(({ b }) => levelMatches(b.level, levelFilter)).length} / ${metas.length}`})</p>
           <input className="find" value={q} placeholder="Blok ara…"
             onChange={(e) => setQ(e.target.value)} />
           <ul className="tree">
-            {metas.filter(({ b }) => (levelFilter === "*" || (b.level || "") === levelFilter) &&
+            {metas.filter(({ b }) => levelMatches(b.level, levelFilter) &&
                 (!q.trim() || `${b.name || ""} ${b.label}`.toLocaleLowerCase("tr").includes(q.toLocaleLowerCase("tr"))))
               .slice(0, 200).map(({ b, m }) => (
               <li key={b.id} className={selIds.includes(b.id) ? "on" : ""}
@@ -2865,7 +2872,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
               {colorChan === "level" && levels.map((l, i) => (
                 <div key={l}>
-                  <i style={{ background: LEVEL_COLORS[i % LEVEL_COLORS.length] }} />
+                  <i style={{ background: levelColor(i) }} />
                   <span>{l}</span>
                   <b className="n">{(levelCounts[l] || 0).toLocaleString("tr-TR")}</b>
                 </div>
