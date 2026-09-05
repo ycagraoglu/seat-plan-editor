@@ -17,9 +17,12 @@
     "snapshot:golden": "node scripts/snapshot-golden.mjs",
     "check:golden": "node scripts/check-golden.mjs",
     "db:build": "node scripts/db-build.mjs",
-    "server": "node server/index.mjs"
+    "server": "node server/index.mjs",
+    "mcp": "node mcp/index.mjs",
+    "test:mcp": "vitest run test/mcp"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
