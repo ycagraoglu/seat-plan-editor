@@ -362,3 +362,43 @@ describe("resolvePlanSections — iki seviyeli ağaç: aynı kod, farklı ebevey
     expect(resolveBlockSectionId(plan.blocks[0])).not.toBe(resolveBlockSectionId(plan.blocks[1]));
   });
 });
+
+/* ── Kat/kuşak alanı YOL kabul eder ───────────────────────────────────
+   Mimari rapor §5.1 N seviyeli bölüm ağacı istiyor ("Batı Tribünü →
+   Alt Kat → H Blok"). Ayrı bir ağaç seçici arayüzü yerine, kat alanına
+   "/" ile ayrılmış bir yol yazmak zinciri kuruyor. Düz string yazan
+   mevcut 9 salon TEK düğüme çözülüyor — davranışları değişmiyor, bu
+   testin ilk vakası onu sabitliyor. */
+describe("bölüm yolu", () => {
+  const blk = (id, level) => ({ id, label: id, level, kind: "grid",
+    x: 0, y: 0, rot: 0, cols: 2, rows: 1, counts: "", align: "center",
+    seatGap: 50, rowGap: 90, curve: 0, taper: 0, color: "", attr: "", num: {}, ov: {} });
+
+  it("düz kat adı tek kök düğüme çözülür (bugünkü 9 salonun hali)", () => {
+    const secs = resolvePlanSections({ blocks: [blk("A", "Parter")] });
+    expect(secs).toHaveLength(1);
+    expect(secs[0]).toMatchObject({ code: "Parter", parentId: null });
+  });
+
+  it("yol, üst-alt zinciri kurar ve kardeşleri aynı ataya bağlar", () => {
+    const secs = resolvePlanSections({ blocks: [
+      blk("H", "Batı Tribünü / Alt Kat"), blk("G", "Batı Tribünü / Üst Kat")] });
+    const kok = secs.find((s) => s.parentId === null);
+    expect(kok.code).toBe("Batı Tribünü");
+    const cocuk = secs.filter((s) => s.parentId === kok.id).map((s) => s.code).sort();
+    expect(cocuk).toEqual(["Alt Kat", "Üst Kat"]);
+  });
+
+  it("aynı kod farklı ata altında yaşayabilir — özelliğin varlık sebebi", () => {
+    const secs = resolvePlanSections({ blocks: [
+      blk("h1", "Batı / Alt Kat / H"), blk("h2", "Batı / Üst Kat / H")] });
+    const hler = secs.filter((s) => s.code === "H");
+    expect(hler).toHaveLength(2);
+    expect(hler[0].parentId).not.toBe(hler[1].parentId);
+  });
+
+  it("farklı yoldaki bloklar farklı bölüme çözülür", () => {
+    const a = blk("H", "Batı Tribünü / Alt Kat"), b = blk("G", "Batı Tribünü / Üst Kat");
+    expect(resolveBlockSectionId(a)).not.toBe(resolveBlockSectionId(b));
+  });
+});

@@ -171,7 +171,15 @@ export function resolvePlanGroups(plan) {
    isim uzayı, karışma riski yok. core/schema.js'in 3→4 göç adımı da id
    üretmek için AYNI bu fonksiyonu çağırır (nid() DEĞİL): göçmüş ve
    göçmemiş bir plan aynı level dizesi için HER ZAMAN aynı id'yi üretir. */
-export const syntheticSectionId = (level) => `lvl:${level || ""}`;
+/* Kat/kuşak alanı bir YOL kabul eder: "Batı Tribünü / Alt Kat" üç değil
+   iki düğümlük bir zincir kurar ve blok yaprağa bağlanır. Ayrı bir ağaç
+   seçici arayüzü yazmadan raporun (§5.1) istediği N seviyeyi ifade
+   etmenin en ucuz yolu; düz string yazan mevcut 9 salon tek düğüme
+   çözülüyor, yani davranışları değişmiyor. */
+export const SECTION_SEP = "/";
+export const sectionPath = (level) =>
+  String(level || "").split(SECTION_SEP).map((x) => x.trim()).filter(Boolean);
+export const syntheticSectionId = (level) => `lvl:${sectionPath(level).join(SECTION_SEP)}`;
 
 /** Bir bloğun ait olduğu bölümün id'si. Açık atıf (b.sectionId) önce,
  *  yoksa düz level'dan sentetik id'ye düşer — resolveSeatGroup'un blok
@@ -193,10 +201,26 @@ export function resolvePlanSections(plan) {
   const known = new Set(explicit.map((s) => s.id));
   const out = [...explicit];
   (plan.blocks || []).forEach((b) => {
-    const id = resolveBlockSectionId(b);
-    if (known.has(id)) return;
-    known.add(id);
-    out.push({ id, code: b.level || "", name: b.level || "", kind: "floor", parentId: null });
+    if (b.sectionId) {           /* açıkça atanmış: zincir plan.sections'ta */
+      if (!known.has(b.sectionId)) {
+        known.add(b.sectionId);
+        out.push({ id: b.sectionId, code: b.level || "", name: b.level || "", kind: "floor", parentId: null });
+      }
+      return;
+    }
+    /* Yoldan zincir: "A / B" → A (kök) ve A/B (A'nın çocuğu). */
+    const parts = sectionPath(b.level);
+    if (!parts.length) {
+      const id = syntheticSectionId("");
+      if (!known.has(id)) { known.add(id); out.push({ id, code: "", name: "", kind: "floor", parentId: null }); }
+      return;
+    }
+    let parentId = null;
+    parts.forEach((ad, i) => {
+      const id = `lvl:${parts.slice(0, i + 1).join(SECTION_SEP)}`;
+      if (!known.has(id)) { known.add(id); out.push({ id, code: ad, name: ad, kind: "floor", parentId }); }
+      parentId = id;
+    });
   });
   return out;
 }

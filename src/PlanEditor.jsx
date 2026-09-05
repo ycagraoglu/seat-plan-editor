@@ -1,6 +1,5 @@
 import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
-import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats,
-  resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND } from "./core/geometry.js";
+import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats, resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND, sectionPath } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
@@ -2483,7 +2482,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <p className="lab">Kat / kuşak</p>
             <select className="mini full" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
               <option value="*">Tümü · {totalSeats.toLocaleString("tr-TR")}</option>
-              {levels.map((l) => <option key={l} value={l}>{l} · {(levelCounts[l] || 0).toLocaleString("tr-TR")}</option>)}
+              {/* Yol yazılmış katlar derinliğine göre girintili görünür:
+                  "Batı Tribünü / Alt Kat" listede "  › Alt Kat" olur. */}
+              {levels.map((l) => {
+                const yol = sectionPath(l);
+                const etiket = yol.length > 1 ? `${"\u00a0\u00a0".repeat(yol.length - 1)}› ${yol[yol.length - 1]}` : l;
+                return <option key={l} value={l}>{etiket} · {(levelCounts[l] || 0).toLocaleString("tr-TR")}</option>;
+              })}
             </select>
           </>)}
 
@@ -3533,7 +3538,7 @@ function MultiPanel({ n, seats, levels, arr, onAlign, onDist, onRenumber, onSet,
             </div>
           </Row>
           <Row label="Kat / kuşak">
-            <input list="lv2" placeholder="değiştirme" onBlur={(e) => e.target.value && onSet({ level: e.target.value })} />
+            <input list="lv2" placeholder="değiştirme  ·  A / B ile iç içe" onBlur={(e) => e.target.value && onSet({ level: e.target.value })} />
             <datalist id="lv2">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
           <Row label="Dış hat payı (cm)">
@@ -3762,10 +3767,19 @@ function BlockPanel({ b, levels, meta, arr, doors, onFootDraw, onFootSeed, onFoo
       <section>
         <div className="g2">
           <Row label="Kimlik ön eki"><input value={b.label} onChange={(e) => onChange(relabelPatch(b, e.target.value))} /></Row>
+          {/* Kat alanı YOL kabul eder: "Batı Tribünü / Alt Kat" iki düğümlük
+              bir bölüm zinciri kurar, blok yaprağa bağlanır. Böylece aynı
+              blok kodu ("H") iki farklı katta yaşayabiliyor — mimari
+              raporun (§5.1) istediği N seviye, ayrı bir ağaç seçici
+              arayüzü yazmadan. Düz ad yazmak eskisi gibi tek düğüm. */}
           <Row label="Kat / kuşak">
-            <input value={b.level || ""} list="lv" placeholder="Alt Tribün" onChange={(e) => onChange(relevelPatch(b, e.target.value))} />
+            <input value={b.level || ""} list="lv" placeholder="Alt Tribün  ·  Batı Tribünü / Alt Kat"
+              onChange={(e) => onChange(relevelPatch(b, e.target.value))} />
             <datalist id="lv">{levels.map((l) => <option key={l} value={l} />)}</datalist>
           </Row>
+          {sectionPath(b.level).length > 1 && (
+            <p className="hint">{sectionPath(b.level).join(" › ")} — {sectionPath(b.level).length} seviye</p>
+          )}
           {!rotInAdv && (
             <Row label="Döndür °"><Num v={Math.round(b.rot)} on={(v) => onChange({ rot: v })} step={5} /></Row>
           )}
