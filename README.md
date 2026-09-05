@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 334 test
+npm test           # 415 test
 ```
 
 ---
@@ -91,6 +91,26 @@ aktarım (`seats.json`) bu türetimin düzleştirilmiş hâlidir:
 ```
 
 (Galatasaray planından gerçek bir kayıt — `test/golden/gs.seats.json`.)
+
+Bunun yanında **`db.json`** düğmesi hedef şemanın **tablolarını** üretir —
+doğrudan `INSERT` edilebilir satır listeleri, yabancı anahtarlarıyla:
+
+```
+space · seat_plan · seat_plan_version
+sections · rows · seat_types · seat_groups · seats · shapes
+entrances · entrance_sections
+```
+
+Editörün hiyerarşisi bölüm → **blok** → satır → koltuk; şemanınki
+`sections → rows → seats`. Aradaki farkı dışa aktarım kapatıyor: **her blok
+bir yaprak bölüm** olarak çıkıyor, üstünde kat yolundan gelen zincir. Yani
+"Batı Tribünü / Alt Kat" katındaki "H" bloğu üç bölüm üretir — raporun
+§5.1'deki örneğinin birebir kendisi, ve koltuğun tam adresi zincirden
+okunabiliyor.
+
+Referans bütünlüğü `test/invariants/db-export.test.js`'te dokuz salon
+üstünde otomatik sınanıyor: her `parent_id`, `section_id`, `row_id`,
+`seat_type_id`, `group_id` ve `entrance_id` var olan bir satıra çözülüyor.
 
 `seat_kind` ve `features` mimari raporun §5.4'ündeki ayrımı izler:
 

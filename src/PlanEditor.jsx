@@ -8,6 +8,7 @@ import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
+import { buildDbPayload } from "./core/db-export.js";
 import { buildCtx, runRules } from "./core/rules.js";
 import { BUILTINS, EMPTY } from "./venues/index.js";
 import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
@@ -2278,6 +2279,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
     setMsg("koltuklar üretiliyor…");
     download(`${plan.key}-seats.json`, buildSeatsPayload(plan, metas, levelCounts, gates));
   };
+  /* Hedef şemanın TABLOLARI — seats.json okunabilir bir özet, bu ise
+     doğrudan INSERT edilebilir satır listesi (sections/rows/seat_types/
+     seat_groups/seats/shapes/entrances, yabancı anahtarlarıyla).
+     Referans bütünlüğü test/invariants/db-export.test.js'te 9 salon
+     üstünde otomatik sınanıyor. */
+  const exportDb = () => {
+    setMsg("tablolar üretiliyor…");
+    download(`${plan.key}-db.json`, buildDbPayload(plan, metas, gates));
+  };
   const exportPlan = () => download(`${plan.key}-plan.json`,
     { ...plan, underlay: plan.underlay ? { ...plan.underlay, src: null } : null });
 
@@ -2406,6 +2416,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
         <span className="tsep" />
         <label className="btn">Aç<input type="file" accept="application/json,.json" onChange={importPlan} hidden /></label>
         <button onClick={exportPlan}>plan.json</button>
+        <button onClick={exportDb} title="Hedef şemanın tabloları — doğrudan INSERT edilebilir">db.json</button>
         <button className="pri" onClick={exportSeats}>seats.json</button>
       </header>
 
