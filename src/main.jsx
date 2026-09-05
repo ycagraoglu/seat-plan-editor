@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import PlanEditor from "./PlanEditor.jsx";
+import ErrorBoundary from "./ui/ErrorBoundary.jsx";
 /* Biletera tasarım sistemi + bileşen stilleri (A7: eskiden PlanEditor.jsx
    içinde <style>{CSS}</style> olarak enjekte ediliyordu). Sıra önemli:
    tokens önce, onları tüketen bileşen kuralları sonra. Kök bootstrap
@@ -17,6 +18,8 @@ import appCssText from "./styles/app.css?raw";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <PlanEditor cssText={tokensCssText + appCssText} />
+    <ErrorBoundary>
+      <PlanEditor cssText={tokensCssText + appCssText} />
+    </ErrorBoundary>
   </React.StrictMode>
 );

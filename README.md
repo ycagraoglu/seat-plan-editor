@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 493 test
+npm test           # 533 test
 ```
 
 ---
@@ -119,6 +119,15 @@ ayrıca şemanın benzersizlik kısıtları — kardeş bölüm kodu (§5.1'in
 `UNIQUE NULLS NOT DISTINCT (tenant_id, version_id, parent_section_id, code)`),
 bölüm içi satır kodu, kapı-bölüm çifti.
 
+**Geri okuma** (`db.json` yükle) dışa aktarımın tersi *değil*: db.json
+bölüm/satır/koltuk taşır, editörün bloğu ise bir üretim tarifidir ("20 sıra,
+21..15 koltuk, 8° kavis"). Koltuk konumlarından o tarifi geri çıkarmak
+tahmindir; tahminle sessizce yanlış blok üretmektense hiç üretmemek doğrudur.
+Geri okunan şey **kimliktir** — kalıcı koltuk kodunun sahibi karşı sistemse
+editör kendi şablon-türevi kimliğini onunkiyle değiştirir. CSV içe
+aktarımıyla aynı eşleştiriciyi kullanır (tek kaynak, iki okuyucu); gidiş-dönüş
+dokuz salonda `test/invariants/db-import.test.js`'te kilitli.
+
 `test/invariants/report-conformance.test.js` ise raporun **sözlüklerini**
 tutuyor: `section.kind`, `seat_group.kind`, `seat_kind`, `features`,
 `geometry_kind`, `shape_kind` — dışa aktarım hiçbirinin dışına çıkamıyor.
@@ -173,7 +182,11 @@ satılan birim locadır.
 ## Neyi ALMAMALI
 
 - **`localStorage` kalıcılığı** (`Store`, `src/PlanEditor.jsx`) — tarayıcıya
-  özgü bir çözüm. Veritabanı destekli sürümde yeri yok.
+  özgü bir çözüm. Veritabanı destekli sürümde yeri yok. (Kotanın dolması
+  gerçek bir risk: GS planı 202 KB, Ülker 131 KB.) Buna karşılık
+  `ui/ErrorBoundary.jsx`'in "kayıtları indir" çıkışı **alınmaya değer**:
+  plan çökmeye yol açıyorsa her yeniden yükleme aynı beyaz ekranı verir,
+  kullanıcının veriyi o döngüden kurtaracak bir yolu olmalı.
 - **Tek dosyalık arayüz.** `PlanEditor.jsx` hâlâ ~3.900 satır. Saf çekirdek
   (`src/core/`) ve veri (`src/venues/`) dışarı çıkarıldı, ama arayüz
   bölünmedi. Yeniden yazacak ekip bunu kendi yapısına göre kursun.

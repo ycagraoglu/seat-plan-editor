@@ -207,3 +207,31 @@ export function buildDbPayload(plan, metas, gates) {
     entrances, entrance_sections,
   };
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GERİ OKUMA
+
+   Dışa aktarımın tersi DEĞİL — olamaz da: db.json bölüm/satır/koltuk taşır,
+   editörün bloğu ise "20 sıra, 21..15 koltuk, 8° kavis, şu numaralandırma
+   şeması" gibi bir ÜRETİM TARİFİDİR. Koltuk konumlarından o tarifi geri
+   çıkarmak (ızgara mı yelpaze mi, kavis kaç derece) tahmindir; tahminle
+   sessizce yanlış blok üretmektense hiç üretmemek doğrudur.
+
+   Geri okunan şey KİMLİKTİR. Kalıcı koltuk kodunun sahibi karşı sistemdir
+   (bkz. README "Kimlik üretimi"); editör kendi şablon-türevi kimliğini onun
+   koduyla değiştirir. CSV içe aktarımının yaptığı işin aynısı, farklı
+   okuyucuyla — o yüzden eşleştirici tektir, iki okuyucuyu birden besler.
+   ══════════════════════════════════════════════════════════════════════════ */
+export function dbSeatRows(payload) {
+  const secCode = new Map((payload.sections || []).map((s) => [s.id, s.code]));
+  const rowById = new Map((payload.rows || []).map((r) => [r.id, r]));
+  return (payload.seats || []).map((s) => {
+    const r = rowById.get(s.row_id);
+    return {
+      block: r ? String(secCode.get(r.section_id) ?? "") : "",
+      row: r ? String(r.code ?? "") : "",
+      seat: String(s.label ?? ""),
+      id: String(s.code ?? ""),
+    };
+  });
+}

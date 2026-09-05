@@ -8,7 +8,7 @@ import { diffPlans, stripUnderlay, planFingerprint } from "./core/plan.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
-import { buildDbPayload } from "./core/db-export.js";
+import { buildDbPayload, dbSeatRows } from "./core/db-export.js";
 import { buildCtx, runRules } from "./core/rules.js";
 import { BUILTINS, EMPTY } from "./venues/index.js";
 import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
@@ -1665,53 +1665,78 @@ export default function PlanEditor({ cssText = "" } = {}) {
   };
 
   /* ── mevcut koltuk listesini içe aktar ve eşleştir ────────────── */
-  const importCSV = (e) => {
+
+  /* Eşleştirici TEK. Okuyucu iki tane: CSV ve db.json. İkisi de aynı
+     {block,row,seat,id} listesine indirgenip buraya girer — "testte var,
+     uygulamada yok" sınıfı ayrışmayı doğuran şey kuralın iki yere
+     kopyalanmasıydı; kimlik eşleştirmesi de aynı hataya açık. */
+  const runMatch = (list, fileName, cols) => {
+    /* çizimdeki koltukları anahtara göre indeksle */
+    const drawnMap = new Map();
+    metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
+      if (!s.gap) drawnMap.set(seatKey(s.block, s.row, s.num), { s, bid: b.id });
+    }));
+
+    const hits = [], missing = [], dupes = [];
+    const usedKeys = new Set();
+    list.forEach((r) => {
+      const key = seatKey(r.block, r.row, r.seat);
+      if (!r.id) return;
+      if (usedKeys.has(key)) { dupes.push(key); return; }
+      const hit = drawnMap.get(key);
+      if (hit) { usedKeys.add(key); hits.push({ ...hit, csvId: r.id, key }); }
+      else missing.push({ key, id: r.id });
+    });
+    const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k)).map(([, v]) => v.s);
+    const changing = hits.filter((h) => h.csvId !== h.s.id);
+
+    setMatch({ file: fileName, cols, total: list.length,
+      hits, missing, extra, dupes, changing });
+    setVerOpen(false); setReport(null);
+    setMsg(`${hits.length} koltuk eşleşti`);
+  };
+
+  const readFile = (e, parse, tur) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
     const rd = new FileReader();
     rd.onload = () => {
-      try {
-        const rows = parseCSV(rd.result);
-        if (rows.length < 2) throw new Error("satır yok");
-        const cols = mapColumns(rows[0]);
-        if (cols.id == null) throw new Error("kimlik sütunu bulunamadı (id / kimlik / kod)");
-        if (cols.block == null || cols.row == null || cols.seat == null)
-          throw new Error("blok / sıra / koltuk sütunları eksik");
-
-        /* çizimdeki koltukları anahtara göre indeksle */
-        const drawnMap = new Map();
-        metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-          if (!s.gap) drawnMap.set(seatKey(s.block, s.row, s.num), { s, bid: b.id });
-        }));
-
-        const hits = [], missing = [], dupes = [];
-        const usedKeys = new Set();
-        rows.slice(1).forEach((r) => {
-          const key = seatKey(r[cols.block], r[cols.row], r[cols.seat]);
-          const id = r[cols.id];
-          if (!id) return;
-          if (usedKeys.has(key)) { dupes.push(key); return; }
-          const hit = drawnMap.get(key);
-          if (hit) { usedKeys.add(key); hits.push({ ...hit, csvId: id, key }); }
-          else missing.push({ key, id });
-        });
-        const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k)).map(([, v]) => v.s);
-        const changing = hits.filter((h) => h.csvId !== h.s.id);
-
-        setMatch({ file: f.name, cols: Object.keys(cols), total: rows.length - 1,
-          hits, missing, extra, dupes, changing });
-        setVerOpen(false); setReport(null);
-        setMsg(`${hits.length} koltuk eşleşti`);
-      } catch (err) {
-        console.error("CSV içe aktarma hatası:", err);
-        const detail = (err instanceof TypeError || err instanceof RangeError)
-          ? "dosya beklenen CSV biçiminde değil" : err.message;
-        setErr(`CSV okunamadı: ${detail}`);
+      try { parse(rd.result, f.name); }
+      catch (err) {
+        console.error(`${tur} içe aktarma hatası:`, err);
+        const detail = (err instanceof TypeError || err instanceof RangeError || err instanceof SyntaxError)
+          ? `dosya beklenen ${tur} biçiminde değil` : err.message;
+        setErr(`${tur} okunamadı: ${detail}`);
       }
     };
     rd.readAsText(f, "utf-8");
   };
+
+  const importCSV = (e) => readFile(e, (text, name) => {
+    const rows = parseCSV(text);
+    if (rows.length < 2) throw new Error("satır yok");
+    const cols = mapColumns(rows[0]);
+    if (cols.id == null) throw new Error("kimlik sütunu bulunamadı (id / kimlik / kod)");
+    if (cols.block == null || cols.row == null || cols.seat == null)
+      throw new Error("blok / sıra / koltuk sütunları eksik");
+    runMatch(
+      rows.slice(1).map((r) => ({ block: r[cols.block], row: r[cols.row],
+        seat: r[cols.seat], id: r[cols.id] })),
+      name, Object.keys(cols));
+  }, "CSV");
+
+  /* db.json geri okuma: GEOMETRİ DEĞİL KİMLİK gelir (bkz. core/db-export.js
+     dbSeatRows notu). Karşı sistem kalıcı koltuk kodunun sahibiyse çizimi
+     burada tutup kimliği ondan benimsiyoruz. */
+  const importDb = (e) => readFile(e, (text, name) => {
+    const payload = JSON.parse(text);
+    if (!Array.isArray(payload?.seats) || !Array.isArray(payload?.rows))
+      throw new Error("seats / rows tabloları bulunamadı");
+    const list = dbSeatRows(payload);
+    if (!list.length) throw new Error("koltuk satırı yok");
+    runMatch(list, name, ["sections.code", "rows.code", "seats.label", "seats.code"]);
+  }, "db.json");
 
   /** Eşleşen koltuklara listedeki kimliği yazar — çizim değil, kimlik uyarlanır. */
   const adoptIds = () => {
@@ -3084,7 +3109,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
           {setOpen && (
             <PlanSettings plan={plan} sample={metas[0]} onClose={() => setSetOpen(false)}
-              onCsv={exportCSV} onSvg={exportSVG} onCsvImport={importCSV} saved={saved} venues={venues} vk={vk}
+              onCsv={exportCSV} onSvg={exportSVG} onCsvImport={importCSV} onDbImport={importDb} saved={saved} venues={venues} vk={vk}
               theme={theme} onTheme={setThemePref} wheelPref={wheelPref} onWheelPref={setWheelPrefP}
               onNew={newPlan} onNewStadium={() => newPlanFromTemplate(buildStadiumTemplate, "Yeni stadyum")}
               onNewHall={() => newPlanFromTemplate(buildHallTemplate, "Yeni salon")}
@@ -3351,7 +3376,7 @@ function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {
 }
 
 /** Seçim yokken: plan seviyesindeki ayarlar. */
-function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onNewStadium, onNewHall, onDup, onDel, onChange }) {
+function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onNewStadium, onNewHall, onDup, onDel, onChange }) {
   const tpl = plan.idTemplate || DEF_TPL;
   const s = sample ? buildSeats(sample.b, sample.m, tpl).seats.find((x) => !x.gap) : null;
   return (
@@ -3378,6 +3403,10 @@ function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, saved,
         <label className="wide asfile">
           Koltuk listesi yükle (CSV)
           <input type="file" accept=".csv,text/csv" onChange={onCsvImport} hidden />
+        </label>
+        <label className="wide asfile">
+          Veritabanı çıktısı yükle (db.json)
+          <input type="file" accept=".json,application/json" onChange={onDbImport} hidden />
         </label>
       </div>
 
