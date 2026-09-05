@@ -36,7 +36,7 @@ import { migrate, CURRENT_SCHEMA_VERSION, mergeSavedVenues, isProtectedSample, f
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const srcPath = path.join(root, "src/PlanEditor.jsx");
 
-const EXTRA_EXPORTS = ["Store", "alignSetup", "alignDelta", "relabelPatch"];
+const EXTRA_EXPORTS = ["alignSetup", "alignDelta", "relabelPatch"];
 
 /* Her çağrı ayrı bir geçici dosyaya derler — driver seçimi modül yüklenirken
    bir kere karara bağlandığı için (top-level const), üç farklı global
@@ -55,6 +55,19 @@ async function loadModule(tag) {
   } finally {
     await rm(tmpPath, { force: true });
   }
+}
+
+/* Store artık kendi modülünde (src/store/index.js). Sürücü seçimi modül
+   yüklenirken bir kere karara bağlandığı için (top-level const) üç ortamı
+   sınamak üç TAZE import ister — Node modül yolunu önbelleğe aldığından
+   her tag için ayrı geçici dosya derleniyor, PlanEditor'de olduğu gibi. */
+async function loadStore(tag) {
+  const src = await readFile(path.join(root, "src/store/index.js"), "utf8");
+  const { code } = await transform(src, { loader: "js", format: "esm", target: "node18" });
+  const tmpPath = path.join(root, "src", "store", `.tmp-store-itest-${process.pid}-${tag}.mjs`);
+  await writeFile(tmpPath, code);
+  try { return await import(pathToFileURL(tmpPath).href); }
+  finally { await rm(tmpPath, { force: true }); }
 }
 
 let anyFail = false;
@@ -78,7 +91,7 @@ console.log("── Store · localStorage sürücüsü (window.storage yok) ─�
 {
   delete global.window;
   global.localStorage = fakeLocalStorage();
-  const { Store } = await loadModule("ls");
+  const { Store } = await loadStore("ls");
   check("driver seçimi", Store.driver === "ls", `driver=${Store.driver}`);
 
   const plan = { blocks: [{ id: "b1" }], shapes: [], underlay: "data:should-be-stripped" };
@@ -98,7 +111,7 @@ console.log("── Store · bellek-içi son çare (ne kv ne localStorage) ─�
 {
   delete global.window;
   delete global.localStorage;
-  const { Store } = await loadModule("mem");
+  const { Store } = await loadStore("mem");
   check("driver seçimi", Store.driver === "memory", `driver=${Store.driver}`);
   await Store.save("t2", { blocks: [], shapes: [] });
   check("bellek sürücüsünde de kaydet/yükle çalışır", (await Store.load("t2")) !== null);
@@ -116,7 +129,7 @@ console.log("── Store · öncelik sırası (kv, localStorage varken bile kaz
       async list(prefix) { return { keys: [...kvMem.keys()].filter((k) => k.startsWith(prefix)) }; },
     },
   };
-  const { Store } = await loadModule("kv");
+  const { Store } = await loadStore("kv");
   check("window.storage + localStorage birlikte varken kv kazanır", Store.driver === "kv", `driver=${Store.driver}`);
   delete global.window;
   delete global.localStorage;

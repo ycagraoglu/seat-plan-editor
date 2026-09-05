@@ -9,6 +9,7 @@ import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
 import { buildDbPayload, dbSeatRows } from "./core/db-export.js";
+import { Store } from "./store/index.js";
 import { buildCtx, runRules } from "./core/rules.js";
 import { BUILTINS, EMPTY } from "./venues/index.js";
 import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
@@ -228,99 +229,6 @@ function paintOv(cur, b, seatKind, seatFeatures) {
   return nx;
 }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   DEPOLAMA KATMANI
-   Tek arayüz, değiştirilebilir sürücü. Kendi backend'inize bağlarken
-   sadece aşağıdaki dört fonksiyonu değiştirin, editörün geri kalanı
-   depolamayı bilmez.
-
-     const Store = {
-       async list()        { const r = await fetch("/api/plans"); ... }
-       async load(key)     { ... }
-       async save(key, p)  { ... }
-       async remove(key)   { ... }
-     }
-
-   Altlık görseli kaydedilmez — base64 görsel plan verisini şişirir ve
-   kaynağı zaten mekândan gelen bir dosyadır.
-   ══════════════════════════════════════════════════════════════════════════ */
-
-const SKEY = (k) => `plan:${k}`;
-
-/* window.storage yoksa (ör. Vercel/Netlify/S3 gibi düz statik barındırma —
-   bkz. README) localStorage gerçek tarayıcıda kalıcılığı sağlıyor; o da
-   yoksa (gizli sekme, kota dolu) bellek-içi Map son çare. */
-const hasLS = (() => {
-  try { const k = "__ls_probe"; localStorage.setItem(k, "1"); localStorage.removeItem(k); return true; }
-  catch { return false; }
-})();
-
-const Store = {
-  driver: (typeof window !== "undefined" && window.storage) ? "kv" : hasLS ? "ls" : "memory",
-  mem: new Map(),
-
-  async list() {
-    if (this.driver === "kv") {
-      try { const r = await window.storage.list("plan:", false);
-        return (r?.keys || []).map((k) => String(k).slice(5)).filter(Boolean); }
-      catch { return []; }
-    }
-    if (this.driver === "ls") {
-      const out = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k?.startsWith("plan:")) out.push(k.slice(5));
-      }
-      return out;
-    }
-    return [...this.mem.keys()];
-  },
-  async load(k) {
-    if (this.driver === "kv") {
-      try { const r = await window.storage.get(SKEY(k), false); return r ? JSON.parse(r.value) : null; }
-      catch { return null; }
-    }
-    if (this.driver === "ls") {
-      try { const v = localStorage.getItem(SKEY(k)); return v ? JSON.parse(v) : null; } catch { return null; }
-    }
-    return this.mem.get(k) || null;
-  },
-  async save(k, p) {
-    const body = JSON.stringify({ ...p, underlay: null });
-    if (this.driver === "kv") {
-      try { await window.storage.set(SKEY(k), body, false); return true; } catch { return false; }
-    }
-    if (this.driver === "ls") {
-      try { localStorage.setItem(SKEY(k), body); return true; } catch { return false; }
-    }
-    this.mem.set(k, JSON.parse(body));
-    return true;
-  },
-  async remove(k) {
-    if (this.driver === "kv") { try { await window.storage.delete(SKEY(k), false); } catch { /* yok */ } }
-    else if (this.driver === "ls") { try { localStorage.removeItem(SKEY(k)); } catch { /* yok */ } }
-    else this.mem.delete(k);
-  },
-
-  /** Küçük kullanıcı tercihleri (tema gibi). Değer verilmezse okur. */
-  async pref(k, v) {
-    const key = `pref:${k}`;
-    if (this.driver === "kv") {
-      try {
-        if (v === undefined) { const r = await window.storage.get(key, false); return r ? r.value : null; }
-        await window.storage.set(key, v, false); return v;
-      } catch { return null; }
-    }
-    if (this.driver === "ls") {
-      try {
-        if (v === undefined) return localStorage.getItem(key);
-        localStorage.setItem(key, v); return v;
-      } catch { return null; }
-    }
-    if (v === undefined) return this.mem.get(key) ?? null;
-    this.mem.set(key, v); return v;
-  },
-};
 
 
 

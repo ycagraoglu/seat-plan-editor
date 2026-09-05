@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 533 test
+npm test           # 551 test
 ```
 
 ---
@@ -181,10 +181,11 @@ satılan birim locadır.
 
 ## Neyi ALMAMALI
 
-- **`localStorage` kalıcılığı** (`Store`, `src/PlanEditor.jsx`) — tarayıcıya
-  özgü bir çözüm. Veritabanı destekli sürümde yeri yok. (Kotanın dolması
-  gerçek bir risk: GS planı 202 KB, Ülker 131 KB.) Buna karşılık
-  `ui/ErrorBoundary.jsx`'in "kayıtları indir" çıkışı **alınmaya değer**:
+- **`localStorage` sürücüsü** (`src/store/index.js`) — tarayıcıya özgü bir
+  çözüm; veritabanı destekli sürümde yeri yok. (Kotanın dolması gerçek bir
+  risk: GS planı 202 KB, Ülker 131 KB.) **Ama dosyanın kendisini alın** —
+  aşağıdaki "Depolama dikişi"ne bakın. Aynı şekilde
+  `ui/ErrorBoundary.jsx`'in "kayıtları indir" çıkışı da alınmaya değer:
   plan çökmeye yol açıyorsa her yeniden yükleme aynı beyaz ekranı verir,
   kullanıcının veriyi o döngüden kurtaracak bir yolu olmalı.
 - **Tek dosyalık arayüz.** `PlanEditor.jsx` hâlâ ~3.900 satır. Saf çekirdek
@@ -196,6 +197,38 @@ satılan birim locadır.
   bunun içindir. Blok adını değiştirmek şablon-türevi kimlikleri
   değiştirir; yayımlanmış sürümün değişmezliği bunu telafi eder, ama
   kimliğin kaynağı konusunda bilinçli olun.
+
+---
+
+## Depolama dikişi
+
+Editörün dış dünyaya değdiği **tek** yer `src/store/index.js`. Çekirdek
+(`src/core/**`) saf; arayüz yalnız beş fonksiyon çağırıyor:
+
+```
+list()          → string[]        kayıtlı plan anahtarları
+load(key)       → plan | null     yoksa null, HATA FIRLATMAZ
+save(key, plan) → boolean         false ise arayüz "kaydedilemedi" gösterir
+remove(key)     → void            yoksa da sessizce geçer
+pref(k[, v])    → string | null   v yoksa okur, varsa yazar
+```
+
+Kurallar sözleşmenin parçası: hiçbiri throw etmez (gizli sekme, kota dolu,
+ağ yok → null/false), `save`/`load` simetriktir, anahtar uzayları ayrıktır
+(`plan:` / `pref:`), altlık görseli kaydedilmez.
+
+Sözleşme **makineyle sınanıyor**: `test/unit/store.test.js` aynı paketi iki
+uygulamaya birden koşuyor — editörün bellek sürücüsü ve on satırlık sahte
+bir API sürücüsü. İkincisi olmasa sözleşme bir iddia olurdu; onunla birlikte
+"sürücü gerçekten değiştirilebilir" ölçülmüş bir olgu. Kendi `fetch` tabanlı
+sürücünüzü yazınca test paketini ona doğrultun.
+
+Bu paketin ilk koşusu gerçek bir hata buldu: bellek sürücüsü planları çıplak
+anahtarla yazıp `list()`'te Map'in tamamını döküyordu, yani tercihler plan
+sanılıyordu — üç sürücüden yalnız biri anahtar uzayı kuralını çiğniyordu.
+
+Tenant/kimlik burada **yok ve olmamalı**: oturum bilgisi `fetch` katmanının
+(çerez, başlık) işi, editörün değil.
 
 ---
 
@@ -235,8 +268,9 @@ src/
     plan       diffPlans — iki sürüm arası kimlik farkı
     schema     şema sürümü + göç zinciri
     export     seats.json veri şekli
+  store/       depolama dikişi — kv · localStorage · bellek sürücüleri
   venues/      9 gerçek mekân + builders + 2 şablon (stadyum, salon)
-  ui/state/    reducer + selector (saf, test edilebilir)
+  ui/          ErrorBoundary + state/ (reducer + selector, saf)
   styles/      tokens.css (tasarım sistemi) + app.css
   PlanEditor.jsx
 test/
