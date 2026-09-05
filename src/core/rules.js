@@ -352,9 +352,10 @@ export const RULES = [
      grupları birleştirir, yalnız kind==="companion_group" olanlar burada
      ilgi konusu — masa grupları (kind:"table") bu kurala hiç girmez.
      Üyelik sayımı ctx.seats.byGroup'tan (computeSeatScan'in tek geçişi,
-     kendi taraması AÇILMADI). BU TURDA hiçbir örnek salonda companion_group
-     YOK (elle gruplama arayüzü ayrı iş) — bu yüzden 9 salonun hiçbirinde
-     tetiklenmiyor, yalnız test/unit/rules.test.js'teki sentetik planda. */
+     kendi taraması AÇILMADI). Grup artık yerleşimden TÜRETİLİYOR (bkz.
+     geometry.js blockCompanionGroups) — bu kural türetilmiş grubun eksik
+     kalmadığını, aşağıdaki companion-orphan ise hiç grup kuramamış bir
+     refakatçi koltuğu kalmadığını denetler. İkisi rapor §5.4'ün iki yarısı. */
   {
     id: "companion-group-incomplete", severity: "err", live: false,
     check(ctx) {
@@ -376,6 +377,22 @@ export const RULES = [
           return `${g.code || g.name}: ${missing} yok`;
         }).join(" · "),
         ids: [...ids] }];
+    },
+  },
+  /* Rapor §5.4, harfiyen: "companion koltuğu yalnızca tür bilgisiyle
+     bırakılmamalıdır. Hangi wheelchair_space ile ilişkili olduğu
+     companion_group üzerinden açıkça tanımlanmalıdır." Grup yerleşimden
+     türetildiği için (tekerlekli sandalye + HEMEN sağındaki refakatçi) bu
+     kural fiilen "komşuluk bozulmuş" demektir: araya normal koltuk girmiş,
+     refakatçi tek başına konmuş ya da tekerlekli sandalye silinmiştir. */
+  {
+    id: "companion-orphan", severity: "err", live: false,
+    check(ctx) {
+      const oksuz = ctx.seats.list.filter((s) => s.seatKind === "companion" && !s.groupId);
+      if (!oksuz.length) return [];
+      return [{ t: "err", m: `${oksuz.length} refakatçi koltuğu hiçbir gruba bağlı değil — yanına tekerlekli sandalye alanı gerekir`,
+        d: oksuz.slice(0, 6).map((s) => s.id).join(" · "),
+        ids: [...new Set(oksuz.map((s) => s.bid))] }];
     },
   },
   /* "Görüş kısıtlı" artık bir KIND değil bir FEATURE (restrictedView) —

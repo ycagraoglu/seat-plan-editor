@@ -79,7 +79,116 @@
       "parent_id": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "cg:b7:11,0",
+      "code": "E-WC11,0",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:11,2",
+      "code": "E-WC11,2",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:11,4",
+      "code": "E-WC11,4",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:12,0",
+      "code": "E-WC12,0",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:12,10",
+      "code": "E-WC12,10",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:12,2",
+      "code": "E-WC12,2",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:12,4",
+      "code": "E-WC12,4",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:12,6",
+      "code": "E-WC12,6",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b7:12,8",
+      "code": "E-WC12,8",
+      "name": "E refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:11,0",
+      "code": "F-WC11,0",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:11,2",
+      "code": "F-WC11,2",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:11,4",
+      "code": "F-WC11,4",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:12,0",
+      "code": "F-WC12,0",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:12,10",
+      "code": "F-WC12,10",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:12,2",
+      "code": "F-WC12,2",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:12,4",
+      "code": "F-WC12,4",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:12,6",
+      "code": "F-WC12,6",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b10:12,8",
+      "code": "F-WC12,8",
+      "name": "F refakat grubu",
+      "kind": "companion_group"
+    }
+  ],
   "seats": [
     {
       "id": "A-1-1",
@@ -26229,7 +26338,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC11,0",
       "section": "Ana Salon"
     },
     {
@@ -26246,7 +26355,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC11,0",
       "section": "Ana Salon"
     },
     {
@@ -26263,7 +26372,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC11,2",
       "section": "Ana Salon"
     },
     {
@@ -26280,7 +26389,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC11,2",
       "section": "Ana Salon"
     },
     {
@@ -26297,7 +26406,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC11,4",
       "section": "Ana Salon"
     },
     {
@@ -26314,7 +26423,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC11,4",
       "section": "Ana Salon"
     },
     {
@@ -26421,7 +26530,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,0",
       "section": "Ana Salon"
     },
     {
@@ -26438,7 +26547,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,0",
       "section": "Ana Salon"
     },
     {
@@ -26455,7 +26564,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,2",
       "section": "Ana Salon"
     },
     {
@@ -26472,7 +26581,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,2",
       "section": "Ana Salon"
     },
     {
@@ -26489,7 +26598,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,4",
       "section": "Ana Salon"
     },
     {
@@ -26506,7 +26615,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,4",
       "section": "Ana Salon"
     },
     {
@@ -26523,7 +26632,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,6",
       "section": "Ana Salon"
     },
     {
@@ -26540,7 +26649,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,6",
       "section": "Ana Salon"
     },
     {
@@ -26557,7 +26666,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,8",
       "section": "Ana Salon"
     },
     {
@@ -26574,7 +26683,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,8",
       "section": "Ana Salon"
     },
     {
@@ -26591,7 +26700,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,10",
       "section": "Ana Salon"
     },
     {
@@ -26608,7 +26717,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "E-WC12,10",
       "section": "Ana Salon"
     },
     {
@@ -30465,7 +30574,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC11,0",
       "section": "Ana Salon"
     },
     {
@@ -30482,7 +30591,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC11,0",
       "section": "Ana Salon"
     },
     {
@@ -30499,7 +30608,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC11,2",
       "section": "Ana Salon"
     },
     {
@@ -30516,7 +30625,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC11,2",
       "section": "Ana Salon"
     },
     {
@@ -30533,7 +30642,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC11,4",
       "section": "Ana Salon"
     },
     {
@@ -30550,7 +30659,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC11,4",
       "section": "Ana Salon"
     },
     {
@@ -30657,7 +30766,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,0",
       "section": "Ana Salon"
     },
     {
@@ -30674,7 +30783,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,0",
       "section": "Ana Salon"
     },
     {
@@ -30691,7 +30800,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,2",
       "section": "Ana Salon"
     },
     {
@@ -30708,7 +30817,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,2",
       "section": "Ana Salon"
     },
     {
@@ -30725,7 +30834,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,4",
       "section": "Ana Salon"
     },
     {
@@ -30742,7 +30851,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,4",
       "section": "Ana Salon"
     },
     {
@@ -30759,7 +30868,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,6",
       "section": "Ana Salon"
     },
     {
@@ -30776,7 +30885,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,6",
       "section": "Ana Salon"
     },
     {
@@ -30793,7 +30902,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,8",
       "section": "Ana Salon"
     },
     {
@@ -30810,7 +30919,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,8",
       "section": "Ana Salon"
     },
     {
@@ -30827,7 +30936,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,10",
       "section": "Ana Salon"
     },
     {
@@ -30844,7 +30953,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "F-WC12,10",
       "section": "Ana Salon"
     }
   ]

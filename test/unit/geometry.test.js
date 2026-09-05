@@ -269,8 +269,8 @@ describe("resolvePlanGroups — kayıtlı + masa-türevi grupların birleşimi",
       { id: "b3", kind: "grid", label: "A" },   // masa DEĞİL, listeye girmez
     ] };
     expect(resolvePlanGroups(plan)).toEqual([
-      { id: "b1", code: "M1", name: "Masa 1", kind: "table" },
-      { id: "b2", code: "M2", name: "M2", kind: "table" },
+      { id: "b1", code: "M1", name: "Masa 1", kind: "table", blockId: "b1" },
+      { id: "b2", code: "M2", name: "M2", kind: "table", blockId: "b2" },
     ]);
   });
   it("kayıtlı gruplar + masa grupları AYNI listede, kayıtlılar ÖNCE gelir", () => {
@@ -281,7 +281,68 @@ describe("resolvePlanGroups — kayıtlı + masa-türevi grupların birleşimi",
     const groups = resolvePlanGroups(plan);
     expect(groups).toHaveLength(2);
     expect(groups[0].kind).toBe("companion_group");
-    expect(groups[1]).toEqual({ id: "b1", code: "M1", name: "M1", kind: "table" });
+    expect(groups[1]).toEqual({ id: "b1", code: "M1", name: "M1", kind: "table", blockId: "b1" });
+  });
+});
+
+/* Refakatçi grubu türetimi (rapor §5.4: companion asla grupsuz kalmamalı).
+   Masa grubuyla aynı desen — kaydedilmiş değil, yerleşimden okunur. */
+describe("companion_group türetimi — en yakın tekerlekli sandalye ile birebir eşleşme", () => {
+  const blok = (ov) => ({ id: "b1", kind: "grid", label: "A", ov });
+  const gid = (g, k) => g.find((x) => x.id === `cg:b1:${k}`);
+
+  /* Örnek salonlarda ÖLÇÜLEN üç gerçek düzen (bkz. geometry.js notu). */
+  it("yan yana (GS · Ülker): (r,c) sandalye, (r,c+1) refakatçi", () => {
+    const b = blok({ "0,0": { at: "wheel" }, "0,1": { at: "comp" } });
+    const g = resolvePlanGroups({ blocks: [b] });
+    expect(g.map((x) => x.kind)).toEqual(["companion_group"]);
+    expect(resolveSeatGroup(b, b.ov["0,0"], 0, 0)).toBe(g[0].id);
+    expect(resolveSeatGroup(b, b.ov["0,1"], 0, 1)).toBe(g[0].id);
+    expect(g[0].id).toBe("cg:b1:0,0");        // grubun kimliği SANDALYE hücresi
+  });
+  it("önlü arkalı (AKM): sandalye (1,c), refakatçi bir ön sırada (0,c)", () => {
+    const b = blok({ "1,5": { at: "wheel" }, "1,6": { at: "wheel" },
+                     "0,5": { at: "comp" },  "0,6": { at: "comp" } });
+    const g = resolvePlanGroups({ blocks: [b] });
+    expect(g).toHaveLength(2);
+    expect(resolveSeatGroup(b, b.ov["0,5"], 0, 5)).toBe("cg:b1:1,5");  // aynı sütun eşleşir
+    expect(resolveSeatGroup(b, b.ov["0,6"], 0, 6)).toBe("cg:b1:1,6");
+  });
+  it("blok blok (Yenikapı): 3 sandalye + 3 refakatçi, hepsi eşleşir", () => {
+    const b = blok({ "9,0": { at: "wheel" }, "9,1": { at: "wheel" }, "9,2": { at: "wheel" },
+                     "9,3": { at: "comp" },  "9,4": { at: "comp" },  "9,5": { at: "comp" } });
+    const g = resolvePlanGroups({ blocks: [b] });
+    expect(g).toHaveLength(3);
+    const bagli = ["9,3", "9,4", "9,5"].map((k) => resolveSeatGroup(b, b.ov[k], ...k.split(",").map(Number)));
+    expect(new Set(bagli).size).toBe(3);                 // birebir: ikisi aynı gruba düşmez
+    expect(bagli.every(Boolean)).toBe(true);
+  });
+
+  it("eşi kalmayan refakatçi grup kuramaz — companion-orphan kuralına düşer", () => {
+    const b = blok({ "0,0": { at: "wheel" }, "0,1": { at: "comp" }, "0,2": { at: "comp" } });
+    const g = resolvePlanGroups({ blocks: [b] });
+    expect(g).toHaveLength(1);                           // tek sandalye → tek grup
+    expect(resolveSeatGroup(b, b.ov["0,2"], 0, 2)).toBeNull();
+  });
+  it("vomitorium sandalyeyi oyduysa (rm) refakatçi öksüz kalır", () => {
+    const b = blok({ "0,0": { at: "wheel", rm: true }, "0,1": { at: "comp" } });
+    expect(resolvePlanGroups({ blocks: [b] })).toEqual([]);
+    expect(resolveSeatGroup(b, b.ov["0,1"], 0, 1)).toBeNull();
+  });
+  it("refakatçi tek başınaysa grup OLUŞMAZ", () => {
+    const b = blok({ "0,2": { at: "comp" } });
+    expect(resolvePlanGroups({ blocks: [b] })).toEqual([]);
+    expect(resolveSeatGroup(b, b.ov["0,2"], 0, 2)).toBeNull();
+  });
+  it("ov.groupId açıkça verilmişse türetimi EZER (istisna önceliği korunur)", () => {
+    const b = blok({ "0,0": { at: "wheel", groupId: "elle" }, "0,1": { at: "comp" } });
+    expect(resolveSeatGroup(b, b.ov["0,0"], 0, 0)).toBe("elle");
+    expect(resolvePlanGroups({ blocks: [b] })).toEqual([]);   // üyesiz ikiz grup çıkmaz
+  });
+  it("masa bloğunda masa grubu KAZANIR (Aylak: masadaki tekerlekli sandalye)", () => {
+    const b = { id: "b9", kind: "table", label: "M1", ov: { "0,0": { at: "wheel" }, "0,1": { at: "comp" } } };
+    expect(resolveSeatGroup(b, b.ov["0,0"], 0, 0)).toBe("b9");
+    expect(resolvePlanGroups({ blocks: [b] }).map((x) => x.kind)).toEqual(["table"]);
   });
 });
 

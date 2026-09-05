@@ -73,4 +73,34 @@ describe.each(VENUES)("%s · tablo dışa aktarımı", (k) => {
     const metin = JSON.stringify(p);
     expect(metin).not.toMatch(/price|fiyat|sellable|satılabilir|available/i);
   });
+
+  it("aynı üst bölüm altında kod tekrarlanmaz (rapor §5.1 UNIQUE kısıtı)", () => {
+    /* Şemanın kısıtı: UNIQUE (tenant_id, version_id, parent_section_id, code).
+       Editör bir bölümü geometrisi değiştiği için birkaç bloğa bölebilir
+       (Zorlu "ORK-O" → 3 blok); dışa aktarım bunları TEK bölümde birleştirir. */
+    const gorulen = new Map(); const cakisan = [];
+    p.sections.forEach((s) => {
+      const k = `${s.parent_id ?? ""}\u0000${s.code ?? ""}`;
+      if (gorulen.has(k)) cakisan.push(`${s.code} < ${s.parent_id}`); else gorulen.set(k, 1);
+    });
+    expect(cakisan).toEqual([]);
+  });
+
+  it("aynı bölüm içinde satır kodu tekrarlanmaz", () => {
+    const gorulen = new Map(); const cakisan = [];
+    p.rows.forEach((r) => {
+      const k = `${r.section_id}\u0000${r.code}`;
+      if (gorulen.has(k)) cakisan.push(k); else gorulen.set(k, 1);
+    });
+    expect(cakisan).toEqual([]);
+  });
+
+  it("kapı-bölüm eşleşmesi tekrarlanmaz (bağlantı tablosu birincil anahtarı)", () => {
+    const g = new Set(); const cakisan = [];
+    p.entrance_sections.forEach((e) => {
+      const k = `${e.entrance_id}\u0000${e.section_id}`;
+      if (g.has(k)) cakisan.push(k); else g.add(k);
+    });
+    expect(cakisan).toEqual([]);
+  });
 });

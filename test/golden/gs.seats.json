@@ -616,7 +616,1286 @@
       "parent_id": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "cg:b184:16,0",
+      "code": "401-WC16,0",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,10",
+      "code": "401-WC16,10",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,12",
+      "code": "401-WC16,12",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,14",
+      "code": "401-WC16,14",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,16",
+      "code": "401-WC16,16",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,2",
+      "code": "401-WC16,2",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,4",
+      "code": "401-WC16,4",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,6",
+      "code": "401-WC16,6",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b184:16,8",
+      "code": "401-WC16,8",
+      "name": "Üst Tribün · 401 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,0",
+      "code": "402-WC16,0",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,10",
+      "code": "402-WC16,10",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,12",
+      "code": "402-WC16,12",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,14",
+      "code": "402-WC16,14",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,16",
+      "code": "402-WC16,16",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,2",
+      "code": "402-WC16,2",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,4",
+      "code": "402-WC16,4",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,6",
+      "code": "402-WC16,6",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b185:16,8",
+      "code": "402-WC16,8",
+      "name": "Üst Tribün · 402 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b186:16,0",
+      "code": "403-WC16,0",
+      "name": "Üst Tribün · 403 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b186:16,16",
+      "code": "403-WC16,16",
+      "name": "Üst Tribün · 403 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b186:16,2",
+      "code": "403-WC16,2",
+      "name": "Üst Tribün · 403 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b186:16,4",
+      "code": "403-WC16,4",
+      "name": "Üst Tribün · 403 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b186:16,6",
+      "code": "403-WC16,6",
+      "name": "Üst Tribün · 403 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b186:16,8",
+      "code": "403-WC16,8",
+      "name": "Üst Tribün · 403 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b187:16,0",
+      "code": "404-WC16,0",
+      "name": "Üst Tribün · 404 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b187:16,16",
+      "code": "404-WC16,16",
+      "name": "Üst Tribün · 404 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b187:16,2",
+      "code": "404-WC16,2",
+      "name": "Üst Tribün · 404 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b187:16,4",
+      "code": "404-WC16,4",
+      "name": "Üst Tribün · 404 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b187:16,6",
+      "code": "404-WC16,6",
+      "name": "Üst Tribün · 404 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b187:16,8",
+      "code": "404-WC16,8",
+      "name": "Üst Tribün · 404 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b188:16,0",
+      "code": "405-WC16,0",
+      "name": "Üst Tribün · 405 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b188:16,16",
+      "code": "405-WC16,16",
+      "name": "Üst Tribün · 405 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b188:16,2",
+      "code": "405-WC16,2",
+      "name": "Üst Tribün · 405 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b188:16,4",
+      "code": "405-WC16,4",
+      "name": "Üst Tribün · 405 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b188:16,6",
+      "code": "405-WC16,6",
+      "name": "Üst Tribün · 405 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b188:16,8",
+      "code": "405-WC16,8",
+      "name": "Üst Tribün · 405 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b189:16,0",
+      "code": "406-WC16,0",
+      "name": "Üst Tribün · 406 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b189:16,16",
+      "code": "406-WC16,16",
+      "name": "Üst Tribün · 406 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b189:16,2",
+      "code": "406-WC16,2",
+      "name": "Üst Tribün · 406 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b189:16,4",
+      "code": "406-WC16,4",
+      "name": "Üst Tribün · 406 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b189:16,6",
+      "code": "406-WC16,6",
+      "name": "Üst Tribün · 406 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b189:16,8",
+      "code": "406-WC16,8",
+      "name": "Üst Tribün · 406 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b190:16,0",
+      "code": "407-WC16,0",
+      "name": "Üst Tribün · 407 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b190:16,16",
+      "code": "407-WC16,16",
+      "name": "Üst Tribün · 407 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b190:16,2",
+      "code": "407-WC16,2",
+      "name": "Üst Tribün · 407 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b190:16,4",
+      "code": "407-WC16,4",
+      "name": "Üst Tribün · 407 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b190:16,6",
+      "code": "407-WC16,6",
+      "name": "Üst Tribün · 407 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b190:16,8",
+      "code": "407-WC16,8",
+      "name": "Üst Tribün · 407 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b191:16,0",
+      "code": "408-WC16,0",
+      "name": "Üst Tribün · 408 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b191:16,16",
+      "code": "408-WC16,16",
+      "name": "Üst Tribün · 408 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b191:16,2",
+      "code": "408-WC16,2",
+      "name": "Üst Tribün · 408 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b191:16,4",
+      "code": "408-WC16,4",
+      "name": "Üst Tribün · 408 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b191:16,6",
+      "code": "408-WC16,6",
+      "name": "Üst Tribün · 408 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b191:16,8",
+      "code": "408-WC16,8",
+      "name": "Üst Tribün · 408 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,0",
+      "code": "409-WC16,0",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,10",
+      "code": "409-WC16,10",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,12",
+      "code": "409-WC16,12",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,14",
+      "code": "409-WC16,14",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,16",
+      "code": "409-WC16,16",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,2",
+      "code": "409-WC16,2",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,4",
+      "code": "409-WC16,4",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,6",
+      "code": "409-WC16,6",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b192:16,8",
+      "code": "409-WC16,8",
+      "name": "Üst Tribün · 409 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,0",
+      "code": "410-WC16,0",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,10",
+      "code": "410-WC16,10",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,12",
+      "code": "410-WC16,12",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,14",
+      "code": "410-WC16,14",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,16",
+      "code": "410-WC16,16",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,2",
+      "code": "410-WC16,2",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,4",
+      "code": "410-WC16,4",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,6",
+      "code": "410-WC16,6",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b193:16,8",
+      "code": "410-WC16,8",
+      "name": "Üst Tribün · 410 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,0",
+      "code": "411-WC16,0",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,10",
+      "code": "411-WC16,10",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,12",
+      "code": "411-WC16,12",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,14",
+      "code": "411-WC16,14",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,16",
+      "code": "411-WC16,16",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,2",
+      "code": "411-WC16,2",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,4",
+      "code": "411-WC16,4",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,6",
+      "code": "411-WC16,6",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b194:16,8",
+      "code": "411-WC16,8",
+      "name": "Üst Tribün · 411 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b195:16,0",
+      "code": "412-WC16,0",
+      "name": "Üst Tribün · 412 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b195:16,12",
+      "code": "412-WC16,12",
+      "name": "Üst Tribün · 412 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b195:16,14",
+      "code": "412-WC16,14",
+      "name": "Üst Tribün · 412 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b195:16,16",
+      "code": "412-WC16,16",
+      "name": "Üst Tribün · 412 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b195:16,2",
+      "code": "412-WC16,2",
+      "name": "Üst Tribün · 412 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b195:16,4",
+      "code": "412-WC16,4",
+      "name": "Üst Tribün · 412 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b196:16,0",
+      "code": "413-WC16,0",
+      "name": "Üst Tribün · 413 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b196:16,12",
+      "code": "413-WC16,12",
+      "name": "Üst Tribün · 413 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b196:16,14",
+      "code": "413-WC16,14",
+      "name": "Üst Tribün · 413 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b196:16,16",
+      "code": "413-WC16,16",
+      "name": "Üst Tribün · 413 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b196:16,2",
+      "code": "413-WC16,2",
+      "name": "Üst Tribün · 413 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b196:16,4",
+      "code": "413-WC16,4",
+      "name": "Üst Tribün · 413 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b197:16,0",
+      "code": "414-WC16,0",
+      "name": "Üst Tribün · 414 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b197:16,12",
+      "code": "414-WC16,12",
+      "name": "Üst Tribün · 414 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b197:16,14",
+      "code": "414-WC16,14",
+      "name": "Üst Tribün · 414 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b197:16,16",
+      "code": "414-WC16,16",
+      "name": "Üst Tribün · 414 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b197:16,2",
+      "code": "414-WC16,2",
+      "name": "Üst Tribün · 414 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b197:16,4",
+      "code": "414-WC16,4",
+      "name": "Üst Tribün · 414 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b198:16,0",
+      "code": "415-WC16,0",
+      "name": "Üst Tribün · 415 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b198:16,12",
+      "code": "415-WC16,12",
+      "name": "Üst Tribün · 415 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b198:16,14",
+      "code": "415-WC16,14",
+      "name": "Üst Tribün · 415 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b198:16,16",
+      "code": "415-WC16,16",
+      "name": "Üst Tribün · 415 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b198:16,2",
+      "code": "415-WC16,2",
+      "name": "Üst Tribün · 415 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b198:16,4",
+      "code": "415-WC16,4",
+      "name": "Üst Tribün · 415 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,0",
+      "code": "416-WC16,0",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,10",
+      "code": "416-WC16,10",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,12",
+      "code": "416-WC16,12",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,14",
+      "code": "416-WC16,14",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,16",
+      "code": "416-WC16,16",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,2",
+      "code": "416-WC16,2",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,4",
+      "code": "416-WC16,4",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,6",
+      "code": "416-WC16,6",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b199:16,8",
+      "code": "416-WC16,8",
+      "name": "Üst Tribün · 416 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,0",
+      "code": "417-WC16,0",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,10",
+      "code": "417-WC16,10",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,12",
+      "code": "417-WC16,12",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,14",
+      "code": "417-WC16,14",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,16",
+      "code": "417-WC16,16",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,2",
+      "code": "417-WC16,2",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,4",
+      "code": "417-WC16,4",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,6",
+      "code": "417-WC16,6",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b200:16,8",
+      "code": "417-WC16,8",
+      "name": "Üst Tribün · 417 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,0",
+      "code": "418-WC16,0",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,10",
+      "code": "418-WC16,10",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,12",
+      "code": "418-WC16,12",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,14",
+      "code": "418-WC16,14",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,16",
+      "code": "418-WC16,16",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,2",
+      "code": "418-WC16,2",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,4",
+      "code": "418-WC16,4",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,6",
+      "code": "418-WC16,6",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b201:16,8",
+      "code": "418-WC16,8",
+      "name": "Üst Tribün · 418 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b202:16,0",
+      "code": "419-WC16,0",
+      "name": "Üst Tribün · 419 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b202:16,16",
+      "code": "419-WC16,16",
+      "name": "Üst Tribün · 419 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b202:16,2",
+      "code": "419-WC16,2",
+      "name": "Üst Tribün · 419 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b202:16,4",
+      "code": "419-WC16,4",
+      "name": "Üst Tribün · 419 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b202:16,6",
+      "code": "419-WC16,6",
+      "name": "Üst Tribün · 419 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b202:16,8",
+      "code": "419-WC16,8",
+      "name": "Üst Tribün · 419 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b203:16,0",
+      "code": "420-WC16,0",
+      "name": "Üst Tribün · 420 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b203:16,16",
+      "code": "420-WC16,16",
+      "name": "Üst Tribün · 420 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b203:16,2",
+      "code": "420-WC16,2",
+      "name": "Üst Tribün · 420 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b203:16,4",
+      "code": "420-WC16,4",
+      "name": "Üst Tribün · 420 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b203:16,6",
+      "code": "420-WC16,6",
+      "name": "Üst Tribün · 420 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b203:16,8",
+      "code": "420-WC16,8",
+      "name": "Üst Tribün · 420 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b204:16,0",
+      "code": "421-WC16,0",
+      "name": "Üst Tribün · 421 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b204:16,16",
+      "code": "421-WC16,16",
+      "name": "Üst Tribün · 421 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b204:16,2",
+      "code": "421-WC16,2",
+      "name": "Üst Tribün · 421 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b204:16,4",
+      "code": "421-WC16,4",
+      "name": "Üst Tribün · 421 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b204:16,6",
+      "code": "421-WC16,6",
+      "name": "Üst Tribün · 421 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b204:16,8",
+      "code": "421-WC16,8",
+      "name": "Üst Tribün · 421 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b205:16,0",
+      "code": "422-WC16,0",
+      "name": "Üst Tribün · 422 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b205:16,16",
+      "code": "422-WC16,16",
+      "name": "Üst Tribün · 422 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b205:16,2",
+      "code": "422-WC16,2",
+      "name": "Üst Tribün · 422 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b205:16,4",
+      "code": "422-WC16,4",
+      "name": "Üst Tribün · 422 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b205:16,6",
+      "code": "422-WC16,6",
+      "name": "Üst Tribün · 422 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b205:16,8",
+      "code": "422-WC16,8",
+      "name": "Üst Tribün · 422 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b206:16,0",
+      "code": "423-WC16,0",
+      "name": "Üst Tribün · 423 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b206:16,16",
+      "code": "423-WC16,16",
+      "name": "Üst Tribün · 423 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b206:16,2",
+      "code": "423-WC16,2",
+      "name": "Üst Tribün · 423 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b206:16,4",
+      "code": "423-WC16,4",
+      "name": "Üst Tribün · 423 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b206:16,6",
+      "code": "423-WC16,6",
+      "name": "Üst Tribün · 423 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b206:16,8",
+      "code": "423-WC16,8",
+      "name": "Üst Tribün · 423 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b207:16,0",
+      "code": "424-WC16,0",
+      "name": "Üst Tribün · 424 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b207:16,16",
+      "code": "424-WC16,16",
+      "name": "Üst Tribün · 424 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b207:16,2",
+      "code": "424-WC16,2",
+      "name": "Üst Tribün · 424 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b207:16,4",
+      "code": "424-WC16,4",
+      "name": "Üst Tribün · 424 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b207:16,6",
+      "code": "424-WC16,6",
+      "name": "Üst Tribün · 424 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b207:16,8",
+      "code": "424-WC16,8",
+      "name": "Üst Tribün · 424 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,0",
+      "code": "425-WC16,0",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,10",
+      "code": "425-WC16,10",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,12",
+      "code": "425-WC16,12",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,14",
+      "code": "425-WC16,14",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,16",
+      "code": "425-WC16,16",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,2",
+      "code": "425-WC16,2",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,4",
+      "code": "425-WC16,4",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,6",
+      "code": "425-WC16,6",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b208:16,8",
+      "code": "425-WC16,8",
+      "name": "Üst Tribün · 425 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,0",
+      "code": "426-WC16,0",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,10",
+      "code": "426-WC16,10",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,12",
+      "code": "426-WC16,12",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,14",
+      "code": "426-WC16,14",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,16",
+      "code": "426-WC16,16",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,2",
+      "code": "426-WC16,2",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,4",
+      "code": "426-WC16,4",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,6",
+      "code": "426-WC16,6",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b209:16,8",
+      "code": "426-WC16,8",
+      "name": "Üst Tribün · 426 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,0",
+      "code": "427-WC16,0",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,10",
+      "code": "427-WC16,10",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,12",
+      "code": "427-WC16,12",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,14",
+      "code": "427-WC16,14",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,16",
+      "code": "427-WC16,16",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,2",
+      "code": "427-WC16,2",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,4",
+      "code": "427-WC16,4",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,6",
+      "code": "427-WC16,6",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b210:16,8",
+      "code": "427-WC16,8",
+      "name": "Üst Tribün · 427 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b211:16,0",
+      "code": "428-WC16,0",
+      "name": "Üst Tribün · 428 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b211:16,12",
+      "code": "428-WC16,12",
+      "name": "Üst Tribün · 428 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b211:16,14",
+      "code": "428-WC16,14",
+      "name": "Üst Tribün · 428 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b211:16,16",
+      "code": "428-WC16,16",
+      "name": "Üst Tribün · 428 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b211:16,2",
+      "code": "428-WC16,2",
+      "name": "Üst Tribün · 428 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b211:16,4",
+      "code": "428-WC16,4",
+      "name": "Üst Tribün · 428 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b212:16,0",
+      "code": "429-WC16,0",
+      "name": "Üst Tribün · 429 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b212:16,12",
+      "code": "429-WC16,12",
+      "name": "Üst Tribün · 429 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b212:16,14",
+      "code": "429-WC16,14",
+      "name": "Üst Tribün · 429 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b212:16,16",
+      "code": "429-WC16,16",
+      "name": "Üst Tribün · 429 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b212:16,2",
+      "code": "429-WC16,2",
+      "name": "Üst Tribün · 429 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b212:16,4",
+      "code": "429-WC16,4",
+      "name": "Üst Tribün · 429 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b213:16,0",
+      "code": "430-WC16,0",
+      "name": "Üst Tribün · 430 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b213:16,12",
+      "code": "430-WC16,12",
+      "name": "Üst Tribün · 430 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b213:16,14",
+      "code": "430-WC16,14",
+      "name": "Üst Tribün · 430 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b213:16,16",
+      "code": "430-WC16,16",
+      "name": "Üst Tribün · 430 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b213:16,2",
+      "code": "430-WC16,2",
+      "name": "Üst Tribün · 430 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b213:16,4",
+      "code": "430-WC16,4",
+      "name": "Üst Tribün · 430 refakat grubu",
+      "kind": "companion_group"
+    }
+  ],
   "seats": [
     {
       "id": "100-1-1",
@@ -452282,7 +453561,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -452299,7 +453578,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -452316,7 +453595,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -452333,7 +453612,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -452350,7 +453629,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -452367,7 +453646,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -452384,7 +453663,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -452401,7 +453680,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -452418,7 +453697,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -452435,7 +453714,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -452452,7 +453731,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -452469,7 +453748,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -452486,7 +453765,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -452503,7 +453782,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -452520,7 +453799,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -452537,7 +453816,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -452554,7 +453833,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -452571,7 +453850,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "401-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -469778,7 +471057,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -469795,7 +471074,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -469812,7 +471091,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -469829,7 +471108,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -469846,7 +471125,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -469863,7 +471142,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -469880,7 +471159,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -469897,7 +471176,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -469914,7 +471193,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -469931,7 +471210,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -469948,7 +471227,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -469965,7 +471244,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -469982,7 +471261,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -469999,7 +471278,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -470016,7 +471295,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -470033,7 +471312,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -470050,7 +471329,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -470067,7 +471346,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "402-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -476204,7 +477483,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -476221,7 +477500,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -476238,7 +477517,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -476255,7 +477534,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -476272,7 +477551,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -476289,7 +477568,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -476306,7 +477585,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -476323,7 +477602,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -476340,7 +477619,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -476357,7 +477636,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -476374,7 +477653,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -476391,7 +477670,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "403-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -481823,7 +483102,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -481840,7 +483119,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -481857,7 +483136,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -481874,7 +483153,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -481891,7 +483170,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -481908,7 +483187,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -481925,7 +483204,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -481942,7 +483221,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -481959,7 +483238,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -481976,7 +483255,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -481993,7 +483272,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -482010,7 +483289,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "404-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -487442,7 +488721,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -487459,7 +488738,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -487476,7 +488755,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -487493,7 +488772,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -487510,7 +488789,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -487527,7 +488806,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -487544,7 +488823,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -487561,7 +488840,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -487578,7 +488857,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -487595,7 +488874,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -487612,7 +488891,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -487629,7 +488908,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "405-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -493061,7 +494340,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -493078,7 +494357,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -493095,7 +494374,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -493112,7 +494391,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -493129,7 +494408,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -493146,7 +494425,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -493163,7 +494442,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -493180,7 +494459,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -493197,7 +494476,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -493214,7 +494493,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -493231,7 +494510,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -493248,7 +494527,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "406-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -498680,7 +499959,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -498697,7 +499976,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -498714,7 +499993,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -498731,7 +500010,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -498748,7 +500027,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -498765,7 +500044,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -498782,7 +500061,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -498799,7 +500078,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -498816,7 +500095,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -498833,7 +500112,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -498850,7 +500129,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -498867,7 +500146,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "407-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -504299,7 +505578,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -504316,7 +505595,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -504333,7 +505612,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -504350,7 +505629,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -504367,7 +505646,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -504384,7 +505663,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -504401,7 +505680,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -504418,7 +505697,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -504435,7 +505714,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -504452,7 +505731,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -504469,7 +505748,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -504486,7 +505765,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "408-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -520988,7 +522267,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -521005,7 +522284,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -521022,7 +522301,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -521039,7 +522318,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -521056,7 +522335,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -521073,7 +522352,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -521090,7 +522369,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -521107,7 +522386,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -521124,7 +522403,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -521141,7 +522420,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -521158,7 +522437,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -521175,7 +522454,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -521192,7 +522471,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -521209,7 +522488,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -521226,7 +522505,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -521243,7 +522522,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -521260,7 +522539,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -521277,7 +522556,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "409-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -538484,7 +539763,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -538501,7 +539780,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -538518,7 +539797,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -538535,7 +539814,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -538552,7 +539831,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -538569,7 +539848,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -538586,7 +539865,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -538603,7 +539882,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -538620,7 +539899,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -538637,7 +539916,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -538654,7 +539933,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -538671,7 +539950,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -538688,7 +539967,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -538705,7 +539984,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -538722,7 +540001,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -538739,7 +540018,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -538756,7 +540035,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -538773,7 +540052,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "410-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -555980,7 +557259,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -555997,7 +557276,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -556014,7 +557293,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -556031,7 +557310,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -556048,7 +557327,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -556065,7 +557344,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -556082,7 +557361,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -556099,7 +557378,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -556116,7 +557395,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -556133,7 +557412,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -556150,7 +557429,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -556167,7 +557446,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -556184,7 +557463,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -556201,7 +557480,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -556218,7 +557497,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -556235,7 +557514,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -556252,7 +557531,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -556269,7 +557548,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "411-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -561206,7 +562485,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -561223,7 +562502,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -561240,7 +562519,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -561257,7 +562536,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -561274,7 +562553,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -561291,7 +562570,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -561308,7 +562587,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -561325,7 +562604,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -561342,7 +562621,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -561359,7 +562638,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -561376,7 +562655,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -561393,7 +562672,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "412-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -565550,7 +566829,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -565567,7 +566846,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -565584,7 +566863,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -565601,7 +566880,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -565618,7 +566897,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -565635,7 +566914,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -565652,7 +566931,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -565669,7 +566948,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -565686,7 +566965,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -565703,7 +566982,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -565720,7 +566999,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -565737,7 +567016,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "413-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -569894,7 +571173,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -569911,7 +571190,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -569928,7 +571207,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -569945,7 +571224,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -569962,7 +571241,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -569979,7 +571258,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -569996,7 +571275,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -570013,7 +571292,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -570030,7 +571309,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -570047,7 +571326,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -570064,7 +571343,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -570081,7 +571360,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "414-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -574238,7 +575517,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -574255,7 +575534,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -574272,7 +575551,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -574289,7 +575568,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -574306,7 +575585,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -574323,7 +575602,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -574340,7 +575619,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -574357,7 +575636,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -574374,7 +575653,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -574391,7 +575670,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -574408,7 +575687,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -574425,7 +575704,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "415-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -590852,7 +592131,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -590869,7 +592148,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -590886,7 +592165,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -590903,7 +592182,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -590920,7 +592199,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -590937,7 +592216,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -590954,7 +592233,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -590971,7 +592250,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -590988,7 +592267,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -591005,7 +592284,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -591022,7 +592301,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -591039,7 +592318,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -591056,7 +592335,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -591073,7 +592352,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -591090,7 +592369,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -591107,7 +592386,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -591124,7 +592403,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -591141,7 +592420,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "416-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -608348,7 +609627,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -608365,7 +609644,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -608382,7 +609661,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -608399,7 +609678,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -608416,7 +609695,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -608433,7 +609712,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -608450,7 +609729,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -608467,7 +609746,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -608484,7 +609763,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -608501,7 +609780,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -608518,7 +609797,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -608535,7 +609814,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -608552,7 +609831,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -608569,7 +609848,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -608586,7 +609865,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -608603,7 +609882,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -608620,7 +609899,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -608637,7 +609916,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "417-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -625844,7 +627123,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -625861,7 +627140,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -625878,7 +627157,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -625895,7 +627174,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -625912,7 +627191,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -625929,7 +627208,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -625946,7 +627225,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -625963,7 +627242,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -625980,7 +627259,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -625997,7 +627276,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -626014,7 +627293,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -626031,7 +627310,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -626048,7 +627327,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -626065,7 +627344,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -626082,7 +627361,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -626099,7 +627378,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -626116,7 +627395,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -626133,7 +627412,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "418-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -632270,7 +633549,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -632287,7 +633566,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -632304,7 +633583,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -632321,7 +633600,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -632338,7 +633617,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -632355,7 +633634,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -632372,7 +633651,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -632389,7 +633668,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -632406,7 +633685,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -632423,7 +633702,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -632440,7 +633719,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -632457,7 +633736,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "419-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -637889,7 +639168,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -637906,7 +639185,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -637923,7 +639202,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -637940,7 +639219,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -637957,7 +639236,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -637974,7 +639253,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -637991,7 +639270,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -638008,7 +639287,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -638025,7 +639304,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -638042,7 +639321,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -638059,7 +639338,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -638076,7 +639355,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "420-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -643508,7 +644787,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -643525,7 +644804,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -643542,7 +644821,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -643559,7 +644838,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -643576,7 +644855,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -643593,7 +644872,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -643610,7 +644889,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -643627,7 +644906,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -643644,7 +644923,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -643661,7 +644940,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -643678,7 +644957,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -643695,7 +644974,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "421-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -649127,7 +650406,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -649144,7 +650423,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -649161,7 +650440,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -649178,7 +650457,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -649195,7 +650474,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -649212,7 +650491,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -649229,7 +650508,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -649246,7 +650525,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -649263,7 +650542,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -649280,7 +650559,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -649297,7 +650576,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -649314,7 +650593,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "422-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -654746,7 +656025,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -654763,7 +656042,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -654780,7 +656059,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -654797,7 +656076,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -654814,7 +656093,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -654831,7 +656110,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -654848,7 +656127,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -654865,7 +656144,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -654882,7 +656161,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -654899,7 +656178,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -654916,7 +656195,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -654933,7 +656212,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "423-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -660365,7 +661644,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -660382,7 +661661,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -660399,7 +661678,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -660416,7 +661695,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -660433,7 +661712,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -660450,7 +661729,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -660467,7 +661746,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -660484,7 +661763,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -660501,7 +661780,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -660518,7 +661797,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -660535,7 +661814,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -660552,7 +661831,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "424-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -677054,7 +678333,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -677071,7 +678350,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -677088,7 +678367,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -677105,7 +678384,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -677122,7 +678401,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -677139,7 +678418,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -677156,7 +678435,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -677173,7 +678452,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -677190,7 +678469,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -677207,7 +678486,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -677224,7 +678503,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -677241,7 +678520,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -677258,7 +678537,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -677275,7 +678554,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -677292,7 +678571,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -677309,7 +678588,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -677326,7 +678605,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -677343,7 +678622,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "425-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -694550,7 +695829,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -694567,7 +695846,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -694584,7 +695863,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -694601,7 +695880,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -694618,7 +695897,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -694635,7 +695914,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -694652,7 +695931,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -694669,7 +695948,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -694686,7 +695965,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -694703,7 +695982,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -694720,7 +695999,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -694737,7 +696016,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -694754,7 +696033,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -694771,7 +696050,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -694788,7 +696067,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -694805,7 +696084,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -694822,7 +696101,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -694839,7 +696118,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "426-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -712046,7 +713325,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -712063,7 +713342,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -712080,7 +713359,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -712097,7 +713376,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -712114,7 +713393,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -712131,7 +713410,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -712148,7 +713427,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -712165,7 +713444,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,6",
       "section": "Üst Tribün"
     },
     {
@@ -712182,7 +713461,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -712199,7 +713478,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,8",
       "section": "Üst Tribün"
     },
     {
@@ -712216,7 +713495,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -712233,7 +713512,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,10",
       "section": "Üst Tribün"
     },
     {
@@ -712250,7 +713529,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -712267,7 +713546,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -712284,7 +713563,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -712301,7 +713580,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -712318,7 +713597,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -712335,7 +713614,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "427-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -717272,7 +718551,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -717289,7 +718568,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -717306,7 +718585,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -717323,7 +718602,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -717340,7 +718619,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -717357,7 +718636,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -717374,7 +718653,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -717391,7 +718670,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -717408,7 +718687,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -717425,7 +718704,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -717442,7 +718721,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -717459,7 +718738,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "428-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -721616,7 +722895,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -721633,7 +722912,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -721650,7 +722929,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -721667,7 +722946,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -721684,7 +722963,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -721701,7 +722980,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -721718,7 +722997,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -721735,7 +723014,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -721752,7 +723031,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -721769,7 +723048,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -721786,7 +723065,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -721803,7 +723082,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "429-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -725960,7 +727239,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -725977,7 +727256,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,0",
       "section": "Üst Tribün"
     },
     {
@@ -725994,7 +727273,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -726011,7 +727290,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,2",
       "section": "Üst Tribün"
     },
     {
@@ -726028,7 +727307,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -726045,7 +727324,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,4",
       "section": "Üst Tribün"
     },
     {
@@ -726062,7 +727341,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -726079,7 +727358,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,12",
       "section": "Üst Tribün"
     },
     {
@@ -726096,7 +727375,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -726113,7 +727392,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,14",
       "section": "Üst Tribün"
     },
     {
@@ -726130,7 +727409,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,16",
       "section": "Üst Tribün"
     },
     {
@@ -726147,7 +727426,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "430-WC16,16",
       "section": "Üst Tribün"
     },
     {

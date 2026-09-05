@@ -97,7 +97,116 @@
       "parent_id": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "cg:b40:13,0",
+      "code": "ORK-O-WC13,0",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,10",
+      "code": "ORK-O-WC13,10",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,12",
+      "code": "ORK-O-WC13,12",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,14",
+      "code": "ORK-O-WC13,14",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,16",
+      "code": "ORK-O-WC13,16",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,2",
+      "code": "ORK-O-WC13,2",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,4",
+      "code": "ORK-O-WC13,4",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,6",
+      "code": "ORK-O-WC13,6",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b40:13,8",
+      "code": "ORK-O-WC13,8",
+      "name": "Orkestra Orta (arka) refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:11,0",
+      "code": "B1-O-WC11,0",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:11,2",
+      "code": "B1-O-WC11,2",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:11,4",
+      "code": "B1-O-WC11,4",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:11,6",
+      "code": "B1-O-WC11,6",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:11,8",
+      "code": "B1-O-WC11,8",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:12,0",
+      "code": "B1-O-WC12,0",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:12,2",
+      "code": "B1-O-WC12,2",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:12,4",
+      "code": "B1-O-WC12,4",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b49:12,6",
+      "code": "B1-O-WC12,6",
+      "name": "1. Balkon Orta refakat grubu",
+      "kind": "companion_group"
+    }
+  ],
   "seats": [
     {
       "id": "ORK-O-AA-18",
@@ -9203,7 +9312,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,0",
       "section": "Orkestra"
     },
     {
@@ -9220,7 +9329,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,0",
       "section": "Orkestra"
     },
     {
@@ -9237,7 +9346,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,2",
       "section": "Orkestra"
     },
     {
@@ -9254,7 +9363,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,2",
       "section": "Orkestra"
     },
     {
@@ -9271,7 +9380,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,4",
       "section": "Orkestra"
     },
     {
@@ -9288,7 +9397,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,4",
       "section": "Orkestra"
     },
     {
@@ -9305,7 +9414,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,6",
       "section": "Orkestra"
     },
     {
@@ -9322,7 +9431,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,6",
       "section": "Orkestra"
     },
     {
@@ -9339,7 +9448,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,8",
       "section": "Orkestra"
     },
     {
@@ -9356,7 +9465,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,8",
       "section": "Orkestra"
     },
     {
@@ -9373,7 +9482,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,10",
       "section": "Orkestra"
     },
     {
@@ -9390,7 +9499,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,10",
       "section": "Orkestra"
     },
     {
@@ -9407,7 +9516,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,12",
       "section": "Orkestra"
     },
     {
@@ -9424,7 +9533,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,12",
       "section": "Orkestra"
     },
     {
@@ -9441,7 +9550,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,14",
       "section": "Orkestra"
     },
     {
@@ -9458,7 +9567,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,14",
       "section": "Orkestra"
     },
     {
@@ -9475,7 +9584,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,16",
       "section": "Orkestra"
     },
     {
@@ -9492,7 +9601,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ORK-O-WC13,16",
       "section": "Orkestra"
     },
     {
@@ -22034,7 +22143,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,0",
       "section": "1. Balkon"
     },
     {
@@ -22051,7 +22160,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,0",
       "section": "1. Balkon"
     },
     {
@@ -22068,7 +22177,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,2",
       "section": "1. Balkon"
     },
     {
@@ -22085,7 +22194,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,2",
       "section": "1. Balkon"
     },
     {
@@ -22102,7 +22211,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,4",
       "section": "1. Balkon"
     },
     {
@@ -22119,7 +22228,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,4",
       "section": "1. Balkon"
     },
     {
@@ -22136,7 +22245,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,6",
       "section": "1. Balkon"
     },
     {
@@ -22153,7 +22262,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,6",
       "section": "1. Balkon"
     },
     {
@@ -22170,7 +22279,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,8",
       "section": "1. Balkon"
     },
     {
@@ -22187,7 +22296,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC11,8",
       "section": "1. Balkon"
     },
     {
@@ -22399,7 +22508,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,0",
       "section": "1. Balkon"
     },
     {
@@ -22416,7 +22525,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,0",
       "section": "1. Balkon"
     },
     {
@@ -22433,7 +22542,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,2",
       "section": "1. Balkon"
     },
     {
@@ -22450,7 +22559,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,2",
       "section": "1. Balkon"
     },
     {
@@ -22467,7 +22576,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,4",
       "section": "1. Balkon"
     },
     {
@@ -22484,7 +22593,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,4",
       "section": "1. Balkon"
     },
     {
@@ -22501,7 +22610,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,6",
       "section": "1. Balkon"
     },
     {
@@ -22518,7 +22627,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "B1-O-WC12,6",
       "section": "1. Balkon"
     },
     {

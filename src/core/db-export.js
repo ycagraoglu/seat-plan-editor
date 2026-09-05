@@ -1,5 +1,5 @@
 import { buildSeats, resolvePlanSections, resolveBlockSectionId, sectionPath,
-  resolvePlanGroups, DEFAULT_SEAT_KIND } from "./geometry.js";
+  resolvePlanGroups, DEFAULT_SEAT_KIND, SECTION_SEP } from "./geometry.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    TABLO BİÇİMİNDE DIŞA AKTARIM
@@ -41,6 +41,37 @@ const SHAPE_MAP = {
 
 const slug = (s) => String(s || "").trim().replace(/\s+/g, "_").toLocaleUpperCase("tr");
 
+const r1 = (n) => +(+n).toFixed(1);
+const pts = (ps) => ps.map((p) => ({ x: r1(p.x), y: r1(p.y) }));
+
+/* Bölüm geometrisi — rapor §6.1: geometri SECTION üzerindedir ("mevcut
+   uygulama section geometrisinde yalnızca rect.v1 destekliyor", §6.2 bunu
+   dokuz türe açıyor). Editörün yaprak bölümü blok olduğu için geometri
+   bloğun tabanından okunur:
+
+     fan            → arc.v1      raporun "kavisli tribün" satırı, birebir
+     yuvarlak masa  → ellipse.v1  raporun "yuvarlak masa" satırı, birebir
+     diğer          → polygon.v1  taban çokgeni — kesin, yaklaşıklık yok
+
+   rect.v1'e DÜŞÜRÜLMEZ: dönmüş bir bloğun dünya hizalı bbox'ı gerçek
+   tabanı değildir; çokgen zaten kesin. Birden çok bloğun birleştiği
+   bölümde (Zorlu ORK-*) tek bir taban yok — geometri null bırakılır,
+   uydurulmuş bir birleşim çokgeni üretilmez. */
+function sectionGeometry(b, m) {
+  if (b.kind === "fan") {
+    const derinlik = m.P.counts.length * b.rowGap;
+    return { geometry_kind: "arc.v1", geometry_data: {
+      cx: r1(b.x), cy: r1(b.y), r_inner: r1(b.r0), r_outer: r1(b.r0 + derinlik),
+      a_start: r1(b.aStart), a_end: r1(b.aEnd), rotation: r1(b.rot || 0) } };
+  }
+  if (b.kind === "table" && b.tShape === "round") {
+    const R = Math.max(...m.outline.map((p) => Math.hypot(p.x - m.cx, p.y - m.cy)));
+    return { geometry_kind: "ellipse.v1", geometry_data: {
+      cx: r1(m.cx), cy: r1(m.cy), rx: r1(R), ry: r1(R), rotation: 0 } };
+  }
+  return { geometry_kind: "polygon.v1", geometry_data: { points: pts(m.outline) } };
+}
+
 /* Bir şeklin geometrisi: çokgen çizilmişse polygon.v1, ikon nokta,
    gerisi dikdörtgen. Editör başka bir şey üretmiyor — ölçüldü. */
 function shapeGeometry(s) {
@@ -67,14 +98,26 @@ export function buildDbPayload(plan, metas, gates) {
   const known = new Set(sections.map((s) => s.id));
   const blockSection = new Map();          // blok id → yaprak bölüm id
 
-  metas.forEach(({ b }) => {
+  /* Aynı kat altında aynı kodu taşıyan bloklar TEK bölümdür. Editor bir
+     bölümü geometrisi değiştiği için birden çok bloğa böler (Zorlu'da
+     "ORK-O" ön/orta/arka üç blok, ama salonda tek bir orkestra ortasıdır).
+     Her bloğa ayrı bölüm açmak hem gerçeği bozar hem de raporun
+     UNIQUE (parent_section_id, code) kısıtını çiğner. */
+  const cokBloklu = new Set();
+  metas.forEach(({ b, m }) => {
     const ust = resolveBlockSectionId(b);
-    const id = `blk:${b.id}`;
+    const id = `${ust}${SECTION_SEP}${b.label}`;
     blockSection.set(b.id, id);
-    if (known.has(id)) return;
+    if (known.has(id)) { cokBloklu.add(id); return; }
     known.add(id);
     sections.push({ id, parent_id: ust, code: b.label,
-      name: b.name || b.label, kind: "section" });
+      name: b.name || b.label, kind: "section", ...sectionGeometry(b, m) });
+  });
+  /* Birden çok bloğun birleştiği bölümün tek tabanı yok (yukarıdaki nota
+     bakınız): ilk bloğunkini bölümün tamamıymış gibi bildirmek yanlış olur. */
+  sections.forEach((s) => {
+    if (!cokBloklu.has(s.id)) return;
+    s.geometry_kind = null; s.geometry_data = null;
   });
 
   /* ── koltuk tipleri: kullanılan her tür bir satır ──────────────── */
@@ -91,10 +134,10 @@ export function buildDbPayload(plan, metas, gates) {
     const gate = (gates.get(b.id) || [])[0] || null;
     buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
       if (s.gap) return;
-      const rowKey = `${b.id}|${s.row}`;
+      const rowKey = `${secId}|${s.row}`;
       let rowId = rowSeen.get(rowKey);
       if (!rowId) {
-        rowId = `row:${b.id}:${slug(s.row)}`;
+        rowId = `row:${secId}:${slug(s.row)}`;
         rowSeen.set(rowKey, rowId);
         rows.push({ id: rowId, section_id: secId, code: String(s.row),
           name: String(s.row), sort_order: rows.length });
@@ -122,7 +165,7 @@ export function buildDbPayload(plan, metas, gates) {
 
   /* ── gruplar ───────────────────────────────────────────────────── */
   const seat_groups = resolvePlanGroups(plan).map((g) => ({
-    id: `grp:${g.id}`, section_id: blockSection.get(g.id) ?? null,
+    id: `grp:${g.id}`, section_id: blockSection.get(g.blockId ?? g.id) ?? null,
     code: g.code, name: g.name, kind: g.kind,
   }));
 
@@ -141,9 +184,15 @@ export function buildDbPayload(plan, metas, gates) {
     id: `ent:${slug(d.label)}`, code: slug(d.label), name: d.label || "",
   }));
   const entrance_sections = [];
+  const esSeen = new Set();
   doors.forEach((d) => (d.blocks || []).forEach((bid) => {
     const sec = blockSection.get(bid);
-    if (sec) entrance_sections.push({ entrance_id: `ent:${slug(d.label)}`, section_id: sec });
+    if (!sec) return;
+    const ent = `ent:${slug(d.label)}`;
+    const k = `${ent}\u0000${sec}`;
+    if (esSeen.has(k)) return;               /* birleşen bloklar aynı kapıyı paylaşabilir */
+    esSeen.add(k);
+    entrance_sections.push({ entrance_id: ent, section_id: sec });
   }));
 
   return {

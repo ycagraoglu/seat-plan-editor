@@ -96,7 +96,44 @@
       "parent_id": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "cg:b460:6,0",
+      "code": "P-WC6,0",
+      "name": "Parter · P refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b460:6,2",
+      "code": "P-WC6,2",
+      "name": "Parter · P refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b462:0,0",
+      "code": "ZL1-WC0,0",
+      "name": "Zemin Loca · ZL1 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b462:1,0",
+      "code": "ZL1-WC1,0",
+      "name": "Zemin Loca · ZL1 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b463:0,0",
+      "code": "ZL2-WC0,0",
+      "name": "Zemin Loca · ZL2 refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b463:1,0",
+      "code": "ZL2-WC1,0",
+      "name": "Zemin Loca · ZL2 refakat grubu",
+      "kind": "companion_group"
+    }
+  ],
   "seats": [
     {
       "id": "P-1-1",
@@ -2002,7 +2039,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P-WC6,0",
       "section": "Parter"
     },
     {
@@ -2019,7 +2056,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P-WC6,0",
       "section": "Parter"
     },
     {
@@ -2036,7 +2073,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P-WC6,2",
       "section": "Parter"
     },
     {
@@ -2053,7 +2090,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P-WC6,2",
       "section": "Parter"
     },
     {
@@ -2505,7 +2542,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL1-WC0,0",
       "section": "Zemin Loca"
     },
     {
@@ -2522,7 +2559,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL1-WC0,0",
       "section": "Zemin Loca"
     },
     {
@@ -2554,7 +2591,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL1-WC1,0",
       "section": "Zemin Loca"
     },
     {
@@ -2571,7 +2608,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL1-WC1,0",
       "section": "Zemin Loca"
     },
     {
@@ -2603,7 +2640,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL2-WC0,0",
       "section": "Zemin Loca"
     },
     {
@@ -2620,7 +2657,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL2-WC0,0",
       "section": "Zemin Loca"
     },
     {
@@ -2652,7 +2689,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL2-WC1,0",
       "section": "Zemin Loca"
     },
     {
@@ -2669,7 +2706,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "ZL2-WC1,0",
       "section": "Zemin Loca"
     },
     {

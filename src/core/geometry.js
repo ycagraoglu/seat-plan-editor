@@ -125,22 +125,109 @@ export const tableGroupId = (b) => b.id;
  *  varsayılan masa grubundan çıkar" demek, bkz. resolveSeatKind'deki aynı
  *  bağımsız-override deseni) > blok varsayılanı (yalnız masa bloklarında
  *  var) > hiç grup yok (null). */
-export function resolveSeatGroup(b, o) {
+export function resolveSeatGroup(b, o, r, c) {
   if (o && o.groupId !== undefined) return o.groupId;
-  return b.kind === "table" ? tableGroupId(b) : null;
+  if (b.kind === "table") return tableGroupId(b);
+  const kind = cellKind(b, r, c);
+  if (kind !== "wheelchair_space" && kind !== "companion") return null;
+  const es = companionEslesme(b).get(`${r},${c}`);
+  return es ? companionGroupId(b, kind === "wheelchair_space" ? `${r},${c}` : es) : null;
 }
 
-/** Bir planın TÜM gruplarının listesi: kayıtlı olanlar (plan.groups —
- *  kullanıcının/arayüzün box/loveseat/pod/companion_group için elle
- *  kuracağı liste, BU TURDA arayüzü yok, veri modeli hazır) + masa
- *  bloklarından türetilenler (asla saklanmaz, her çağrıda üretilir).
- *  export.js (seats.json) ve rules.js (companion_group doğrulaması) TEK
- *  bu fonksiyonu çağırır — ikisi ayrı ayrı "masayı grupla" mantığı YAZMAZ. */
+/* Grubun kimliği TEKERLEKLİ SANDALYE hücresidir — refakatçi ona bağlanır,
+   tersi değil (rapor §5.4: "hangi wheelchair_space ile ilişkili olduğu"). */
+export const companionGroupId = (b, wheelKey) => `cg:${b.id}:${wheelKey}`;
+
+/* Silinmiş (rm) veya koridora çevrilmiş (gap) hücrede koltuk YOKTUR: ov
+   girdisi kalsa bile grup üyesi olamaz. Stadyum şablonunda cutVomitories
+   withAccessible'dan SONRA çalışıp tünele denk gelen çifti siliyor
+   (bkz. venues/templates.js notu). */
+const cellKind = (b, r, c) => {
+  if (r == null || c == null || c < 0) return null;
+  const o = (b.ov || {})[`${r},${c}`] || {};
+  if (o.rm || o.gap) return null;
+  return resolveSeatKind(b, o).seatKind;
+};
+
+/* ── refakatçi ↔ tekerlekli sandalye eşleşmesi ──────────────────────────
+   Rapor §5.4 refakatçinin hangi tekerlekli sandalyeye ait olduğunun açıkça
+   tanımlanmasını istiyor. İlişki FİZİKSEL, o yüzden yerleşimden okunuyor —
+   masa grubunun blok kimliğinden okunması gibi. Örnek salonlarda ölçülmüş
+   ÜÇ gerçek düzen var, üçünü de aynı kural karşılıyor:
+
+     yan yana      GS · Ülker    (r,c) ile (r,c+1)
+     önlü arkalı   AKM           (4,c) ile (3,c) — refakatçi bir ön sırada
+     blok blok     Yenikapı      (19,0..5) sandalye, (19,6..11) refakatçi
+
+   Eşleştirme hücre uzayında en yakın komşuya, BİREBİR ve açgözlü. Sıra
+   farkı sütun farkından baskın (bir sıra ~90cm, bir sütun ~41cm), bu yüzden
+   aynı sıradaki her eş, komşu sıradaki her eşi yener. Eşsiz kalan refakatçi
+   grup kuramaz ve companion-orphan kuralına düşer — GS/Ülker'de vomitorium
+   tekerlekli sandalyeyi oyduğu hâlde refakatçinin kalması böyle yakalandı.
+
+   Blok başına bir kez hesaplanıp ov nesnesine göre belleniyor: resolveSeatGroup
+   koltuk başına çağrılıyor, GS'te 48.600 kez. */
+const eslesmeBellek = new WeakMap();
+
+function companionEslesme(b) {
+  const ov = b.ov || {};
+  const bellek = eslesmeBellek.get(ov);
+  if (bellek) return bellek;
+  const sandalye = [], refakat = [];
+  Object.keys(ov).forEach((k) => {
+    const [r, c] = k.split(",").map(Number);
+    if (!Number.isFinite(r) || !Number.isFinite(c)) return;
+    const t = cellKind(b, r, c);
+    if (t === "wheelchair_space") sandalye.push(k);
+    else if (t === "companion") refakat.push(k);
+  });
+  const adaylar = [];
+  refakat.forEach((rk) => {
+    const [rr, rc] = rk.split(",").map(Number);
+    sandalye.forEach((wk) => {
+      const [wr, wc] = wk.split(",").map(Number);
+      adaylar.push({ rk, wk, d: Math.abs(rr - wr) * 1000 + Math.abs(rc - wc) });
+    });
+  });
+  adaylar.sort((a, z) => a.d - z.d || (a.rk < z.rk ? -1 : a.rk > z.rk ? 1 : a.wk < z.wk ? -1 : 1));
+  const m = new Map(), kullanilan = new Set();
+  adaylar.forEach(({ rk, wk }) => {
+    if (m.has(rk) || kullanilan.has(wk)) return;
+    m.set(rk, wk); m.set(wk, rk); kullanilan.add(wk);
+  });
+  eslesmeBellek.set(ov, m);
+  return m;
+}
+
+/* Bir bloğun türettiği refakatçi grupları — eşleşmenin ta kendisi, koltuk
+   üretmeden. Öncelik sırası (elle atama > masa > refakat) BURADA
+   TEKRARLANMAZ: grup ancak iki koltuk da gerçekten ona düşüyorsa vardır,
+   bunu resolveSeatGroup söyler. Sırayı iki yerde yazmak, ikisinin
+   ayrışmasına ve üyesiz grup uydurulmasına yol açıyordu. */
+export function blockCompanionGroups(b) {
+  const ov = b.ov || {};
+  const m = companionEslesme(b);
+  const out = [];
+  m.forEach((es, k) => {
+    if (cellKind(b, ...k.split(",").map(Number)) !== "wheelchair_space") return;
+    const id = companionGroupId(b, k);
+    const [r, c] = k.split(",").map(Number);
+    const [er, ec] = es.split(",").map(Number);
+    if (resolveSeatGroup(b, ov[k], r, c) !== id) return;
+    if (resolveSeatGroup(b, ov[es], er, ec) !== id) return;
+    out.push({ id, code: `${b.label}-WC${k}`,
+      name: `${b.name || b.label} refakat grubu`, kind: "companion_group", blockId: b.id });
+  });
+  return out.sort((a, z) => (a.id < z.id ? -1 : a.id > z.id ? 1 : 0));
+}
+
 export function resolvePlanGroups(plan) {
   const tableGroups = (plan.blocks || [])
     .filter((b) => b.kind === "table")
-    .map((b) => ({ id: tableGroupId(b), code: b.label, name: b.name || b.label, kind: "table" }));
-  return [...(plan.groups || []), ...tableGroups];
+    .map((b) => ({ id: tableGroupId(b), code: b.label, name: b.name || b.label,
+      kind: "table", blockId: b.id }));
+  const compGroups = (plan.blocks || []).flatMap(blockCompanionGroups);
+  return [...(plan.groups || []), ...tableGroups, ...compGroups];
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -563,7 +650,7 @@ export function buildSeats(b, meta, tpl) {
       seats.push({ key: `${b.id}:${r},${c}`, id: o.id || gen, gen, adopted: !!o.id,
         block: b.label, level: b.level || "", row: rl, num: label,
         r, c, gap: f.gap, tweak: !!(o.dx || o.dy || o.rot || o.label || o.id),
-        ...resolveSeatKind(b, o), groupId: resolveSeatGroup(b, o),
+        ...resolveSeatKind(b, o), groupId: resolveSeatGroup(b, o, r, c),
         x: w.x, y: w.y, rot: p.a + b.rot + (o.rot || 0), color: b.color });
     });
     if (b.kind !== "free" && b.kind !== "table" && row.length && P.counts.length > 1) {

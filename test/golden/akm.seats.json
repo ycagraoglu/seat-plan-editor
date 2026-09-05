@@ -92,7 +92,116 @@
       "parent_id": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "cg:b489:4,10",
+      "code": "P.ON-WC4,10",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,11",
+      "code": "P.ON-WC4,11",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,12",
+      "code": "P.ON-WC4,12",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,13",
+      "code": "P.ON-WC4,13",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,14",
+      "code": "P.ON-WC4,14",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,15",
+      "code": "P.ON-WC4,15",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,16",
+      "code": "P.ON-WC4,16",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,17",
+      "code": "P.ON-WC4,17",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,8",
+      "code": "P.ON-WC4,8",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b489:4,9",
+      "code": "P.ON-WC4,9",
+      "name": "P.ON refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,10",
+      "code": "1B.ORTA-WC6,10",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,11",
+      "code": "1B.ORTA-WC6,11",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,12",
+      "code": "1B.ORTA-WC6,12",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,13",
+      "code": "1B.ORTA-WC6,13",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,14",
+      "code": "1B.ORTA-WC6,14",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,15",
+      "code": "1B.ORTA-WC6,15",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,8",
+      "code": "1B.ORTA-WC6,8",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b493:6,9",
+      "code": "1B.ORTA-WC6,9",
+      "name": "1B.ORTA refakat grubu",
+      "kind": "companion_group"
+    }
+  ],
   "seats": [
     {
       "id": "P.ON-1-1",
@@ -948,7 +1057,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,8",
       "section": "Parter"
     },
     {
@@ -965,7 +1074,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,9",
       "section": "Parter"
     },
     {
@@ -982,7 +1091,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,10",
       "section": "Parter"
     },
     {
@@ -999,7 +1108,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,11",
       "section": "Parter"
     },
     {
@@ -1016,7 +1125,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,12",
       "section": "Parter"
     },
     {
@@ -1033,7 +1142,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,13",
       "section": "Parter"
     },
     {
@@ -1050,7 +1159,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,14",
       "section": "Parter"
     },
     {
@@ -1067,7 +1176,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,15",
       "section": "Parter"
     },
     {
@@ -1084,7 +1193,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,16",
       "section": "Parter"
     },
     {
@@ -1101,7 +1210,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,17",
       "section": "Parter"
     },
     {
@@ -1358,7 +1467,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,8",
       "section": "Parter"
     },
     {
@@ -1375,7 +1484,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,9",
       "section": "Parter"
     },
     {
@@ -1392,7 +1501,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,10",
       "section": "Parter"
     },
     {
@@ -1409,7 +1518,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,11",
       "section": "Parter"
     },
     {
@@ -1426,7 +1535,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,12",
       "section": "Parter"
     },
     {
@@ -1443,7 +1552,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,13",
       "section": "Parter"
     },
     {
@@ -1460,7 +1569,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,14",
       "section": "Parter"
     },
     {
@@ -1477,7 +1586,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,15",
       "section": "Parter"
     },
     {
@@ -1494,7 +1603,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,16",
       "section": "Parter"
     },
     {
@@ -1511,7 +1620,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "P.ON-WC4,17",
       "section": "Parter"
     },
     {
@@ -16828,7 +16937,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,8",
       "section": "1. Balkon"
     },
     {
@@ -16845,7 +16954,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,9",
       "section": "1. Balkon"
     },
     {
@@ -16862,7 +16971,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,10",
       "section": "1. Balkon"
     },
     {
@@ -16879,7 +16988,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,11",
       "section": "1. Balkon"
     },
     {
@@ -16896,7 +17005,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,12",
       "section": "1. Balkon"
     },
     {
@@ -16913,7 +17022,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,13",
       "section": "1. Balkon"
     },
     {
@@ -16930,7 +17039,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,14",
       "section": "1. Balkon"
     },
     {
@@ -16947,7 +17056,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,15",
       "section": "1. Balkon"
     },
     {
@@ -17264,7 +17373,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,8",
       "section": "1. Balkon"
     },
     {
@@ -17281,7 +17390,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,9",
       "section": "1. Balkon"
     },
     {
@@ -17298,7 +17407,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,10",
       "section": "1. Balkon"
     },
     {
@@ -17315,7 +17424,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,11",
       "section": "1. Balkon"
     },
     {
@@ -17332,7 +17441,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,12",
       "section": "1. Balkon"
     },
     {
@@ -17349,7 +17458,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,13",
       "section": "1. Balkon"
     },
     {
@@ -17366,7 +17475,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,14",
       "section": "1. Balkon"
     },
     {
@@ -17383,7 +17492,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "1B.ORTA-WC6,15",
       "section": "1. Balkon"
     },
     {

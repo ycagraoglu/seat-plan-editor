@@ -52,7 +52,44 @@
       "parent_id": null
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": "cg:b511:19,0",
+      "code": "LOCA-WC19,0",
+      "name": "LOCA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b511:19,1",
+      "code": "LOCA-WC19,1",
+      "name": "LOCA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b511:19,2",
+      "code": "LOCA-WC19,2",
+      "name": "LOCA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b511:19,3",
+      "code": "LOCA-WC19,3",
+      "name": "LOCA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b511:19,4",
+      "code": "LOCA-WC19,4",
+      "name": "LOCA refakat grubu",
+      "kind": "companion_group"
+    },
+    {
+      "id": "cg:b511:19,5",
+      "code": "LOCA-WC19,5",
+      "name": "LOCA refakat grubu",
+      "kind": "companion_group"
+    }
+  ],
   "seats": [
     {
       "id": "LOCA-1-1",
@@ -7193,7 +7230,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,0",
       "section": "Loca"
     },
     {
@@ -7210,7 +7247,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,1",
       "section": "Loca"
     },
     {
@@ -7227,7 +7264,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,2",
       "section": "Loca"
     },
     {
@@ -7244,7 +7281,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,3",
       "section": "Loca"
     },
     {
@@ -7261,7 +7298,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,4",
       "section": "Loca"
     },
     {
@@ -7278,7 +7315,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,5",
       "section": "Loca"
     },
     {
@@ -7295,7 +7332,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,5",
       "section": "Loca"
     },
     {
@@ -7312,7 +7349,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,4",
       "section": "Loca"
     },
     {
@@ -7329,7 +7366,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,3",
       "section": "Loca"
     },
     {
@@ -7346,7 +7383,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,2",
       "section": "Loca"
     },
     {
@@ -7363,7 +7400,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,1",
       "section": "Loca"
     },
     {
@@ -7380,7 +7417,7 @@
       "features": [
         "accessible"
       ],
-      "group": null,
+      "group": "LOCA-WC19,0",
       "section": "Loca"
     },
     {
