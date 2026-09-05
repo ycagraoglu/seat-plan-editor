@@ -386,6 +386,25 @@ Hiyerarşiye dokunan her şeyi ikincisi sınar.
 
 ---
 
+## 11.5 · MCP — editörü LLM'e açmak (varsa)
+
+Bu depoda `mcp/` altında, editörü Blender gibi bir LLM'e açan bir MCP
+sunucusu var: 27 tipli araç, saf çekirdeğin ince sarmalayıcısı. Ayrıntı
+[`docs/MCP-KILAVUZU.md`](MCP-KILAVUZU.md).
+
+Sizin için önemli olan iki karar:
+
+· **Serbest kod çalıştırma yok.** Alan sınırlı olduğu için tipli araçlar
+  yetiyor; `execute_code` riskini hiç doğurmuyor. Siz de öyle yapın.
+· **Yayım aracı yok.** LLM taslak üretir; yayına gönderme kararı
+  operatörde. Bilet satılan bir sistemde bu sınırı gevşetmeyin.
+
+Bunun mümkün olmasının sebebi mimarinin kendisi: `src/core/**` saf olduğu
+için araçlar onu doğrudan çağırabiliyor. Siz de çekirdeği saf tutarsanız
+aynı kapı size de açık kalır.
+
+---
+
 ## 12 · Sorman gerekenler
 
 Emin olmadığın şeyi uydurma, sor:

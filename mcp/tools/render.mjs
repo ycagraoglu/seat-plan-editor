@@ -52,12 +52,17 @@ export function registerRenderTools(server, session, z) {
     const r = renderSvg(plan, {
       scope, seats, width,
       underlay: withUnderlay ? plan.underlay || null : null,
+      underlayRect: plan.underlayRect || null,
     });
     const buf = await png(r.svg, r.width);
     const ozet = `${r.blocks} blok · ${r.seats.toLocaleString("tr-TR")} koltuk`
       + ` · koltuklar ${r.seatsDrawn ? "çizildi" : "çizilmedi (blok seviyesi)"}`
       + (r.labelsHidden ? ` · ${r.labelsHidden} etiket sığmadı, yakınlaşabilirsin` : "")
-      + (plan.underlay && withUnderlay ? " · altlık bindirildi" : "");
+      /* Altlığın KONUMLU mu gerilmiş mi olduğu LLM için kritik: gerilmiş
+         altlık çizimle hizalanmaz, ona bakıp "tutuyor" demek yanıltır. */
+      + (r.underlayPlaced === null ? ""
+        : r.underlayPlaced ? " · altlık bindirildi (konumlu)"
+          : " · altlık bindirildi (GERİLMİŞ — hizalanmaz, karşılaştırma için x/y/width/height ver)");
     return {
       content: [
         { type: "text", text: ozet },
@@ -76,20 +81,35 @@ export function registerRenderTools(server, session, z) {
       "kurduğun için sonuç zaten gerçek santimetrede çıkıyor. Altlıktan",
       "okuyacağın şey NE ve NEREDE — kaç blok, hangi adlar, nasıl dizilmiş.",
       "",
-      "Altlık plana kaydedilmez (dosya boyutunu şişirmemek için), yalnız",
+      "HİZALAMA: x/y/width/height verirsen altlık DÜNYADA o dikdörtgene",
+      "oturur ve çizimle karşılaştırılabilir. Vermezsen görüntü kutusuna",
+      "gerilir — kaba bir referans olur, üst üste bindirme HİZALANMAZ.",
+      "Ölçüyü bilmiyorsan: bir bloğu kur, plan_summary'den bbox'ını oku,",
+      "altlığı ona göre yerleştir.",
+      "",
+      "Altlık dışa aktarılmaz (dosya boyutunu şişirmemek için), yalnız",
       "oturum boyunca karşılaştırma amacıyla tutulur.",
     ].join("\n"),
     inputSchema: {
       path: z.string().describe("Görselin yerel dosya yolu (png/jpg/webp)"),
+      x: z.number().optional().describe("Dünyada sol kenar (cm)"),
+      y: z.number().optional().describe("Dünyada üst kenar (cm)"),
+      width: z.number().optional().describe("Dünyada genişlik (cm)"),
+      height: z.number().optional().describe("Dünyada yükseklik (cm)"),
     },
-  }, async ({ path: dosya }) => {
+  }, async ({ path: dosya, x, y, width, height }) => {
     const uzanti = path.extname(dosya).toLowerCase();
     const mime = MIME[uzanti];
     if (!mime) throw new Error(`Desteklenmeyen görsel: ${uzanti || "(uzantı yok)"}`);
     const buf = await readFile(dosya);
     const plan = session.need();
-    session.set({ ...plan, underlay: `data:${mime};base64,${buf.toString("base64")}` });
+    const rect = [x, y, width, height].every((v) => v != null)
+      ? { x, y, w: width, h: height } : null;
+    session.set({ ...plan, underlay: `data:${mime};base64,${buf.toString("base64")}`,
+      underlayRect: rect });
     return metin(`Altlık yüklendi: ${path.basename(dosya)} (${Math.round(buf.length / 1024)} KB)`
-      + `\nrender ile arkaya bindirilecek. Blokları onun üstünden kur.`);
+      + (rect ? `\nDünyada yeri: ${rect.w}×${rect.h} cm, sol üst (${rect.x}, ${rect.y}).`
+        : `\nDünyadaki yeri VERİLMEDİ — görüntü kutusuna gerilecek, bindirme`
+          + ` hizalanmaz. Karşılaştırma yapacaksan x/y/width/height ver.`));
   });
 }

@@ -130,3 +130,55 @@ describe("altlık — organizatörün planı arkada", () => {
       .rejects.toThrow(/Desteklenmeyen görsel/);
   });
 });
+
+describe("görüntü çerçevesi çizime göre BÜYÜR", () => {
+  it("create_plan'ın çerçevesi boş tuvalde kilitli kalmaz", async () => {
+    /* EMPTY'nin home'u 40×30 m'lik boş tuval. create_plan onu taşıyordu ve
+       render o pencereye kilitleniyordu: LLM stadyum çizse bile çizdiğine
+       bakamıyordu. home artık verilmiyor, planHome içerikten türetiyor. */
+    await t.cagir("create_plan", { name: "T" });
+    await t.cagir("add_block", { kind: "fan", label: "A", level: "S", x: 0, y: 6020,
+      r0: 6545, rows: 12, rowGap: 105, aCenter: 0, counts: "39..48", mode: "pitch" });
+    const d = await t.jsonCagir("plan_summary");
+    const bb = d.blocks[0].bbox;
+    const vb = d.home;
+    /* Çerçeve bloğu KAPSAMALI */
+    expect(vb.x).toBeLessThanOrEqual(bb.x0);
+    expect(vb.y).toBeLessThanOrEqual(bb.y0);
+    expect(vb.x + vb.w).toBeGreaterThanOrEqual(bb.x1);
+    expect(vb.y + vb.h).toBeGreaterThanOrEqual(bb.y1);
+  });
+});
+
+describe("altlık dünyada konumlanabiliyor", () => {
+  const PNG = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+    "base64");
+  let dosya;
+  beforeEach(() => {
+    dosya = path.join(mkdtempSync(path.join(tmpdir(), "altlik2-")), "p.png");
+    writeFileSync(dosya, PNG);
+    });
+
+  it("x/y/width/height verilince o dikdörtgene oturur", async () => {
+    await t.cagir("create_plan", { name: "T" });
+    const r = await t.cagir("set_underlay",
+      { path: dosya, x: -2900, y: -4600, width: 5800, height: 7700 });
+    expect(r).toContain("5800×7700");
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 5, cols: 10 });
+    /* Aracın KENDİSİNDEN geç — renderSvg'yi doğrudan çağırmak kabloyu
+       sınamaz; ilk yazışımda öyle yapmıştım ve konumu yok saymak testi
+       kırmıyordu (sabotaj yakaladı). */
+    const c = await t.client.callTool({ name: "render", arguments: { scope: "all" } });
+    expect(c.content[0].text).toContain("konumlu");
+  });
+
+  it("verilmezse HİZALANMAYACAĞI açıkça söyleniyor", async () => {
+    await t.cagir("create_plan", { name: "T" });
+    /* Sessizce gerilmiş bir altlık, LLM'i "çizim tutuyor" sanmaya iter. */
+    expect(await t.cagir("set_underlay", { path: dosya })).toMatch(/hizalanmaz/);
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 5, cols: 10 });
+    const c = await t.client.callTool({ name: "render", arguments: { scope: "all" } });
+    expect(c.content[0].text).toContain("GERİLMİŞ");
+  });
+});

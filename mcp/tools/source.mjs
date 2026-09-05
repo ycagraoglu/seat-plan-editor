@@ -116,6 +116,56 @@ export function registerSourceTools(server, session, z) {
     return metin(sat.join("\n"));
   });
 
+  server.registerTool("remove_extra_seats", {
+    title: "Listede olmayan koltukları kaldır",
+    description: [
+      "match_seat_list'in FAZLA dediği koltukları kaldırır — yani çizimde",
+      "olup organizatörün listesinde olmayanları.",
+      "",
+      "Gerçek salonlarda bu fazlalık genelde MİMARİ bir boşluktur: kapı,",
+      "merdiven, tekerlekli sandalye platformu. Bir tribünün ortasından",
+      "geçen tünel için cut_vomitories daha doğrudur; bu araç dağınık,",
+      "tek tek koltuklar için.",
+      "",
+      "Koltuk plandan silinmez, KAPALI işaretlenir — geri alınabilir ve",
+      "kalan koltukların kimliği bozulmaz.",
+      "",
+      "Önce match_seat_list çağır.",
+    ].join("\n"),
+    inputSchema: {
+      limit: z.number().int().positive().optional()
+        .describe("En fazla kaç koltuk kaldırılsın (güvenlik freni)"),
+    },
+  }, async ({ limit }) => {
+    if (!session.match) throw new Error("Önce match_seat_list çağır.");
+    const fazla = session.match.extra || [];
+    if (!fazla.length) return metin("Fazla koltuk yok — çizim listeyle örtüşüyor.");
+    if (limit && fazla.length > limit) {
+      throw new Error(`${fazla.length} fazla koltuk var, limit ${limit}. `
+        + `Bu kadar çok fazlalık genelde blok sıra/koltuk sayısının yanlış `
+        + `olduğunu gösterir — önce onu düzeltmeyi düşün. Yine de kaldırmak `
+        + `istiyorsan limit'i yükselt.`);
+    }
+    const byB = new Map();
+    fazla.forEach((s) => {
+      if (!s.bid) return;
+      if (!byB.has(s.bid)) byB.set(s.bid, []);
+      byB.get(s.bid).push(`${s.r},${s.c}`);
+    });
+    const ozet = session.mutate((plan) => ({
+      ...plan,
+      blocks: plan.blocks.map((b) => {
+        const list = byB.get(b.id);
+        if (!list) return b;
+        const ov = { ...b.ov };
+        list.forEach((rc) => { ov[rc] = { ...(ov[rc] || {}), rm: true, gap: false }; });
+        return { ...b, ov };
+      }),
+    }), `${fazla.length} fazla koltuk kaldırıldı`);
+    session.match = { ...session.match, extra: [] };
+    return metin(ozet);
+  });
+
   server.registerTool("adopt_ids", {
     title: "Listedeki kimliği benimse",
     description: [

@@ -134,7 +134,13 @@ function siraEtiketleri(b, m, tpl) {
     : [...gorulen.slice(0, 3), `…${gorulen.length - 6} sıra…`, ...gorulen.slice(-3)];
 }
 
+/* home BİLEREK verilmiyor. EMPTY'nin çerçevesi 40×30 m'lik bir boş tuval;
+   onu taşımak render'ı o pencereye kilitliyordu — LLM stadyum çizse bile
+   görüntü küçük kalıyor, çizdiğine bakamıyordu. home yokken planHome()
+   çerçeveyi blokların kapladığı alandan TÜRETİYOR (bkz. core/plan.js),
+   yani plan büyüdükçe görüntü de büyüyor. */
 export const yeniPlan = (key, name) => ({
-  ...EMPTY, key, name, blocks: [], shapes: [], sections: [], groups: [],
+  ...EMPTY, key, name, home: null, underlay: null, underlayRect: null,
+  blocks: [], shapes: [], sections: [], groups: [],
   versions: [], published: null, schemaVersion: 4,
 });

@@ -110,7 +110,11 @@ export function matchSeats(list, metas, buildSeats, idTemplate) {
     if (hit) { usedKeys.add(key); hits.push({ ...hit, csvId: r.id, key }); }
     else missing.push({ key, id: r.id });
   });
-  const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k)).map(([, v]) => v.s);
+  /* extra'ya bloğun kimliği de konuyor: "çizimde var, listede yok" denen
+     koltuğu KALDIRABİLMEK için hangi bloğa ait olduğu gerekiyor. Arayüz
+     yalnız sayı ve etiket gösteriyor, ek alan onu bozmuyor. */
+  const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k))
+    .map(([, v]) => ({ ...v.s, bid: v.bid }));
   const changing = hits.filter((h) => h.csvId !== h.s.id);
   return { hits, missing, extra, dupes, changing };
 }

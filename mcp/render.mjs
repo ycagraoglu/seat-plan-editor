@@ -55,7 +55,7 @@ function seatRects(b, m, tpl, renk) {
  * @param underlay data: URI — organizatörün planı, arkaya bindirilir
  */
 export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null,
-  maxSeats = 4000, width = 1400 } = {}) {
+  underlayRect = null, maxSeats = 4000, width = 1400 } = {}) {
   const tumMetas = plan.blocks.map((b) => ({ b, m: buildMeta(b) }));
 
   /* Kapsam: tek blok, tek kat ya da hepsi. Tek bloğa yakınlaşmak LOD'u da
@@ -98,11 +98,17 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   };
 
   const parca = [];
+  let altlikKonumlu = null;              /* null: altlık yok · true/false: konumlu mu */
 
-  /* 1 — altlık en arkada */
+  /* 1 — altlık en arkada.
+     Altlığın DÜNYADAKİ yeri verilmişse oraya konur; verilmemişse görüntü
+     kutusuna gerilir. Gerilmiş altlık çizimle HİZALANMAZ — kaba bir
+     referanstır. Karşılaştırma yapacaksan underlayRect ver. */
   if (underlay) {
-    parca.push(`<image href="${underlay}" x="${num(vb.x)}" y="${num(vb.y)}"`
-      + ` width="${num(vb.w)}" height="${num(vb.h)}" opacity="0.55"`
+    altlikKonumlu = !!(underlayRect && underlayRect.w > 0 && underlayRect.h > 0);
+    const u = altlikKonumlu ? underlayRect : vb;
+    parca.push(`<image href="${underlay}" x="${num(u.x)}" y="${num(u.y)}"`
+      + ` width="${num(u.w)}" height="${num(u.h)}" opacity="0.55"`
       + ` preserveAspectRatio="xMidYMid meet"/>`);
   }
 
@@ -162,5 +168,8 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
     blocks: secili.length, seats: koltukSayisi, seatsDrawn: koltukCiz,
     /* Kaç etiket sığmadı — LLM "yakınlaşmam mı lazım" diye anlasın. */
     labelsHidden: yazilmayan,
+    /* Özet bunu RENDER'IN KENDİSİNDEN okur; plandan okumak ikisinin
+       ayrışmasına izin veriyordu (özet "konumlu" derken resim gerilmiş). */
+    underlayPlaced: altlikKonumlu,
   };
 }
