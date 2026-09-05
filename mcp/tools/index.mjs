@@ -4,6 +4,7 @@ import { registerBlockTools } from "./blocks.mjs";
 import { registerVenueTools } from "./venue.mjs";
 import { registerRenderTools } from "./render.mjs";
 import { registerSourceTools } from "./source.mjs";
+import { registerExportTools } from "./export.mjs";
 
 /* Araç kaydı tek yerden. Konu başına bir dosya; yeni faz yeni dosya ekler,
    burası sadece toplar. */
@@ -21,4 +22,5 @@ export function registerTools(server, session) {
   registerVenueTools(server, session, z);
   registerRenderTools(server, session, z);
   registerSourceTools(server, session, z);
+  registerExportTools(server, session, z);
 }

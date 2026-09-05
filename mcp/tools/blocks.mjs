@@ -51,6 +51,9 @@ export function registerBlockTools(server, session, z) {
       seats: z.number().int().positive().optional().describe("Table: masa etrafı koltuk sayısı"),
       tW: z.number().optional().describe("Table: masa çapı (cm)"),
       align: z.enum(["center", "left", "right"]).optional(),
+      pad: z.number().optional().describe("Taban payı (cm) — bloğun koltukların ötesinde kapladığı pay"),
+      aCenter: z.number().optional().describe("Fan: yay merkezi açısı"),
+      color: z.string().optional().describe("Blok rengi (#RRGGBB); verilmezse kata göre otomatik"),
     },
   }, async (a) => metin(session.mutate((plan) => {
     let b;
@@ -61,7 +64,7 @@ export function registerBlockTools(server, session, z) {
       const ortak = { label: a.label, level: a.level, x: a.x, y: a.y };
       const opsiyonel = {};
       for (const k of ["name", "rot", "rows", "cols", "counts", "seatGap", "rowGap",
-        "curve", "taper", "r0", "aStart", "aEnd", "mode", "align"]) {
+        "curve", "taper", "r0", "aStart", "aEnd", "mode", "align", "pad", "aCenter", "color"]) {
         if (a[k] !== undefined) opsiyonel[k] = a[k];
       }
       b = a.kind === "fan" ? fanB({ ...ortak, ...opsiyonel }) : gr({ ...ortak, ...opsiyonel });

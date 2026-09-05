@@ -125,7 +125,8 @@ export function registerVenueTools(server, session, z) {
       r0: z.number(), rows: z.number().int().positive(), rowGap: z.number(),
       seatGap: z.number(), perRow: z.number().int().positive().describe("Loca başına koltuk"),
       gap: z.number().describe("Localar arası boşluk (cm)"),
-      countPerSide: z.number().int().positive(),
+      countPerSide: z.number().int().positive()
+        .describe("Her yanda EN FAZLA kaç loca — gerçek sayıyı yay (fromDeg/toDeg) belirler, sığdığı kadarı kurulur"),
       first: z.union([z.number(), z.string()]),
       level: z.string(),
       fromDeg: z.number().optional(), toDeg: z.number().optional(),
