@@ -3,7 +3,7 @@ import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeat
 import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
-import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
+import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey, matchSeats, applyAdoptedIds } from "./core/identity.js";
 import { diffPlans, stripUnderlay, planFingerprint, planHome } from "./core/plan.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
@@ -1596,29 +1596,12 @@ export default function PlanEditor({ cssText = "" } = {}) {
      uygulamada yok" sınıfı ayrışmayı doğuran şey kuralın iki yere
      kopyalanmasıydı; kimlik eşleştirmesi de aynı hataya açık. */
   const runMatch = (list, fileName, cols) => {
-    /* çizimdeki koltukları anahtara göre indeksle */
-    const drawnMap = new Map();
-    metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (!s.gap) drawnMap.set(seatKey(s.block, s.row, s.num), { s, bid: b.id });
-    }));
-
-    const hits = [], missing = [], dupes = [];
-    const usedKeys = new Set();
-    list.forEach((r) => {
-      const key = seatKey(r.block, r.row, r.seat);
-      if (!r.id) return;
-      if (usedKeys.has(key)) { dupes.push(key); return; }
-      const hit = drawnMap.get(key);
-      if (hit) { usedKeys.add(key); hits.push({ ...hit, csvId: r.id, key }); }
-      else missing.push({ key, id: r.id });
-    });
-    const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k)).map(([, v]) => v.s);
-    const changing = hits.filter((h) => h.csvId !== h.s.id);
-
-    setMatch({ file: fileName, cols, total: list.length,
-      hits, missing, extra, dupes, changing });
+    /* Eşleştirmenin kendisi core/identity.js'te — MCP'nin match_seat_list
+       aracı da AYNI fonksiyonu çağırıyor, iki yerde ayrışmasın diye. */
+    const r = matchSeats(list, metas, buildSeats, plan.idTemplate);
+    setMatch({ file: fileName, cols, total: list.length, ...r });
     setVerOpen(false); setReport(null);
-    setMsg(`${hits.length} koltuk eşleşti`);
+    setMsg(`${r.hits.length} koltuk eşleşti`);
   };
 
   const readFile = (e, parse, tur) => {
@@ -1666,18 +1649,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   /** Eşleşen koltuklara listedeki kimliği yazar — çizim değil, kimlik uyarlanır. */
   const adoptIds = () => {
     if (!match) return;
-    const byBlock = new Map();
-    match.changing.forEach(({ bid, s, csvId }) => {
-      if (!byBlock.has(bid)) byBlock.set(bid, {});
-      byBlock.get(bid)[`${s.r},${s.c}`] = csvId;
-    });
-    commit({ ...plan, blocks: plan.blocks.map((b) => {
-      const patch = byBlock.get(b.id);
-      if (!patch) return b;
-      const ov = { ...b.ov };
-      Object.entries(patch).forEach(([k, id]) => { ov[k] = { ...(ov[k] || {}), id }; });
-      return { ...b, ov };
-    }) });
+    commit(applyAdoptedIds(plan, match.changing));
     setMsg(`${match.changing.length} koltuk kimliği benimsendi`);
     setMatch({ ...match, changing: [] });
   };
