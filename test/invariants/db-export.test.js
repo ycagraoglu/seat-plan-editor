@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildDbPayload } from "../../src/core/db-export.js";
-import { buildMeta } from "../../src/core/geometry.js";
+import { buildMeta, buildSeats } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import * as V from "../../src/venues/index.js";
 
@@ -22,6 +22,8 @@ const payload = (k) => {
 };
 
 describe.each(VENUES)("%s · tablo dışa aktarımı", (k) => {
+  const v = V[k];
+  const gates = gateMap(v);
   const p = payload(k);
   const ids = (rows) => new Set(rows.map((r) => r.id));
 
@@ -102,5 +104,32 @@ describe.each(VENUES)("%s · tablo dışa aktarımı", (k) => {
       if (g.has(k)) cakisan.push(k); else g.add(k);
     });
     expect(cakisan).toEqual([]);
+  });
+
+  it("koltuk-kapı eşlemesi TÜM kapıları taşır (çok kapılı blok yönlendirmesi)", () => {
+    /* Bir blok gerçekte sık sık birden çok kapıdan girilir — Ülker'de 42
+       blok, Harbiye ve AKM'de üç kapılı bloklar var. Dışa aktarım eskiden
+       yalnız ilkini yazıyordu: dokuz salonda 13.575 yönlendirme satırı
+       sessizce kayboluyordu, AKM'de yarıdan fazlası. seats[].entrance_id
+       hâlâ BİRİNCİL kapıdır; tamamı entrance_seats'te. */
+    /* Her koltuk, bloğunun kapı sayısı kadar satır üretmeli. */
+    let hedef = 0;
+    v.blocks.forEach((b) => {
+      const n = (gates.get(b.id) || []).length;
+      if (!n) return;
+      hedef += n * buildSeats(b, buildMeta(b), v.idTemplate).seats.filter((s) => !s.gap).length;
+    });
+    expect(p.entrance_seats).toHaveLength(hedef);
+
+    const entIds = new Set(p.entrances.map((e) => e.id));
+    const seatIds = new Set(p.seats.map((s) => s.id));
+    expect(p.entrance_seats.filter((e) => !entIds.has(e.entrance_id))).toEqual([]);
+    expect(p.entrance_seats.filter((e) => !seatIds.has(e.seat_id))).toEqual([]);
+  });
+
+  it("birincil kapı, koltuğun kapı listesinin İÇİNDE olmalı", () => {
+    const cift = new Set(p.entrance_seats.map((e) => `${e.seat_id}\u0000${e.entrance_id}`));
+    const disarda = p.seats.filter((s) => s.entrance_id && !cift.has(`${s.id}\u0000${s.entrance_id}`));
+    expect(disarda.slice(0, 3)).toEqual([]);
   });
 });

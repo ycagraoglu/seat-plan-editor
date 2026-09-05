@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 584 test
+npm test           # 602 test
 ```
 
 ---
@@ -87,7 +87,7 @@ aktarım (`seats.json`) bu türetimin düzleştirilmiş hâlidir:
 ```json
 {
   "id": "112-1-1", "level": "Alt Tribün", "block": "112",
-  "row": "1", "seat": 1, "gate": "KAPI 13",
+  "row": "1", "seat": 1, "gate": "KAPI 13", "gates": ["KAPI 13"],
   "x": 6600, "y": 2250, "rot": -90,
   "seat_kind": "single", "features": [], "group": null,
   "section": "Alt Tribün"
@@ -95,6 +95,11 @@ aktarım (`seats.json`) bu türetimin düzleştirilmiş hâlidir:
 ```
 
 (Galatasaray planından gerçek bir kayıt — `test/golden/gs.seats.json`.)
+
+`gate` **birincil** kapıdır, `gates` hepsini taşır: gerçekte bir blok sık sık
+birden çok kapıdan girilir (Ülker'de 42 blok, Harbiye ve AKM'de üç kapılı
+bloklar). Bileti basan taraf `gate`'i tek gerçek sanarsa yönlendirmenin
+büyük kısmı kaybolur — AKM'de koltukların %88'i çok kapılıdır.
 
 Bunun yanında **`db.json`** düğmesi hedef şemanın **tablolarını** üretir —
 doğrudan `INSERT` edilebilir satır listeleri, yabancı anahtarlarıyla:

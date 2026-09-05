@@ -128,10 +128,15 @@ export function buildDbPayload(plan, metas, gates) {
   const rows = [];
   const rowSeen = new Map();               // "blok|satır" → row id
   const seats = [];
+  /* Koltuk ↔ kapı ÇOKA ÇOK. Şemadaki seating_entrance_seats bağlantı
+     tablosunun karşılığı: bir blok iki kapıdan giriliyorsa koltuğun iki
+     satırı olur. seats[].entrance_id yalnız birincilidir; yönlendirmenin
+     tamamı burada. */
+  const entrance_seats = [];
 
   metas.forEach(({ b, m }) => {
     const secId = blockSection.get(b.id);
-    const gate = (gates.get(b.id) || [])[0] || null;
+    const kapilar = (gates.get(b.id) || []).map((g) => `ent:${slug(g)}`);
     buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
       if (s.gap) return;
       const rowKey = `${secId}|${s.row}`;
@@ -154,8 +159,9 @@ export function buildDbPayload(plan, metas, gates) {
         label: s.num == null ? "" : String(s.num),
         x: +s.x.toFixed(1), y: +s.y.toFixed(1), rotation: +s.rot.toFixed(1),
         features: s.seatFeatures || [],
-        entrance_id: gate ? `ent:${slug(gate)}` : null,
+        entrance_id: kapilar[0] || null,   /* birincil — tek kapılı yaygın hâl */
       });
+      kapilar.forEach((e) => entrance_seats.push({ entrance_id: e, seat_id: `seat:${s.id}` }));
     });
   });
 
@@ -204,7 +210,7 @@ export function buildDbPayload(plan, metas, gates) {
       unit: "cm",
     },
     sections, rows, seat_types, seat_groups, seats, shapes,
-    entrances, entrance_sections,
+    entrances, entrance_sections, entrance_seats,
   };
 }
 

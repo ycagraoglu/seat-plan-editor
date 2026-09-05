@@ -95,15 +95,15 @@ describe("buildSeatsPayload — koltuk satırındaki `section`: block/gate/group
     expect(byBlock("H", "Üst Kat")).toHaveLength(2);
   });
 
-  it("koltuk sayıları/level/block/row/seat, section EKLENMEDEN ÖNCEKİ ile birebir aynı kalır (yalnız EKLEME, mevcut alanlar bozulmadı)", () => {
+  it("koltuk satırının alanları EKLEME dışında değişmez (section, gates... hep eklendi, hiçbiri bozulmadı)", () => {
     const plan = {
       name: "Test Salonu", idTemplate: undefined, shapes: [],
       blocks: [gridBlock({ id: "b1", level: "Parter" })],
     };
     const payload = payloadFor(plan);
     expect(payload.seats.map(({ section, ...rest }) => rest)).toEqual([
-      { id: "A-1-1", level: "Parter", block: "A", row: "1", seat: 1, gate: null, x: -25, y: 0, rot: 0, seat_kind: "single", features: [], group: null },
-      { id: "A-1-2", level: "Parter", block: "A", row: "1", seat: 2, gate: null, x: 25, y: 0, rot: 0, seat_kind: "single", features: [], group: null },
+      { id: "A-1-1", level: "Parter", block: "A", row: "1", seat: 1, gate: null, gates: [], x: -25, y: 0, rot: 0, seat_kind: "single", features: [], group: null },
+      { id: "A-1-2", level: "Parter", block: "A", row: "1", seat: 2, gate: null, gates: [], x: 25, y: 0, rot: 0, seat_kind: "single", features: [], group: null },
     ]);
   });
 });

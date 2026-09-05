@@ -113,11 +113,10 @@ export function loadPayload(db, payload, { tenantId = "t1", planKey, skipHeader 
       J(s.geometry_data), s.z_index, s.label));
     p.entrances.forEach((e) => q.ent.run(tenantId, verId, e.id, e.code, e.name));
     p.entrance_sections.forEach((e) => q.entsec.run(tenantId, verId, e.entrance_id, e.section_id));
-    /* Koltuk düzeyi yönlendirme (§5.5): koltuğun kapısı bölümünkinden
-       türüyor ama ayrı tabloda duruyor — kapı bölüme değil KOLTUĞA
-       atandığında (loca, engelli platformu) model bozulmasın diye. */
-    p.seats.filter((s) => s.entrance_id)
-      .forEach((s) => q.entst.run(tenantId, verId, s.entrance_id, s.id));
+    /* Koltuk düzeyi yönlendirme (§5.5) ÇOKA ÇOK: bir blok iki kapıdan
+       giriliyorsa koltuğun iki satırı olur. seats[].entrance_id yalnız
+       birincilidir — burada yönlendirmenin tamamı yazılıyor. */
+    (p.entrance_seats || []).forEach((e) => q.entst.run(tenantId, verId, e.entrance_id, e.seat_id));
     db.exec("COMMIT");
   } catch (e) {
     db.exec("ROLLBACK");

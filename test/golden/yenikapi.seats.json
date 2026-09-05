@@ -98,6 +98,10 @@
       "row": "1",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 15650,
       "rot": 0,
@@ -113,6 +117,10 @@
       "row": "1",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 15650,
       "rot": 0,
@@ -128,6 +136,10 @@
       "row": "1",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 15650,
       "rot": 0,
@@ -143,6 +155,10 @@
       "row": "1",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 15650,
       "rot": 0,
@@ -158,6 +174,10 @@
       "row": "1",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 15650,
       "rot": 0,
@@ -173,6 +193,10 @@
       "row": "1",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 15650,
       "rot": 0,
@@ -188,6 +212,10 @@
       "row": "1",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 15650,
       "rot": 0,
@@ -203,6 +231,10 @@
       "row": "1",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 15650,
       "rot": 0,
@@ -218,6 +250,10 @@
       "row": "1",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 15650,
       "rot": 0,
@@ -233,6 +269,10 @@
       "row": "1",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 15650,
       "rot": 0,
@@ -248,6 +288,10 @@
       "row": "1",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 15650,
       "rot": 0,
@@ -263,6 +307,10 @@
       "row": "1",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 15650,
       "rot": 0,
@@ -278,6 +326,10 @@
       "row": "1",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 15650,
       "rot": 0,
@@ -293,6 +345,10 @@
       "row": "1",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 15650,
       "rot": 0,
@@ -308,6 +364,10 @@
       "row": "1",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 15650,
       "rot": 0,
@@ -323,6 +383,10 @@
       "row": "1",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 15650,
       "rot": 0,
@@ -338,6 +402,10 @@
       "row": "1",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 15650,
       "rot": 0,
@@ -353,6 +421,10 @@
       "row": "1",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 15650,
       "rot": 0,
@@ -368,6 +440,10 @@
       "row": "1",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 15650,
       "rot": 0,
@@ -383,6 +459,10 @@
       "row": "1",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 15650,
       "rot": 0,
@@ -398,6 +478,10 @@
       "row": "1",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 15650,
       "rot": 0,
@@ -413,6 +497,10 @@
       "row": "1",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 15650,
       "rot": 0,
@@ -428,6 +516,10 @@
       "row": "1",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 15650,
       "rot": 0,
@@ -443,6 +535,10 @@
       "row": "1",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 15650,
       "rot": 0,
@@ -458,6 +554,10 @@
       "row": "1",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 15650,
       "rot": 0,
@@ -473,6 +573,10 @@
       "row": "2",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 15740,
       "rot": 0,
@@ -488,6 +592,10 @@
       "row": "2",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 15740,
       "rot": 0,
@@ -503,6 +611,10 @@
       "row": "2",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 15740,
       "rot": 0,
@@ -518,6 +630,10 @@
       "row": "2",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 15740,
       "rot": 0,
@@ -533,6 +649,10 @@
       "row": "2",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 15740,
       "rot": 0,
@@ -548,6 +668,10 @@
       "row": "2",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 15740,
       "rot": 0,
@@ -563,6 +687,10 @@
       "row": "2",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 15740,
       "rot": 0,
@@ -578,6 +706,10 @@
       "row": "2",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 15740,
       "rot": 0,
@@ -593,6 +725,10 @@
       "row": "2",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 15740,
       "rot": 0,
@@ -608,6 +744,10 @@
       "row": "2",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 15740,
       "rot": 0,
@@ -623,6 +763,10 @@
       "row": "2",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 15740,
       "rot": 0,
@@ -638,6 +782,10 @@
       "row": "2",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 15740,
       "rot": 0,
@@ -653,6 +801,10 @@
       "row": "2",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 15740,
       "rot": 0,
@@ -668,6 +820,10 @@
       "row": "2",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 15740,
       "rot": 0,
@@ -683,6 +839,10 @@
       "row": "2",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 15740,
       "rot": 0,
@@ -698,6 +858,10 @@
       "row": "2",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 15740,
       "rot": 0,
@@ -713,6 +877,10 @@
       "row": "2",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 15740,
       "rot": 0,
@@ -728,6 +896,10 @@
       "row": "2",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 15740,
       "rot": 0,
@@ -743,6 +915,10 @@
       "row": "2",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 15740,
       "rot": 0,
@@ -758,6 +934,10 @@
       "row": "2",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 15740,
       "rot": 0,
@@ -773,6 +953,10 @@
       "row": "2",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 15740,
       "rot": 0,
@@ -788,6 +972,10 @@
       "row": "2",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 15740,
       "rot": 0,
@@ -803,6 +991,10 @@
       "row": "2",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 15740,
       "rot": 0,
@@ -818,6 +1010,10 @@
       "row": "2",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 15740,
       "rot": 0,
@@ -833,6 +1029,10 @@
       "row": "2",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 15740,
       "rot": 0,
@@ -848,6 +1048,10 @@
       "row": "3",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 15830,
       "rot": 0,
@@ -863,6 +1067,10 @@
       "row": "3",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 15830,
       "rot": 0,
@@ -878,6 +1086,10 @@
       "row": "3",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 15830,
       "rot": 0,
@@ -893,6 +1105,10 @@
       "row": "3",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 15830,
       "rot": 0,
@@ -908,6 +1124,10 @@
       "row": "3",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 15830,
       "rot": 0,
@@ -923,6 +1143,10 @@
       "row": "3",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 15830,
       "rot": 0,
@@ -938,6 +1162,10 @@
       "row": "3",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 15830,
       "rot": 0,
@@ -953,6 +1181,10 @@
       "row": "3",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 15830,
       "rot": 0,
@@ -968,6 +1200,10 @@
       "row": "3",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 15830,
       "rot": 0,
@@ -983,6 +1219,10 @@
       "row": "3",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 15830,
       "rot": 0,
@@ -998,6 +1238,10 @@
       "row": "3",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 15830,
       "rot": 0,
@@ -1013,6 +1257,10 @@
       "row": "3",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 15830,
       "rot": 0,
@@ -1028,6 +1276,10 @@
       "row": "3",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 15830,
       "rot": 0,
@@ -1043,6 +1295,10 @@
       "row": "3",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 15830,
       "rot": 0,
@@ -1058,6 +1314,10 @@
       "row": "3",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 15830,
       "rot": 0,
@@ -1073,6 +1333,10 @@
       "row": "3",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 15830,
       "rot": 0,
@@ -1088,6 +1352,10 @@
       "row": "3",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 15830,
       "rot": 0,
@@ -1103,6 +1371,10 @@
       "row": "3",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 15830,
       "rot": 0,
@@ -1118,6 +1390,10 @@
       "row": "3",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 15830,
       "rot": 0,
@@ -1133,6 +1409,10 @@
       "row": "3",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 15830,
       "rot": 0,
@@ -1148,6 +1428,10 @@
       "row": "3",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 15830,
       "rot": 0,
@@ -1163,6 +1447,10 @@
       "row": "3",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 15830,
       "rot": 0,
@@ -1178,6 +1466,10 @@
       "row": "3",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 15830,
       "rot": 0,
@@ -1193,6 +1485,10 @@
       "row": "3",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 15830,
       "rot": 0,
@@ -1208,6 +1504,10 @@
       "row": "3",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 15830,
       "rot": 0,
@@ -1223,6 +1523,10 @@
       "row": "4",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 15920,
       "rot": 0,
@@ -1238,6 +1542,10 @@
       "row": "4",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 15920,
       "rot": 0,
@@ -1253,6 +1561,10 @@
       "row": "4",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 15920,
       "rot": 0,
@@ -1268,6 +1580,10 @@
       "row": "4",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 15920,
       "rot": 0,
@@ -1283,6 +1599,10 @@
       "row": "4",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 15920,
       "rot": 0,
@@ -1298,6 +1618,10 @@
       "row": "4",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 15920,
       "rot": 0,
@@ -1313,6 +1637,10 @@
       "row": "4",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 15920,
       "rot": 0,
@@ -1328,6 +1656,10 @@
       "row": "4",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 15920,
       "rot": 0,
@@ -1343,6 +1675,10 @@
       "row": "4",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 15920,
       "rot": 0,
@@ -1358,6 +1694,10 @@
       "row": "4",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 15920,
       "rot": 0,
@@ -1373,6 +1713,10 @@
       "row": "4",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 15920,
       "rot": 0,
@@ -1388,6 +1732,10 @@
       "row": "4",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 15920,
       "rot": 0,
@@ -1403,6 +1751,10 @@
       "row": "4",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 15920,
       "rot": 0,
@@ -1418,6 +1770,10 @@
       "row": "4",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 15920,
       "rot": 0,
@@ -1433,6 +1789,10 @@
       "row": "4",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 15920,
       "rot": 0,
@@ -1448,6 +1808,10 @@
       "row": "4",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 15920,
       "rot": 0,
@@ -1463,6 +1827,10 @@
       "row": "4",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 15920,
       "rot": 0,
@@ -1478,6 +1846,10 @@
       "row": "4",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 15920,
       "rot": 0,
@@ -1493,6 +1865,10 @@
       "row": "4",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 15920,
       "rot": 0,
@@ -1508,6 +1884,10 @@
       "row": "4",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 15920,
       "rot": 0,
@@ -1523,6 +1903,10 @@
       "row": "4",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 15920,
       "rot": 0,
@@ -1538,6 +1922,10 @@
       "row": "4",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 15920,
       "rot": 0,
@@ -1553,6 +1941,10 @@
       "row": "4",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 15920,
       "rot": 0,
@@ -1568,6 +1960,10 @@
       "row": "4",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 15920,
       "rot": 0,
@@ -1583,6 +1979,10 @@
       "row": "4",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 15920,
       "rot": 0,
@@ -1598,6 +1998,10 @@
       "row": "5",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16010,
       "rot": 0,
@@ -1613,6 +2017,10 @@
       "row": "5",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16010,
       "rot": 0,
@@ -1628,6 +2036,10 @@
       "row": "5",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16010,
       "rot": 0,
@@ -1643,6 +2055,10 @@
       "row": "5",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16010,
       "rot": 0,
@@ -1658,6 +2074,10 @@
       "row": "5",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16010,
       "rot": 0,
@@ -1673,6 +2093,10 @@
       "row": "5",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16010,
       "rot": 0,
@@ -1688,6 +2112,10 @@
       "row": "5",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16010,
       "rot": 0,
@@ -1703,6 +2131,10 @@
       "row": "5",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16010,
       "rot": 0,
@@ -1718,6 +2150,10 @@
       "row": "5",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16010,
       "rot": 0,
@@ -1733,6 +2169,10 @@
       "row": "5",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16010,
       "rot": 0,
@@ -1748,6 +2188,10 @@
       "row": "5",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16010,
       "rot": 0,
@@ -1763,6 +2207,10 @@
       "row": "5",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16010,
       "rot": 0,
@@ -1778,6 +2226,10 @@
       "row": "5",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16010,
       "rot": 0,
@@ -1793,6 +2245,10 @@
       "row": "5",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16010,
       "rot": 0,
@@ -1808,6 +2264,10 @@
       "row": "5",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16010,
       "rot": 0,
@@ -1823,6 +2283,10 @@
       "row": "5",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16010,
       "rot": 0,
@@ -1838,6 +2302,10 @@
       "row": "5",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16010,
       "rot": 0,
@@ -1853,6 +2321,10 @@
       "row": "5",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16010,
       "rot": 0,
@@ -1868,6 +2340,10 @@
       "row": "5",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16010,
       "rot": 0,
@@ -1883,6 +2359,10 @@
       "row": "5",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16010,
       "rot": 0,
@@ -1898,6 +2378,10 @@
       "row": "5",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16010,
       "rot": 0,
@@ -1913,6 +2397,10 @@
       "row": "5",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16010,
       "rot": 0,
@@ -1928,6 +2416,10 @@
       "row": "5",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16010,
       "rot": 0,
@@ -1943,6 +2435,10 @@
       "row": "5",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16010,
       "rot": 0,
@@ -1958,6 +2454,10 @@
       "row": "5",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16010,
       "rot": 0,
@@ -1973,6 +2473,10 @@
       "row": "6",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16100,
       "rot": 0,
@@ -1988,6 +2492,10 @@
       "row": "6",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16100,
       "rot": 0,
@@ -2003,6 +2511,10 @@
       "row": "6",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16100,
       "rot": 0,
@@ -2018,6 +2530,10 @@
       "row": "6",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16100,
       "rot": 0,
@@ -2033,6 +2549,10 @@
       "row": "6",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16100,
       "rot": 0,
@@ -2048,6 +2568,10 @@
       "row": "6",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16100,
       "rot": 0,
@@ -2063,6 +2587,10 @@
       "row": "6",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16100,
       "rot": 0,
@@ -2078,6 +2606,10 @@
       "row": "6",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16100,
       "rot": 0,
@@ -2093,6 +2625,10 @@
       "row": "6",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16100,
       "rot": 0,
@@ -2108,6 +2644,10 @@
       "row": "6",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16100,
       "rot": 0,
@@ -2123,6 +2663,10 @@
       "row": "6",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16100,
       "rot": 0,
@@ -2138,6 +2682,10 @@
       "row": "6",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16100,
       "rot": 0,
@@ -2153,6 +2701,10 @@
       "row": "6",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16100,
       "rot": 0,
@@ -2168,6 +2720,10 @@
       "row": "6",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16100,
       "rot": 0,
@@ -2183,6 +2739,10 @@
       "row": "6",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16100,
       "rot": 0,
@@ -2198,6 +2758,10 @@
       "row": "6",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16100,
       "rot": 0,
@@ -2213,6 +2777,10 @@
       "row": "6",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16100,
       "rot": 0,
@@ -2228,6 +2796,10 @@
       "row": "6",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16100,
       "rot": 0,
@@ -2243,6 +2815,10 @@
       "row": "6",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16100,
       "rot": 0,
@@ -2258,6 +2834,10 @@
       "row": "6",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16100,
       "rot": 0,
@@ -2273,6 +2853,10 @@
       "row": "6",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16100,
       "rot": 0,
@@ -2288,6 +2872,10 @@
       "row": "6",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16100,
       "rot": 0,
@@ -2303,6 +2891,10 @@
       "row": "6",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16100,
       "rot": 0,
@@ -2318,6 +2910,10 @@
       "row": "6",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16100,
       "rot": 0,
@@ -2333,6 +2929,10 @@
       "row": "6",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16100,
       "rot": 0,
@@ -2348,6 +2948,10 @@
       "row": "7",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16190,
       "rot": 0,
@@ -2363,6 +2967,10 @@
       "row": "7",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16190,
       "rot": 0,
@@ -2378,6 +2986,10 @@
       "row": "7",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16190,
       "rot": 0,
@@ -2393,6 +3005,10 @@
       "row": "7",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16190,
       "rot": 0,
@@ -2408,6 +3024,10 @@
       "row": "7",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16190,
       "rot": 0,
@@ -2423,6 +3043,10 @@
       "row": "7",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16190,
       "rot": 0,
@@ -2438,6 +3062,10 @@
       "row": "7",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16190,
       "rot": 0,
@@ -2453,6 +3081,10 @@
       "row": "7",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16190,
       "rot": 0,
@@ -2468,6 +3100,10 @@
       "row": "7",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16190,
       "rot": 0,
@@ -2483,6 +3119,10 @@
       "row": "7",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16190,
       "rot": 0,
@@ -2498,6 +3138,10 @@
       "row": "7",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16190,
       "rot": 0,
@@ -2513,6 +3157,10 @@
       "row": "7",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16190,
       "rot": 0,
@@ -2528,6 +3176,10 @@
       "row": "7",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16190,
       "rot": 0,
@@ -2543,6 +3195,10 @@
       "row": "7",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16190,
       "rot": 0,
@@ -2558,6 +3214,10 @@
       "row": "7",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16190,
       "rot": 0,
@@ -2573,6 +3233,10 @@
       "row": "7",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16190,
       "rot": 0,
@@ -2588,6 +3252,10 @@
       "row": "7",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16190,
       "rot": 0,
@@ -2603,6 +3271,10 @@
       "row": "7",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16190,
       "rot": 0,
@@ -2618,6 +3290,10 @@
       "row": "7",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16190,
       "rot": 0,
@@ -2633,6 +3309,10 @@
       "row": "7",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16190,
       "rot": 0,
@@ -2648,6 +3328,10 @@
       "row": "7",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16190,
       "rot": 0,
@@ -2663,6 +3347,10 @@
       "row": "7",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16190,
       "rot": 0,
@@ -2678,6 +3366,10 @@
       "row": "7",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16190,
       "rot": 0,
@@ -2693,6 +3385,10 @@
       "row": "7",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16190,
       "rot": 0,
@@ -2708,6 +3404,10 @@
       "row": "7",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16190,
       "rot": 0,
@@ -2723,6 +3423,10 @@
       "row": "8",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16280,
       "rot": 0,
@@ -2738,6 +3442,10 @@
       "row": "8",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16280,
       "rot": 0,
@@ -2753,6 +3461,10 @@
       "row": "8",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16280,
       "rot": 0,
@@ -2768,6 +3480,10 @@
       "row": "8",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16280,
       "rot": 0,
@@ -2783,6 +3499,10 @@
       "row": "8",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16280,
       "rot": 0,
@@ -2798,6 +3518,10 @@
       "row": "8",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16280,
       "rot": 0,
@@ -2813,6 +3537,10 @@
       "row": "8",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16280,
       "rot": 0,
@@ -2828,6 +3556,10 @@
       "row": "8",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16280,
       "rot": 0,
@@ -2843,6 +3575,10 @@
       "row": "8",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16280,
       "rot": 0,
@@ -2858,6 +3594,10 @@
       "row": "8",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16280,
       "rot": 0,
@@ -2873,6 +3613,10 @@
       "row": "8",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16280,
       "rot": 0,
@@ -2888,6 +3632,10 @@
       "row": "8",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16280,
       "rot": 0,
@@ -2903,6 +3651,10 @@
       "row": "8",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16280,
       "rot": 0,
@@ -2918,6 +3670,10 @@
       "row": "8",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16280,
       "rot": 0,
@@ -2933,6 +3689,10 @@
       "row": "8",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16280,
       "rot": 0,
@@ -2948,6 +3708,10 @@
       "row": "8",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16280,
       "rot": 0,
@@ -2963,6 +3727,10 @@
       "row": "8",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16280,
       "rot": 0,
@@ -2978,6 +3746,10 @@
       "row": "8",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16280,
       "rot": 0,
@@ -2993,6 +3765,10 @@
       "row": "8",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16280,
       "rot": 0,
@@ -3008,6 +3784,10 @@
       "row": "8",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16280,
       "rot": 0,
@@ -3023,6 +3803,10 @@
       "row": "8",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16280,
       "rot": 0,
@@ -3038,6 +3822,10 @@
       "row": "8",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16280,
       "rot": 0,
@@ -3053,6 +3841,10 @@
       "row": "8",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16280,
       "rot": 0,
@@ -3068,6 +3860,10 @@
       "row": "8",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16280,
       "rot": 0,
@@ -3083,6 +3879,10 @@
       "row": "8",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16280,
       "rot": 0,
@@ -3098,6 +3898,10 @@
       "row": "9",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16370,
       "rot": 0,
@@ -3113,6 +3917,10 @@
       "row": "9",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16370,
       "rot": 0,
@@ -3128,6 +3936,10 @@
       "row": "9",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16370,
       "rot": 0,
@@ -3143,6 +3955,10 @@
       "row": "9",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16370,
       "rot": 0,
@@ -3158,6 +3974,10 @@
       "row": "9",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16370,
       "rot": 0,
@@ -3173,6 +3993,10 @@
       "row": "9",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16370,
       "rot": 0,
@@ -3188,6 +4012,10 @@
       "row": "9",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16370,
       "rot": 0,
@@ -3203,6 +4031,10 @@
       "row": "9",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16370,
       "rot": 0,
@@ -3218,6 +4050,10 @@
       "row": "9",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16370,
       "rot": 0,
@@ -3233,6 +4069,10 @@
       "row": "9",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16370,
       "rot": 0,
@@ -3248,6 +4088,10 @@
       "row": "9",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16370,
       "rot": 0,
@@ -3263,6 +4107,10 @@
       "row": "9",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16370,
       "rot": 0,
@@ -3278,6 +4126,10 @@
       "row": "9",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16370,
       "rot": 0,
@@ -3293,6 +4145,10 @@
       "row": "9",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16370,
       "rot": 0,
@@ -3308,6 +4164,10 @@
       "row": "9",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16370,
       "rot": 0,
@@ -3323,6 +4183,10 @@
       "row": "9",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16370,
       "rot": 0,
@@ -3338,6 +4202,10 @@
       "row": "9",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16370,
       "rot": 0,
@@ -3353,6 +4221,10 @@
       "row": "9",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16370,
       "rot": 0,
@@ -3368,6 +4240,10 @@
       "row": "9",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16370,
       "rot": 0,
@@ -3383,6 +4259,10 @@
       "row": "9",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16370,
       "rot": 0,
@@ -3398,6 +4278,10 @@
       "row": "9",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16370,
       "rot": 0,
@@ -3413,6 +4297,10 @@
       "row": "9",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16370,
       "rot": 0,
@@ -3428,6 +4316,10 @@
       "row": "9",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16370,
       "rot": 0,
@@ -3443,6 +4335,10 @@
       "row": "9",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16370,
       "rot": 0,
@@ -3458,6 +4354,10 @@
       "row": "9",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16370,
       "rot": 0,
@@ -3473,6 +4373,10 @@
       "row": "10",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16460,
       "rot": 0,
@@ -3488,6 +4392,10 @@
       "row": "10",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16460,
       "rot": 0,
@@ -3503,6 +4411,10 @@
       "row": "10",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16460,
       "rot": 0,
@@ -3518,6 +4430,10 @@
       "row": "10",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16460,
       "rot": 0,
@@ -3533,6 +4449,10 @@
       "row": "10",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16460,
       "rot": 0,
@@ -3548,6 +4468,10 @@
       "row": "10",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16460,
       "rot": 0,
@@ -3563,6 +4487,10 @@
       "row": "10",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16460,
       "rot": 0,
@@ -3578,6 +4506,10 @@
       "row": "10",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16460,
       "rot": 0,
@@ -3593,6 +4525,10 @@
       "row": "10",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16460,
       "rot": 0,
@@ -3608,6 +4544,10 @@
       "row": "10",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16460,
       "rot": 0,
@@ -3623,6 +4563,10 @@
       "row": "10",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16460,
       "rot": 0,
@@ -3638,6 +4582,10 @@
       "row": "10",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16460,
       "rot": 0,
@@ -3653,6 +4601,10 @@
       "row": "10",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16460,
       "rot": 0,
@@ -3668,6 +4620,10 @@
       "row": "10",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16460,
       "rot": 0,
@@ -3683,6 +4639,10 @@
       "row": "10",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16460,
       "rot": 0,
@@ -3698,6 +4658,10 @@
       "row": "10",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16460,
       "rot": 0,
@@ -3713,6 +4677,10 @@
       "row": "10",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16460,
       "rot": 0,
@@ -3728,6 +4696,10 @@
       "row": "10",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16460,
       "rot": 0,
@@ -3743,6 +4715,10 @@
       "row": "10",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16460,
       "rot": 0,
@@ -3758,6 +4734,10 @@
       "row": "10",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16460,
       "rot": 0,
@@ -3773,6 +4753,10 @@
       "row": "10",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16460,
       "rot": 0,
@@ -3788,6 +4772,10 @@
       "row": "10",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16460,
       "rot": 0,
@@ -3803,6 +4791,10 @@
       "row": "10",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16460,
       "rot": 0,
@@ -3818,6 +4810,10 @@
       "row": "10",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16460,
       "rot": 0,
@@ -3833,6 +4829,10 @@
       "row": "10",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16460,
       "rot": 0,
@@ -3848,6 +4848,10 @@
       "row": "11",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16550,
       "rot": 0,
@@ -3863,6 +4867,10 @@
       "row": "11",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16550,
       "rot": 0,
@@ -3878,6 +4886,10 @@
       "row": "11",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16550,
       "rot": 0,
@@ -3893,6 +4905,10 @@
       "row": "11",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16550,
       "rot": 0,
@@ -3908,6 +4924,10 @@
       "row": "11",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16550,
       "rot": 0,
@@ -3923,6 +4943,10 @@
       "row": "11",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16550,
       "rot": 0,
@@ -3938,6 +4962,10 @@
       "row": "11",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16550,
       "rot": 0,
@@ -3953,6 +4981,10 @@
       "row": "11",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16550,
       "rot": 0,
@@ -3968,6 +5000,10 @@
       "row": "11",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16550,
       "rot": 0,
@@ -3983,6 +5019,10 @@
       "row": "11",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16550,
       "rot": 0,
@@ -3998,6 +5038,10 @@
       "row": "11",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16550,
       "rot": 0,
@@ -4013,6 +5057,10 @@
       "row": "11",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16550,
       "rot": 0,
@@ -4028,6 +5076,10 @@
       "row": "11",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16550,
       "rot": 0,
@@ -4043,6 +5095,10 @@
       "row": "11",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16550,
       "rot": 0,
@@ -4058,6 +5114,10 @@
       "row": "11",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16550,
       "rot": 0,
@@ -4073,6 +5133,10 @@
       "row": "11",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16550,
       "rot": 0,
@@ -4088,6 +5152,10 @@
       "row": "11",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16550,
       "rot": 0,
@@ -4103,6 +5171,10 @@
       "row": "11",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16550,
       "rot": 0,
@@ -4118,6 +5190,10 @@
       "row": "11",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16550,
       "rot": 0,
@@ -4133,6 +5209,10 @@
       "row": "11",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16550,
       "rot": 0,
@@ -4148,6 +5228,10 @@
       "row": "11",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16550,
       "rot": 0,
@@ -4163,6 +5247,10 @@
       "row": "11",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16550,
       "rot": 0,
@@ -4178,6 +5266,10 @@
       "row": "11",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16550,
       "rot": 0,
@@ -4193,6 +5285,10 @@
       "row": "11",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16550,
       "rot": 0,
@@ -4208,6 +5304,10 @@
       "row": "11",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16550,
       "rot": 0,
@@ -4223,6 +5323,10 @@
       "row": "12",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16640,
       "rot": 0,
@@ -4238,6 +5342,10 @@
       "row": "12",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16640,
       "rot": 0,
@@ -4253,6 +5361,10 @@
       "row": "12",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16640,
       "rot": 0,
@@ -4268,6 +5380,10 @@
       "row": "12",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16640,
       "rot": 0,
@@ -4283,6 +5399,10 @@
       "row": "12",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16640,
       "rot": 0,
@@ -4298,6 +5418,10 @@
       "row": "12",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16640,
       "rot": 0,
@@ -4313,6 +5437,10 @@
       "row": "12",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16640,
       "rot": 0,
@@ -4328,6 +5456,10 @@
       "row": "12",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16640,
       "rot": 0,
@@ -4343,6 +5475,10 @@
       "row": "12",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16640,
       "rot": 0,
@@ -4358,6 +5494,10 @@
       "row": "12",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16640,
       "rot": 0,
@@ -4373,6 +5513,10 @@
       "row": "12",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16640,
       "rot": 0,
@@ -4388,6 +5532,10 @@
       "row": "12",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16640,
       "rot": 0,
@@ -4403,6 +5551,10 @@
       "row": "12",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16640,
       "rot": 0,
@@ -4418,6 +5570,10 @@
       "row": "12",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16640,
       "rot": 0,
@@ -4433,6 +5589,10 @@
       "row": "12",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16640,
       "rot": 0,
@@ -4448,6 +5608,10 @@
       "row": "12",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16640,
       "rot": 0,
@@ -4463,6 +5627,10 @@
       "row": "12",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16640,
       "rot": 0,
@@ -4478,6 +5646,10 @@
       "row": "12",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16640,
       "rot": 0,
@@ -4493,6 +5665,10 @@
       "row": "12",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16640,
       "rot": 0,
@@ -4508,6 +5684,10 @@
       "row": "12",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16640,
       "rot": 0,
@@ -4523,6 +5703,10 @@
       "row": "12",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16640,
       "rot": 0,
@@ -4538,6 +5722,10 @@
       "row": "12",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16640,
       "rot": 0,
@@ -4553,6 +5741,10 @@
       "row": "12",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16640,
       "rot": 0,
@@ -4568,6 +5760,10 @@
       "row": "12",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16640,
       "rot": 0,
@@ -4583,6 +5779,10 @@
       "row": "12",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16640,
       "rot": 0,
@@ -4598,6 +5798,10 @@
       "row": "13",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16730,
       "rot": 0,
@@ -4613,6 +5817,10 @@
       "row": "13",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16730,
       "rot": 0,
@@ -4628,6 +5836,10 @@
       "row": "13",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16730,
       "rot": 0,
@@ -4643,6 +5855,10 @@
       "row": "13",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16730,
       "rot": 0,
@@ -4658,6 +5874,10 @@
       "row": "13",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16730,
       "rot": 0,
@@ -4673,6 +5893,10 @@
       "row": "13",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16730,
       "rot": 0,
@@ -4688,6 +5912,10 @@
       "row": "13",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16730,
       "rot": 0,
@@ -4703,6 +5931,10 @@
       "row": "13",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16730,
       "rot": 0,
@@ -4718,6 +5950,10 @@
       "row": "13",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16730,
       "rot": 0,
@@ -4733,6 +5969,10 @@
       "row": "13",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16730,
       "rot": 0,
@@ -4748,6 +5988,10 @@
       "row": "13",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16730,
       "rot": 0,
@@ -4763,6 +6007,10 @@
       "row": "13",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16730,
       "rot": 0,
@@ -4778,6 +6026,10 @@
       "row": "13",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16730,
       "rot": 0,
@@ -4793,6 +6045,10 @@
       "row": "13",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16730,
       "rot": 0,
@@ -4808,6 +6064,10 @@
       "row": "13",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16730,
       "rot": 0,
@@ -4823,6 +6083,10 @@
       "row": "13",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16730,
       "rot": 0,
@@ -4838,6 +6102,10 @@
       "row": "13",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16730,
       "rot": 0,
@@ -4853,6 +6121,10 @@
       "row": "13",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16730,
       "rot": 0,
@@ -4868,6 +6140,10 @@
       "row": "13",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16730,
       "rot": 0,
@@ -4883,6 +6159,10 @@
       "row": "13",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16730,
       "rot": 0,
@@ -4898,6 +6178,10 @@
       "row": "13",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16730,
       "rot": 0,
@@ -4913,6 +6197,10 @@
       "row": "13",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16730,
       "rot": 0,
@@ -4928,6 +6216,10 @@
       "row": "13",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16730,
       "rot": 0,
@@ -4943,6 +6235,10 @@
       "row": "13",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16730,
       "rot": 0,
@@ -4958,6 +6254,10 @@
       "row": "13",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16730,
       "rot": 0,
@@ -4973,6 +6273,10 @@
       "row": "14",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16820,
       "rot": 0,
@@ -4988,6 +6292,10 @@
       "row": "14",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16820,
       "rot": 0,
@@ -5003,6 +6311,10 @@
       "row": "14",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16820,
       "rot": 0,
@@ -5018,6 +6330,10 @@
       "row": "14",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16820,
       "rot": 0,
@@ -5033,6 +6349,10 @@
       "row": "14",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16820,
       "rot": 0,
@@ -5048,6 +6368,10 @@
       "row": "14",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16820,
       "rot": 0,
@@ -5063,6 +6387,10 @@
       "row": "14",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16820,
       "rot": 0,
@@ -5078,6 +6406,10 @@
       "row": "14",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16820,
       "rot": 0,
@@ -5093,6 +6425,10 @@
       "row": "14",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16820,
       "rot": 0,
@@ -5108,6 +6444,10 @@
       "row": "14",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16820,
       "rot": 0,
@@ -5123,6 +6463,10 @@
       "row": "14",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16820,
       "rot": 0,
@@ -5138,6 +6482,10 @@
       "row": "14",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16820,
       "rot": 0,
@@ -5153,6 +6501,10 @@
       "row": "14",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16820,
       "rot": 0,
@@ -5168,6 +6520,10 @@
       "row": "14",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16820,
       "rot": 0,
@@ -5183,6 +6539,10 @@
       "row": "14",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16820,
       "rot": 0,
@@ -5198,6 +6558,10 @@
       "row": "14",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16820,
       "rot": 0,
@@ -5213,6 +6577,10 @@
       "row": "14",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16820,
       "rot": 0,
@@ -5228,6 +6596,10 @@
       "row": "14",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16820,
       "rot": 0,
@@ -5243,6 +6615,10 @@
       "row": "14",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16820,
       "rot": 0,
@@ -5258,6 +6634,10 @@
       "row": "14",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16820,
       "rot": 0,
@@ -5273,6 +6653,10 @@
       "row": "14",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16820,
       "rot": 0,
@@ -5288,6 +6672,10 @@
       "row": "14",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16820,
       "rot": 0,
@@ -5303,6 +6691,10 @@
       "row": "14",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16820,
       "rot": 0,
@@ -5318,6 +6710,10 @@
       "row": "14",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16820,
       "rot": 0,
@@ -5333,6 +6729,10 @@
       "row": "14",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16820,
       "rot": 0,
@@ -5348,6 +6748,10 @@
       "row": "15",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 16910,
       "rot": 0,
@@ -5363,6 +6767,10 @@
       "row": "15",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 16910,
       "rot": 0,
@@ -5378,6 +6786,10 @@
       "row": "15",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 16910,
       "rot": 0,
@@ -5393,6 +6805,10 @@
       "row": "15",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 16910,
       "rot": 0,
@@ -5408,6 +6824,10 @@
       "row": "15",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 16910,
       "rot": 0,
@@ -5423,6 +6843,10 @@
       "row": "15",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 16910,
       "rot": 0,
@@ -5438,6 +6862,10 @@
       "row": "15",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 16910,
       "rot": 0,
@@ -5453,6 +6881,10 @@
       "row": "15",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 16910,
       "rot": 0,
@@ -5468,6 +6900,10 @@
       "row": "15",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 16910,
       "rot": 0,
@@ -5483,6 +6919,10 @@
       "row": "15",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 16910,
       "rot": 0,
@@ -5498,6 +6938,10 @@
       "row": "15",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 16910,
       "rot": 0,
@@ -5513,6 +6957,10 @@
       "row": "15",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 16910,
       "rot": 0,
@@ -5528,6 +6976,10 @@
       "row": "15",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 16910,
       "rot": 0,
@@ -5543,6 +6995,10 @@
       "row": "15",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 16910,
       "rot": 0,
@@ -5558,6 +7014,10 @@
       "row": "15",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 16910,
       "rot": 0,
@@ -5573,6 +7033,10 @@
       "row": "15",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 16910,
       "rot": 0,
@@ -5588,6 +7052,10 @@
       "row": "15",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 16910,
       "rot": 0,
@@ -5603,6 +7071,10 @@
       "row": "15",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 16910,
       "rot": 0,
@@ -5618,6 +7090,10 @@
       "row": "15",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 16910,
       "rot": 0,
@@ -5633,6 +7109,10 @@
       "row": "15",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 16910,
       "rot": 0,
@@ -5648,6 +7128,10 @@
       "row": "15",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 16910,
       "rot": 0,
@@ -5663,6 +7147,10 @@
       "row": "15",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 16910,
       "rot": 0,
@@ -5678,6 +7166,10 @@
       "row": "15",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 16910,
       "rot": 0,
@@ -5693,6 +7185,10 @@
       "row": "15",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 16910,
       "rot": 0,
@@ -5708,6 +7204,10 @@
       "row": "15",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 16910,
       "rot": 0,
@@ -5723,6 +7223,10 @@
       "row": "16",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 17000,
       "rot": 0,
@@ -5738,6 +7242,10 @@
       "row": "16",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 17000,
       "rot": 0,
@@ -5753,6 +7261,10 @@
       "row": "16",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 17000,
       "rot": 0,
@@ -5768,6 +7280,10 @@
       "row": "16",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 17000,
       "rot": 0,
@@ -5783,6 +7299,10 @@
       "row": "16",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 17000,
       "rot": 0,
@@ -5798,6 +7318,10 @@
       "row": "16",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 17000,
       "rot": 0,
@@ -5813,6 +7337,10 @@
       "row": "16",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 17000,
       "rot": 0,
@@ -5828,6 +7356,10 @@
       "row": "16",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 17000,
       "rot": 0,
@@ -5843,6 +7375,10 @@
       "row": "16",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 17000,
       "rot": 0,
@@ -5858,6 +7394,10 @@
       "row": "16",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 17000,
       "rot": 0,
@@ -5873,6 +7413,10 @@
       "row": "16",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 17000,
       "rot": 0,
@@ -5888,6 +7432,10 @@
       "row": "16",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 17000,
       "rot": 0,
@@ -5903,6 +7451,10 @@
       "row": "16",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 17000,
       "rot": 0,
@@ -5918,6 +7470,10 @@
       "row": "16",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 17000,
       "rot": 0,
@@ -5933,6 +7489,10 @@
       "row": "16",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 17000,
       "rot": 0,
@@ -5948,6 +7508,10 @@
       "row": "16",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 17000,
       "rot": 0,
@@ -5963,6 +7527,10 @@
       "row": "16",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 17000,
       "rot": 0,
@@ -5978,6 +7546,10 @@
       "row": "16",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 17000,
       "rot": 0,
@@ -5993,6 +7565,10 @@
       "row": "16",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 17000,
       "rot": 0,
@@ -6008,6 +7584,10 @@
       "row": "16",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 17000,
       "rot": 0,
@@ -6023,6 +7603,10 @@
       "row": "16",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 17000,
       "rot": 0,
@@ -6038,6 +7622,10 @@
       "row": "16",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 17000,
       "rot": 0,
@@ -6053,6 +7641,10 @@
       "row": "16",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 17000,
       "rot": 0,
@@ -6068,6 +7660,10 @@
       "row": "16",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 17000,
       "rot": 0,
@@ -6083,6 +7679,10 @@
       "row": "16",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 17000,
       "rot": 0,
@@ -6098,6 +7698,10 @@
       "row": "17",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 17090,
       "rot": 0,
@@ -6113,6 +7717,10 @@
       "row": "17",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 17090,
       "rot": 0,
@@ -6128,6 +7736,10 @@
       "row": "17",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 17090,
       "rot": 0,
@@ -6143,6 +7755,10 @@
       "row": "17",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 17090,
       "rot": 0,
@@ -6158,6 +7774,10 @@
       "row": "17",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 17090,
       "rot": 0,
@@ -6173,6 +7793,10 @@
       "row": "17",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 17090,
       "rot": 0,
@@ -6188,6 +7812,10 @@
       "row": "17",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 17090,
       "rot": 0,
@@ -6203,6 +7831,10 @@
       "row": "17",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 17090,
       "rot": 0,
@@ -6218,6 +7850,10 @@
       "row": "17",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 17090,
       "rot": 0,
@@ -6233,6 +7869,10 @@
       "row": "17",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 17090,
       "rot": 0,
@@ -6248,6 +7888,10 @@
       "row": "17",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 17090,
       "rot": 0,
@@ -6263,6 +7907,10 @@
       "row": "17",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 17090,
       "rot": 0,
@@ -6278,6 +7926,10 @@
       "row": "17",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 17090,
       "rot": 0,
@@ -6293,6 +7945,10 @@
       "row": "17",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 17090,
       "rot": 0,
@@ -6308,6 +7964,10 @@
       "row": "17",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 17090,
       "rot": 0,
@@ -6323,6 +7983,10 @@
       "row": "17",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 17090,
       "rot": 0,
@@ -6338,6 +8002,10 @@
       "row": "17",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 17090,
       "rot": 0,
@@ -6353,6 +8021,10 @@
       "row": "17",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 17090,
       "rot": 0,
@@ -6368,6 +8040,10 @@
       "row": "17",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 17090,
       "rot": 0,
@@ -6383,6 +8059,10 @@
       "row": "17",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 17090,
       "rot": 0,
@@ -6398,6 +8078,10 @@
       "row": "17",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 17090,
       "rot": 0,
@@ -6413,6 +8097,10 @@
       "row": "17",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 17090,
       "rot": 0,
@@ -6428,6 +8116,10 @@
       "row": "17",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 17090,
       "rot": 0,
@@ -6443,6 +8135,10 @@
       "row": "17",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 17090,
       "rot": 0,
@@ -6458,6 +8154,10 @@
       "row": "17",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 17090,
       "rot": 0,
@@ -6473,6 +8173,10 @@
       "row": "18",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 17180,
       "rot": 0,
@@ -6488,6 +8192,10 @@
       "row": "18",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 17180,
       "rot": 0,
@@ -6503,6 +8211,10 @@
       "row": "18",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 17180,
       "rot": 0,
@@ -6518,6 +8230,10 @@
       "row": "18",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 17180,
       "rot": 0,
@@ -6533,6 +8249,10 @@
       "row": "18",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 17180,
       "rot": 0,
@@ -6548,6 +8268,10 @@
       "row": "18",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 17180,
       "rot": 0,
@@ -6563,6 +8287,10 @@
       "row": "18",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 17180,
       "rot": 0,
@@ -6578,6 +8306,10 @@
       "row": "18",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 17180,
       "rot": 0,
@@ -6593,6 +8325,10 @@
       "row": "18",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 17180,
       "rot": 0,
@@ -6608,6 +8344,10 @@
       "row": "18",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 17180,
       "rot": 0,
@@ -6623,6 +8363,10 @@
       "row": "18",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 17180,
       "rot": 0,
@@ -6638,6 +8382,10 @@
       "row": "18",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 17180,
       "rot": 0,
@@ -6653,6 +8401,10 @@
       "row": "18",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 17180,
       "rot": 0,
@@ -6668,6 +8420,10 @@
       "row": "18",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 17180,
       "rot": 0,
@@ -6683,6 +8439,10 @@
       "row": "18",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 17180,
       "rot": 0,
@@ -6698,6 +8458,10 @@
       "row": "18",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 17180,
       "rot": 0,
@@ -6713,6 +8477,10 @@
       "row": "18",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 17180,
       "rot": 0,
@@ -6728,6 +8496,10 @@
       "row": "18",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 17180,
       "rot": 0,
@@ -6743,6 +8515,10 @@
       "row": "18",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 17180,
       "rot": 0,
@@ -6758,6 +8534,10 @@
       "row": "18",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 17180,
       "rot": 0,
@@ -6773,6 +8553,10 @@
       "row": "18",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 17180,
       "rot": 0,
@@ -6788,6 +8572,10 @@
       "row": "18",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 17180,
       "rot": 0,
@@ -6803,6 +8591,10 @@
       "row": "18",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 17180,
       "rot": 0,
@@ -6818,6 +8610,10 @@
       "row": "18",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 17180,
       "rot": 0,
@@ -6833,6 +8629,10 @@
       "row": "18",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 17180,
       "rot": 0,
@@ -6848,6 +8648,10 @@
       "row": "19",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 17270,
       "rot": 0,
@@ -6863,6 +8667,10 @@
       "row": "19",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 17270,
       "rot": 0,
@@ -6878,6 +8686,10 @@
       "row": "19",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 17270,
       "rot": 0,
@@ -6893,6 +8705,10 @@
       "row": "19",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 17270,
       "rot": 0,
@@ -6908,6 +8724,10 @@
       "row": "19",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 17270,
       "rot": 0,
@@ -6923,6 +8743,10 @@
       "row": "19",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 17270,
       "rot": 0,
@@ -6938,6 +8762,10 @@
       "row": "19",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 17270,
       "rot": 0,
@@ -6953,6 +8781,10 @@
       "row": "19",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 17270,
       "rot": 0,
@@ -6968,6 +8800,10 @@
       "row": "19",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 17270,
       "rot": 0,
@@ -6983,6 +8819,10 @@
       "row": "19",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 17270,
       "rot": 0,
@@ -6998,6 +8838,10 @@
       "row": "19",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 17270,
       "rot": 0,
@@ -7013,6 +8857,10 @@
       "row": "19",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 17270,
       "rot": 0,
@@ -7028,6 +8876,10 @@
       "row": "19",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 17270,
       "rot": 0,
@@ -7043,6 +8895,10 @@
       "row": "19",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 17270,
       "rot": 0,
@@ -7058,6 +8914,10 @@
       "row": "19",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 17270,
       "rot": 0,
@@ -7073,6 +8933,10 @@
       "row": "19",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 17270,
       "rot": 0,
@@ -7088,6 +8952,10 @@
       "row": "19",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 17270,
       "rot": 0,
@@ -7103,6 +8971,10 @@
       "row": "19",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 17270,
       "rot": 0,
@@ -7118,6 +8990,10 @@
       "row": "19",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 17270,
       "rot": 0,
@@ -7133,6 +9009,10 @@
       "row": "19",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 17270,
       "rot": 0,
@@ -7148,6 +9028,10 @@
       "row": "19",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 17270,
       "rot": 0,
@@ -7163,6 +9047,10 @@
       "row": "19",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 17270,
       "rot": 0,
@@ -7178,6 +9066,10 @@
       "row": "19",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 17270,
       "rot": 0,
@@ -7193,6 +9085,10 @@
       "row": "19",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 17270,
       "rot": 0,
@@ -7208,6 +9104,10 @@
       "row": "19",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 17270,
       "rot": 0,
@@ -7223,6 +9123,10 @@
       "row": "20",
       "seat": 1,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -600,
       "y": 17360,
       "rot": 0,
@@ -7240,6 +9144,10 @@
       "row": "20",
       "seat": 2,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -550,
       "y": 17360,
       "rot": 0,
@@ -7257,6 +9165,10 @@
       "row": "20",
       "seat": 3,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -500,
       "y": 17360,
       "rot": 0,
@@ -7274,6 +9186,10 @@
       "row": "20",
       "seat": 4,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -450,
       "y": 17360,
       "rot": 0,
@@ -7291,6 +9207,10 @@
       "row": "20",
       "seat": 5,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -400,
       "y": 17360,
       "rot": 0,
@@ -7308,6 +9228,10 @@
       "row": "20",
       "seat": 6,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -350,
       "y": 17360,
       "rot": 0,
@@ -7325,6 +9249,10 @@
       "row": "20",
       "seat": 7,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -300,
       "y": 17360,
       "rot": 0,
@@ -7342,6 +9270,10 @@
       "row": "20",
       "seat": 8,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -250,
       "y": 17360,
       "rot": 0,
@@ -7359,6 +9291,10 @@
       "row": "20",
       "seat": 9,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -200,
       "y": 17360,
       "rot": 0,
@@ -7376,6 +9312,10 @@
       "row": "20",
       "seat": 10,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -150,
       "y": 17360,
       "rot": 0,
@@ -7393,6 +9333,10 @@
       "row": "20",
       "seat": 11,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -100,
       "y": 17360,
       "rot": 0,
@@ -7410,6 +9354,10 @@
       "row": "20",
       "seat": 12,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": -50,
       "y": 17360,
       "rot": 0,
@@ -7427,6 +9375,10 @@
       "row": "20",
       "seat": 13,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 0,
       "y": 17360,
       "rot": 0,
@@ -7442,6 +9394,10 @@
       "row": "20",
       "seat": 14,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 50,
       "y": 17360,
       "rot": 0,
@@ -7457,6 +9413,10 @@
       "row": "20",
       "seat": 15,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 100,
       "y": 17360,
       "rot": 0,
@@ -7472,6 +9432,10 @@
       "row": "20",
       "seat": 16,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 150,
       "y": 17360,
       "rot": 0,
@@ -7487,6 +9451,10 @@
       "row": "20",
       "seat": 17,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 200,
       "y": 17360,
       "rot": 0,
@@ -7502,6 +9470,10 @@
       "row": "20",
       "seat": 18,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 250,
       "y": 17360,
       "rot": 0,
@@ -7517,6 +9489,10 @@
       "row": "20",
       "seat": 19,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 300,
       "y": 17360,
       "rot": 0,
@@ -7532,6 +9508,10 @@
       "row": "20",
       "seat": 20,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 350,
       "y": 17360,
       "rot": 0,
@@ -7547,6 +9527,10 @@
       "row": "20",
       "seat": 21,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 400,
       "y": 17360,
       "rot": 0,
@@ -7562,6 +9546,10 @@
       "row": "20",
       "seat": 22,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 450,
       "y": 17360,
       "rot": 0,
@@ -7577,6 +9565,10 @@
       "row": "20",
       "seat": 23,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 500,
       "y": 17360,
       "rot": 0,
@@ -7592,6 +9584,10 @@
       "row": "20",
       "seat": 24,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 550,
       "y": 17360,
       "rot": 0,
@@ -7607,6 +9603,10 @@
       "row": "20",
       "seat": 25,
       "gate": "KAPI 5",
+      "gates": [
+        "KAPI 5",
+        "KAPI 6"
+      ],
       "x": 600,
       "y": 17360,
       "rot": 0,

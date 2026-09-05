@@ -47,8 +47,14 @@ export function buildSeatsPayload(plan, metas, levelCounts, gates) {
   const all = [];
   metas.forEach(({ b, m }) => {
     const sectionId = resolveBlockSectionId(b);
+    const kapilar = gates.get(b.id) || [];
     buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (!s.gap) all.push({ ...s, gate: (gates.get(b.id) || [])[0] || null, sectionId });
+      /* Bir blok BİRDEN ÇOK kapıdan girilebilir ve gerçekte sık öyledir
+         (Ülker'de 42 blok, Harbiye'de üç kapılı bloklar var). `gate` ilk
+         kapıyı taşımaya devam ediyor — tek kapılı yaygın hâl ve mevcut
+         tüketiciler için; `gates` hepsini taşır. Yalnız ilkini yazmak
+         biletin yönlendirmesini sessizce yarım bırakıyordu. */
+      if (!s.gap) all.push({ ...s, gate: kapilar[0] || null, gates: kapilar, sectionId });
     });
   });
   const seatKinds = {}, features = {};
@@ -68,7 +74,7 @@ export function buildSeatsPayload(plan, metas, levelCounts, gates) {
     groups: groupList.map(({ id, code, name, kind }) => ({ id, code, name, kind })),
     seats: all.map((s) => ({
       id: s.id, level: s.level, block: s.block, row: s.row, seat: s.num,
-      gate: s.gate, x: +s.x.toFixed(1), y: +s.y.toFixed(1), rot: +s.rot.toFixed(1),
+      gate: s.gate, gates: s.gates, x: +s.x.toFixed(1), y: +s.y.toFixed(1), rot: +s.rot.toFixed(1),
       seat_kind: s.seatKind, features: s.seatFeatures,
       group: groupById.get(s.groupId)?.code ?? null,
       section: sectionById.get(s.sectionId)?.code ?? null,
