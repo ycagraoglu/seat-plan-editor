@@ -51,6 +51,44 @@ export function registerPlanTools(server, session, z) {
     key: k, name: v.name, blocks: (v.blocks || []).length,
   }))));
 
+  server.registerTool("validate", {
+    title: "Doğrula",
+    description: [
+      "Planı 26 kurala göre denetler ve DÜZELTİLEBİLİR bilgi döndürür.",
+      "",
+      "Bulgular sadece 'hata var' demez, HEDEF DEĞER verir:",
+      "  'geçit için en az 90 cm gerekir' · '1 yer daha eklenmeli'",
+      "  '52.838 kapasite için 276 tekerlekli sandalye yeri gerekiyor'",
+      "Bu hedeflere göre update_block / add_accessible ile düzelt, tekrar çağır.",
+      "",
+      "Her bulgu ilgili blokların kimliğini de verir (blocks alanı).",
+      "severity ile süzebilirsin: err = düzeltilmeli, warn = bak ama olabilir.",
+    ].join("\n"),
+    inputSchema: {
+      severity: z.enum(["err", "warn", "info", "all"]).optional()
+        .describe("Süzgeç, varsayılan all"),
+    },
+  }, async ({ severity = "all" }) => {
+    const { findings } = session.derive();
+    const say = { err: 0, warn: 0, info: 0 };
+    findings.forEach((f) => { say[f.t] = (say[f.t] || 0) + 1; });
+    const suzulmus = severity === "all" ? findings : findings.filter((f) => f.t === severity);
+    return json({
+      ok: say.err === 0,
+      /* Karar cümlesi: LLM'in "bitti mi" sorusuna tek bakışta cevap. */
+      verdict: say.err === 0
+        ? (say.warn ? `Hata yok, ${say.warn} uyarı var — gözden geçirilebilir.`
+                    : "Temiz.")
+        : `${say.err} hata var — düzeltilmeli.`,
+      counts: say,
+      findings: suzulmus.map((f) => ({
+        rule: f.id, severity: f.t, message: f.m,
+        target: f.d ?? null,             /* HEDEF DEĞER — düzeltmeyi mümkün kılan alan */
+        blocks: f.ids ?? [],
+      })),
+    });
+  });
+
   server.registerTool("plan_summary", {
     title: "Planı oku",
     description: [
