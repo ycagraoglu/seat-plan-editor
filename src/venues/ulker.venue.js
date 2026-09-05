@@ -26,7 +26,7 @@
 
 import { nid } from "../core/ids.js";
 import { DEF_NUM } from "../core/labels.js";
-import { bowl, cutVomitories, labelGates, withAccessible } from "./builders.js";
+import { bowl, cutVomitories, labelGates, withAccessible, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
 import { solveBowlTiers } from "../core/solve.js";
@@ -49,7 +49,12 @@ const [T_ALT, T_LOCA, T_UST] = solveBowlTiers([
 const [ulkerAlt, ulkerAltDoors] = cutVomitories(bowl({ W: T_ALT.W, H: T_ALT.H, Rc: 900, rows: T_ALT.rows, rowGap: T_ALT.rowGap, seatGap: T_ALT.seatGap,
   nLong: 4, nShort: 2, nCorner: 2, first: 101, level: "Alt Tribün", aisle: 200, pad: T_ALT.pad }));
 const ulkerLoca = bowl({ W: T_LOCA.W, H: T_LOCA.H, Rc: 2600, rows: T_LOCA.rows, rowGap: T_LOCA.rowGap, seatGap: T_LOCA.seatGap,
-  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: T_LOCA.pad });
+  nLong: 4, nShort: 2, nCorner: 8, first: 1, level: "Loca", aisle: 250, pad: T_LOCA.pad })
+  /* Bu kuşağın her bloğu BİR locadır (44 blok × 6 koltuk, yukarıdaki nota
+     bakınız) — locaWing'in ürettikleri gibi. Rapor §5.3: loca bir
+     seat_group, koltuk türü değil. bowl() genel amaçlı olduğu için
+     groupKind'i burada, locanın bilindiği yerde işaretliyoruz. */
+  .map((b) => ({ ...b, groupKind: "box" }));
 const [ulkerUst, ulkerUstDoors] = cutVomitories(withAccessible(bowl({ W: T_UST.W, H: T_UST.H, Rc: 2800, rows: T_UST.rows, rowGap: T_UST.rowGap, seatGap: T_UST.seatGap,
   nLong: 5, nShort: 3, nCorner: 3, first: 201, level: "Üst Tribün", aisle: 220, pad: T_UST.pad }),
   ["203", "205", "207", "209", "211", "213", "215", "217", "219", "221", "223", "225", "227"], 9));
@@ -61,6 +66,11 @@ export const ULKER = {
     { id: nid("s"), kind: "rect", type: "pitch", sport: "basket", x: 0, y: 0,
       w: 2800, h: 1500, rot: 0, label: "Basketbol sahası", capacity: 0, fs: 160, blocks: [] },
     ...labelGates([...ulkerAltDoors, ...ulkerUstDoors]),
+  ],
+  sections: [
+    sec("Alt Tribün", "stand"),
+    sec("Üst Tribün", "stand"),
+    sec("Loca", "tier"),
   ],
   blocks: [
     /* Parket kenarı — sahaya paralel iki tek sıra (courtside) */

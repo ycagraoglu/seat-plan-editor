@@ -179,6 +179,15 @@
       "blocks": []
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:Salon",
+      "code": "Salon",
+      "name": "Salon",
+      "kind": "table_area",
+      "parentId": null
+    }
+  ],
   "blocks": [
     {
       "id": "b439",
@@ -694,6 +703,7 @@
       "level": "Bar",
       "attr": "",
       "ov": {},
+      "seatKind": "stool",
       "num": {
         "rowScheme": "custom",
         "rowStart": 1,

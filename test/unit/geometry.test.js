@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { parseCounts, countAt, prep, offsetFor, footprintPad, tableCells,
   SEAT_KINDS, DEF, DEFAULT_SEAT_KIND, seatKindWidth, legacyAtToKind, resolveSeatKind, buildSeats,
-  tableGroupId, resolveSeatGroup, resolvePlanGroups,
+  blockGroupId, resolveSeatGroup, resolvePlanGroups,
   syntheticSectionId, resolveBlockSectionId, resolvePlanSections }
   from "../../src/core/geometry.js";
 
@@ -230,10 +230,10 @@ describe("resolveSeatGroup — masa varsayılanı + ov istisnası önceliği", (
   it("masa DIŞI bir blokta istisna yoksa grup yok (null)", () => {
     expect(resolveSeatGroup({ id: "b1", kind: "grid" }, {})).toBeNull();
   });
-  it("kind:\"table\" bloğunda istisna yoksa grup, bloğun KENDİ id'si (tableGroupId)", () => {
+  it("kind:\"table\" bloğunda istisna yoksa grup, bloğun KENDİ id'si (blockGroupId)", () => {
     const b = { id: "b7", kind: "table" };
     expect(resolveSeatGroup(b, {})).toBe("b7");
-    expect(resolveSeatGroup(b, {})).toBe(tableGroupId(b));
+    expect(resolveSeatGroup(b, {})).toBe(blockGroupId(b));
   });
   it("ov.groupId TANIMLIYSA masa varsayılanını da geçersiz kılar", () => {
     const b = { id: "b7", kind: "table" };

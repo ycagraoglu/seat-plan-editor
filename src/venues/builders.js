@@ -10,7 +10,7 @@
    içeriği değil, src/venues/index.js'in salon dosyalarını import ETTİĞİ
    sıra (bkz. o dosyadaki uyarı). */
 
-import { RAD, prep, rowPts, toWorld, buildMeta } from "../core/geometry.js";
+import { RAD, prep, rowPts, toWorld, buildMeta, syntheticSectionId } from "../core/geometry.js";
 import { linearArray, radialArray } from "../core/arrays.js";
 import { incLabel, reLabel, DEF_NUM } from "../core/labels.js";
 import { nid } from "../core/ids.js";
@@ -169,6 +169,17 @@ export function tier({ r0, rows, rowGap, span, count, first, level, aisle = 160,
  *  DIŞINDA başlamalı — aynı yarıçapta aynı açıya konursa localar parterin
  *  üstüne biner, koltuklar birebir çakışır. fromDeg ana bloğun kenar açısı
  *  (+ pay), toDeg localarının gidebileceği en uç açı. */
+
+/** Bir katın BÖLÜM TÜRÜNÜ bildirir (rapor §5.1 sözlüğü: floor · balcony ·
+ *  stand · tier · section · box · table_area · general_admission_area).
+ *  Bildirilmeyen kat "floor"a düşer — bu doğru varsayılan ama bir balkon
+ *  için YANLIŞ bilgi; dışa aktarım o yanlışı olduğu gibi karşı tarafa
+ *  taşır. Kimlik syntheticSectionId'den geliyor: kat dizesinden türeyen
+ *  id ile BURADA bildirilen id aynı olmak zorunda, yoksa bildirim
+ *  türetilmiş bölümü ezmez, yanına ikinci bir bölüm ekler. */
+export const sec = (level, kind) =>
+  ({ id: syntheticSectionId(level), code: level, name: level, kind, parentId: null });
+
 export function locaWing({ r0, rows, rowGap, seatGap, perRow, gap, countPerSide,
                     first, level, color, pad = 40, fromDeg, toDeg }) {
   /* Kutu genişliğini TAHMİN etmek güvenilmezdi: offsetPoly'nin köşe
@@ -186,7 +197,12 @@ export function locaWing({ r0, rows, rowGap, seatGap, perRow, gap, countPerSide,
   const step = measuredDeg + gapDeg;
   const fit = Math.floor((toDeg - fromDeg) / step);
   const n = Math.min(countPerSide, Math.max(1, fit));
-  const seed = (a, i) => reLabel({ ...probe, id: nid(), rot: a, noAisle: true }, incLabel(first, i));
+  /* groupKind:"box" — locaWing'in ürettiği her blok BİR locadır (Ülker'de
+     44, Süreyya'da 16; hepsi 6 koltuk). Rapor §5.3'ün seat_group türü:
+     loca, masa gibi, birlikte durulan tek birim. Koltuk TÜRÜ yapılmıyor
+     (§5.4: "masa veya loca da koltuk türü yapılmamalıdır") — locadaki
+     koltuklar single kalır, birim ilişkiyi grup taşır. */
+  const seed = (a, i) => reLabel({ ...probe, id: nid(), rot: a, noAisle: true, groupKind: "box" }, incLabel(first, i));
   const out = [];
   for (let i = 0; i < n; i++) {
     const a = fromDeg + step / 2 + step * i;

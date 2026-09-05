@@ -61,42 +61,138 @@
   ],
   "sections": [
     {
-      "id": "lvl:Parter",
-      "code": "Parter",
-      "name": "Parter",
-      "kind": "floor",
+      "id": "lvl:1. Kat",
+      "code": "1. Kat",
+      "name": "1. Kat",
+      "kind": "balcony",
       "parent_id": null
     },
     {
       "id": "lvl:Zemin Loca",
       "code": "Zemin Loca",
       "name": "Zemin Loca",
-      "kind": "floor",
-      "parent_id": null
-    },
-    {
-      "id": "lvl:1. Kat",
-      "code": "1. Kat",
-      "name": "1. Kat",
-      "kind": "floor",
+      "kind": "section",
       "parent_id": null
     },
     {
       "id": "lvl:1. Kat Loca",
       "code": "1. Kat Loca",
       "name": "1. Kat Loca",
-      "kind": "floor",
+      "kind": "section",
       "parent_id": null
     },
     {
       "id": "lvl:2. Kat Loca",
       "code": "2. Kat Loca",
       "name": "2. Kat Loca",
+      "kind": "section",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:Parter",
+      "code": "Parter",
+      "name": "Parter",
       "kind": "floor",
       "parent_id": null
     }
   ],
   "groups": [
+    {
+      "id": "b462",
+      "code": "ZL1",
+      "name": "Zemin Loca · ZL1",
+      "kind": "box"
+    },
+    {
+      "id": "b463",
+      "code": "ZL2",
+      "name": "Zemin Loca · ZL2",
+      "kind": "box"
+    },
+    {
+      "id": "b466",
+      "code": "1L1",
+      "name": "1. Kat Loca · 1L1",
+      "kind": "box"
+    },
+    {
+      "id": "b467",
+      "code": "1L3",
+      "name": "1. Kat Loca · 1L3",
+      "kind": "box"
+    },
+    {
+      "id": "b468",
+      "code": "1L2",
+      "name": "1. Kat Loca · 1L2",
+      "kind": "box"
+    },
+    {
+      "id": "b469",
+      "code": "1L4",
+      "name": "1. Kat Loca · 1L4",
+      "kind": "box"
+    },
+    {
+      "id": "b471",
+      "code": "2L1",
+      "name": "2. Kat Loca · 2L1",
+      "kind": "box"
+    },
+    {
+      "id": "b472",
+      "code": "2L6",
+      "name": "2. Kat Loca · 2L6",
+      "kind": "box"
+    },
+    {
+      "id": "b473",
+      "code": "2L2",
+      "name": "2. Kat Loca · 2L2",
+      "kind": "box"
+    },
+    {
+      "id": "b474",
+      "code": "2L7",
+      "name": "2. Kat Loca · 2L7",
+      "kind": "box"
+    },
+    {
+      "id": "b475",
+      "code": "2L3",
+      "name": "2. Kat Loca · 2L3",
+      "kind": "box"
+    },
+    {
+      "id": "b476",
+      "code": "2L8",
+      "name": "2. Kat Loca · 2L8",
+      "kind": "box"
+    },
+    {
+      "id": "b477",
+      "code": "2L4",
+      "name": "2. Kat Loca · 2L4",
+      "kind": "box"
+    },
+    {
+      "id": "b478",
+      "code": "2L9",
+      "name": "2. Kat Loca · 2L9",
+      "kind": "box"
+    },
+    {
+      "id": "b479",
+      "code": "2L5",
+      "name": "2. Kat Loca · 2L5",
+      "kind": "box"
+    },
+    {
+      "id": "b480",
+      "code": "2L10",
+      "name": "2. Kat Loca · 2L10",
+      "kind": "box"
+    },
     {
       "id": "cg:b460:6,0",
       "code": "P-WC6,0",
@@ -107,30 +203,6 @@
       "id": "cg:b460:6,2",
       "code": "P-WC6,2",
       "name": "Parter · P refakat grubu",
-      "kind": "companion_group"
-    },
-    {
-      "id": "cg:b462:0,0",
-      "code": "ZL1-WC0,0",
-      "name": "Zemin Loca · ZL1 refakat grubu",
-      "kind": "companion_group"
-    },
-    {
-      "id": "cg:b462:1,0",
-      "code": "ZL1-WC1,0",
-      "name": "Zemin Loca · ZL1 refakat grubu",
-      "kind": "companion_group"
-    },
-    {
-      "id": "cg:b463:0,0",
-      "code": "ZL2-WC0,0",
-      "name": "Zemin Loca · ZL2 refakat grubu",
-      "kind": "companion_group"
-    },
-    {
-      "id": "cg:b463:1,0",
-      "code": "ZL2-WC1,0",
-      "name": "Zemin Loca · ZL2 refakat grubu",
       "kind": "companion_group"
     }
   ],
@@ -2542,7 +2614,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL1-WC0,0",
+      "group": "ZL1",
       "section": "Zemin Loca"
     },
     {
@@ -2559,7 +2631,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL1-WC0,0",
+      "group": "ZL1",
       "section": "Zemin Loca"
     },
     {
@@ -2574,7 +2646,7 @@
       "rot": -79.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "ZL1",
       "section": "Zemin Loca"
     },
     {
@@ -2591,7 +2663,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL1-WC1,0",
+      "group": "ZL1",
       "section": "Zemin Loca"
     },
     {
@@ -2608,7 +2680,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL1-WC1,0",
+      "group": "ZL1",
       "section": "Zemin Loca"
     },
     {
@@ -2623,7 +2695,7 @@
       "rot": -80.1,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "ZL1",
       "section": "Zemin Loca"
     },
     {
@@ -2640,7 +2712,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL2-WC0,0",
+      "group": "ZL2",
       "section": "Zemin Loca"
     },
     {
@@ -2657,7 +2729,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL2-WC0,0",
+      "group": "ZL2",
       "section": "Zemin Loca"
     },
     {
@@ -2672,7 +2744,7 @@
       "rot": 90.7,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "ZL2",
       "section": "Zemin Loca"
     },
     {
@@ -2689,7 +2761,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL2-WC1,0",
+      "group": "ZL2",
       "section": "Zemin Loca"
     },
     {
@@ -2706,7 +2778,7 @@
       "features": [
         "accessible"
       ],
-      "group": "ZL2-WC1,0",
+      "group": "ZL2",
       "section": "Zemin Loca"
     },
     {
@@ -2721,7 +2793,7 @@
       "rot": 89.9,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "ZL2",
       "section": "Zemin Loca"
     },
     {
@@ -4701,7 +4773,7 @@
       "rot": -70.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L1",
       "section": "1. Kat Loca"
     },
     {
@@ -4716,7 +4788,7 @@
       "rot": -67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L1",
       "section": "1. Kat Loca"
     },
     {
@@ -4731,7 +4803,7 @@
       "rot": -64.8,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L1",
       "section": "1. Kat Loca"
     },
     {
@@ -4746,7 +4818,7 @@
       "rot": -70.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L1",
       "section": "1. Kat Loca"
     },
     {
@@ -4761,7 +4833,7 @@
       "rot": -67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L1",
       "section": "1. Kat Loca"
     },
     {
@@ -4776,7 +4848,7 @@
       "rot": -65,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L1",
       "section": "1. Kat Loca"
     },
     {
@@ -4791,7 +4863,7 @@
       "rot": 64.8,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L3",
       "section": "1. Kat Loca"
     },
     {
@@ -4806,7 +4878,7 @@
       "rot": 67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L3",
       "section": "1. Kat Loca"
     },
     {
@@ -4821,7 +4893,7 @@
       "rot": 70.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L3",
       "section": "1. Kat Loca"
     },
     {
@@ -4836,7 +4908,7 @@
       "rot": 65,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L3",
       "section": "1. Kat Loca"
     },
     {
@@ -4851,7 +4923,7 @@
       "rot": 67.6,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L3",
       "section": "1. Kat Loca"
     },
     {
@@ -4866,7 +4938,7 @@
       "rot": 70.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L3",
       "section": "1. Kat Loca"
     },
     {
@@ -4881,7 +4953,7 @@
       "rot": -85.7,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L2",
       "section": "1. Kat Loca"
     },
     {
@@ -4896,7 +4968,7 @@
       "rot": -82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L2",
       "section": "1. Kat Loca"
     },
     {
@@ -4911,7 +4983,7 @@
       "rot": -80.1,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L2",
       "section": "1. Kat Loca"
     },
     {
@@ -4926,7 +4998,7 @@
       "rot": -85.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L2",
       "section": "1. Kat Loca"
     },
     {
@@ -4941,7 +5013,7 @@
       "rot": -82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L2",
       "section": "1. Kat Loca"
     },
     {
@@ -4956,7 +5028,7 @@
       "rot": -80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L2",
       "section": "1. Kat Loca"
     },
     {
@@ -4971,7 +5043,7 @@
       "rot": 80.1,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L4",
       "section": "1. Kat Loca"
     },
     {
@@ -4986,7 +5058,7 @@
       "rot": 82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L4",
       "section": "1. Kat Loca"
     },
     {
@@ -5001,7 +5073,7 @@
       "rot": 85.7,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L4",
       "section": "1. Kat Loca"
     },
     {
@@ -5016,7 +5088,7 @@
       "rot": 80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L4",
       "section": "1. Kat Loca"
     },
     {
@@ -5031,7 +5103,7 @@
       "rot": 82.9,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L4",
       "section": "1. Kat Loca"
     },
     {
@@ -5046,7 +5118,7 @@
       "rot": 85.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "1L4",
       "section": "1. Kat Loca"
     },
     {
@@ -5061,7 +5133,7 @@
       "rot": -47.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L1",
       "section": "2. Kat Loca"
     },
     {
@@ -5076,7 +5148,7 @@
       "rot": -45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L1",
       "section": "2. Kat Loca"
     },
     {
@@ -5091,7 +5163,7 @@
       "rot": -43.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L1",
       "section": "2. Kat Loca"
     },
     {
@@ -5106,7 +5178,7 @@
       "rot": -47.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L1",
       "section": "2. Kat Loca"
     },
     {
@@ -5121,7 +5193,7 @@
       "rot": -45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L1",
       "section": "2. Kat Loca"
     },
     {
@@ -5136,7 +5208,7 @@
       "rot": -43.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L1",
       "section": "2. Kat Loca"
     },
     {
@@ -5151,7 +5223,7 @@
       "rot": 43.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L6",
       "section": "2. Kat Loca"
     },
     {
@@ -5166,7 +5238,7 @@
       "rot": 45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L6",
       "section": "2. Kat Loca"
     },
     {
@@ -5181,7 +5253,7 @@
       "rot": 47.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L6",
       "section": "2. Kat Loca"
     },
     {
@@ -5196,7 +5268,7 @@
       "rot": 43.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L6",
       "section": "2. Kat Loca"
     },
     {
@@ -5211,7 +5283,7 @@
       "rot": 45.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L6",
       "section": "2. Kat Loca"
     },
     {
@@ -5226,7 +5298,7 @@
       "rot": 47.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L6",
       "section": "2. Kat Loca"
     },
     {
@@ -5241,7 +5313,7 @@
       "rot": -58.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L2",
       "section": "2. Kat Loca"
     },
     {
@@ -5256,7 +5328,7 @@
       "rot": -56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L2",
       "section": "2. Kat Loca"
     },
     {
@@ -5271,7 +5343,7 @@
       "rot": -54.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L2",
       "section": "2. Kat Loca"
     },
     {
@@ -5286,7 +5358,7 @@
       "rot": -58.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L2",
       "section": "2. Kat Loca"
     },
     {
@@ -5301,7 +5373,7 @@
       "rot": -56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L2",
       "section": "2. Kat Loca"
     },
     {
@@ -5316,7 +5388,7 @@
       "rot": -54.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L2",
       "section": "2. Kat Loca"
     },
     {
@@ -5331,7 +5403,7 @@
       "rot": 54.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L7",
       "section": "2. Kat Loca"
     },
     {
@@ -5346,7 +5418,7 @@
       "rot": 56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L7",
       "section": "2. Kat Loca"
     },
     {
@@ -5361,7 +5433,7 @@
       "rot": 58.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L7",
       "section": "2. Kat Loca"
     },
     {
@@ -5376,7 +5448,7 @@
       "rot": 54.5,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L7",
       "section": "2. Kat Loca"
     },
     {
@@ -5391,7 +5463,7 @@
       "rot": 56.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L7",
       "section": "2. Kat Loca"
     },
     {
@@ -5406,7 +5478,7 @@
       "rot": 58.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L7",
       "section": "2. Kat Loca"
     },
     {
@@ -5421,7 +5493,7 @@
       "rot": -69.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L3",
       "section": "2. Kat Loca"
     },
     {
@@ -5436,7 +5508,7 @@
       "rot": -67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L3",
       "section": "2. Kat Loca"
     },
     {
@@ -5451,7 +5523,7 @@
       "rot": -65.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L3",
       "section": "2. Kat Loca"
     },
     {
@@ -5466,7 +5538,7 @@
       "rot": -69.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L3",
       "section": "2. Kat Loca"
     },
     {
@@ -5481,7 +5553,7 @@
       "rot": -67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L3",
       "section": "2. Kat Loca"
     },
     {
@@ -5496,7 +5568,7 @@
       "rot": -65.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L3",
       "section": "2. Kat Loca"
     },
     {
@@ -5511,7 +5583,7 @@
       "rot": 65.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L8",
       "section": "2. Kat Loca"
     },
     {
@@ -5526,7 +5598,7 @@
       "rot": 67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L8",
       "section": "2. Kat Loca"
     },
     {
@@ -5541,7 +5613,7 @@
       "rot": 69.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L8",
       "section": "2. Kat Loca"
     },
     {
@@ -5556,7 +5628,7 @@
       "rot": 65.4,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L8",
       "section": "2. Kat Loca"
     },
     {
@@ -5571,7 +5643,7 @@
       "rot": 67.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L8",
       "section": "2. Kat Loca"
     },
     {
@@ -5586,7 +5658,7 @@
       "rot": 69.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L8",
       "section": "2. Kat Loca"
     },
     {
@@ -5601,7 +5673,7 @@
       "rot": -80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L4",
       "section": "2. Kat Loca"
     },
     {
@@ -5616,7 +5688,7 @@
       "rot": -78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L4",
       "section": "2. Kat Loca"
     },
     {
@@ -5631,7 +5703,7 @@
       "rot": -76.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L4",
       "section": "2. Kat Loca"
     },
     {
@@ -5646,7 +5718,7 @@
       "rot": -80.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L4",
       "section": "2. Kat Loca"
     },
     {
@@ -5661,7 +5733,7 @@
       "rot": -78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L4",
       "section": "2. Kat Loca"
     },
     {
@@ -5676,7 +5748,7 @@
       "rot": -76.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L4",
       "section": "2. Kat Loca"
     },
     {
@@ -5691,7 +5763,7 @@
       "rot": 76.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L9",
       "section": "2. Kat Loca"
     },
     {
@@ -5706,7 +5778,7 @@
       "rot": 78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L9",
       "section": "2. Kat Loca"
     },
     {
@@ -5721,7 +5793,7 @@
       "rot": 80.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L9",
       "section": "2. Kat Loca"
     },
     {
@@ -5736,7 +5808,7 @@
       "rot": 76.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L9",
       "section": "2. Kat Loca"
     },
     {
@@ -5751,7 +5823,7 @@
       "rot": 78.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L9",
       "section": "2. Kat Loca"
     },
     {
@@ -5766,7 +5838,7 @@
       "rot": 80.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L9",
       "section": "2. Kat Loca"
     },
     {
@@ -5781,7 +5853,7 @@
       "rot": -91.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L5",
       "section": "2. Kat Loca"
     },
     {
@@ -5796,7 +5868,7 @@
       "rot": -89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L5",
       "section": "2. Kat Loca"
     },
     {
@@ -5811,7 +5883,7 @@
       "rot": -87.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L5",
       "section": "2. Kat Loca"
     },
     {
@@ -5826,7 +5898,7 @@
       "rot": -91.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L5",
       "section": "2. Kat Loca"
     },
     {
@@ -5841,7 +5913,7 @@
       "rot": -89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L5",
       "section": "2. Kat Loca"
     },
     {
@@ -5856,7 +5928,7 @@
       "rot": -87.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L5",
       "section": "2. Kat Loca"
     },
     {
@@ -5871,7 +5943,7 @@
       "rot": 87.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L10",
       "section": "2. Kat Loca"
     },
     {
@@ -5886,7 +5958,7 @@
       "rot": 89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L10",
       "section": "2. Kat Loca"
     },
     {
@@ -5901,7 +5973,7 @@
       "rot": 91.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L10",
       "section": "2. Kat Loca"
     },
     {
@@ -5916,7 +5988,7 @@
       "rot": 87.3,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L10",
       "section": "2. Kat Loca"
     },
     {
@@ -5931,7 +6003,7 @@
       "rot": 89.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L10",
       "section": "2. Kat Loca"
     },
     {
@@ -5946,7 +6018,7 @@
       "rot": 91.2,
       "seat_kind": "single",
       "features": [],
-      "group": null,
+      "group": "2L10",
       "section": "2. Kat Loca"
     }
   ]

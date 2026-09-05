@@ -8,7 +8,7 @@
 
 import { nid } from "../core/ids.js";
 import { reLabel, DEF_NUM } from "../core/labels.js";
-import { locaWing, withAccessible } from "./builders.js";
+import { locaWing, withAccessible, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
 
@@ -27,6 +27,12 @@ export const SUREYYA = {
     ...[[1, -700, 940], [2, 700, 940]].map(([n, x, y]) => ({
       id: nid("s"), kind: "rect", type: "door", x, y, w: 90, h: 90, rot: 0,
       label: `KAPI ${n}`, capacity: 0, fs: 34, blocks: [] })),
+  ],
+  sections: [
+    sec("1. Kat", "balcony"),
+    sec("Zemin Loca", "section"),
+    sec("1. Kat Loca", "section"),
+    sec("2. Kat Loca", "section"),
   ],
   blocks: [
     /* Parter — sahne önü, hafif açılan taban, sabit değil doğal taper */

@@ -10,7 +10,7 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 415 test
+npm test           # 493 test
 ```
 
 ---
@@ -34,9 +34,10 @@ almalı:
 - `cutVomitories()` — tribün kapılarını üstüne kondurmaz, **içine oyar**:
   koltukları siler, kapıyı gerçek boşluğa koyar. Gerçek stadyum mimarisi budur.
 
-**Kurallar** (`src/core/rules.js`) — 21 kural, veri olarak tanımlı, tek
+**Kurallar** (`src/core/rules.js`) — 26 kural, veri olarak tanımlı, tek
 kaynaktan üç tüketiciye (canlı uyarı, Doğrula raporu, CI). Aralarında:
 - kapı/işaret hiçbir koltukla kesişmez
+- refakatçi koltuğu grupsuz kalmaz; bölüm ağacında döngü/derinlik/kardeş kod
 - aynı kattaki bloklar birbirinin alanına giremez (farklı kat girebilir —
   balkon parterin üstünde durur)
 - koltuk kendi bloğunun dış hattının içinde
@@ -70,8 +71,11 @@ plan
 │   ├── num      numaralandırma şeması → seating.rows
 │   └── ov       koltuk başına istisna (tip, özellik, kaydırma, silme)
 ├── sections[]   bölüm ağacı (parentId ile) → seating.sections
+│                 kind: floor · balcony · stand · tier · section · box ·
+│                 table_area · general_admission_area
 ├── groups[]     koltuk grupları → seating.seat_groups
-│   masa (otomatik) · loca · love-seat · kapsül · refakatçi grubu
+│   masa ve loca OTOMATİK: blok = grup (b.kind:"table" · b.groupKind:"box")
+│   refakatçi grubu OTOMATİK: tekerlekli sandalye + en yakın refakatçi
 ├── shapes[]     satılabilir olmayan nesneler → seating.shapes
 │   sahne · perde · saha · kapı · duvar · ayakta alan · ikon · not
 └── versions[]   sürümler + published → seating.seat_plan_versions
@@ -110,7 +114,32 @@ okunabiliyor.
 
 Referans bütünlüğü `test/invariants/db-export.test.js`'te dokuz salon
 üstünde otomatik sınanıyor: her `parent_id`, `section_id`, `row_id`,
-`seat_type_id`, `group_id` ve `entrance_id` var olan bir satıra çözülüyor.
+`seat_type_id`, `group_id` ve `entrance_id` var olan bir satıra çözülüyor;
+ayrıca şemanın benzersizlik kısıtları — kardeş bölüm kodu (§5.1'in
+`UNIQUE NULLS NOT DISTINCT (tenant_id, version_id, parent_section_id, code)`),
+bölüm içi satır kodu, kapı-bölüm çifti.
+
+`test/invariants/report-conformance.test.js` ise raporun **sözlüklerini**
+tutuyor: `section.kind`, `seat_group.kind`, `seat_kind`, `features`,
+`geometry_kind`, `shape_kind` — dışa aktarım hiçbirinin dışına çıkamıyor.
+Aynı dosya §6.4'ün yazım doğrulamasını da uyguluyor (sonlu sayı, pozitif
+ölçü, en az üç farklı noktalı poligon, sınırlı nokta sayısı) ve fiyat/satış/
+envanter alanı sızmadığını makineyle kontrol ediyor.
+
+**Bölüm geometrisi.** Raporun §6'sı geometriyi *section* üzerinde tanımlıyor
+(§6.1: "mevcut uygulama section geometrisinde yalnızca `rect.v1`
+destekliyor"). Yaprak bölüm geometrisini bloğun tabanından alır:
+
+| blok | `geometry_kind` | neden |
+|---|---|---|
+| fan | `arc.v1` | raporun "kavisli tribün" satırı |
+| yuvarlak masa | `ellipse.v1` | raporun "yuvarlak masa" satırı |
+| gerisi | `polygon.v1` | taban çokgeni — kesin, yaklaşıklık yok |
+
+`rect.v1`'e düşürülmez: dönmüş bir bloğun dünya hizalı bbox'ı gerçek taban
+değildir, çokgen zaten kesin. Birden çok bloğun birleştiği bölümde tek bir
+taban yoktur (Zorlu'nun orkestra blokları) — geometri `null` bırakılır,
+uydurulmuş bir birleşim çokgeni üretilmez.
 
 `seat_kind` ve `features` mimari raporun §5.4'ündeki ayrımı izler:
 
@@ -120,10 +149,24 @@ Referans bütünlüğü `test/invariants/db-export.test.js`'te dokuz salon
 | `loveseat` | 74 cm | fiziksel birleşik ikili |
 | `wheelchair_space` | 86 cm | tekerlekli sandalye konumu |
 | `companion` | 41 cm | refakatçi |
-| `stool` | 34 cm | tabure (bar, masa çevresi) |
+| `stool` | 34 cm | tabure (bar, masa çevresi) — Aylak'ın bar tezgâhı |
 | `tech` | 41 cm | **rapor sözlüğünde YOK** — editöre özgü uzantı: ızgarada yer kaplayan ama seyirci koltuğu olmayan konum (kamera platformu, ışık masası) |
 
 `features` (0..N): `accessible`, `restrictedView`
+
+**Refakatçi grubu türetilir, saklanmaz.** Rapor §5.4 refakatçi koltuğunun
+hangi tekerlekli sandalye konumuna ait olduğunun açıkça tanımlanmasını
+şart koşuyor. İlişki fiziksel olduğu için yerleşimden okunuyor: hücre
+uzayında en yakın komşuya, birebir. Örnek salonlarda ölçülen üç gerçek
+düzenin üçünü de aynı kural karşılıyor — **yan yana** (GS, Ülker),
+**önlü arkalı** (AKM: refakatçi bir ön sırada, aynı sütun), **blok blok**
+(Yenikapı: 6 sandalye + 6 refakatçi). Eşsiz kalan refakatçiyi
+`companion-orphan` kuralı bildirir.
+
+Bir loca ya da masa söz konusuysa **birim grup kazanır**: o koltuklar
+locanın/masanın grubuna düşer, ayrıca refakat grubu açılmaz. Rapor bu
+durumu ayrıca ele almıyor; bir koltuğun tek bir `group_id`'si var ve
+satılan birim locadır.
 
 ---
 
@@ -148,9 +191,16 @@ Referans bütünlüğü `test/invariants/db-export.test.js`'te dokuz salon
 Editörün veri modeli raporun hedefine hizalandı (§5.1 bölüm ağacı, §5.3 koltuk
 grupları, §5.4 `seat_kind`/`features`). Kalan boşluklar:
 
-| Rapor | Editörde |
-|---|---|
-| §6.2 — `rounded_rect.v1`, `line.v1`, `bezier_path.v1` | yok (arc, polygon, rect, point var) |
+| Rapor | Editörde | neden |
+|---|---|---|
+| §6.2 — `line.v1`, `polyline.v1` | yok | editörde açık uçlu çizgi/rota nesnesi yok; duvar ve bariyer dikdörtgen ya da çokgen çiziliyor |
+| §6.2 — `rounded_rect.v1` | yok | yuvarlatılmış köşe ayrı bir tür değil, çokgen olarak çıkıyor |
+| §6.2 — `bezier_path.v1` | yok | raporun kendisi ilk teslimat için zorunlu değil diyor |
+| §6.3 — `court`, `goal`, `barrier`, `aisle`, `exit`, `restricted_area` | yok | editörde karşılığı olan şekil tipi yok |
+| §5.4 `loveseat` · §5.3 `loveseat`, `pod` | model destekliyor | dokuz örnek salonda örneği yok — eksiklik veride, modelde değil |
+| §7 — `venue.venues` | yok | editör mekân-alan ayrımı tutmuyor; `space` tek kayıt olarak çıkıyor |
+
+Üretilen: `arc.v1` · `ellipse.v1` · `polygon.v1` · `point.v1` · `rect.v1`.
 
 Raporun *"karşılanmıyor"* dediği üç şey ise editörde **var**: birden fazla
 ayakta alan (Yenikapı'da 4 alan / 39.500 kişi), kavisli geometri (145
@@ -165,7 +215,7 @@ src/
   core/        saf: React yok, DOM yok
     geometry   prep · buildMeta · buildSeats · footprintPad · SEAT_KINDS
     polygon    kesişim, alan, çokgen kırpma (Sutherland-Hodgman)
-    rules      21 kural + runRules — tek kaynak
+    rules      26 kural + runRules — tek kaynak
     solve      kademe çözücü
     labels     sıra/koltuk numaralandırma
     identity   kimlik şablonu, CSV eşleştirme

@@ -1,7 +1,7 @@
 /* ══════════════  SALON 3 · GALATASARAY STADYUMU  ══════════════ */
 
 import { nid } from "../core/ids.js";
-import { bowl, cutVomitories, labelGates, withAccessible } from "./builders.js";
+import { bowl, cutVomitories, labelGates, withAccessible, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
 import { solveBowlTiers } from "../core/solve.js";
@@ -48,6 +48,11 @@ export const GS = {
     { id: nid("s"), kind: "rect", type: "note", x: -13100, y: 0, w: 10, h: 10, rot: 90, label: "KUZEY / NORTH", capacity: 0, fs: 600 },
     { id: nid("s"), kind: "rect", type: "note", x: 13100, y: 0, w: 10, h: 10, rot: -90, label: "GÜNEY / SOUTH", capacity: 0, fs: 600 },
     ...labelGates([...gsAltDoors, ...gsOrtaDoors, ...gsUstDoors]),
+  ],
+  sections: [
+    sec("Alt Tribün", "stand"),
+    sec("Orta Tribün", "stand"),
+    sec("Üst Tribün", "stand"),
   ],
   blocks: [...gsAlt, ...gsOrta, ...gsUst],
 };

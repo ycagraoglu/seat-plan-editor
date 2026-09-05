@@ -163,6 +163,36 @@
       ]
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:1. Kat",
+      "code": "1. Kat",
+      "name": "1. Kat",
+      "kind": "balcony",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Zemin Loca",
+      "code": "Zemin Loca",
+      "name": "Zemin Loca",
+      "kind": "section",
+      "parentId": null
+    },
+    {
+      "id": "lvl:1. Kat Loca",
+      "code": "1. Kat Loca",
+      "name": "1. Kat Loca",
+      "kind": "section",
+      "parentId": null
+    },
+    {
+      "id": "lvl:2. Kat Loca",
+      "code": "2. Kat Loca",
+      "name": "2. Kat Loca",
+      "kind": "section",
+      "parentId": null
+    }
+  ],
   "blocks": [
     {
       "id": "b460",
@@ -258,6 +288,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "ZL1",
       "name": "Zemin Loca · ZL1"
     },
@@ -307,6 +338,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "ZL2",
       "name": "Zemin Loca · ZL2"
     },
@@ -378,6 +410,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "1L1",
       "name": "1. Kat Loca · 1L1"
     },
@@ -414,6 +447,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "1L3",
       "name": "1. Kat Loca · 1L3"
     },
@@ -450,6 +484,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "1L2",
       "name": "1. Kat Loca · 1L2"
     },
@@ -486,6 +521,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "1L4",
       "name": "1. Kat Loca · 1L4"
     },
@@ -522,6 +558,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L1",
       "name": "2. Kat Loca · 2L1"
     },
@@ -558,6 +595,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L6",
       "name": "2. Kat Loca · 2L6"
     },
@@ -594,6 +632,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L2",
       "name": "2. Kat Loca · 2L2"
     },
@@ -630,6 +669,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L7",
       "name": "2. Kat Loca · 2L7"
     },
@@ -666,6 +706,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L3",
       "name": "2. Kat Loca · 2L3"
     },
@@ -702,6 +743,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L8",
       "name": "2. Kat Loca · 2L8"
     },
@@ -738,6 +780,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L4",
       "name": "2. Kat Loca · 2L4"
     },
@@ -774,6 +817,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L9",
       "name": "2. Kat Loca · 2L9"
     },
@@ -810,6 +854,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L5",
       "name": "2. Kat Loca · 2L5"
     },
@@ -846,6 +891,7 @@
         "anchor": "order"
       },
       "noAisle": true,
+      "groupKind": "box",
       "label": "2L10",
       "name": "2. Kat Loca · 2L10"
     }

@@ -896,6 +896,29 @@
       "label": "KAPI 48"
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:Alt Tribün",
+      "code": "Alt Tribün",
+      "name": "Alt Tribün",
+      "kind": "stand",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Üst Tribün",
+      "code": "Üst Tribün",
+      "name": "Üst Tribün",
+      "kind": "stand",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Loca",
+      "code": "Loca",
+      "name": "Loca",
+      "kind": "tier",
+      "parentId": null
+    }
+  ],
   "blocks": [
     {
       "id": "b393",
@@ -2686,7 +2709,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "1",
-      "name": "Loca · 1"
+      "name": "Loca · 1",
+      "groupKind": "box"
     },
     {
       "id": "b293",
@@ -2721,7 +2745,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "2",
-      "name": "Loca · 2"
+      "name": "Loca · 2",
+      "groupKind": "box"
     },
     {
       "id": "b294",
@@ -2756,7 +2781,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "3",
-      "name": "Loca · 3"
+      "name": "Loca · 3",
+      "groupKind": "box"
     },
     {
       "id": "b295",
@@ -2791,7 +2817,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "4",
-      "name": "Loca · 4"
+      "name": "Loca · 4",
+      "groupKind": "box"
     },
     {
       "id": "b296",
@@ -2826,7 +2853,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "5",
-      "name": "Loca · 5"
+      "name": "Loca · 5",
+      "groupKind": "box"
     },
     {
       "id": "b297",
@@ -2861,7 +2889,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "6",
-      "name": "Loca · 6"
+      "name": "Loca · 6",
+      "groupKind": "box"
     },
     {
       "id": "b298",
@@ -2896,7 +2925,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "7",
-      "name": "Loca · 7"
+      "name": "Loca · 7",
+      "groupKind": "box"
     },
     {
       "id": "b299",
@@ -2931,7 +2961,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "8",
-      "name": "Loca · 8"
+      "name": "Loca · 8",
+      "groupKind": "box"
     },
     {
       "id": "b300",
@@ -2963,7 +2994,8 @@
       "rows": 2,
       "cols": 6,
       "label": "9",
-      "name": "Loca · 9"
+      "name": "Loca · 9",
+      "groupKind": "box"
     },
     {
       "id": "b301",
@@ -2995,7 +3027,8 @@
       "rows": 2,
       "cols": 6,
       "label": "10",
-      "name": "Loca · 10"
+      "name": "Loca · 10",
+      "groupKind": "box"
     },
     {
       "id": "b302",
@@ -3027,7 +3060,8 @@
       "rows": 2,
       "cols": 6,
       "label": "11",
-      "name": "Loca · 11"
+      "name": "Loca · 11",
+      "groupKind": "box"
     },
     {
       "id": "b303",
@@ -3059,7 +3093,8 @@
       "rows": 2,
       "cols": 6,
       "label": "12",
-      "name": "Loca · 12"
+      "name": "Loca · 12",
+      "groupKind": "box"
     },
     {
       "id": "b304",
@@ -3094,7 +3129,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "13",
-      "name": "Loca · 13"
+      "name": "Loca · 13",
+      "groupKind": "box"
     },
     {
       "id": "b305",
@@ -3129,7 +3165,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "14",
-      "name": "Loca · 14"
+      "name": "Loca · 14",
+      "groupKind": "box"
     },
     {
       "id": "b306",
@@ -3164,7 +3201,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "15",
-      "name": "Loca · 15"
+      "name": "Loca · 15",
+      "groupKind": "box"
     },
     {
       "id": "b307",
@@ -3199,7 +3237,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "16",
-      "name": "Loca · 16"
+      "name": "Loca · 16",
+      "groupKind": "box"
     },
     {
       "id": "b308",
@@ -3234,7 +3273,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "17",
-      "name": "Loca · 17"
+      "name": "Loca · 17",
+      "groupKind": "box"
     },
     {
       "id": "b309",
@@ -3269,7 +3309,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "18",
-      "name": "Loca · 18"
+      "name": "Loca · 18",
+      "groupKind": "box"
     },
     {
       "id": "b310",
@@ -3304,7 +3345,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "19",
-      "name": "Loca · 19"
+      "name": "Loca · 19",
+      "groupKind": "box"
     },
     {
       "id": "b311",
@@ -3339,7 +3381,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "20",
-      "name": "Loca · 20"
+      "name": "Loca · 20",
+      "groupKind": "box"
     },
     {
       "id": "b312",
@@ -3371,7 +3414,8 @@
       "rows": 2,
       "cols": 6,
       "label": "21",
-      "name": "Loca · 21"
+      "name": "Loca · 21",
+      "groupKind": "box"
     },
     {
       "id": "b313",
@@ -3403,7 +3447,8 @@
       "rows": 2,
       "cols": 6,
       "label": "22",
-      "name": "Loca · 22"
+      "name": "Loca · 22",
+      "groupKind": "box"
     },
     {
       "id": "b314",
@@ -3438,7 +3483,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "23",
-      "name": "Loca · 23"
+      "name": "Loca · 23",
+      "groupKind": "box"
     },
     {
       "id": "b315",
@@ -3473,7 +3519,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "24",
-      "name": "Loca · 24"
+      "name": "Loca · 24",
+      "groupKind": "box"
     },
     {
       "id": "b316",
@@ -3508,7 +3555,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "25",
-      "name": "Loca · 25"
+      "name": "Loca · 25",
+      "groupKind": "box"
     },
     {
       "id": "b317",
@@ -3543,7 +3591,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "26",
-      "name": "Loca · 26"
+      "name": "Loca · 26",
+      "groupKind": "box"
     },
     {
       "id": "b318",
@@ -3578,7 +3627,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "27",
-      "name": "Loca · 27"
+      "name": "Loca · 27",
+      "groupKind": "box"
     },
     {
       "id": "b319",
@@ -3613,7 +3663,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "28",
-      "name": "Loca · 28"
+      "name": "Loca · 28",
+      "groupKind": "box"
     },
     {
       "id": "b320",
@@ -3648,7 +3699,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "29",
-      "name": "Loca · 29"
+      "name": "Loca · 29",
+      "groupKind": "box"
     },
     {
       "id": "b321",
@@ -3683,7 +3735,8 @@
       "aStart": -98.4954,
       "aEnd": -92.7546,
       "label": "30",
-      "name": "Loca · 30"
+      "name": "Loca · 30",
+      "groupKind": "box"
     },
     {
       "id": "b322",
@@ -3715,7 +3768,8 @@
       "rows": 2,
       "cols": 6,
       "label": "31",
-      "name": "Loca · 31"
+      "name": "Loca · 31",
+      "groupKind": "box"
     },
     {
       "id": "b323",
@@ -3747,7 +3801,8 @@
       "rows": 2,
       "cols": 6,
       "label": "32",
-      "name": "Loca · 32"
+      "name": "Loca · 32",
+      "groupKind": "box"
     },
     {
       "id": "b324",
@@ -3779,7 +3834,8 @@
       "rows": 2,
       "cols": 6,
       "label": "33",
-      "name": "Loca · 33"
+      "name": "Loca · 33",
+      "groupKind": "box"
     },
     {
       "id": "b325",
@@ -3811,7 +3867,8 @@
       "rows": 2,
       "cols": 6,
       "label": "34",
-      "name": "Loca · 34"
+      "name": "Loca · 34",
+      "groupKind": "box"
     },
     {
       "id": "b326",
@@ -3846,7 +3903,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "35",
-      "name": "Loca · 35"
+      "name": "Loca · 35",
+      "groupKind": "box"
     },
     {
       "id": "b327",
@@ -3881,7 +3939,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "36",
-      "name": "Loca · 36"
+      "name": "Loca · 36",
+      "groupKind": "box"
     },
     {
       "id": "b328",
@@ -3916,7 +3975,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "37",
-      "name": "Loca · 37"
+      "name": "Loca · 37",
+      "groupKind": "box"
     },
     {
       "id": "b329",
@@ -3951,7 +4011,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "38",
-      "name": "Loca · 38"
+      "name": "Loca · 38",
+      "groupKind": "box"
     },
     {
       "id": "b330",
@@ -3986,7 +4047,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "39",
-      "name": "Loca · 39"
+      "name": "Loca · 39",
+      "groupKind": "box"
     },
     {
       "id": "b331",
@@ -4021,7 +4083,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "40",
-      "name": "Loca · 40"
+      "name": "Loca · 40",
+      "groupKind": "box"
     },
     {
       "id": "b332",
@@ -4056,7 +4119,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "41",
-      "name": "Loca · 41"
+      "name": "Loca · 41",
+      "groupKind": "box"
     },
     {
       "id": "b333",
@@ -4091,7 +4155,8 @@
       "aStart": 171.5046,
       "aEnd": 177.2454,
       "label": "42",
-      "name": "Loca · 42"
+      "name": "Loca · 42",
+      "groupKind": "box"
     },
     {
       "id": "b334",
@@ -4123,7 +4188,8 @@
       "rows": 2,
       "cols": 6,
       "label": "43",
-      "name": "Loca · 43"
+      "name": "Loca · 43",
+      "groupKind": "box"
     },
     {
       "id": "b335",
@@ -4155,7 +4221,8 @@
       "rows": 2,
       "cols": 6,
       "label": "44",
-      "name": "Loca · 44"
+      "name": "Loca · 44",
+      "groupKind": "box"
     },
     {
       "id": "b336",

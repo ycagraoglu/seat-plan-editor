@@ -6,7 +6,7 @@
 
 import { nid } from "../core/ids.js";
 import { reLabel, DEF_NUM } from "../core/labels.js";
-import { tbl, withAccessible } from "./builders.js";
+import { tbl, withAccessible, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
 
@@ -31,6 +31,9 @@ export const AYLAK = {
       .map(([icon, x, y, label]) => ({ id: nid("s"), kind: "icon", type: "icon", icon,
         x, y, rot: 0, size: 32, w: 120, h: 120, label, capacity: 0, fs: 100, blocks: [] })),
   ],
+  sections: [
+    sec("Salon", "table_area"),
+  ],
   blocks: [
     /* Sahne önü — iki kişilik masalar */
     ...[-195, 35, 265, 495].map((x, i) => tbl(`M${i + 1}`, x, -250, 2, 65, 0)),
@@ -41,6 +44,9 @@ export const AYLAK = {
     reLabel({ id: nid(), kind: "grid", x: -370, y: -25, rot: -90,
       cols: 7, rows: 1, counts: "", align: "center", seatGap: 72, rowGap: 90,
       curve: 0, taper: 0, pad: 30, level: "Bar", attr: "", ov: {},
+      /* Rapor §5.4: "Pub masasındaki yüksek tabure → seat_kind = stool".
+         Yukarıdaki yorum zaten tabure diyordu, veri söylemiyordu. */
+      seatKind: "stool",
       num: { ...DEF_NUM, rowScheme: "custom", rowCustom: "B", seatStart: 1 } }, "BAR"),
   ],
 };

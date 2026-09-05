@@ -76,23 +76,23 @@
   ],
   "sections": [
     {
-      "id": "lvl:Orkestra",
-      "code": "Orkestra",
-      "name": "Orkestra",
-      "kind": "floor",
-      "parent_id": null
-    },
-    {
       "id": "lvl:1. Balkon",
       "code": "1. Balkon",
       "name": "1. Balkon",
-      "kind": "floor",
+      "kind": "balcony",
       "parent_id": null
     },
     {
       "id": "lvl:2. Balkon",
       "code": "2. Balkon",
       "name": "2. Balkon",
+      "kind": "balcony",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:Orkestra",
+      "code": "Orkestra",
+      "name": "Orkestra",
       "kind": "floor",
       "parent_id": null
     }

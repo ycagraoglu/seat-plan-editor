@@ -180,6 +180,22 @@
       ]
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:1. Balkon",
+      "code": "1. Balkon",
+      "name": "1. Balkon",
+      "kind": "balcony",
+      "parentId": null
+    },
+    {
+      "id": "lvl:2. Balkon",
+      "code": "2. Balkon",
+      "name": "2. Balkon",
+      "kind": "balcony",
+      "parentId": null
+    }
+  ],
   "blocks": [
     {
       "id": "b38",

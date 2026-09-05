@@ -6,7 +6,7 @@
 
 import { nid } from "../core/ids.js";
 import { reLabel, DEF_NUM } from "../core/labels.js";
-import { tier, locaWing, withAccessible } from "./builders.js";
+import { tier, locaWing, withAccessible, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { RAD, buildMeta } from "../core/geometry.js";
 import { solveRadialTiers } from "../core/solve.js";
@@ -65,6 +65,13 @@ export const HARBIYE = {
       id: nid("s"), kind: "rect", type: "door", x, y, w: 300, h: 300, rot: 0,
       label: `KAPI ${n}`, capacity: 0, fs: 100, blocks: [],
     })),
+  ],
+  sections: [
+    sec("Alt Kademe", "tier"),
+    sec("Orta Kademe", "tier"),
+    sec("Üst Kademe", "tier"),
+    sec("Protokol", "section"),
+    sec("Erişilebilir Platform", "section"),
   ],
   blocks: [
     /* Protokol locası — sahnenin hemen önünde, iki sıra */

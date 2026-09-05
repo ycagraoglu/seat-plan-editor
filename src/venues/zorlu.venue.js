@@ -1,7 +1,7 @@
 /* ══════════════  SALON 2 · ZORLU PSM  ══════════════ */
 
 import { nid } from "../core/ids.js";
-import { gr, nOrta, nCift, nTek, withAccessible } from "./builders.js";
+import { gr, nOrta, nCift, nTek, withAccessible, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
 
@@ -23,6 +23,10 @@ export const ZORLU = {
       id: nid("s"), kind: "rect", type: "door", x, y, w: 260, h: 260, rot: 0,
       label: `KAPI ${n}`, capacity: 0, fs: 90, blocks: [],
     })),
+  ],
+  sections: [
+    sec("1. Balkon", "balcony"),
+    sec("2. Balkon", "balcony"),
   ],
   blocks: [
     gr({ label: "ORK-O", name: "Orkestra Orta (ön)", level: "Orkestra", x: 0, y: 200, rows: 2, counts: "18..20", num: nOrta("AA,BB") }),

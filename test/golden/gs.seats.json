@@ -598,21 +598,21 @@
       "id": "lvl:Alt Tribün",
       "code": "Alt Tribün",
       "name": "Alt Tribün",
-      "kind": "floor",
+      "kind": "stand",
       "parent_id": null
     },
     {
       "id": "lvl:Orta Tribün",
       "code": "Orta Tribün",
       "name": "Orta Tribün",
-      "kind": "floor",
+      "kind": "stand",
       "parent_id": null
     },
     {
       "id": "lvl:Üst Tribün",
       "code": "Üst Tribün",
       "name": "Üst Tribün",
-      "kind": "floor",
+      "kind": "stand",
       "parent_id": null
     }
   ],

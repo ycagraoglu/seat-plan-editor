@@ -183,6 +183,15 @@
       ]
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:Loca",
+      "code": "Loca",
+      "name": "Loca",
+      "kind": "section",
+      "parentId": null
+    }
+  ],
   "blocks": [
     {
       "id": "b511",

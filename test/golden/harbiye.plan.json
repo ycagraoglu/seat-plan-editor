@@ -437,6 +437,43 @@
       "blocks": []
     }
   ],
+  "sections": [
+    {
+      "id": "lvl:Alt Kademe",
+      "code": "Alt Kademe",
+      "name": "Alt Kademe",
+      "kind": "tier",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Orta Kademe",
+      "code": "Orta Kademe",
+      "name": "Orta Kademe",
+      "kind": "tier",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Üst Kademe",
+      "code": "Üst Kademe",
+      "name": "Üst Kademe",
+      "kind": "tier",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Protokol",
+      "code": "Protokol",
+      "name": "Protokol",
+      "kind": "section",
+      "parentId": null
+    },
+    {
+      "id": "lvl:Erişilebilir Platform",
+      "code": "Erişilebilir Platform",
+      "name": "Erişilebilir Platform",
+      "kind": "section",
+      "parentId": null
+    }
+  ],
   "blocks": [
     {
       "id": "b403",

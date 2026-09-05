@@ -8,6 +8,7 @@
    ══════════════════════════════════════════════════════════════ */
 
 import { nid } from "../core/ids.js";
+import { sec } from "./builders.js";
 import { DEF_NUM } from "../core/labels.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
@@ -33,6 +34,9 @@ export const YENIKAPI = {
       id: nid("s"), kind: "rect", type: "door", x, y, w: 400, h: 400, rot: 0,
       label: `KAPI ${n}`, capacity: 0, fs: 160, blocks: [],
     })),
+  ],
+  sections: [
+    sec("Loca", "section"),
   ],
   blocks: [
     { id: nid(), kind: "grid", label: "LOCA", name: "LOCA", level: "Loca",

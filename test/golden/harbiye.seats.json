@@ -75,38 +75,38 @@
   ],
   "sections": [
     {
-      "id": "lvl:Protokol",
-      "code": "Protokol",
-      "name": "Protokol",
-      "kind": "floor",
-      "parent_id": null
-    },
-    {
       "id": "lvl:Alt Kademe",
       "code": "Alt Kademe",
       "name": "Alt Kademe",
-      "kind": "floor",
+      "kind": "tier",
       "parent_id": null
     },
     {
       "id": "lvl:Orta Kademe",
       "code": "Orta Kademe",
       "name": "Orta Kademe",
-      "kind": "floor",
+      "kind": "tier",
       "parent_id": null
     },
     {
       "id": "lvl:Üst Kademe",
       "code": "Üst Kademe",
       "name": "Üst Kademe",
-      "kind": "floor",
+      "kind": "tier",
+      "parent_id": null
+    },
+    {
+      "id": "lvl:Protokol",
+      "code": "Protokol",
+      "name": "Protokol",
+      "kind": "section",
       "parent_id": null
     },
     {
       "id": "lvl:Erişilebilir Platform",
       "code": "Erişilebilir Platform",
       "name": "Erişilebilir Platform",
-      "kind": "floor",
+      "kind": "section",
       "parent_id": null
     }
   ],

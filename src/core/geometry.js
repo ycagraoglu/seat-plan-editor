@@ -115,10 +115,19 @@ export function resolveSeatKind(b, o) {
    b.kind==="table" olan her blok için id/code/name/kind HER OKUMADA
    burada yeniden türetilir; src/venues/** (DOKUNMA) tek satır bile
    değişmedi, salon dosyaları bunun varlığından habersiz. Blok zaten kendi
-   id'sini taşıdığı için grubun id'si de ONUN id'si (tableGroupId) — masa
+   id'sini taşıdığı için grubun id'si de ONUN id'si (blockGroupId) — masa
    ile grubu arasında 1:1 bir ilişki var, ayrı bir kimlik uydurmak sahte
    bir ayrım eklerdi. */
-export const tableGroupId = (b) => b.id;
+export const blockGroupId = (b) => b.id;
+
+/* Bir BLOĞUN kendisi bir grup olabilir. İki gerçek hâli var ve ikisi de
+   aynı şey — "blok = birlikte durulan tek birim":
+     masa   b.kind === "table"    Aylak'ın 12 masası
+     loca   b.groupKind === "box" Ülker'in 44, Süreyya'nın 16 locası
+   Rapor §5.3 ikisini de seat_group türü sayıyor, §5.4 ise ikisinin de
+   koltuk TÜRÜ olmamasını şart koşuyor ("masa veya loca da koltuk türü
+   yapılmamalıdır") — bu ayrım tam olarak burada duruyor. */
+export const blockGroupKind = (b) => (b.kind === "table" ? "table" : b.groupKind || null);
 
 /** Bir KOLTUĞUN ait olduğu grup — resolveSeatKind'in birebir eşi. Öncelik:
  *  ov istisnası (o.groupId, TANIMLIYSA — null dahil: "bu koltuğu
@@ -127,7 +136,7 @@ export const tableGroupId = (b) => b.id;
  *  var) > hiç grup yok (null). */
 export function resolveSeatGroup(b, o, r, c) {
   if (o && o.groupId !== undefined) return o.groupId;
-  if (b.kind === "table") return tableGroupId(b);
+  if (blockGroupKind(b)) return blockGroupId(b);
   const kind = cellKind(b, r, c);
   if (kind !== "wheelchair_space" && kind !== "companion") return null;
   const es = companionEslesme(b).get(`${r},${c}`);
@@ -222,12 +231,12 @@ export function blockCompanionGroups(b) {
 }
 
 export function resolvePlanGroups(plan) {
-  const tableGroups = (plan.blocks || [])
-    .filter((b) => b.kind === "table")
-    .map((b) => ({ id: tableGroupId(b), code: b.label, name: b.name || b.label,
-      kind: "table", blockId: b.id }));
+  const blockGroups = (plan.blocks || [])
+    .filter(blockGroupKind)
+    .map((b) => ({ id: blockGroupId(b), code: b.label, name: b.name || b.label,
+      kind: blockGroupKind(b), blockId: b.id }));
   const compGroups = (plan.blocks || []).flatMap(blockCompanionGroups);
-  return [...(plan.groups || []), ...tableGroups, ...compGroups];
+  return [...(plan.groups || []), ...blockGroups, ...compGroups];
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

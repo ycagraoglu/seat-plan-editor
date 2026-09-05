@@ -57,7 +57,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 import { nid } from "../core/ids.js";
-import { fanB, akmDoor } from "./builders.js";
+import { fanB, akmDoor, sec} from "./builders.js";
 import { autoGates } from "../core/gates.js";
 import { buildMeta } from "../core/geometry.js";
 import { solveRadialTiers } from "../core/solve.js";
@@ -89,6 +89,10 @@ export const AKM = {
     akmDoor(1, -2012, -177), akmDoor(2, 2012, -177),
     akmDoor(3, -1543, -1839), akmDoor(4, 1543, -1839),
     akmDoor(5, -2155, -1940), akmDoor(6, 2155, -1940),
+  ],
+  sections: [
+    sec("1. Balkon", "balcony"),
+    sec("2. Balkon", "balcony"),
   ],
   blocks: [
     /* Sahneye en yakın küçük ön bant — tek parça (ÇİFT/TEK ayrımı bu

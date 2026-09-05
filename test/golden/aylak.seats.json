@@ -9,7 +9,8 @@
   },
   "seat_kinds": {
     "wheelchair_space": 4,
-    "companion": 4
+    "companion": 4,
+    "stool": 7
   },
   "features": {
     "accessible": 8
@@ -48,7 +49,7 @@
       "id": "lvl:Salon",
       "code": "Salon",
       "name": "Salon",
-      "kind": "floor",
+      "kind": "table_area",
       "parent_id": null
     },
     {
@@ -760,7 +761,7 @@
       "x": -370,
       "y": 191,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"
@@ -775,7 +776,7 @@
       "x": -370,
       "y": 119,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"
@@ -790,7 +791,7 @@
       "x": -370,
       "y": 47,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"
@@ -805,7 +806,7 @@
       "x": -370,
       "y": -25,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"
@@ -820,7 +821,7 @@
       "x": -370,
       "y": -97,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"
@@ -835,7 +836,7 @@
       "x": -370,
       "y": -169,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"
@@ -850,7 +851,7 @@
       "x": -370,
       "y": -241,
       "rot": -90,
-      "seat_kind": "single",
+      "seat_kind": "stool",
       "features": [],
       "group": null,
       "section": "Bar"

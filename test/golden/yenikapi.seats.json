@@ -48,7 +48,7 @@
       "id": "lvl:Loca",
       "code": "Loca",
       "name": "Loca",
-      "kind": "floor",
+      "kind": "section",
       "parent_id": null
     }
   ],
