@@ -5,6 +5,8 @@ import { buildMeta } from "../../src/core/geometry.js";
 import { nid } from "../../src/core/ids.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
+const cokgenNot = (a) => (Array.isArray(a.points) && a.points.length >= 3
+  ? ` (çokgen, ${a.points.length} nokta)` : "");
 const json = (o) => ({ content: [{ type: "text", text: JSON.stringify(o, null, 2) }] });
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -234,12 +236,19 @@ export function registerVenueTools(server, session, z) {
       "· stage — sahne · screen — perde/ekran · pitch — spor sahası (nizami ölçü)",
       "· door — kapı/turnike · wall — salon sınırı (koltuk dışına taşamaz)",
       "· standing — ayakta alan (kapasitesi olur) · note — metin etiketi",
+      "· icon — tesis işareti (tuvalet, vestiyer, büfe, danışma...); icon alanı",
+      "  zorunlu, sözlük aşağıda.",
+      "",
+      "DÜZENSİZ SINIR: wall gibi bir şekli dikdörtgen yerine ÇOKGEN çizmek",
+      "için points ver — [{x,y},...] dünya koordinatında, en az 3 nokta.",
+      "Düzgün olmayan salonların sınırı ancak böyle doğru çizilir; sınır",
+      "kuralları (koltuk salon dışına taşmasın) duvara bakıyor.",
       "",
       "pitch verirsen sport zorunlu; ölçü nizamnameden gelir, w/h yok sayılır.",
       "wall şekilleri salonun SINIRIDIR — dışına taşan koltuk hata sayılır.",
     ].join("\n"),
     inputSchema: {
-      type: z.enum(["stage", "screen", "pitch", "door", "wall", "standing", "note"]),
+      type: z.enum(["stage", "screen", "pitch", "door", "wall", "standing", "note", "icon"]),
       x: z.number(), y: z.number(),
       w: z.number().optional().describe("Genişlik (cm) — pitch dışında zorunlu"),
       h: z.number().optional().describe("Yükseklik (cm) — pitch dışında zorunlu"),
@@ -249,21 +258,42 @@ export function registerVenueTools(server, session, z) {
         .optional().describe("pitch için zorunlu"),
       capacity: z.number().int().optional().describe("standing için kişi kapasitesi"),
       fs: z.number().optional().describe("Yazı boyu (cm)"),
+      points: z.array(z.object({ x: z.number(), y: z.number() })).min(3).optional()
+        .describe("ÇOKGEN şekil için köşe noktaları (dünya cm). Verilirse w/h "
+          + "yok sayılır; düzensiz salon sınırı/alan için."),
+      icon: z.enum(["wc", "entrance", "exit", "stairs", "elevator", "escal", "food",
+        "bar", "beer", "cafe", "shop", "aid", "access", "info", "ticket", "cloak",
+        "warn", "spot", "smoke", "parking", "wifi", "nursery", "lounge", "show"])
+        .optional().describe("icon türü: wc tuvalet · entrance giriş · exit acil çıkış "
+          + "· stairs merdiven · elevator asansör · escal yürüyen merdiven · food "
+          + "restoran · bar · beer büfe · cafe · shop satış · aid ilk yardım · access "
+          + "engelli erişimi · info danışma · ticket bilet · cloak vestiyer · warn uyarı "
+          + "· spot ışık · smoke sigara · parking otopark · wifi · nursery emzirme · "
+          + "lounge oturma alanı · show gösteri"),
     },
   }, async (a) => metin(session.mutate((plan) => {
     if (a.type === "pitch" && !a.sport) throw new Error("pitch için sport zorunlu.");
-    if (a.type !== "pitch" && (a.w == null || a.h == null)) {
-      throw new Error(`${a.type} için w ve h zorunlu.`);
+    if (a.type === "icon" && !a.icon) throw new Error("icon için icon türü zorunlu (bkz. sözlük).");
+    /* Çokgen ve ikon kendi ölçüsünü taşır; gerisi w/h ister. */
+    const cokgen = Array.isArray(a.points) && a.points.length >= 3;
+    if (!cokgen && a.type !== "pitch" && a.type !== "icon" && (a.w == null || a.h == null)) {
+      throw new Error(`${a.type} için w ve h zorunlu (ya da çokgen için points).`);
     }
     const s = {
-      id: nid("s"), kind: "rect", type: a.type,
-      x: a.x, y: a.y, w: a.w ?? 0, h: a.h ?? 0, rot: a.rot ?? 0,
+      id: nid("s"),
+      kind: cokgen ? "poly" : a.type === "icon" ? "icon" : "rect",
+      type: a.type,
+      x: a.x, y: a.y, w: a.w ?? (a.type === "icon" ? 120 : 0),
+      h: a.h ?? (a.type === "icon" ? 120 : 0), rot: a.rot ?? 0,
       label: a.label ?? "", capacity: a.capacity ?? 0, fs: a.fs ?? 150,
+      ...(cokgen ? { pts: a.points } : {}),
+      ...(a.type === "icon" ? { icon: a.icon, size: 30 } : {}),
       ...(a.sport ? { sport: a.sport } : {}),
       ...(a.type === "door" ? { blocks: [] } : {}),
     };
     return { ...plan, shapes: [...(plan.shapes || []), s] };
-  }, `Şekil eklendi: ${a.type}${a.label ? ` "${a.label}"` : ""}`)));
+  }, `Şekil eklendi: ${a.type}${a.icon ? `/${a.icon}` : ""}`
+     + `${cokgenNot(a)}${a.label ? ` "${a.label}"` : ""}`)));
 
   server.registerTool("assign_gate", {
     title: "Kapıya blok ata",

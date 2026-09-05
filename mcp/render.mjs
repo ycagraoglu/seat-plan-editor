@@ -31,7 +31,7 @@ export const levelColor = (i) =>
    "sahne neredeydi" sorusunu tek bakışta cevaplıyor. */
 const SHAPE_FILL = {
   pitch: "#2F5D43", stage: "#2B2B33", screen: "#3A3A45", wall: "none",
-  standing: "#8A7B4E", door: "#B4472F", note: "none",
+  standing: "#8A7B4E", door: "#B4472F", note: "none", icon: "#6E7787",
 };
 
 const num = (v) => (Number.isFinite(v) ? +v.toFixed(1) : 0);

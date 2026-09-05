@@ -96,7 +96,7 @@ sonuç kendiliğinden gerçek santimetrede çıkar. Kaynak görselden mesafe
 | `add_accessible` | Tekerlekli sandalye + refakatçi çifti |
 | `define_section` | Bölüme tür ver (rapor sözlüğü) |
 | **Şekil / kapı** | |
-| `add_shape` | Sahne · saha · perde · kapı · duvar · ayakta alan · not |
+| `add_shape` | Sahne · saha · perde · kapı · duvar · ayakta alan · not · **ikon** (çokgen destekli) |
 | `assign_gate` | Kapıya blok ata (çok kapılı blok destekli) |
 | `auto_gates` | Mesafeye göre ata (tahmindir) |
 | **Görme** | |
@@ -153,6 +153,7 @@ Yayına sen göndermezsin. Ürettiğin şey taslaktır.
 | Geometri geri okunamaz | `db.json` bölüm/satır/koltuk taşır; koltuk konumlarından "ızgara mıydı yelpaze miydi" çıkarmak tahmindir |
 | Yayımlayamaz | Aracı yok; operatör editörde açıp onaylar |
 | Excel doğrudan okunamaz | CSV dışa aktarımı istenmeli |
+| `free` blok türü açık değil | Editörde var ama on salonun 334 bloğunun HİÇBİRİ kullanmıyor; olmayan ihtiyaç için araç açılmadı. Düzensiz oturma gerekirse eklenir |
 
 ---
 

@@ -198,3 +198,51 @@ describe("define_section — rapor sözlüğü", () => {
     await expect(t.cagir("define_section", { level: "X", kind: "her_neyse" })).rejects.toThrow();
   });
 });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EDİTÖRÜN OLUP MCP'DE OLMAYAN YETENEKLER
+
+   Ölçüldü: on salonun dördü ikon şekli kullanıyor (22 örnek), ikisi
+   düzensiz çokgen salon sınırı (2 örnek). Soğuk LLM testinde model "REJİ
+   ODASI için şekil türü yok" diye takıldı ve not olarak koymak zorunda
+   kaldı. free blok türü ise 334 bloğun HİÇBİRİNDE kullanılmıyor —
+   bilerek açılmadı, olmayan ihtiyaç uydurmamak için.
+   ══════════════════════════════════════════════════════════════════════════ */
+describe("ikon ve çokgen şekiller", () => {
+  beforeEach(async () => { await t.cagir("create_plan", { name: "T" }); });
+
+  it("tesis ikonu eklenebiliyor (tuvalet, vestiyer, danışma...)", async () => {
+    await t.cagir("add_shape", { type: "icon", icon: "cloak", x: -900, y: 900, label: "Vestiyer" });
+    const d = await t.jsonCagir("plan_summary");
+    expect(d.shapes.find((s) => s.type === "icon").label).toBe("Vestiyer");
+  });
+
+  it("ikon türü verilmezse sessizce geçmiyor", async () => {
+    await expect(t.cagir("add_shape", { type: "icon", x: 0, y: 0 }))
+      .rejects.toThrow(/icon türü zorunlu/);
+  });
+
+  it("çokgen duvar SINIR olarak çalışıyor — düzensiz salonlar için", async () => {
+    /* Dikdörtgen duvar düzensiz bir salonu temsil edemez; CSO ve Harbiye'nin
+       sınırı çokgen. Sınır kuralları (koltuk salon dışına taşmasın) duvara
+       bakıyor, yani çokgen olmadan o salonlar doğru denetlenemez. */
+    await t.cagir("add_shape", { type: "wall", x: 0, y: 0,
+      points: [{ x: -600, y: -400 }, { x: 600, y: -400 }, { x: 0, y: 600 }] });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 4, cols: 20 });
+    const v = await t.jsonCagir("validate");
+    expect(v.findings.some((f) => f.rule === "seats-outside-boundary")).toBe(true);
+  });
+
+  it("çokgen ÇOKGEN olarak çiziliyor, dikdörtgene indirgenmiyor", async () => {
+    await t.cagir("add_shape", { type: "wall", x: 0, y: 0,
+      points: [{ x: -600, y: -400 }, { x: 600, y: -400 }, { x: 0, y: 600 }] });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 2, cols: 4 });
+    const { renderSvg } = await import("../../mcp/render.mjs");
+    expect(renderSvg(t.session.plan, { scope: "all" }).svg).toMatch(/<polygon[^>]*-600,-400/);
+  });
+
+  it("en az 3 nokta şartı şemada zorunlu", async () => {
+    await expect(t.cagir("add_shape", { type: "wall", x: 0, y: 0,
+      points: [{ x: 0, y: 0 }, { x: 10, y: 10 }] })).rejects.toThrow();
+  });
+});
