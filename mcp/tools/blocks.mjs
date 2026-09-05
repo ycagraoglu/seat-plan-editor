@@ -56,6 +56,26 @@ export function registerBlockTools(server, session, z) {
       color: z.string().optional().describe("Blok rengi (#RRGGBB); verilmezse kata göre otomatik"),
     },
   }, async (a) => metin(session.mutate((plan) => {
+    /* Türe göre ZORUNLU alanlar. Eksikse blok yine kurulurdu ama sessizce
+       yanlış olurdu: rows'suz grid 0 koltuk üretip "Blok eklendi" diyordu,
+       r0'suz fan geometrisi bozuk koltuklar üretiyordu. LLM ikisinde de
+       çalıştı sanır. Sessiz başarısızlık bu projedeki en pahalı hata
+       sınıfı — araç sınırında kesiliyor. */
+    const eksik = [];
+    if (a.kind === "table") {
+      if (!a.seats) eksik.push("seats (masa etrafı koltuk sayısı)");
+    } else {
+      if (!a.rows) eksik.push("rows (sıra sayısı)");
+      if (a.kind === "fan" && a.r0 == null) eksik.push("r0 (ilk sıra yarıçapı, cm)");
+      if (a.kind === "grid" && !a.cols && !a.counts) {
+        eksik.push("cols ya da counts (sıra başına koltuk)");
+      }
+    }
+    if (eksik.length) {
+      throw new Error(`${a.kind} bloğu için eksik alan: ${eksik.join(" · ")}.`
+        + ` Verilmezse blok kurulur ama koltukları yanlış olur.`);
+    }
+
     let b;
     if (a.kind === "table") {
       b = tbl(a.label, a.x, a.y, a.seats ?? 4, a.tW ?? 120, 0);

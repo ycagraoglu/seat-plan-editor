@@ -178,3 +178,40 @@ describe("kural motoru geri bildirimi — LLM'i kendini düzeltebilir yapan şey
     expect(r).toMatch(/A|B/);
   });
 });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EKSİK PARAMETRE SESSİZCE GEÇMEZ
+
+   Gerçek stdio denemesinde çıktı: rows'suz bir grid bloğu 0 koltukla
+   kabul ediliyor ve araç "Blok eklendi" diyordu; r0'suz bir fan ise
+   geometrisi bozuk koltuklar üretiyordu. LLM ikisinde de çalıştı sanar
+   ve yanlış planla devam eder — sessiz başarısızlık.
+   ══════════════════════════════════════════════════════════════════════════ */
+describe("eksik zorunlu alan REDDEDİLİR", () => {
+  beforeEach(async () => { await t.cagir("create_plan", { name: "T" }); });
+
+  it("grid: rows yoksa red, ne eksik olduğunu SÖYLER", async () => {
+    await expect(t.cagir("add_block", { kind: "grid", label: "X", level: "L", x: 0, y: 0 }))
+      .rejects.toThrow(/rows/);
+  });
+
+  it("grid: cols ve counts'un ikisi de yoksa red", async () => {
+    await expect(t.cagir("add_block", { kind: "grid", label: "X", level: "L", x: 0, y: 0, rows: 5 }))
+      .rejects.toThrow(/cols ya da counts/);
+  });
+
+  it("fan: r0 yoksa red — yoksa geometri bozuk koltuk üretiyordu", async () => {
+    await expect(t.cagir("add_block", { kind: "fan", label: "Y", level: "L", x: 0, y: 0, rows: 5 }))
+      .rejects.toThrow(/r0/);
+  });
+
+  it("table: seats yoksa red", async () => {
+    await expect(t.cagir("add_block", { kind: "table", label: "M", level: "L", x: 0, y: 0 }))
+      .rejects.toThrow(/seats/);
+  });
+
+  it("eksiksiz blok kabul edilir", async () => {
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "L", x: 0, y: 0, rows: 5, cols: 10 });
+    expect((await t.jsonCagir("plan_summary")).seatCount).toBe(50);
+  });
+});
