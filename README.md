@@ -364,6 +364,11 @@ koltuk çıktısı dosyada sabittir, her değişiklikte karşılaştırılır. G
 dokunmadan yapılan hiçbir değişiklik bunları oynatamaz — oynatıyorsa bir şey
 kırılmıştır.
 
+**Bu depoyu ana uygulamaya taşıyacak ekip / yapay zekâ ajanı için:**
+[`docs/CODEX-BRIEF.md`](docs/CODEX-BRIEF.md) — kapsam sınırı, veri modeli,
+kendi kendine keşfedilemeyecek alan bilgisi, çarptığımız tuzaklar ve
+sırayla ne yapılacağı. Olduğu gibi prompt olarak verilebilir.
+
 Ayrıntılı kullanım: [`docs/KULLANIM-KILAVUZU.md`](docs/KULLANIM-KILAVUZU.md) ·
 korunan davranışlar ve koruması olmayanlar:
 [`docs/REGRESYON.md`](docs/REGRESYON.md)
