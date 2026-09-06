@@ -425,3 +425,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, label:focus-vis
 .canli .gnl .sy{ grid-column:2; font-size:11px; color:var(--mut); }
 .canli .gnl .uy{ grid-column:2; font-size:11px; color:var(--warn); }
 .canli .btn.wide{ width:100%; justify-content:center; }
+
+/* Panel içi sohbet — mesajlar ve araç adımları TEK zaman çizelgesinde.
+   .props'u flex kolona çeviriyoruz ki girdi altta sabit kalsın ve yalnız
+   liste kaysın (.canli ile aynı kalıp). */
+.props:has(.sohbet){ display:flex; flex-direction:column; overflow:hidden; }
+.sohbet{ flex:1; min-height:0; display:flex; flex-direction:column; gap:8px; padding:12px; }
+.sohbet .akis{ list-style:none; margin:0; padding:0; flex:1; min-height:0; overflow-y:auto;
+  display:flex; flex-direction:column; gap:6px; }
+.sohbet .akis li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+  padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+.sohbet .akis .sa{ font:10.5px var(--mono); color:var(--mut); padding-top:2px; }
+.sohbet .akis .mt{ font-size:12px; white-space:pre-wrap; }
+.sohbet .akis .sy{ grid-column:2; font-size:11px; color:var(--mut); }
+.sohbet .akis .uy{ grid-column:2; font-size:11px; color:var(--warn); }
+.sohbet .akis li.kullanici{ border-color:var(--acc); background:var(--accline); }
+.sohbet .akis li.kullanici .mt{ font-weight:600; }
+.sohbet .akis li.asistan{ border-color:var(--ok); }
+.sohbet .akis li.hata .mt, .sohbet .akis li.uyari .mt{ color:var(--err); }
+.sohbet .akis li.bekle .mt{ color:var(--mut); font-style:italic; }
+.sohbet .akis li.ipucu{ display:block; border-style:dashed; color:var(--mut); font-size:11.5px; }
+.sohbet .pubrow{ flex:none; }

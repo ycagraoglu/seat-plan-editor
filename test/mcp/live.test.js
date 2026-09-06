@@ -144,6 +144,45 @@ describe("SEAT_EDITOR_API verilmişken", () => {
     await t.kapat();
   });
 
+  it("list_plans + open_plan: kayıtlı salon açılıyor, ORİJİNAL ezilmiyor", async () => {
+    /* Yönetim panelinde asıl ihtiyaç bu: salon bir kez çizilir, sonra
+       düzeltilir. Ama yapay zekâ operatörün kaydının ÜSTÜNE yazmamalı —
+       çıktı taslaktır, üstüne geçme kararı operatörün. */
+    await fetch(`${taban}/plans/salonum`, {
+      method: "PUT", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ key: "salonum", name: "Benim Salonum",
+        blocks: [{ id: "b1", kind: "grid", label: "A", level: "Z", x: 0, y: 0,
+          rows: 2, cols: 3, seatGap: 50, rowGap: 90, counts: "", align: "center",
+          num: {}, ov: {} }], shapes: [] }),
+    });
+
+    const t = await baglan();
+    const liste = JSON.parse(await t.cagir("list_plans"));
+    expect(liste.find((x) => x.key === "salonum").name).toBe("Benim Salonum");
+
+    await t.cagir("open_plan", { key: "salonum" });
+    await t.cagir("add_block", { kind: "grid", label: "YENİ", level: "Z",
+      x: 5000, y: 0, rows: 3, cols: 4 });
+    await bekle(async () => { const x = await canli(); return x.aktif ? x : null; });
+
+    /* Yapay zekânın işi ai- ad alanında... */
+    expect((await canli()).key).toBe("ai-salonum");
+    /* ...operatörün kaydı DOKUNULMAMIŞ. */
+    const orijinal = await (await fetch(`${taban}/plans/salonum`)).json();
+    expect(orijinal.blocks).toHaveLength(1);
+    await t.kapat();
+  });
+
+  it("SEAT_EDITOR_API yokken kayıtlı plan araçları NET hata veriyor", async () => {
+    delete process.env.SEAT_EDITOR_API;
+    const t = await baglan();
+    await expect(t.cagir("list_plans")).rejects.toThrow(/SEAT_EDITOR_API/);
+    /* Ne yapacağını da söylüyor. */
+    await expect(t.cagir("open_plan", { key: "x" })).rejects.toThrow(/create_plan|open_sample/);
+    await t.kapat();
+    process.env.SEAT_EDITOR_API = taban;
+  });
+
   it("adım günlüğü OPERATÖR DİLİNDE ve bulguları taşıyor", async () => {
     /* Panelin okuduğu şey bu. "grid" değil "Izgara", ham kural kimliği
        değil hedef değerli mesaj — operatör kod bilmek zorunda değil. */

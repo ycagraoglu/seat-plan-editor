@@ -43,6 +43,65 @@ export function registerPlanTools(server, session, z) {
     return metin(session.summaryText(`Örnek alındı: ${v.name}`));
   });
 
+  /* ── OPERATÖRÜN KENDİ SALONLARI ───────────────────────────────────
+     open_sample depodaki ON ÖRNEĞİ açıyor; bunlar operatörün KENDİ kayıtlı
+     planlarını açıyor. Yönetim panelinde asıl ihtiyaç bu: salon bir kez
+     çizilir, sonra "balkona iki sıra ekle" diye düzeltilir.
+
+     Depoya SEAT_EDITOR_API üzerinden bakıyorlar (mcp/live.mjs'in emsali).
+     Değişken yoksa NET HATA veriyorlar — boş liste dönüp "hiç planın yok"
+     izlenimi vermek, olmayan bir gerçeği bildirmek olurdu. */
+  const taban = () => {
+    const t = process.env.SEAT_EDITOR_API;
+    if (!t) {
+      throw new Error("Kayıtlı planlara erişim yok: SEAT_EDITOR_API tanımlı değil."
+        + " Bu araç ancak editör sunucusuna bağlıyken çalışır."
+        + " Sıfırdan çizmek için create_plan ya da open_sample kullan.");
+    }
+    return t.replace(/\/+$/, "");
+  };
+  const getir = async (yol) => {
+    const r = await fetch(`${taban()}${yol}`);
+    if (!r.ok) throw new Error(`Depo yanıtı: HTTP ${r.status}`);
+    return r.json();
+  };
+
+  server.registerTool("list_plans", {
+    title: "Kayıtlı planlar",
+    description: [
+      "Operatörün KAYITLI planlarını listeler (örnek salonları değil —",
+      "onlar için list_samples).",
+      "",
+      "Var olan bir salonu düzeltmen istendiğinde önce bunu çağır, doğru",
+      "anahtarı bul, sonra open_plan ile aç. Ada göre tahmin yürütme.",
+    ].join("\n"),
+    inputSchema: {},
+  }, async () => {
+    const liste = await getir("/plans?detay=1");
+    if (!liste.length) return metin("Kayıtlı plan yok. create_plan ile başlayabilirsin.");
+    return json(liste);
+  });
+
+  server.registerTool("open_plan", {
+    title: "Kayıtlı planı aç",
+    description: [
+      "Operatörün kayıtlı bir planını aktif hâle getirir — üstünde düzenleme",
+      "yapmak için. Anahtarı list_plans'ten al.",
+      "",
+      "ÖNEMLİ: Orijinali EZMEZSİN. Çizim, canlı görünümde kendi ad alanına",
+      "(\"ai-\" ön ekli) yazılır; operatörün planı olduğu gibi durur ve",
+      "beğenirse üstüne kendisi geçer. Ürettiğin şey yine TASLAKTIR.",
+    ].join("\n"),
+    inputSchema: {
+      key: z.string().describe("Plan anahtarı (list_plans'ten)"),
+    },
+  }, async ({ key }) => {
+    const plan = await getir(`/plans/${encodeURIComponent(key)}`);
+    if (!plan || typeof plan !== "object") throw new Error(`Böyle bir plan yok: ${key}`);
+    session.yeni(plan);
+    return metin(session.summaryText(`Kayıtlı plan açıldı: ${plan.name || key}`));
+  });
+
   server.registerTool("list_samples", {
     title: "Örnek salonlar",
     description: "Taban alınabilecek gerçek salonlar, anahtar ve kapasiteleriyle.",

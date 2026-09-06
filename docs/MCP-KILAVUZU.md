@@ -144,6 +144,120 @@ Yayına sen göndermezsin. Ürettiğin şey taslaktır.
 
 ---
 
+## Panel içi sohbet — asıl kullanım biçimi
+
+Bu editör ana uygulamaya, bir biletleme platformunun yönetim paneline
+taşınacak: `ticketmanager.com` gibi bir adreste, **login'in arkasında bir
+sayfa**. Orada operatörün kendi bilgisayarında Claude Desktop çalıştırması
+beklenemez.
+
+Onun için ikinci bir yol var ve **canlıda kullanılacak olan budur**:
+
+| | stdio MCP (geliştirme) | Panel içi sohbet (canlı) |
+|---|---|---|
+| Modeli kim çalıştırır | Claude Desktop / Codex | **Sunucu** |
+| Operatör ne ayarlar | `.mcp.json` | **Hiçbir şey** |
+| Token | operatörün makinesinde | sunucuda, tarayıcıya **hiç gitmez** |
+| Sohbet nerede | Claude Desktop penceresi | **panelin kendi sayfası** |
+
+Operatörün gördüğü şey: sayfayı açar, sağdaki kutuya *"Bursa Tayyare'yi
+çiz"* yazar, izler.
+
+### Kurulum — üç sağlayıcıdan biri
+
+Sahada en çok bu üçü kullanılıyor; hangisinin anahtarı elindeyse o çalışır:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...  npm run live     # Claude
+OPENAI_API_KEY=sk-...         npm run live     # GPT
+GEMINI_API_KEY=...            npm run live     # Gemini
+```
+
+Birden çok anahtar tanımlıysa sıra **anthropic → openai → gemini**; açıkça
+seçmek için `SOHBET_SAGLAYICI=gemini`. Modeli değiştirmek için
+`SOHBET_MODEL=...` (OpenAI/Gemini varsayılanları hesaptan hesaba değişiyor,
+kendi hesabında ne varsa onu yaz).
+
+Hiç anahtar **yoksa sohbet paneli hiç görünmez** ve editör eskisi gibi
+çalışır. Panel yalnız "açık mı" cevabını alır; anahtarın kendisi tarayıcıya
+gitmez.
+
+### Sağlayıcı katmanı
+
+```
+chat/dongu.mjs            ← sağlayıcıdan BAĞIMSIZ
+chat/saglayici/
+  ├─ anthropic.mjs
+  ├─ openai.mjs
+  ├─ gemini.mjs
+  └─ sema.mjs             ← katı şema bekleyenler için temizleyici
+```
+
+Dördüncü bir sağlayıcı eklemek **tek dosya** demek; döngüye, rotalara,
+panele, 29 araca dokunulmuyor. Test paketi üçünü de aynı senaryolarla
+koşuyor — soyutlamanın tuttuğunun kanıtı orada.
+
+**İki gerçek fark, ikisi de çözüldü:**
+
+| Fark | Çözüm |
+|---|---|
+| Gemini'nin şeması OpenAPI 3.0 alt kümesi; `exclusiveMinimum` (19 yerde) ve tip dizisi (3 araçta) kabul edilmiyor | `sema.mjs` sadeleştiriyor ve **düşen kısıtı açıklamaya taşıyor** — sessizce atmak modelin `rows: 0` göndermesine kapı açardı |
+| Araç yanıtı yalnız Anthropic'te görsel taşıyabiliyor | Diğer ikisinde görsel **ayrı bir tur** olarak gidiyor. Bir mesaj fazla; "çiz → kendi çizimine bak → düzelt" döngüsü üçünde de çalışıyor |
+
+### Nasıl kurulu
+
+```
+Tarayıcı ──POST /api/chat──► sunucu ──► Claude (claude-opus-5)
+         ◄─GET /api/chat 1sn─┘   │           │ tool_use
+                                 │  ┌────────┘
+                                 ▼  ▼
+                         süreç-içi MCP istemcisi
+                                 │
+                                 ▼  29 araç — TEK KAYNAK
+                            src/core/**
+```
+
+**Araç tanımları iki kez yazılmıyor.** Sohbet katmanı MCP sunucusuna
+süreç-içi bağlanıp (`chat/kopru.mjs`) `listTools()` ile şemaları okuyor;
+sistem talimatı da `mcp/server.mjs`'ten geliyor. Yani Claude Desktop ile
+panelin sohbeti **aynı araçları ve aynı talimatı** kullanıyor. Bir araç
+değişince sohbet tarafında hiçbir şey yapılmıyor.
+
+### Kararlar ve gerekçeleri
+
+| Karar | Neden |
+|---|---|
+| Tool Runner değil **elle döngü** | SDK'nın runner'ı araçların dekoratörle tanımlanmasını bekliyor; bizimkiler MCP'den geliyor ve tek kaynakta kalmaları bu işin bel kemiği |
+| **Yoklama**, SSE değil | Tur arka planda koşuyor, panel saniyede bir okuyor — canlı görünümün kalıbı. Sunucuya ilk durumlu bağlantı girmiyor, testlerdeki `srv.close()` asılı kalmıyor |
+| Tur başına **40 araç sınırı** | Kaçak döngü bir biletleme panelinde hem para hem çöp plan demek. Sınır aşılınca durup **sebebini söylüyor** |
+| Araçlar **sırayla** | Doğruluk taşıma katmanının işleme düzenine bağlı kalmasın ve adım günlüğü operatöre sırayla aksın. *(Not: "paralel çalışırsa veri yarışı olur" diye yazmıştım — ölçtüm, doğru değil; `mutate` senkron. Bu bir determinizm tercihi.)* |
+| **Yayım aracı yok** | Çıktı taslaktır; yayına gönderme kararı operatörde |
+
+### Var olan salonu düzenleme
+
+`list_plans` operatörün kayıtlı planlarını listeler, `open_plan` birini
+açar. **Orijinal ezilmez:** çizim `ai-` ad alanına yazılır, operatörün
+kaydı olduğu gibi durur, beğenirse üstüne kendisi geçer.
+
+### Ana uygulamaya taşırken
+
+- **Kimlik:** `x-tenant-id` başlığı hazır (`server/index.mjs`). Auth
+  yazılmadı — ana uygulama kendi oturum katmanından dolduracak. Başlık
+  yoksa tek kiracılı davranış sürüyor.
+- **Oturum:** konuşma başına bir MCP oturumu (`chat/oturumlar.mjs`),
+  bellekte, 30 dk boşta kalınca düşüyor. Kalıcı olması gereken şey plan,
+  o zaten `editor_plans`'ta.
+- **Sohbet dökümü** bellekte; kaybolursa çizim kaybolmaz.
+
+### Sınanmayan tek halka
+
+Uçtan uca deneme sahte anahtarla yapıldı: mesaj gidiyor, döngü koşuyor,
+hata akışa düşüyor, panel gösteriyor. **Başarılı bir model çağrısı gerçek
+anahtar gerektiriyor** ve bu depoda denenmedi — ilk gerçek turu
+çalıştıran kişi bunu bilerek yapsın.
+
+---
+
 ## Canlı görünüm — çizerken izlemek
 
 Blender'daki his: bir ekranda sohbet, öbüründe editör. "Bu salonu çiz"
