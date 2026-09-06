@@ -4,7 +4,8 @@ import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
 import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey, matchSeats, applyAdoptedIds } from "./core/identity.js";
-import { diffPlans, stripUnderlay, planFingerprint, planHome } from "./core/plan.js";
+import { diffPlans, stripUnderlay, planFingerprint, planHome, contentBBox } from "./core/plan.js";
+import { etiketSigdirici } from "./core/labelfit.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
@@ -1096,6 +1097,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
     });
   }, [shown, seatMode]);
 
+  /* Rozet sığdırıcısı, o an ÇİZİLEN blokların etiket kümesini bilir: kısa
+     ada ("LOCA 3" → "3") ancak o kısa ad ayırt ediciyse düşer. Stadyumda
+     "KUZEY ALT A" → "A" sekiz bloğa aynı harfi yazmak olurdu. */
+  const sigdirici = useMemo(
+    () => etiketSigdirici(shown.map(({ b }) => b.label).filter(Boolean)),
+    [shown]);
+
   const selSeatInfo = useMemo(() => {
     if (!selSeat) return null;
     const hit = drawn.find((d) => d.b.id === selSeat.bid);
@@ -1272,13 +1280,60 @@ export default function PlanEditor({ cssText = "" } = {}) {
       label: best >= 100 ? `${(best / 100).toLocaleString("tr-TR")} m` : `${best} cm` };
   }, [pxPerCm]);
 
+  /* ── ROZETLER: sığdır, sonra ÇAKIŞANI ELE ───────────────────────────
+     Yalnız genişliğe sığdırmak yetmiyordu. Yamuk duran tribün bloklarının
+     EKSEN HİZALI kutusu gerçek ayak izinden çok geniş; sığdırıcı "yer var"
+     sanıp tam etiketi yazıyor, komşusunun rozeti üstüne biniyor ve ekranda
+     "FEN FEN FEN FEN" görünüyordu (Şükrü Saracoğlu, 56 blok).
+
+     Gerçek harita etiketlemesinin yaptığı: önce önemliyi yerleştir, çakışanı
+     hiç çizme. Öncelik KOLTUK SAYISI — büyük tribünün adı küçüğünkine
+     feda edilmez. Elenen etiket kaybolmaz, yakınlaşınca yer açılıp geri
+     gelir.
+     ponytail: O(n²) çakışma taraması. Görünen blok sayısıyla sınırlı
+     (en kalabalık plan 96 blok → ~4.600 kutu testi); yavaşlarsa ızgara
+     indeksi gerekir. */
+  const rozetler = useMemo(() => {
+    /* Koltuk görünümünde rozet bloğun ÜSTÜNDE durur (koltukları kapatmasın),
+       blok görünümünde bloğun İÇİNDE — koltuk yok, orası boş. Sığdırma ve
+       eleme ikisinde de aynı. */
+    const kaynak = seatMode ? drawn : shown;
+    const enBuyuk = seatMode ? 15 * U : 17 * U;
+    const aday = kaynak
+      .filter(({ b }) => b.kind !== "table")
+      .map(({ b, m }) => {
+        const vx0 = Math.max(m.bbox.x0, view.x), vx1 = Math.min(m.bbox.x1, view.x + view.w);
+        const vy0 = Math.max(m.bbox.y0, view.y), vy1 = Math.min(m.bbox.y1, view.y + view.h);
+        if (vx1 <= vx0 || vy1 <= vy0) return null;
+        const uy = sigdirici(b.label, Math.max(1, m.bbox.x1 - m.bbox.x0), enBuyuk, pxPerCm);
+        if (!uy) return null;
+        const f = uy.boy, bw = f * uy.oran;
+        const cx = seatMode ? (vx0 + vx1) / 2 : m.cx;
+        const by = seatMode
+          ? (view.y > m.bbox.y0 + 1 ? view.y + f * 0.35 : m.bbox.y0 - f * 1.5)
+          : m.cy - f * 0.62;
+        return { b, metin: uy.metin, f, bw, cx, by, h: f * 1.32, agirlik: m.seatCount || 0 };
+      })
+      .filter(Boolean)
+      .sort((a, z) => z.agirlik - a.agirlik);
+
+    const bos = 2 * U;                       /* rozetler birbirine değmesin */
+    const kalan = [];
+    for (const r of aday) {
+      const x0 = r.cx - r.bw / 2 - bos, x1 = r.cx + r.bw / 2 + bos;
+      const y0 = r.by - bos, y1 = r.by + r.h + bos;
+      if (kalan.some((k) => x0 < k.x1 && x1 > k.x0 && y0 < k.y1 && y1 > k.y0)) continue;
+      kalan.push({ ...r, x0, x1, y0, y1 });
+    }
+    return kalan;
+  }, [drawn, shown, seatMode, view, pxPerCm, U, sigdirici]);
+
   /* aspect: hedef yükseklik/genişlik oranı. view'in eski oranı yerine
      canvas'ın gerçek piksel oranını kullanır — pencere yeniden
      boyutlandığında view hemen düzelmez, eski oranla sığdırmak
      gereksiz boşluk (letterbox) bırakırdı. */
-  const fitBBoxRect = (items, aspect) => {
-    const x0 = Math.min(...items.map((m) => m.bbox.x0)), x1 = Math.max(...items.map((m) => m.bbox.x1));
-    const y0 = Math.min(...items.map((m) => m.bbox.y0)), y1 = Math.max(...items.map((m) => m.bbox.y1));
+  const fitRect = (b, aspect) => {
+    const { x0, x1, y0, y1 } = b;
     const pad = Math.max(x1 - x0, y1 - y0) * 0.12 + 100;
     const w = Math.max(MINW, (x1 - x0) + 2 * pad);
     const h = w * aspect;
@@ -1286,23 +1341,40 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const W = need > 1 ? w * need : w;
     return { x: (x0 + x1) / 2 - W / 2, y: (y0 + y1) / 2 - (W * aspect) / 2, w: W, h: W * aspect };
   };
-  const zoomToBBox = (items) => {
-    if (!items.length) return;
-    setView(fitBBoxRect(items, canvasSize.h / canvasSize.w));
+  const birlestir = (kutular) => {
+    const bb = kutular.filter((b) => b && Number.isFinite(b.x0));
+    if (!bb.length) return null;
+    return {
+      x0: Math.min(...bb.map((b) => b.x0)), x1: Math.max(...bb.map((b) => b.x1)),
+      y0: Math.min(...bb.map((b) => b.y0)), y1: Math.max(...bb.map((b) => b.y1)),
+    };
   };
-  const zoomToSelection = () => zoomToBBox(selIds.length
-    ? selIds.map((id) => metaById.get(id)).filter(Boolean)
-    : metas.map((x) => x.m));
+  const zoomToBBox = (kutu) => {
+    if (!kutu) return;
+    setView(fitRect(kutu, canvasSize.h / canvasSize.w));
+  };
+  const zoomToSelection = () => (selIds.length
+    ? zoomToBBox(birlestir(selIds.map((id) => metaById.get(id)?.bbox)))
+    : zoomToAll());
   /* Sığdır: plan.home sabit bir değer — bir oturumda büyüyen bloklar onun
      dışına taştığında sessizce ekran dışında kalıyordu. Gerçek içerik
-     sınırını hesapla; plan boşsa (Yeni plan) home'a düş. */
-  const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(planHome(plan)));
+     sınırını hesapla; plan boşsa (Yeni plan) home'a düş.
+
+     İÇERİK bloklardan ibaret DEĞİL: sahne blokların üstünde durur, sığdırma
+     yalnız bloklara bakınca sahne ekran dışında kalıyordu — Tayyare'de
+     450 cm'lik sahnenin 395 cm'i ve "SAHNE" yazısının TAMAMI kesiliyordu.
+     contentBBox şekilleri de sayar (bkz. src/core/plan.js). */
+  const zoomToAll = () => {
+    const b = contentBBox(plan);
+    if (b) zoomToBBox(b); else setView(planHome(plan));
+  };
   /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
      olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
      birimi paylaşmıyor). %100 = Sığdır'ın ürettiği görünüm — Sığdır'a
      basınca bu yüzden her zaman tam %100 görünür. */
-  const homeRect = metas.length
-    ? fitBBoxRect(metas.map((x) => x.m), canvasSize.h / canvasSize.w)
+  const icerik = useMemo(() => contentBBox(plan), [plan.blocks, plan.shapes]);
+  const homeRect = icerik
+    ? fitRect(icerik, canvasSize.h / canvasSize.w)
     : planHome(plan);
   const homePxPerCm = Math.min(canvasSize.w / homeRect.w, canvasSize.h / homeRect.h);
   const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
@@ -2434,7 +2506,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
      "single" varsayılanına döner; SeatPanel eff.seatKind'i KOŞULSUZ okur,
      null asla geçmemeli. */
   const seatEffAttr = selSeat ? resolveSeatKind(seatOvBlock || {}, seatOv || {}) : null;
-  const lodFont = 17 * U;
   const hSize = Math.max(24, 9 / (pxPerCm || 0.01));
   const arrProps = { lin, setLin, rad, setRad, onArrayL: doLinear, onArrayR: doRadial,
     prev: arrPrev, setPrev: setArrPrev };
@@ -2809,23 +2880,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </g>
             )}
 
-            {!seatMode && shown.map(({ b, m }) => {
-              const col = chanColor(b);
-              const bw = lodFont * (String(b.label).length * 0.62 + 0.7);
-              return (
-                <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
-                  <polygon data-b={b.id}
-                    points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
-                    fill={col} fillOpacity={dark ? 0.24 : 0.17}
-                    stroke={col} strokeOpacity={0.95}
-                    strokeWidth={Math.max(4, 1.6 / (pxPerCm || 0.01))} />
-                  <rect className="badge" x={m.cx - bw / 2} y={m.cy - lodFont * 0.62}
-                    width={bw} height={lodFont * 1.24} rx={lodFont * 0.34} fill={badgeColor(col)} />
-                  <text x={m.cx} y={m.cy + lodFont * 0.36} fill="#FBFAF7"
-                    style={{ fontSize: lodFont }}>{b.label}</text>
-                </g>
-              );
-            })}
+            {/* Blok görünümü: taban. Etiket AYRI çiziliyor (rozetler memo'su)
+                — eskiden burada sabit boyda, sığdırmasız, çakışma denetimsiz
+                kendi kopyası vardı ve 56 bloklu stadyumda "FEN FEN FEN FEN"
+                diye üst üste biniyordu. */}
+            {!seatMode && shown.map(({ b, m }) => (
+              <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
+                <polygon data-b={b.id}
+                  points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                  fill={chanColor(b)} fillOpacity={dark ? 0.24 : 0.17}
+                  stroke={chanColor(b)} strokeOpacity={0.95}
+                  strokeWidth={Math.max(4, 1.6 / (pxPerCm || 0.01))} />
+              </g>
+            ))}
 
             {seatMode && drawn.filter(({ b }) => b.kind === "table").map(({ b }) => (
               <g key={`t${b.id}`} className="tbl"
@@ -2858,23 +2925,16 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 kenarına yapıştırmak koltukların üstüne oturtuyordu. Şimdi:
                 blok tam görünüyorsa rozet tabanın biraz DIŞINA (üstüne)
                 taşıyor; blok üstten kesilmişse ekran kenarına sabitleniyor. */}
-            {seatMode && drawn.filter(({ b }) => b.kind !== "table").map(({ b, m }) => {
-              const vx0 = Math.max(m.bbox.x0, view.x), vx1 = Math.min(m.bbox.x1, view.x + view.w);
-              const vy0 = Math.max(m.bbox.y0, view.y), vy1 = Math.min(m.bbox.y1, view.y + view.h);
-              if (vx1 <= vx0 || vy1 <= vy0) return null;
-              const f = 15 * U;
-              const bw = f * (String(b.label).length * 0.62 + 0.9);
-              const clipped = view.y > m.bbox.y0 + 1;
-              const by = clipped ? view.y + f * 0.35 : m.bbox.y0 - f * 1.5;
-              return (
-                <g key={`sb${b.id}`} className="stick">
-                  <rect x={(vx0 + vx1) / 2 - bw / 2} y={by}
-                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(chanColor(b))} />
-                  <text x={(vx0 + vx1) / 2} y={by + f * 1.04}
-                    style={{ fontSize: f }}>{b.label}</text>
-                </g>
-              );
-            })}
+            {/* Sığdırma ve çakışma eleme yukarıda (rozetler memo'su);
+                burada yalnız çizim var. */}
+            {rozetler.map((r) => (
+              <g key={`sb${r.b.id}`} className={seatMode ? "stick" : "lod"}>
+                <rect className="badge" x={r.cx - r.bw / 2} y={r.by} width={r.bw} height={r.h}
+                  rx={r.f * 0.36} fill={badgeColor(chanColor(r.b))} />
+                <text x={r.cx} y={r.by + r.f * 1.04} fill={seatMode ? undefined : "#FBFAF7"}
+                  style={{ fontSize: r.f }}>{r.metin}</text>
+              </g>
+            ))}
 
             {seatMode && drawn.map(({ b, seats, labels }) => (
               <g key={b.id} className={selIds.includes(b.id) ? "blk on" : "blk"}>
@@ -3309,7 +3369,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 <div key={k} className={i.ids && i.ids.length ? `${i.t} go` : i.t}
                   onClick={i.ids && i.ids.length ? () => {
                     setSelIds(i.ids); setSelShapeId(null);
-                    zoomToBBox(i.ids.map((id) => metaById.get(id)).filter(Boolean));
+                    zoomToBBox(birlestir(i.ids.map((id) => metaById.get(id)?.bbox)));
                   } : undefined}>
                   {i.m}{i.d && <em>{i.d}</em>}
                 </div>

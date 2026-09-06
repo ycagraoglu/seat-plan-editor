@@ -2,6 +2,7 @@ import { buildMeta, buildSeats, DEF } from "../src/core/geometry.js";
 import { boundaryPolys } from "../src/core/gates.js";
 import { planHome } from "../src/core/plan.js";
 import { selectBlockLevels, levelMatches } from "../src/ui/state/selectors.js";
+import { etiketSigdirici } from "../src/core/labelfit.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    GÖRME KATMANI — LLM'in kendi çizdiğine bakması için
@@ -72,23 +73,11 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
      sınırı + pay. */
   let vb;
   if (scope === "all") {
-    /* Çerçeve ŞEKİLLERİ de kapsamalı. planHome yalnız bloklara bakıyor;
-       MCP ile kurulan bir planda (home bildirilmemiş) sahne blokların
-       dışındaysa hiç çizilmiyordu — LLM'e "çizimine bak" diyoruz ama
-       koyduğu sahneyi göremiyordu. Soğuk LLM testi buldu. */
+    /* Çerçeve ŞEKİLLERİ de kapsar — kural artık planHome'un İÇİNDE
+       (src/core/plan.js, contentBBox). Burada AYRI bir kopya duruyordu:
+       renderer düzelmiş, editörün Sığdır'ı düzelmemişti; kullanıcı sahneyi
+       ekranda göremedi. Kopya silindi. */
     vb = planHome(plan);
-    const kutular = (plan.shapes || [])
-      .filter((s) => Number.isFinite(s.x) && Number.isFinite(s.y))
-      .map((s) => ({ x0: s.x - (s.w || 0) / 2, x1: s.x + (s.w || 0) / 2,
-        y0: s.y - (s.h || 0) / 2, y1: s.y + (s.h || 0) / 2 }));
-    if (kutular.length && !plan.home) {
-      const x0 = Math.min(vb.x, ...kutular.map((b) => b.x0));
-      const y0 = Math.min(vb.y, ...kutular.map((b) => b.y0));
-      const x1 = Math.max(vb.x + vb.w, ...kutular.map((b) => b.x1));
-      const y1 = Math.max(vb.y + vb.h, ...kutular.map((b) => b.y1));
-      const pay = Math.max(x1 - x0, y1 - y0) * 0.04;
-      vb = { x: x0 - pay, y: y0 - pay, w: x1 - x0 + 2 * pay, h: y1 - y0 + 2 * pay };
-    }
   } else {
     const bb = secili.map((x) => x.m.bbox);
     const x0 = Math.min(...bb.map((b) => b.x0)), x1 = Math.max(...bb.map((b) => b.x1));
@@ -102,16 +91,24 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   const olcek = vb.w / width;                 /* dünya cm → piksel */
   const yaziBoy = Math.max(vb.w / 60, 120);
 
-  /* Etiket, İÇİNE YAZILDIĞI ŞEKLE sığmalı. Sabit boy kullanınca 56 bloklu
-     stadyumda "FENERIFENERIFENERI..." diye üst üste biniyordu — okunmaz bir
-     görüntü, LLM için de gürültü. Sığmıyorsa küçültülür; okunabilirlik
-     tabanının altına düşerse hiç yazılmaz (yakın plan için scope var). */
-  const TABAN_PX = 7;                          /* bu pikselin altı okunmaz */
-  const sigdir = (metin, en) => {
-    if (!metin) return 0;
-    const boy = Math.min(yaziBoy, (en * 0.92) / (String(metin).length * 0.58));
-    return boy / olcek >= TABAN_PX ? boy : 0;  /* 0 = yazma */
+  /* Etiket, İÇİNE YAZILDIĞI ŞEKLE sığmalı. Kural src/core/labelfit.js'te —
+     editör de (src/PlanEditor.jsx blok rozetleri) AYNI fonksiyonu çağırıyor.
+     İkisi ayrı ayrı yazılmıştı ve aynı hatayı ayrı ayrı yaşadılar: burada 56
+     bloklu stadyumda "FENERIFENERIFENERI…", editörde dokuz locanın rozetleri
+     üst üste. Tek kaynağa alındı.
+     Sığdırıcı çizimdeki TÜM etiketleri bilerek kuruluyor: kısa ada ancak
+     o kısa ad ayırt ediciyse düşer. Stadyumda "KUZEY ALT A" → "A" sekiz
+     bloğa aynı harfi yazmak olurdu.
+     Dönen null = yazma. */
+  const kur = (adlar) => {
+    const f = etiketSigdirici(adlar.filter(Boolean));
+    return (metin, en) => f(metin, en, yaziBoy, 1 / olcek);
   };
+  /* Bloklar ve şekiller AYRI ad uzayı: "MARATON" adlı bir not ile "MARATON
+     ALT B" bloğu kardeş değildir. Tek kümede toplanınca ortak önek sıfıra
+     düşüyor ve tribüne yakınlaşınca 7 blok etiketsiz kalıyordu. */
+  const sigdir = kur(secili.map(({ b }) => b.label));
+  const sigdirSekil = kur((plan.shapes || []).map((s) => s.label));
 
   const parca = [];
   let altlikKonumlu = null;              /* null: altlık yok · true/false: konumlu mu */
@@ -151,10 +148,10 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
       + `<rect x="${num(s.x - w / 2)}" y="${num(s.y - h / 2)}" width="${num(w)}" height="${num(h)}"`
       + ` fill="${f}" ${f === "none" ? `stroke="#8A8A94" stroke-width="${num(olcek * 2)}"` : ""}/>`
       + ((() => {
-        const fs = sigdir(s.label, w);
-        return fs ? `<text x="${num(s.x)}" y="${num(s.y + fs * 0.35)}"`
-          + ` font-size="${num(fs)}" fill="#FFFFFF" text-anchor="middle"`
-          + ` font-family="sans-serif">${esc(s.label)}</text>` : "";
+        const uy = sigdirSekil(s.label, w);
+        return uy ? `<text x="${num(s.x)}" y="${num(s.y + uy.boy * 0.35)}"`
+          + ` font-size="${num(uy.boy)}" fill="#FFFFFF" text-anchor="middle"`
+          + ` font-family="sans-serif">${esc(uy.metin)}</text>` : "";
       })())
       + `</g>`);
   });
@@ -171,12 +168,12 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   /* 5 — blok etiketleri en üstte, her biri kendi bloğuna sığacak boyda */
   let yazilmayan = 0;
   secili.forEach(({ b, m }) => {
-    const fs = sigdir(b.label, m.bbox.x1 - m.bbox.x0);
-    if (!fs) { yazilmayan++; return; }
-    parca.push(`<text x="${num(m.cx)}" y="${num(m.cy + fs * 0.35)}" font-size="${num(fs)}"`
-      + ` fill="#111" stroke="#FFF" stroke-width="${num(fs * 0.14)}"`
+    const uy = sigdir(b.label, m.bbox.x1 - m.bbox.x0);
+    if (!uy) { yazilmayan++; return; }
+    parca.push(`<text x="${num(m.cx)}" y="${num(m.cy + uy.boy * 0.35)}" font-size="${num(uy.boy)}"`
+      + ` fill="#111" stroke="#FFF" stroke-width="${num(uy.boy * 0.14)}"`
       + ` paint-order="stroke" text-anchor="middle" font-weight="700"`
-      + ` font-family="sans-serif">${esc(b.label)}</text>`);
+      + ` font-family="sans-serif">${esc(uy.metin)}</text>`);
   });
 
   const yukseklik = Math.round(width * (vb.h / vb.w));
