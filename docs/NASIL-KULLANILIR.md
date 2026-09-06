@@ -145,7 +145,7 @@ Hiç anahtar yoksa sohbet paneli **hiç görünmez** ve editör normal çalış�
 | `SOHBET_MODEL` | Modeli değiştir. OpenAI/Gemini varsayılanları hesaptan hesaba değişir — kendi hesabında ne varsa onu yaz |
 | `API_PORT` | Depo sunucusu portu (varsayılan 8787) |
 | `TENANT_ID` | Tek kiracılı kurulumda kimlik (varsayılan `t1`) |
-| `SEAT_EDITOR_API` | MCP sunucusunun depoya bakacağı adres — canlı görünüm ve `open_plan` için |
+| `SEAT_EDITOR_API` | Depoya bakılacak adres — canlı görünüm ve `open_plan` için. **Panel sohbetinde vermene gerek yok:** sunucu açılışta kendi adresini veriyor. Yalnız MCP'yi ayrı bir süreçte (Claude Desktop/Codex) çalıştırırken gerekir |
 
 Birden çok anahtar tanımlıysa seçim sırası: **anthropic → openai → gemini**.
 Sıra bir tercih değil, tahmin edilebilir olsun diye sabit.
@@ -170,7 +170,9 @@ Sohbet ve canlı görünüm **olmaz**; geri kalan her şey çalışır.
 | Sunucu kalkmıyor, "table already exists" | Eski bir sürümdesin; şema kurulumu artık tekrarlanabilir |
 | Port kullanımda | `API_PORT` ile değiştir ya da eski süreci kapat |
 | Sohbet var ama cevap gelmiyor | Akıştaki hata satırını oku — anahtar, kota ya da ağ |
-| Bloklar tuvalde belirmiyor | `VITE_API_BASE` verilmemiş; `npm run live` bunu kendisi yapıyor |
+| Bloklar tuvalde belirmiyor (panel sohbeti) | `npm run live` kullan. Sunucuyu tek başına başlattıysan canlı yazma adresi kurulmaz |
+| Bloklar tuvalde belirmiyor (Claude Desktop/Codex) | MCP sürecine `SEAT_EDITOR_API` verilmemiş |
+| Sağdaki panel anahtar koyduğun hâlde gelmiyor | Sayfayı yenile — panelin açılıp açılmayacağına açılışta karar veriliyor |
 
 ---
 

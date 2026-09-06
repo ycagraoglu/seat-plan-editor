@@ -9,9 +9,18 @@ hiçbiri bu uygulamanın konusu değildir ve bilerek yoktur.
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
-npm test           # 633 test
+npm run dev        # http://localhost:5173  (editör tek başına)
+npm test           # tüm sınavlar
 ```
+
+**Yapay zekâya salon çizdirmek istiyorsan** — panele düz Türkçe yazıp
+çizimi canlı izlemek — tek komut ve kılavuz:
+
+```bash
+GEMINI_API_KEY=...  npm run live      # ya da ANTHROPIC_API_KEY / OPENAI_API_KEY
+```
+
+→ **[docs/NASIL-KULLANILIR.md](docs/NASIL-KULLANILIR.md)** — buradan başla.
 
 ---
 
