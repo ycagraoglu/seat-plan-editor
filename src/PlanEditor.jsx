@@ -888,6 +888,21 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const [liveDurgun, setLiveDurgun] = useState(false);
   const durgunRef = useRef(false);
   const [liveGunluk, setLiveGunluk] = useState([]);
+
+  /* ── PANEL İÇİ SOHBET ──────────────────────────────────────────────
+     Operatör sağdaki kutuya "Bursa Tayyare'yi çiz" yazıyor; model
+     SUNUCUDA çalışıyor ve editörün araçlarını çağırıyor. Operatörün
+     bilgisayarında hiçbir program yok, hiçbir ayar yok, token yok.
+
+     Anahtar sunucuda: panel yalnız "açık mı" sorusunun cevabını alıyor.
+     Kapalıysa bu panel HİÇ görünmüyor, editör bugünkü gibi çalışıyor. */
+  const [sohbetAcik, setSohbetAcik] = useState(false);
+  const [sohbetAkis, setSohbetAkis] = useState([]);
+  const [sohbetCalisiyor, setSohbetCalisiyor] = useState(false);
+  const [sohbetGirdi, setSohbetGirdi] = useState("");
+  /* Konuşma kimliği sekme ömürlü — yenilenince yeni konuşma başlar.
+     Kalıcı olması gereken şey PLAN, o zaten depoda. */
+  const sohbetId = useRef(`k${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`);
   useEffect(() => {
     /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
        sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
@@ -934,6 +949,40 @@ export default function PlanEditor({ cssText = "" } = {}) {
     tur();
     return () => { dead = true; clearInterval(t); };
   }, []);
+
+  useEffect(() => {
+    if (Store.driver !== "api" || !Store.sohbetDurum) return;
+    let dead = false;
+    (async () => {
+      const d = await Store.sohbetDurum();
+      if (!dead) setSohbetAcik(!!d?.acik);
+    })();
+    /* Canlı görünümle AYNI hızda: iki yoklama da yerel sunucuda, ikisi
+       birlikte saniyede iki küçük istek — ölçülebilir bir yük değil. */
+    const t = setInterval(async () => {
+      const r = await Store.sohbetOku(sohbetId.current);
+      if (dead || !r) return;
+      setSohbetCalisiyor(r.calisiyor);
+      setSohbetAkis((o) => (o.length === r.akis.length ? o : r.akis));
+    }, 1000);
+    return () => { dead = true; clearInterval(t); };
+  }, []);
+
+  const sohbetYolla = useCallback(async () => {
+    const m = sohbetGirdi.trim();
+    if (!m || sohbetCalisiyor) return;
+    setSohbetGirdi("");
+    /* İyimser satır: ağ turunu beklemeden görünsün, yoklama zaten
+       sunucudaki gerçek akışla değiştirecek. */
+    setSohbetAkis((o) => [...o, { t: new Date().toISOString(), rol: "kullanici", metin: m }]);
+    setSohbetCalisiyor(true);
+    const r = await Store.sohbetGonder(sohbetId.current, m);
+    if (!r) {
+      setSohbetAkis((o) => [...o, { t: new Date().toISOString(), rol: "hata",
+        metin: "Sunucuya ulaşılamadı." }]);
+      setSohbetCalisiyor(false);
+    }
+  }, [sohbetGirdi, sohbetCalisiyor]);
 
   /* KES: kilidi düşür, yapay zekânın yazmasını durdur, çizimi KALICI kıl.
      commit şart — live/apply rev'i artırmadığı için plan yalnız sunucuda
@@ -3279,7 +3328,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
              düzenleme kontrolü dolu; canlıyken hepsi ölü düğme olurdu.
              Operatörün o an istediği şey "ne yapılıyor", bir bloğun
              sıra aralığı değil. KES'ten sonra paneller geri geliyor. */
-          live ? (
+          /* Sohbet açıksa panel ODUR: adım günlüğünü de içinde taşıyor,
+             292px'e iki kutu sığmaz. Kapalıysa bugünkü davranış aynen. */
+          sohbetAcik ? (
+            <SohbetPaneli akis={sohbetAkis} gunluk={liveGunluk} calisiyor={sohbetCalisiyor}
+              live={live} durgun={liveDurgun} onKes={liveKes}
+              girdi={sohbetGirdi} setGirdi={setSohbetGirdi} onYolla={sohbetYolla} />
+          ) : live ? (
             <CanliGunluk live={live} gunluk={liveGunluk} durgun={liveDurgun} onKes={liveKes} />
           ) : selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
@@ -3326,6 +3381,63 @@ export default function PlanEditor({ cssText = "" } = {}) {
 /* ─────────────────────────  PANELLER  ───────────────────────── */
 
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
+
+/** Panel içi sohbet — operatörün yazdığı yer VE ne yapıldığının akışı.
+ *
+ *  TEK ZAMAN ÇİZELGESİ: mesajlar ve araç adımları ayrı kutularda değil,
+ *  kronolojik olarak aynı listede. Sağ panel 292px; iki kutu sığmaz ve
+ *  zaten operatörün okuduğu şey tek bir hikâye — "şunu istedim, şunlar
+ *  yapıldı, şu cevap geldi".
+ *
+ *  Adımlar SOHBET akışından değil CANLI GÜNLÜKTEN geliyor: sohbet tarafı
+ *  yalnız araç adını biliyor, günlük ise koltuk sayısını ve kural
+ *  bulgularını da taşıyor. İkisi zaman damgasıyla birleştiriliyor. */
+function SohbetPaneli({ akis, gunluk, calisiyor, live, durgun, onKes, girdi, setGirdi, onYolla }) {
+  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  /* Sohbetin kendi "arac" satırları atılıyor — aynı olayın zengin hâli
+     günlükte var, ikisini de göstermek tekrar olurdu. */
+  const satirlar = [
+    ...akis.filter((x) => x.rol !== "arac").map((x) => ({ ...x, tip: x.rol })),
+    ...gunluk.map((a) => ({ t: a.t, tip: "adim", metin: a.n, k: a.k, b: a.b, u: a.u })),
+  ].sort((x, y) => String(x.t).localeCompare(String(y.t)));
+
+  return (
+    <div className="sohbet">
+      <p className="lab">
+        {live ? (durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor") : "Yapay zekâ yardımcısı"}
+      </p>
+      {live && <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>}
+
+      <ol className="akis">
+        {!satirlar.length && (
+          <li className="ipucu">Bir salon adı yazıp çizdirebilirsin.<br />
+            Örnek: <em>“Bursa Tayyare Kültür Merkezi’ni çiz”</em> ya da
+            <em> “kayıtlı planlarımı listele”</em>.</li>
+        )}
+        {satirlar.map((r, i) => (
+          <li key={`${r.t}-${i}`} className={r.tip}>
+            <span className="sa">{saat(r.t)}</span>
+            <span className="mt">{r.metin}</span>
+            {r.tip === "adim" && (
+              <span className="sy">{Number(r.k).toLocaleString("tr-TR")} koltuk · {r.b} blok</span>
+            )}
+            {(r.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
+          </li>
+        ))}
+        {calisiyor && <li className="bekle"><span className="sa" /><span className="mt">çalışıyor…</span></li>}
+      </ol>
+
+      <div className="pubrow">
+        <input value={girdi} placeholder={calisiyor ? "yanıt bekleniyor…" : "Ne çizelim?"}
+          disabled={calisiyor}
+          onChange={(e) => setGirdi(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && onYolla()} />
+        <button className="pri" onClick={onYolla} disabled={calisiyor || !girdi.trim()}>Gönder</button>
+      </div>
+    </div>
+  );
+}
 
 /** Yapay zekâ çizerken operatörün takip paneli.
  *

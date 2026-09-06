@@ -86,7 +86,11 @@ describe("anahtar VARKEN", () => {
     }
     expect(d.calisiyor).toBe(false);
     expect(d.akis[0]).toMatchObject({ rol: "kullanici", metin: "çiz" });
-    expect(d.akis.some((x) => x.rol === "hata")).toBe(true);
+    const hata = d.akis.find((x) => x.rol === "hata");
+    expect(hata).toBeTruthy();
+    /* Operatör ham SDK çıktısı okumamalı — ne olduğu ve ne yapacağı yazmalı. */
+    expect(hata.metin).toMatch(/API anahtarı geçersiz/);
+    expect(hata.metin).not.toMatch(/authentication_error|\{"type"/);
   }, 30_000);
 
   it("bilinmeyen konuşma boş akış veriyor, patlamıyor", async () => {

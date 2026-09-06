@@ -24,6 +24,22 @@ const AKIS_SINIRI = 400;             /* bellekte tutulan satır */
 
 export const sohbetAcikMi = () => !!process.env.ANTHROPIC_API_KEY;
 
+/* Ham SDK hatası operatöre gösterilecek metin değil:
+   `401 {"type":"error","error":{"type":"authentication_error",...}}`
+   Onun okuması gereken şey ne olduğu ve ne yapacağı. Tanımadığımız hatayı
+   YUTMUYORUZ — kısaltıp geçiriyoruz ki en azından bir ipucu kalsın. */
+const anlasilirHata = (e) => {
+  const m = String(e?.message || e);
+  if (/authentication|invalid x-api-key|401/i.test(m)) {
+    return "Yapay zekâ servisine bağlanılamadı: API anahtarı geçersiz."
+      + " Sunucudaki ANTHROPIC_API_KEY doğru mu?";
+  }
+  if (/rate.?limit|429/i.test(m)) return "Servis şu an yoğun (kota). Biraz sonra tekrar dene.";
+  if (/overloaded|529|5\d\d/i.test(m)) return "Yapay zekâ servisi geçici olarak yanıt vermiyor. Tekrar dene.";
+  if (/ECONNREFUSED|fetch failed|network/i.test(m)) return "Ağ hatası: servise ulaşılamadı.";
+  return `Beklenmeyen hata: ${m.slice(0, 200)}`;
+};
+
 const suzgec = () => {
   const simdi = Date.now();
   for (const [id, k] of konusmalar) {
@@ -63,7 +79,7 @@ export async function mesajGonder(id, mesaj) {
       if (r.durum === "bitti") ekle(k, { rol: "asistan", metin: r.metin });
       else ekle(k, { rol: "uyari", metin: r.metin, durum: r.durum });
     })
-    .catch((e) => ekle(k, { rol: "hata", metin: String(e?.message || e) }))
+    .catch((e) => ekle(k, { rol: "hata", metin: anlasilirHata(e) }))
     .finally(() => { k.calisiyor = false; k.sonKullanim = Date.now(); });
 
   return { kabul: true };
