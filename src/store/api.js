@@ -70,6 +70,22 @@ export function apiStore(base = "/api") {
     async liveGet() {
       try { return await gonder("/live"); } catch { return null; }
     },
+    /* Panel içi sohbet — aynı sınıf yetenek. Anahtar sunucuda durur,
+       tarayıcı yalnız "açık mı" öğrenir. */
+    async sohbetDurum() {
+      try { return await gonder("/chat/durum"); } catch { return { acik: false }; }
+    },
+    async sohbetGonder(id, mesaj) {
+      try {
+        return await gonder("/chat", { method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ id, mesaj }) });
+      } catch { return null; }
+    },
+    async sohbetOku(id) {
+      try { return await gonder(`/chat?id=${encodeURIComponent(id)}`); } catch { return null; }
+    },
+
     async liveStop() {
       try { await gonder("/live", { method: "DELETE" }); return true; }
       catch { return false; }

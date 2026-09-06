@@ -6,6 +6,7 @@ import { openDb, createSchema, loadPayload } from "../db/load.mjs";
 import { buildDbPayload } from "../src/core/db-export.js";
 import { buildMeta } from "../src/core/geometry.js";
 import { gateMap } from "../src/core/gates.js";
+import { sohbetAcikMi, mesajGonder, akisOku } from "../chat/oturumlar.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -223,6 +224,31 @@ export function handler(db) {
           const d = oku();
           if (d) yaz({ ...d, revoked: true });
           return json(res, 204);
+        }
+      }
+
+      /* ── PANEL İÇİ SOHBET ──────────────────────────────────────────
+         Model SUNUCUDA çalışıyor; operatör hiçbir ayar yapmıyor, token
+         görmüyor. ANTHROPIC_API_KEY sunucuda durur, tarayıcıya ASLA gitmez
+         — panel yalnız "açık mı" cevabını alır.
+
+         Tur arka planda koşuyor: POST hemen döner, panel /api/chat'i
+         saniyede bir okur. Canlı görünümün yoklama kalıbının aynısı;
+         sunucuya ilk durumlu bağlantı girmiyor. */
+      if (p === "/api/chat/durum" && m === "GET")
+        return json(res, 200, { acik: sohbetAcikMi() });
+
+      if (p === "/api/chat") {
+        if (m === "GET") {
+          const id = u.searchParams.get("id");
+          if (!id) return json(res, 400, { hata: "id gerekli" });
+          return json(res, 200, await akisOku(id));
+        }
+        if (m === "POST") {
+          const b = await govde(req);
+          if (!b?.id || !b?.mesaj) return json(res, 400, { hata: "id ve mesaj gerekli" });
+          if (!sohbetAcikMi()) return json(res, 503, { hata: "Sohbet kapalı (ANTHROPIC_API_KEY yok)" });
+          return json(res, 202, await mesajGonder(b.id, String(b.mesaj)));
         }
       }
 
