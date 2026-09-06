@@ -320,5 +320,17 @@ export function createServer(db) { return http.createServer(handler(db)); }
 if (process.argv[1] && process.argv[1].endsWith("server/index.mjs")) {
   const port = Number(process.env.PORT) || 8787;
   const db = createDb(process.env.DB_FILE || "db/seating.db");
+  /* PANEL İÇİ SOHBET DE CANLI YAZSIN.
+     canliYaz() SEAT_EDITOR_API yoksa hiçbir şey yapmıyor (bilinçli: MCP
+     sunucusuz da çalışsın). stdio yolunda operatör bunu elle veriyor, ama
+     panel sohbeti SUNUCUNUN İÇİNDE koşuyor ve kimse vermiyordu: çizim
+     ilerliyor, editörde hiçbir şey belirmiyor, adım günlüğü boş kalıyordu —
+     panelin sohbetin çıplak araç satırlarını attığı düşünülünce operatör
+     ekranda HİÇBİR adım göremiyordu. Ürünün asıl kullanım biçimi bu mod.
+     Sunucu kendi adresini biliyor; iki yol da tek canlı-yazma kodunu
+     kullansın diye burada veriliyor, ikinci bir kod yolu açılmıyor. */
+  if (!process.env.SEAT_EDITOR_API) {
+    process.env.SEAT_EDITOR_API = `http://127.0.0.1:${port}/api`;
+  }
   createServer(db).listen(port, () => console.log(`sunucu http://localhost:${port}`));
 }

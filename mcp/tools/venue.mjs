@@ -207,7 +207,18 @@ export function registerVenueTools(server, session, z) {
     /* Sayım mutate'ten ÖNCE: mutate'in başlık metni geri çağrımdan önce
        hesaplanıyor, sonra atarsam başlıkta hep 0 görünüyordu. */
     const eslesenBlok = session.need().blocks.filter(secici).length;
-    if (!eslesenBlok) throw new Error("Eşleşen blok yok — seçiciyi kontrol et.");
+    /* Hata mesajı NE VERİLDİĞİNİ ve NE VERİLEBİLECEĞİNİ söylemeli. Şema
+       tanımadığı alanı sessizce atıyor: "block" yazan bir çağrı seçicisiz
+       kalıp "eşleşen blok yok" duvarına toslıyordu, sebebi görünmeden. */
+    if (!eslesenBlok) {
+      const verilen = ["labels", "labelPattern", "level"].filter((k) => a[k] != null);
+      throw new Error(
+        (verilen.length
+          ? `Seçiciyle eşleşen blok yok (${verilen.map((k) => `${k}=${JSON.stringify(a[k])}`).join(", ")}).`
+          : "Seçici verilmedi.")
+        + " Seçici alanları: labels (kod dizisi), labelPattern (regex), level (kat yolu)."
+        + ` Plandaki kodlar: ${session.need().blocks.map((b) => b.label).slice(0, 12).join(", ")}`);
+    }
     return metin(session.mutate((plan) => {
     return { ...plan, blocks: withAccessible(plan.blocks, secici, a.pairs) };
   }, `Erişilebilir konumlar: ${eslesenBlok} blok × ${a.pairs} çift`
