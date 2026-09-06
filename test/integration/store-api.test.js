@@ -182,3 +182,24 @@ describe("canlı görünüm · MCP çizerken editör izler", () => {
     expect((await r.json()).hata).toMatch(/ai-/);
   });
 });
+
+describe("canlı görünüm · tarayıcı sürücüsü", () => {
+  const S = () => apiStore(base);
+  beforeEach(() => { db.exec("DELETE FROM editor_prefs WHERE key = '__live'"); });
+
+  it("liveGet aktif çizimi okur, liveStop KES eder", async () => {
+    await fetch(`${base}/live`, {
+      method: "PUT", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: { key: "ai-s1", name: "Süreyya", blocks: [], shapes: [] } }),
+    });
+    expect((await S().liveGet()).name).toBe("Süreyya");
+    expect(await S().liveStop()).toBe(true);
+    expect((await S().liveGet()).aktif).toBe(false);
+  });
+
+  it("sunucu ÖLÜYKEN liveGet çökmüyor — görüntüleme özelliği editörü düşürmemeli", async () => {
+    const olu = apiStore("http://127.0.0.1:1/api");
+    expect(await olu.liveGet()).toBeNull();
+    expect(await olu.liveStop()).toBe(false);
+  });
+});

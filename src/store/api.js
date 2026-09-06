@@ -57,5 +57,22 @@ export function apiStore(base = "/api") {
       if (!r.ok) throw new Error(body?.detay || body?.hata || `HTTP ${r.status}`);
       return body;
     },
+
+    /* Aynı sınıf ikinci yetenek: CANLI GÖRÜNÜM. MCP çizerken editörün
+       izlemesi. localStorage'da karşılığı yok — iki ayrı süreç ancak
+       sunucu üzerinden buluşabilir, o yüzden sözleşmede değil burada.
+
+       liveGet saniyede bir çağrılıyor ve ağ her zaman kopar: sözleşmenin
+       "throw etme" kuralına burada da uyuyor (null döner, editör canlı
+       görünümü kapatır). Bir GÖRÜNTÜLEME özelliği yüzünden editör
+       çökmemeli. liveStop ise KES: operatörün açık niyeti, sessizce
+       yutulursa kilit açık kalır — o yüzden başarısızlığı söylüyor. */
+    async liveGet() {
+      try { return await gonder("/live"); } catch { return null; }
+    },
+    async liveStop() {
+      try { await gonder("/live", { method: "DELETE" }); return true; }
+      catch { return false; }
+    },
   };
 }

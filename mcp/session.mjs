@@ -5,6 +5,7 @@ import { absorbIds } from "../src/core/ids.js";
 import { planHome } from "../src/core/plan.js";
 import { selectLevels, selectLevelCounts } from "../src/ui/state/selectors.js";
 import { EMPTY } from "../src/venues/empty.venue.js";
+import { canliYaz } from "./live.mjs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURUM — Blender'ın "sahne"sinin karşılığı
@@ -22,15 +23,29 @@ import { EMPTY } from "../src/venues/empty.venue.js";
 const tr = (n) => Number(n).toLocaleString("tr-TR");
 
 export class Session {
-  constructor() { this.plan = null; }
+  constructor() { this.plan = null; this.kesildi = false; }
 
   /** Aktif plan yoksa aracın anlamı yok — net hata, sessiz boş sonuç değil. */
   need() {
+    /* KES: operatör canlı görünümde çizimi devraldı. Sunucu zaten aynı
+       anahtara yazmayı 409'luyor (asıl otorite orası — mcp/cli.mjs her
+       çağrıda yeni bir Session kurduğu için oturuma bağlı bir bayrak tek
+       başına yetmez); bu bayrak yalnız HIZLI ve ANLAŞILIR başarısızlık
+       için: LLM bir sonraki çağrıda ne olduğunu ve ne yapması gerektiğini
+       okusun diye. */
+    if (this.kesildi) {
+      throw new Error("Operatör devraldı (KES) — bu çizim durduruldu."
+        + " Devam etmek için create_plan ya da open_sample ile YENİ bir çizime başla.");
+    }
     if (!this.plan) throw new Error("Aktif plan yok — önce create_plan ya da open_sample çağır.");
     return this.plan;
   }
 
   set(plan) {
+    /* Yeni çizim = temiz sayfa. KES bir ÇİZİMİ durduruyor, oturumu değil:
+       operatör "şunu bırak, şunu çiz" diyebilmeli. Yanlış temizlense bile
+       sunucu anahtara göre yine 409 verir — hakem orası. */
+    this.kesildi = false;
     /* absorbIds: hazır bir salonu taban alırken id sayacını ileri sarar,
        sonradan eklenen bloklar mevcutlarla çakışmasın. */
     this.plan = absorbIds({ ...plan });
@@ -50,6 +65,9 @@ export class Session {
     const plan = this.need();
     const next = fn(plan) || plan;
     this.plan = next;
+    /* Canlı görünüme yansıt. Beklemiyoruz: SEAT_EDITOR_API yoksa hiç ağa
+       çıkmıyor, varsa da sunucu kapalıysa çizim aksamıyor (bkz. live.mjs). */
+    canliYaz(next, () => { this.kesildi = true; });
     return this.summaryText(baslik);
   }
 
