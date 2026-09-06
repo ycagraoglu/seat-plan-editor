@@ -476,3 +476,56 @@ describe("deleteTarget — koltuk seçimi HER ZAMAN bloktan önce", () => {
     expect(deleteTarget({ ...bos, selSeats: new Set(), selIds: ["b1"] })).toBe("blocks");
   });
 });
+
+describe("canlı görünüm — yapay zekâ çizerken kilit", () => {
+  const plan2 = (key, n) => ({ key, blocks: Array.from({ length: n }, (_, i) => ({ id: `b${i}` })), shapes: [] });
+  /* Canlı bir oturumun ortası: yapay zekâ "ai-x"e yazıyor, operatörün
+     geçmişinde de eski bir kayıt var. */
+  const canliDurum = () => {
+    let s = initialState({ ...venuesFixture(), "ai-x": plan2("ai-x", 1) }, "a");
+    s = reducer(s, { type: "commit", payload: plan("a", [{ id: "z" }]) });   /* geçmiş dolsun */
+    return reducer(s, { type: "live/start", payload: { key: "ai-x", name: "Tayyare" } });
+  };
+
+  it("live/start geçmişi TEMİZLER — yoksa ilk ⌘Z başka planı buraya yazardı", () => {
+    const s = canliDurum();
+    expect(s.live).toEqual({ key: "ai-x", name: "Tayyare" });
+    expect(s.vk).toBe("ai-x");
+    expect(s.past).toEqual([]);
+    expect(s.future).toEqual([]);
+  });
+
+  it("canlıyken düzenleme eylemlerinin HİÇBİRİ durumu değiştirmiyor", () => {
+    const s = canliDurum();
+    /* Editördeki ~40 mutasyon girişi bu eylemlere düşüyor; setPlan ve
+       paintSeat dahil hepsi "venues/set"e iniyor. */
+    ["commit", "nudgeCommit", "venues/set", "undo", "redo", "finalizeDrag",
+      "rev/set", "past/set", "future/set", "switchVenue", "vk/set"].forEach((t) => {
+      expect(reducer(s, { type: t, payload: plan("ai-x", [{ id: "SAHTE" }]) })).toBe(s);
+    });
+  });
+
+  it("izlerken kamera ve seçim SERBEST — canlı görünümün anlamı bu", () => {
+    const s = canliDurum();
+    expect(reducer(s, { type: "setView", payload: { x: 5, y: 5, w: 9, h: 9 } }).view.x).toBe(5);
+    expect(reducer(s, { type: "selectBlocks", payload: ["b0"] }).selIds).toEqual(["b0"]);
+    expect(reducer(s, { type: "setLevelFilter", payload: "Üst" }).levelFilter).toBe("Üst");
+  });
+
+  it("live/apply geçmişe ve rev'e DOKUNMUYOR — otomatik kayıt döngüsü kurulmasın", () => {
+    const s = canliDurum();
+    const y = reducer(s, { type: "live/apply", payload: { key: "ai-x", plan: plan2("ai-x", 7) } });
+    expect(y.venues["ai-x"].blocks).toHaveLength(7);
+    expect(y.rev).toBe(s.rev);                 /* rev artmadı → otomatik kayıt tetiklenmez */
+    expect(y.past).toBe(s.past);
+    expect(y.future).toBe(s.future);
+  });
+
+  it("live/stop kontrolü geri veriyor — düzenleme yeniden işliyor", () => {
+    const s = reducer(canliDurum(), { type: "live/stop" });
+    expect(s.live).toBeNull();
+    const y = reducer(s, { type: "commit", payload: plan2("ai-x", 3) });
+    expect(y.venues["ai-x"].blocks).toHaveLength(3);
+    expect(y.rev).toBe(s.rev + 1);
+  });
+});
