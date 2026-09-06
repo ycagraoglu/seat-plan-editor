@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { baglan } from "./harness.js";
 import { createDb, createServer } from "../../server/index.mjs";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { rmSync } from "node:fs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    CANLI GÖRÜNÜM — MCP tarafı
@@ -141,4 +144,43 @@ describe("SEAT_EDITOR_API verilmişken", () => {
       expect(redler).toEqual([]);
     } finally { process.off("unhandledRejection", dinle); }
   });
+});
+
+describe("KES, SÜREÇ SINIRINI aşıyor mu (mcp/cli.mjs yolu)", () => {
+  /* Bunu tarayıcıda uçtan uca denerken buldum: cli.mjs her çağrıda YENİ
+     bir Session kuruyor, dolayısıyla kesik bayrağı süreçle birlikte
+     ölüyordu. Sunucu yazmaları reddetmeye devam ediyordu (operatörün
+     tuvali güvendeydi) ama LLM her seferinde "Blok eklendi" görüyordu —
+     boşluğa çiziyor ve haberi yok. Tam da bu projede kovaladığımız
+     sessiz başarısızlık sınıfı, bu yüzden gerçek süreçle sınanıyor. */
+  const calistir = promisify(execFile);
+  const OTURUM = "/tmp/seat-live-test-session.json";
+
+  const cli = async (...arg) => {
+    try {
+      const { stdout } = await calistir(process.execPath, ["mcp/cli.mjs", "call", ...arg],
+        { env: { ...process.env, SEAT_EDITOR_API: taban, MCP_SESSION: OTURUM } });
+      return stdout;
+    } catch (e) { return (e.stdout || "") + (e.stderr || ""); }
+  };
+
+  it("ayrı süreçlerde bile yapay zekâ kesildiğini ÖĞRENİYOR", async () => {
+    rmSync(OTURUM, { force: true });
+    await fetch(`${taban}/live`, { method: "DELETE" });
+
+    await cli("create_plan", '{"name":"Süreç","key":"sr"}');
+    expect(await cli("add_block", '{"kind":"grid","label":"A","level":"L","x":0,"y":0,"rows":5,"cols":10}'))
+      .toMatch(/Blok eklendi/);
+
+    await fetch(`${taban}/live`, { method: "DELETE" });                 /* KES */
+
+    await cli("add_block", '{"kind":"grid","label":"B","level":"L","x":3000,"y":0,"rows":5,"cols":10}');
+    /* İkinci çağrıda öğrenmeli — bayrak dosyada taşınıyor. */
+    expect(await cli("add_block", '{"kind":"grid","label":"C","level":"L","x":6000,"y":0,"rows":5,"cols":10}'))
+      .toMatch(/Operatör devraldı/i);
+
+    /* Ve yeni bir çizim serbest kalmalı — KES oturumu değil ÇİZİMİ durdurur. */
+    expect(await cli("create_plan", '{"name":"Yeni","key":"yn"}')).toMatch(/Yeni plan açıldı/);
+    rmSync(OTURUM, { force: true });
+  }, 40_000);
 });

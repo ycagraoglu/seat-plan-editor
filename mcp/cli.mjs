@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync, rmSync } from "node:fs";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createMcpServer, INSTRUCTIONS } from "./server.mjs";
+import { bekle } from "./live.mjs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    KOMUT SATIRI — MCP araçlarını elle çağırmak için
@@ -37,12 +38,20 @@ async function baglan() {
      oturumda yeni bloklar AYNI kimliği alıyordu (hepsi b587). Kimlikle
      adreslenen her araç o kimliği paylaşan bütün bloklara vuruyordu:
      "Blok silindi: Q" yazıp üçünü birden siliyordu. Soğuk LLM testi buldu. */
-  if (existsSync(DURUM)) session.set(JSON.parse(readFileSync(DURUM, "utf8")));
+  if (existsSync(DURUM)) {
+    const d = JSON.parse(readFileSync(DURUM, "utf8"));
+    /* Eski biçim düz plandı; ikisini de oku. */
+    session.set(d.plan || d);
+    /* set() kesik bayrağını temizliyor — SONRA geri koy. Bu bayrak süreç
+       ömürlü olamaz: cli her çağrıda yeni Session kuruyor, oysa KES bir
+       ÇİZİMİ durduruyor. Dosyada taşınmazsa LLM kesildiğini hiç öğrenmez. */
+    session.kesildi = !!d.kesildi;
+  }
   return { client, server, session };
 }
 
 const kaydet = (session) => {
-  if (session.plan) writeFileSync(DURUM, JSON.stringify(session.plan));
+  if (session.plan) writeFileSync(DURUM, JSON.stringify({ plan: session.plan, kesildi: session.kesildi }));
 };
 
 const [, , komut, ...arg] = process.argv;
@@ -92,6 +101,9 @@ try {
       }
     });
     if (r.isError) process.exitCode = 1;
+    /* Uçuştaki canlı yazmanın sonucunu BEKLE: 409 geldiyse kesik bayrağı
+       dosyaya girsin, yoksa bir sonraki süreç hiçbir şey bilmez. */
+    await bekle();
     kaydet(session);
   } else {
     throw new Error(`Bilinmeyen komut: ${komut}. tools · describe · call · reset`);

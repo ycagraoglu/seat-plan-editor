@@ -740,7 +740,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const {
     venues, vk, past, future, rev,
     selIds, selShapeId, selSeat, selSeats,
-    view, levelFilter, report, calib, match, saveState,
+    view, levelFilter, report, calib, match, saveState, live,
   } = state;
   const plan = selectPlan(state);
 
@@ -856,6 +856,67 @@ export default function PlanEditor({ cssText = "" } = {}) {
      gereği yok: her biri saf, tek bir {type,payload} geçişi (bkz.
      ui/state/reducer.js ve test/unit/reducer.test.js). */
   const commit = useCallback((next) => dispatch({ type: "commit", payload: next }), []);
+
+  /* ── CANLI GÖRÜNÜM ────────────────────────────────────────────────
+     Operatör iki ekran açıyor: birinde sohbet, birinde editör. LLM MCP
+     üzerinden çizerken bloklar burada belirsin diye saniyede bir sunucuya
+     soruyoruz. YOKLAMA, akış (SSE) değil — bilinçli: sunucu 195 satırlık,
+     bağlantı durumu tutmayan saf bir istek→yanıt fonksiyonu; açık akış
+     eklemek onu durumlu yapar ve testlerdeki srv.close() asılı kalırdı.
+     Olayın kaynağı zaten AYRI BİR SÜREÇ (MCP), oraya ancak sunucu
+     üzerinden ulaşıyoruz; SSE yalnız son adımı ≤1 sn kısaltırdı, oysa
+     LLM'in kendi araç turu saniyeler sürüyor.
+     ponytail: 1 sn yoklama; gecikme dert olursa aynı rotayı ?since= ile
+     uzun yoklamaya çevir — istemci tarafı aynı kalır. */
+  const liveRef = useRef(null);
+  liveRef.current = live;
+  useEffect(() => {
+    /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
+       sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
+    if (Store.driver !== "api" || !Store.liveGet) return;
+    let dead = false, sonAt = null;
+    const kapsar = (dis, ic) => !!ic && dis.x >= ic.x && dis.y >= ic.y
+      && dis.x + dis.w <= ic.x + ic.w && dis.y + dis.h <= ic.y + ic.h;
+    const tur = async () => {
+      const d = await Store.liveGet();
+      if (dead || !d) return;
+      const su = liveRef.current;
+      if (!d.aktif) { if (su) { sonAt = null; dispatch({ type: "live/stop" }); } return; }
+      if (d.at === sonAt) return;              /* değişmedi — planı boşuna çekme */
+      const p = await Store.load(d.key);
+      if (dead || !p) return;
+      sonAt = d.at;
+      /* ÖNCE plan, SONRA start: live/start görüntüyü venues[key]'den
+         türetiyor, plan daha yoksa çerçeveyi bulamaz. */
+      dispatch({ type: "live/apply", payload: { key: d.key, plan: p } });
+      if (!su || su.key !== d.key) dispatch({ type: "live/start", payload: { key: d.key, name: d.name } });
+      else {
+        /* Çizim büyüdükçe çerçeveyi aç — ama SADECE taştığında. Her
+           karede sığdırmak operatörün kaydırmasını saniyede bir geri
+           alırdı; izlerken kamerayı gezdirebilmek bu modun anlamı. */
+        const h = planHome(p);
+        setView((v) => (kapsar(h, v) ? v : h));
+      }
+    };
+    const t = setInterval(tur, 1000);
+    tur();
+    return () => { dead = true; clearInterval(t); };
+  }, []);
+
+  /* KES: kilidi düşür, yapay zekânın yazmasını durdur, çizimi KALICI kıl.
+     commit şart — live/apply rev'i artırmadığı için plan yalnız sunucuda
+     duruyordu; commit hem otomatik kaydı tetikliyor hem de operatöre tek
+     ⌘Z ile yapay zekânın bütün oturumunu geri alma imkânı veriyor. */
+  const liveKes = useCallback(async () => {
+    const su = liveRef.current;
+    if (!su) return;
+    const p = plan;
+    const ok = await Store.liveStop();
+    dispatch({ type: "live/stop" });
+    if (p) commit(p);
+    setMsg(ok ? "Çizimi devraldınız — yapay zekânın yazması durduruldu."
+      : "Kilit düşürüldü ama sunucuya ulaşılamadı; yapay zekâ hâlâ yazıyor olabilir.");
+  }, [plan, commit]);
   /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
    *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
    *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
@@ -1265,6 +1326,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   useEffect(() => {
     if (!rev) return;
+    /* Canlı görünümde YAZMA YOK: plan yapay zekâdan geliyor, buradan geri
+       yazmak onun yazdığıyla yarışırdı. (Birinci emniyet reducer'da:
+       live/apply rev'i hiç artırmıyor, yani bu efekt zaten tetiklenmemeli
+       — bu ikinci emniyet, kapının iki yanı da kapalı olsun diye.) */
+    if (live) return;
     setSaveState("saving");
     const t = setTimeout(async () => {
       /* plan !== BUILTINS[vk]: sadece venues[vk] BUILTINS'teki taze
@@ -1289,7 +1355,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       setSaved((s) => (s.includes(vk) ? s : [...s, vk]));
     }, 1000);
     return () => clearTimeout(t);
-  }, [rev, plan, vk]);
+  }, [rev, plan, vk, live]);
 
   const newPlan = () => {
     const k = `p${Date.now().toString(36)}`;
@@ -2322,6 +2388,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
     label: `Dizi önizleme: ${arrPrev === "lin" ? "doğrusal" : "radyal"}`, x: () => setArrPrev(null) });
   if (poly) modeChips.push({ k: "pg",
     label: `Çokgen çiziliyor · ${poly.pts.length} nokta`, x: () => { setPoly(null); setTool("select"); } });
+  /* Canlı görünüm de tam olarak bir "anormal mod": uygulama beklenenden
+     farklı davranıyor (düzenleme kapalı) ve çıkışı her zaman görünür
+     olmalı. Yeni bir bileşen değil, var olan şerit. */
+  if (live) modeChips.push({ k: "lv",
+    label: `● Yapay zekâ çiziyor · ${live.name} — düzenleme kapalı`, x: liveKes });
 
   return (
     <div className={`ed ${dark ? "dark" : "light"}`}>
@@ -2332,7 +2403,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       </div>
 
       <header className="top">
-        <select className="venue" value={vk} onChange={(e) => switchVenue(e.target.value)}>
+        <select className="venue" value={vk} disabled={!!live}
+          title={live ? "Yapay zekâ çizerken salon değiştirilemez — KES" : undefined}
+          onChange={(e) => switchVenue(e.target.value)}>
           {Object.entries(venues).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
         </select>
         <span className={`sv ${saveState}`}>

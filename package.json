@@ -19,7 +19,8 @@
     "db:build": "node scripts/db-build.mjs",
     "server": "node server/index.mjs",
     "mcp": "node mcp/index.mjs",
-    "test:mcp": "vitest run test/mcp"
+    "test:mcp": "vitest run test/mcp",
+    "live": "node scripts/live.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

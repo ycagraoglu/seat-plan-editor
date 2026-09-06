@@ -144,6 +144,70 @@ Yayına sen göndermezsin. Ürettiğin şey taslaktır.
 
 ---
 
+## Canlı görünüm — çizerken izlemek
+
+Blender'daki his: bir ekranda sohbet, öbüründe editör. "Bu salonu çiz"
+dediğinde bloklar editörde **belirirken** izlersin.
+
+```bash
+npm run live      # sunucu (8787) + editör (5173) birlikte
+```
+
+MCP tarafında tek değişken:
+
+```json
+{ "mcpServers": { "seat-plan-editor": {
+    "command": "node", "args": ["mcp/index.mjs"],
+    "env": { "SEAT_EDITOR_API": "http://localhost:8787/api" } } } }
+```
+
+Değişken **verilmezse hiçbir şey değişmez** — sunucusuz akış (çiz →
+`export_plan` → editörde "Aç") aynen çalışır, ağa hiç çıkılmaz.
+
+### Nasıl çalışıyor
+
+Her araç çağrısı planı değiştirdikten sonra sunucuya yazıyor; editör
+saniyede bir sorup güncelliyor. Akış (SSE) değil **yoklama** — bilinçli:
+sunucu 195 satırlık, bağlantı durumu tutmayan saf bir istek→yanıt
+fonksiyonu ve olayın kaynağı zaten ayrı bir süreç; SSE yalnız son adımı
+≤1 sn kısaltırdı, oysa LLM'in kendi araç turu saniyeler sürüyor.
+
+**Yapay zekâ çizerken düzenleme kapalı.** Editörde ~40 mutasyon girişi var
+ama hepsi 11 reducer eylemine düşüyor, kilit orada — kırk yerde değil.
+Kapalı olmayanlar bilerek açık: **kaydırma, yakınlaştırma ve seçim**.
+İzlerken kamerayı gezdirebilmek bu modun bütün anlamı. Çizim büyüdükçe
+çerçeve kendiliğinden açılıyor, ama yalnız içerik taştığında — her karede
+sığdırmak senin kaydırmanı saniyede bir geri alırdı.
+
+**KES** (şeritteki ×) üç şey yapıyor: kilidi düşürür, planı kalıcı kılar
+(tek ⌘Z ile yapay zekânın bütün oturumunu geri alabilirsin) ve yapay
+zekânın yazmasını durdurur — sonraki araç çağrısı *"Operatör devraldı"*
+hatası alır.
+
+### Üç tasarım kararı
+
+| Karar | Gerekçe |
+|---|---|
+| Kilit **sahibe değil çizime** bağlı | `mcp/cli.mjs` her çağrıda yeni bir oturum kuruyor; oturum kimliğine bağlı bir iptal bir sonraki çağrıda geri alınır ve KES hiçbir şey ifade etmezdi. İptal edilen şey çizim: aynı plana yazan 409 alır, **yeni** bir çizim (`create_plan`/`open_sample`) serbesttir |
+| Canlı anahtar `ai-` ön ekli | `open_sample` planı yerleşik salonun anahtarıyla tutuyor. O anahtara yazmak editörün "örnek salon değişmiş" çatallamasını tetikler ve yeniden yüklemede plan **sessizce atılır** — yapay zekânın bütün işi kaybolurdu |
+| Ağ hatası **yutuluyor**, 409 yutulmuyor | Canlı görünüm bir görüntüleme özelliği. Sunucu kapalı diye `add_block`'un patlaması, işe yarayan bir ürünü göstermelik bir özellik uğruna kırmak olurdu |
+
+### Bilinen sınırlar
+
+- Sunucu gerekiyor: `VITE_API_BASE` verilmemişse editör localStorage'la
+  çalışır ve canlı görünüm **hiç açılmaz**.
+- KES'ten sonra yapay zekâ **bir çağrı geç** öğreniyor. O yazma da sunucuda
+  reddedildiği için operatörün tuvaline dokunulmuyor; yalnız haber bir tur
+  gecikiyor.
+- `open_sample` tek başına canlı görünümü açmıyor — ilk **değişiklikte**
+  açılıyor.
+- Altlık canlı görünüme gönderilmiyor (her yazmada megabaytlarca base64
+  olurdu). Ayrıca `set_underlay` altlığı düz metin olarak tutuyor, editör
+  ise `.src` alanlı nesne bekliyor — bu ayrı bir uyumsuzluk, henüz
+  ısırmıyor çünkü çıktıda altlık zaten atılıyor.
+
+---
+
 ## Yapamadıkları — baştan bilinsin
 
 | Sınır | Sonuç |

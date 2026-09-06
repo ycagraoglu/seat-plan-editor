@@ -42,13 +42,21 @@ export const canliAnahtar = (key) => {
 
 /** Planı canlı görünüme yansıtır. Söz DÖNDÜRMEZ — çağıran beklemiyor.
  *  409 gelirse onKesildi() çağrılır; başka hiçbir şey dışarı sızmaz. */
+/* Son yazmanın sözü. mutate() bunu BEKLEMİYOR (bkz. yukarıda), ama her
+   çağrıda YENİ BİR SÜREÇ kuran mcp/cli.mjs bekliyor: orada oturum dosyaya
+   yazılıp süreç ölüyor, dolayısıyla "kesildim" bilgisi uçuşta kalırsa
+   sonsuza dek kaybolur ve LLM boşluğa çizmeye devam eder — sunucu her
+   yazmayı reddederken kendisi "eklendi" görür. Ölçtüm, öyle oluyordu. */
+let bekleyen = null;
+export const bekle = () => bekleyen || Promise.resolve();
+
 export function canliYaz(plan, onKesildi) {
   const taban = process.env.SEAT_EDITOR_API;
   if (!taban || !plan) return;
   const govde = JSON.stringify({
     plan: { ...stripUnderlay(plan), key: canliAnahtar(plan.key) },
   });
-  fetch(`${taban.replace(/\/+$/, "")}/live`, {
+  bekleyen = fetch(`${taban.replace(/\/+$/, "")}/live`, {
     method: "PUT", headers: { "content-type": "application/json" }, body: govde,
   })
     .then((r) => { if (r.status === 409 && onKesildi) onKesildi(); })
