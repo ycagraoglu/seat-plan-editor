@@ -51,7 +51,7 @@ const json = (res, code, body) => {
   res.writeHead(code, { "content-type": "application/json; charset=utf-8",
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
-    "access-control-allow-headers": "content-type" });
+    "access-control-allow-headers": "content-type, x-tenant-id" });
   res.end(s);
 };
 
@@ -67,28 +67,36 @@ const govde = (req) => new Promise((ok, no) => {
 });
 
 /** Yayımlama: taslak belgeden kanonik satırları üretip yazar. */
-export function publish(db, plan, key) {
+export function publish(db, plan, key, tenant = TENANT) {
   const metas = (plan.blocks || []).map((b) => ({ b, m: buildMeta(b) }));
   const payload = buildDbPayload(plan, metas, gateMap(plan));
   const surum = (db.prepare(
     `SELECT COALESCE(MAX(version), 0) + 1 AS v FROM seating_seat_plan_versions
-      WHERE tenant_id = ? AND seat_plan_id = ?`).get(TENANT, `plan:${key}`) || {}).v || 1;
+      WHERE tenant_id = ? AND seat_plan_id = ?`).get(tenant, `plan:${key}`) || {}).v || 1;
   payload.seat_plan_version = { version: surum, status: "published", unit: "cm" };
   /* Aynı mekân/plan zaten varsa yeniden eklenmesin — yalnız yeni SÜRÜM. */
   const varMi = db.prepare(
-    `SELECT 1 FROM seating_seat_plans WHERE tenant_id = ? AND id = ?`).get(TENANT, `plan:${key}`);
-  const r = loadPayload(db, payload, { tenantId: TENANT, planKey: key, skipHeader: !!varMi });
+    `SELECT 1 FROM seating_seat_plans WHERE tenant_id = ? AND id = ?`).get(tenant, `plan:${key}`);
+  const r = loadPayload(db, payload, { tenantId: tenant, planKey: key, skipHeader: !!varMi });
   db.prepare(`UPDATE seating_seat_plan_versions SET status = 'superseded', published_at = published_at
                WHERE tenant_id = ? AND seat_plan_id = ? AND id <> ? AND status = 'published'`)
-    .run(TENANT, `plan:${key}`, r.versionId);
+    .run(tenant, `plan:${key}`, r.versionId);
   db.prepare(`UPDATE seating_seat_plan_versions SET published_at = ? WHERE tenant_id = ? AND id = ?`)
-    .run(new Date().toISOString(), TENANT, r.versionId);
+    .run(new Date().toISOString(), tenant, r.versionId);
   return { ...r, version: surum };
 }
 
 export function handler(db) {
   return async (req, res) => {
     const u = new URL(req.url, "http://x");
+    /* KİMLİK DİKİŞİ — ana uygulamanın bağlanacağı yer.
+       Bu depo tek operatörlük; canlıda editör login'in arkasında bir sayfa
+       ve her isteğin kimin adına geldiği bilinmeli. Burada AUTH YAZMIYORUZ
+       (o ana uygulamanın oturum katmanının işi) — yalnız sabiti değişkene
+       çeviriyoruz ki bağlanacak yer hazır olsun. Dosya başındaki yorum
+       zaten bunu vaat ediyordu.
+       Başlık YOKSA eski davranış birebir sürüyor. */
+    const tenant = String(req.headers["x-tenant-id"] || TENANT);
     const p = u.pathname.replace(/\/+$/, "");
     const m = req.method;
     if (m === "OPTIONS") return json(res, 204);
@@ -97,7 +105,7 @@ export function handler(db) {
       /* ── taslak belgeler: depolama sözleşmesi ── */
       if (p === "/api/plans" && m === "GET") {
         const satir = db.prepare(
-          "SELECT key, document, updated_at FROM editor_plans WHERE tenant_id = ? ORDER BY key").all(TENANT);
+          "SELECT key, document, updated_at FROM editor_plans WHERE tenant_id = ? ORDER BY key").all(tenant);
         /* ?detay=1 SORGU PARAMETRESİ — yeni bir yol açmadım çünkü
            /api/plans/<şey> deseni her şeyi anahtar sanıyor ("ozet" bir plan
            anahtarı gibi görünürdü). Parametresiz çağrı, depolama
@@ -117,7 +125,7 @@ export function handler(db) {
         const key = decodeURIComponent(g[1]);
         if (m === "GET") {
           const r = db.prepare(
-            "SELECT document FROM editor_plans WHERE tenant_id = ? AND key = ?").get(TENANT, key);
+            "SELECT document FROM editor_plans WHERE tenant_id = ? AND key = ?").get(tenant, key);
           return r ? json(res, 200, JSON.parse(r.document)) : json(res, 404, null);
         }
         if (m === "PUT") {
@@ -126,11 +134,11 @@ export function handler(db) {
           db.prepare(`INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET document = excluded.document,
                         updated_at = excluded.updated_at`)
-            .run(TENANT, key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
+            .run(tenant, key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
           return json(res, 204);
         }
         if (m === "DELETE") {
-          db.prepare("DELETE FROM editor_plans WHERE tenant_id = ? AND key = ?").run(TENANT, key);
+          db.prepare("DELETE FROM editor_plans WHERE tenant_id = ? AND key = ?").run(tenant, key);
           return json(res, 204);
         }
       }
@@ -139,14 +147,14 @@ export function handler(db) {
         const key = decodeURIComponent(g[1]);
         if (m === "GET") {
           const r = db.prepare(
-            "SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?").get(TENANT, key);
+            "SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?").get(tenant, key);
           return json(res, 200, r ? r.value : null);
         }
         if (m === "PUT") {
           const b = await govde(req);
           db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
-            .run(TENANT, key, String(b?.value ?? ""));
+            .run(tenant, key, String(b?.value ?? ""));
           return json(res, 204);
         }
       }
@@ -172,12 +180,12 @@ export function handler(db) {
       if (p === "/api/live") {
         const oku = () => {
           const r = db.prepare("SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?")
-            .get(TENANT, LIVE_KEY);
+            .get(tenant, LIVE_KEY);
           try { return r ? JSON.parse(r.value) : null; } catch { return null; }
         };
         const yaz = (v) => db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
-          .run(TENANT, LIVE_KEY, JSON.stringify(v));
+          .run(tenant, LIVE_KEY, JSON.stringify(v));
 
         if (m === "GET") {
           const d = oku();
@@ -207,7 +215,7 @@ export function handler(db) {
           db.prepare(`INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET document = excluded.document,
                         updated_at = excluded.updated_at`)
-            .run(TENANT, plan.key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
+            .run(tenant, plan.key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
           /* Adım günlüğü: operatörün "ne yapıldı" panelinde okuyacağı
              satırlar. YENİ BİR ÇİZİME geçilince sıfırlanıyor — önceki
              salonun adımları yeni salonun altında durmamalı.
@@ -256,9 +264,9 @@ export function handler(db) {
       if ((g = p.match(/^\/api\/plans\/([^/]+)\/publish$/)) && m === "POST") {
         const key = decodeURIComponent(g[1]);
         const r = db.prepare(
-          "SELECT document FROM editor_plans WHERE tenant_id = ? AND key = ?").get(TENANT, key);
+          "SELECT document FROM editor_plans WHERE tenant_id = ? AND key = ?").get(tenant, key);
         if (!r) return json(res, 404, { hata: "taslak yok" });
-        try { return json(res, 200, publish(db, JSON.parse(r.document), key)); }
+        try { return json(res, 200, publish(db, JSON.parse(r.document), key, tenant)); }
         catch (e) {
           /* Şema reddettiyse SEBEBİ görünsün — sessiz başarısızlık, bu
              projede en pahalı hata sınıfıydı. */
@@ -274,7 +282,7 @@ export function handler(db) {
                     WHERE s.tenant_id = v.tenant_id AND s.version_id = v.id) AS seats
              FROM seating_seat_plan_versions v
              JOIN seating_seat_plans sp ON sp.tenant_id = v.tenant_id AND sp.id = v.seat_plan_id
-            WHERE v.tenant_id = ? ORDER BY sp.name, v.version`).all(TENANT));
+            WHERE v.tenant_id = ? ORDER BY sp.name, v.version`).all(tenant));
 
       if ((g = p.match(/^\/api\/versions\/([^/]+)\/sections$/)) && m === "GET")
         return json(res, 200, db.prepare(
@@ -283,7 +291,7 @@ export function handler(db) {
                     WHERE r.tenant_id = s.tenant_id AND r.version_id = s.version_id
                       AND r.section_id = s.id) AS rows_count
              FROM seating_sections s WHERE tenant_id = ? AND version_id = ?
-            ORDER BY code`).all(TENANT, decodeURIComponent(g[1])));
+            ORDER BY code`).all(tenant, decodeURIComponent(g[1])));
 
       if ((g = p.match(/^\/api\/versions\/([^/]+)\/seats$/)) && m === "GET") {
         const vid = decodeURIComponent(g[1]);
@@ -296,7 +304,7 @@ export function handler(db) {
              JOIN seating_sections sec ON sec.tenant_id = s.tenant_id AND sec.version_id = s.version_id AND sec.id = r.section_id
              JOIN seating_seat_types t ON t.tenant_id = s.tenant_id AND t.version_id = s.version_id AND t.id = s.seat_type_id
             WHERE s.tenant_id = ? AND s.version_id = ? ORDER BY s.code LIMIT ?`)
-          .all(TENANT, vid, limit));
+          .all(tenant, vid, limit));
       }
 
       return json(res, 404, { hata: "yol yok" });

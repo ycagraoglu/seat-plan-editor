@@ -11,10 +11,15 @@
    Tenant/oturum burada YOK: çerez ya da başlık, fetch katmanının işi.
    ══════════════════════════════════════════════════════════════════════════ */
 
-export function apiStore(base = "/api") {
+export function apiStore(base = "/api", tenant = null) {
   const u = (p) => `${base}${p}`;
+  /* Kiracı başlığı: canlıda editör login'in arkasında bir sayfa ve her
+     istek kimin adına geldiğini taşımalı. Burada AUTH yok — ana uygulama
+     kendi oturum katmanından dolduracak; verilmezse sunucu eski
+     davranışını sürdürüyor. */
+  const basliklar = tenant ? { "x-tenant-id": tenant } : {};
   const gonder = async (yol, opt) => {
-    const r = await fetch(u(yol), opt);
+    const r = await fetch(u(yol), { ...opt, headers: { ...basliklar, ...(opt?.headers || {}) } });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return r.status === 204 ? null : r.json();
   };

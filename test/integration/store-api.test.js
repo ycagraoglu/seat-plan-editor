@@ -251,3 +251,33 @@ describe("canlı görünüm · adım günlüğü", () => {
     expect(g[g.length - 1].n).toBe("adım 64");     /* en yenisi duruyor */
   });
 });
+
+describe("kimlik dikişi · x-tenant-id", () => {
+  /* Bu depo tek operatörlük ama canlıda editör login'in arkasında bir
+     sayfa: her istek kimin adına geldiğini taşımalı. Burada AUTH YAZMIYORUZ
+     — yalnız sabiti değişkene çevirdik ki ana uygulama bağlanabilsin.
+     Sınanan şey: iki kiracı birbirinin planını GÖRMÜYOR. */
+  /* base beforeAll'da atanıyor; describe TOPLANIRKEN henüz undefined —
+     eager kurmak sürücüyü "/api"ye bağlar ve istek hiç gitmez.
+     Dosyadaki diğer testler de bu yüzden fonksiyon kullanıyor. */
+  const A = () => apiStore(base, "kiraci-a");
+  const B = () => apiStore(base, "kiraci-b");
+  beforeEach(() => { db.exec("DELETE FROM editor_plans;"); });
+
+  it("iki kiracı ayrı plan listesi görüyor", async () => {
+    await A().save("salon", { key: "salon", name: "A'nın salonu", blocks: [], shapes: [] });
+    await B().save("arena", { key: "arena", name: "B'nin arenası", blocks: [], shapes: [] });
+    expect(await A().list()).toEqual(["salon"]);
+    expect(await B().list()).toEqual(["arena"]);
+    expect(await A().load("arena")).toBeNull();          /* öbürünü göremiyor */
+    expect((await B().load("arena")).name).toBe("B'nin arenası");
+  });
+
+  it("başlık YOKSA eski davranış birebir sürüyor", async () => {
+    const eski = apiStore(base);
+    await eski.save("varsayilan", { key: "varsayilan", blocks: [], shapes: [] });
+    expect(await eski.list()).toEqual(["varsayilan"]);
+    /* Varsayılan kiracı da diğerlerinden ayrı. */
+    expect(await A().list()).toEqual([]);
+  });
+});
