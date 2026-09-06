@@ -32,6 +32,12 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 
 const TENANT = process.env.TENANT_ID || "t1";
 
+/* Canlı görünümün iki sabiti. LIVE_ONEK bir AD ALANI: canlı çizim asla
+   yerleşik bir örneğin anahtarına yazmasın diye ("gs" değil "ai-gs").
+   Hiçbir yerleşik salon anahtarı bu ön ekle başlamıyor. */
+const LIVE_KEY = "__live";
+const LIVE_ONEK = "ai-";
+
 export function createDb(file = ":memory:") {
   const db = createSchema(openDb(file));
   db.exec(readFileSync(path.join(here, "..", "db", "editor.sql"), "utf8"));
@@ -126,6 +132,69 @@ export function handler(db) {
           db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
             .run(TENANT, key, String(b?.value ?? ""));
+          return json(res, 204);
+        }
+      }
+
+      /* ── CANLI GÖRÜNÜM ─────────────────────────────────────────────
+         Sözleşmenin ÜSTÜNDE, yalnız API sürücüsünde olan yetenek
+         (publish() ile aynı sınıf): MCP çizerken editör izlesin diye.
+
+         Yeni TABLO yok. Gerçekten yeni olan durum tek satırlık: hangi
+         çizim canlı, ne zaman yazıldı, operatör devraldı mı. O da
+         editor_prefs'te ayrılmış bir anahtar. Planın kendisi zaten
+         editor_plans'a, MEVCUT upsert'le gidiyor — böylece underlay
+         soyma ve updated_at bedava geliyor, Store.list() de onu görüyor.
+
+         KİLİT SAHİBE DEĞİL, ÇİZİME BAĞLI. mcp/cli.mjs her çağrıda yeni
+         bir Session kuruyor; oturuma bağlı bir kimlikle iptal etseydik
+         bir sonraki çağrı yeni kimlikle kilidi geri alırdı ve KES hiçbir
+         şey ifade etmezdi. Burada iptal EDİLEN ŞEY çizim: aynı anahtara
+         yazmaya çalışan herkes 409 alır, BAŞKA bir anahtar gelince
+         (create_plan/open_sample) yeni çizim sayılır ve iptal düşer.
+         Doğru zihinsel model bu: "operatör bu çizimi devraldı; çizmek
+         istiyorsan yenisine başla." */
+      if (p === "/api/live") {
+        const oku = () => {
+          const r = db.prepare("SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?")
+            .get(TENANT, LIVE_KEY);
+          try { return r ? JSON.parse(r.value) : null; } catch { return null; }
+        };
+        const yaz = (v) => db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
+                      ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
+          .run(TENANT, LIVE_KEY, JSON.stringify(v));
+
+        if (m === "GET") {
+          const d = oku();
+          if (!d || d.revoked) return json(res, 200, { aktif: false });
+          /* Yaş SUNUCUDA hesaplanıyor: tarayıcı kendi saatiyle karşılaştırsa
+             saat kayması yüzünden ya hep bayat ya hiç bayat görünürdü. */
+          return json(res, 200, { aktif: true, key: d.key, name: d.name || d.key,
+            at: d.at, yasSaniye: Math.max(0, Math.round((Date.now() - Date.parse(d.at)) / 1000)) });
+        }
+        if (m === "PUT") {
+          const b = await govde(req);
+          const plan = b?.plan;
+          if (!plan || typeof plan !== "object" || !plan.key)
+            return json(res, 400, { hata: "plan bekleniyor" });
+          /* Derinlemesine savunma: canlı yazma ASLA yerleşik bir örneğin
+             anahtarına düşmemeli (editörün sessiz çatallaması oradan
+             tetikleniyor). Ön ek MCP tarafında konuyor, burada denetleniyor. */
+          if (!String(plan.key).startsWith(LIVE_ONEK))
+            return json(res, 400, { hata: `canlı anahtar "${LIVE_ONEK}" ile başlamalı` });
+          const d = oku();
+          if (d && d.revoked && d.key === plan.key)
+            return json(res, 409, { hata: "operatör devraldı" });
+          db.prepare(`INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)
+                      ON CONFLICT (tenant_id,key) DO UPDATE SET document = excluded.document,
+                        updated_at = excluded.updated_at`)
+            .run(TENANT, plan.key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
+          yaz({ key: plan.key, name: plan.name || plan.key, at: new Date().toISOString(), revoked: false });
+          return json(res, 204);
+        }
+        if (m === "DELETE") {                       /* KES */
+          const d = oku();
+          if (d) yaz({ ...d, revoked: true });
           return json(res, 204);
         }
       }

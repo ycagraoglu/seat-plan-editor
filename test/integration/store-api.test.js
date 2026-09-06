@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
 import { createDb, createServer } from "../../server/index.mjs";
 import { apiStore } from "../../src/store/api.js";
 import { sozlesme } from "../store-contract.js";
@@ -113,5 +113,72 @@ describe("şema kurulumu tekrarlanabilir — var olan veritabanına bağlanmak",
       createDb(dosya).close();
       expect(() => createDb(dosya).close()).not.toThrow();
     } finally { rmSync(dizin, { recursive: true, force: true }); }
+  });
+});
+
+describe("canlı görünüm · MCP çizerken editör izler", () => {
+  const canli = () => fetch(`${base}/live`).then((r) => r.json());
+  const yaz = (key, name = key) => fetch(`${base}/live`, {
+    method: "PUT", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ plan: { key, name, blocks: [], shapes: [] } }),
+  });
+  const kes = () => fetch(`${base}/live`, { method: "DELETE" });
+
+  beforeEach(() => { db.exec("DELETE FROM editor_prefs WHERE key = '__live'"); });
+
+  it("kimse çizmiyorken aktif değil", async () => {
+    expect(await canli()).toEqual({ aktif: false });
+  });
+
+  it("yazma kilidi alır; yaş SUNUCUDA hesaplanır", async () => {
+    expect((await yaz("ai-t1", "Test Salonu")).status).toBe(204);
+    const d = await canli();
+    expect(d.aktif).toBe(true);
+    expect(d.key).toBe("ai-t1");
+    expect(d.name).toBe("Test Salonu");
+    /* Tarayıcı kendi saatiyle karşılaştırsaydı saat kayması yanıltırdı. */
+    expect(d.yasSaniye).toBeTypeOf("number");
+    expect(d.yasSaniye).toBeLessThan(5);
+  });
+
+  it("plan editor_plans'a düşer — Store.list() onu görür", async () => {
+    await yaz("ai-t2");
+    expect(await (await fetch(`${base}/plans`)).json()).toContain("ai-t2");
+  });
+
+  it("altlık soyulur — her yazmada megabaytlarca base64 gitmez", async () => {
+    await fetch(`${base}/live`, {
+      method: "PUT", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: { key: "ai-t3", blocks: [], shapes: [], underlay: "data:image/png;base64,AAAA" } }),
+    });
+    const p = await (await fetch(`${base}/plans/ai-t3`)).json();
+    expect(p.underlay).toBeNull();
+  });
+
+  it("KES kilidi düşürür VE aynı çizime yazmayı 409'lar", async () => {
+    await yaz("ai-t4");
+    expect((await kes()).status).toBe(204);
+    expect(await canli()).toEqual({ aktif: false });
+    const r = await yaz("ai-t4");
+    expect(r.status).toBe(409);
+    expect((await r.json()).hata).toMatch(/operatör devraldı/i);
+  });
+
+  it("KES'ten sonra YENİ bir çizim serbest — kilit sahibe değil çizime bağlı", async () => {
+    /* mcp/cli.mjs her çağrıda yeni Session kuruyor; oturum kimliğine bağlı
+       bir iptal, bir sonraki çağrıda yeni kimlikle geri alınırdı ve KES
+       hiçbir şey ifade etmezdi. İptal edilen şey ÇİZİM. */
+    await yaz("ai-t5"); await kes();
+    expect((await yaz("ai-t5")).status).toBe(409);
+    expect((await yaz("ai-BASKA")).status).toBe(204);
+    expect((await canli()).key).toBe("ai-BASKA");
+  });
+
+  it("yerleşik örneğin anahtarına canlı yazma REDDEDİLİR", async () => {
+    /* Editörün sessiz çatallaması buradan tetikleniyor; ön ek MCP'de
+       konuyor ama sunucu da denetliyor. */
+    const r = await yaz("gs");
+    expect(r.status).toBe(400);
+    expect((await r.json()).hata).toMatch(/ai-/);
   });
 });
