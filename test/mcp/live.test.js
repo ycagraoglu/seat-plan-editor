@@ -119,6 +119,83 @@ describe("SEAT_EDITOR_API verilmişken", () => {
     await t.kapat();
   });
 
+  it("KES'ten sonra AYNI adla yeniden çizmek serbest", async () => {
+    /* Kullanırken çıktı: iptal anahtara bağlı olduğu için operatör
+       devraldıktan sonra "Tayyare'yi yeniden çiz" demek 409 yiyordu ve
+       sistem bozuk görünüyordu. create_plan/open_sample artık niyeti
+       ayrıca bildiriyor: bu bir DEVAM değil, baştan başlama. */
+    const t = await baglan();
+    await t.cagir("create_plan", { name: "Tayyare", key: "ty" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "L", x: 0, y: 0, rows: 5, cols: 10 });
+    await bekle(async () => ((await canli()).aktif ? true : null));
+    await fetch(`${taban}/live`, { method: "DELETE" });                 /* KES */
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "L", x: 3000, y: 0, rows: 2, cols: 2 }).catch(() => {});
+    await bekle(async () => (t.session.kesildi ? true : null));
+
+    /* AYNI anahtar, yeni çizim. */
+    await t.cagir("create_plan", { name: "Tayyare", key: "ty" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "L", x: 0, y: 0, rows: 4, cols: 5 });
+    const d = await bekle(async () => {
+      const x = await canli(); return x.aktif && x.key === "ai-ty" ? x : null;
+    });
+    expect(d).not.toBeNull();
+    /* Günlük de sıfırlanmalı — önceki çizimin adımları altta durmamalı. */
+    expect(d.gunluk.every((a) => !/"B"/.test(a.n))).toBe(true);
+    await t.kapat();
+  });
+
+  it("adım günlüğü OPERATÖR DİLİNDE ve bulguları taşıyor", async () => {
+    /* Panelin okuduğu şey bu. "grid" değil "Izgara", ham kural kimliği
+       değil hedef değerli mesaj — operatör kod bilmek zorunda değil. */
+    const t = await baglan();
+    await t.cagir("create_plan", { name: "Günlük", key: "gl" });
+    await t.cagir("add_block", { kind: "grid", label: "SALON", level: "Zemin",
+      x: 0, y: 0, rows: 10, cols: 20 });
+    const d = await bekle(async () => {
+      const x = await canli(); return x.aktif && x.gunluk?.length ? x : null;
+    });
+    const son = d.gunluk[d.gunluk.length - 1];
+    expect(son.n).toMatch(/Izgara blok eklendi: "SALON"/);
+    expect(son.n).toMatch(/10 sıra/);
+    expect(son.n).not.toMatch(/grid/);            /* şema dili sızmasın */
+    expect(son.k).toBe(200);
+    expect(son.b).toBe(1);
+    /* Kural bulgusu HEDEF DEĞERİYLE görünmeli — operatör anında görsün. */
+    expect(son.u.join(" ")).toMatch(/[Tt]ekerlekli sandalye/);
+    await t.kapat();
+  });
+
+  it("çoğaltma satırı KOPYA değil BLOK sayısı diyor", async () => {
+    /* count TOPLAM blok sayısı (asıl dahil): 9 verince 8 kopya çıkıyor.
+       İlk çeviride "9 kopyaya çoğaltıldı" yazmıştım — paneli okuyunca
+       yanlış olduğu görüldü. Sayının anlamı değişirse burası kırılsın. */
+    const t = await baglan();
+    await t.cagir("create_plan", { name: "Çoğalt", key: "cg" });
+    await t.cagir("add_block", { kind: "grid", label: "L1", level: "Z", x: 0, y: 0, rows: 2, cols: 2 });
+    await t.cagir("array_blocks", { id: "L1", mode: "linear", count: 9, dx: -170, dy: 0 });
+    const d = await bekle(async () => {
+      const x = await canli(); return x.gunluk?.length >= 2 ? x : null;
+    });
+    const son = d.gunluk[d.gunluk.length - 1];
+    expect(son.n).toMatch(/9 bloğa çoğaltıldı/);
+    expect(son.n).not.toMatch(/kopya/);
+    expect(son.b).toBe(9);                        /* metin gerçeğe uyuyor */
+    await t.kapat();
+  });
+
+  it("şekil satırında şema dili görünmüyor", async () => {
+    const t = await baglan();
+    await t.cagir("create_plan", { name: "Şekil", key: "sk" });
+    await t.cagir("add_shape", { type: "stage", label: "SAHNE", x: 0, y: 0, w: 1000, h: 400 });
+    const d = await bekle(async () => {
+      const x = await canli(); return x.gunluk?.length ? x : null;
+    });
+    const son = d.gunluk[d.gunluk.length - 1];
+    expect(son.n).toMatch(/Sahne kondu: "SAHNE"/);
+    expect(son.n).not.toMatch(/stage/);
+    await t.kapat();
+  });
+
   it("SUNUCU KAPALIYKEN çizim aksamıyor — asıl koruma bu", async () => {
     /* İLK YAZDIĞIMDA BU TEST BOŞLUĞUN ETRAFINDAN GEÇİYORDU: live.mjs'teki
        .catch() kaldırılınca test YEŞİL kalıyordu, çünkü beklenmeyen bir
@@ -170,7 +247,7 @@ describe("KES, SÜREÇ SINIRINI aşıyor mu (mcp/cli.mjs yolu)", () => {
 
     await cli("create_plan", '{"name":"Süreç","key":"sr"}');
     expect(await cli("add_block", '{"kind":"grid","label":"A","level":"L","x":0,"y":0,"rows":5,"cols":10}'))
-      .toMatch(/Blok eklendi/);
+      .toMatch(/blok eklendi/i);
 
     await fetch(`${taban}/live`, { method: "DELETE" });                 /* KES */
 

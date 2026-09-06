@@ -410,3 +410,18 @@ button:focus-visible, input:focus-visible, select:focus-visible, label:focus-vis
    dokunma" ile "durdu, bakabilirsin" bakışta ayrılsın. Yazı da söylüyor
    ama renk daha hızlı okunuyor — operatör ekrana sürekli bakmıyor. */
 .modestrip .chip.durgun{ color:var(--ok); border-color:var(--ok); background:var(--okline); }
+
+/* Canlı görünüm takip paneli — yapay zekâ çizerken Özellikler'in yerini
+   alır. Adım listesi en yenisi üstte; dar panelde kaydırmadan okunsun. */
+.canli{ padding:12px; display:flex; flex-direction:column; gap:8px; min-height:0; }
+.canli .cad{ font-weight:600; font-size:13px; margin:0; }
+.canli .gnl{ list-style:none; margin:0; padding:0; overflow-y:auto; min-height:0;
+  display:flex; flex-direction:column; gap:6px; }
+.canli .gnl li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+  padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+.canli .gnl li.son{ border-color:var(--acc); background:var(--accline); }
+.canli .gnl .sa{ font:10.5px var(--mono); color:var(--mut); padding-top:1px; }
+.canli .gnl .ne{ font-size:12px; font-weight:600; }
+.canli .gnl .sy{ grid-column:2; font-size:11px; color:var(--mut); }
+.canli .gnl .uy{ grid-column:2; font-size:11px; color:var(--warn); }
+.canli .btn.wide{ width:100%; justify-content:center; }

@@ -50,11 +50,19 @@ export const canliAnahtar = (key) => {
 let bekleyen = null;
 export const bekle = () => bekleyen || Promise.resolve();
 
-export function canliYaz(plan, onKesildi) {
+export function canliYaz(plan, adim, yeni, onKesildi) {
   const taban = process.env.SEAT_EDITOR_API;
   if (!taban || !plan) return;
   const govde = JSON.stringify({
     plan: { ...stripUnderlay(plan), key: canliAnahtar(plan.key) },
+    /* Operatörün paneline düşecek tek satır. Planla BİRLİKTE gidiyor ki
+       "çizim ilerledi ama günlük geride kaldı" diye bir tutarsızlık
+       olmasın — ikisi tek yazmada. */
+    adim,
+    /* YENİ ÇİZİM bildirimi: sunucu iptali anahtara bağlıyor, dolayısıyla
+       KES'ten sonra AYNI adla yeniden çizmek de reddedilirdi. Bu bayrak
+       "bu, devam değil, baştan başlama" diyor. */
+    yeni: !!yeni,
   });
   bekleyen = fetch(`${taban.replace(/\/+$/, "")}/live`, {
     method: "PUT", headers: { "content-type": "application/json" }, body: govde,

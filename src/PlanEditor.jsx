@@ -887,6 +887,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
      ederdik. */
   const [liveDurgun, setLiveDurgun] = useState(false);
   const durgunRef = useRef(false);
+  const [liveGunluk, setLiveGunluk] = useState([]);
   useEffect(() => {
     /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
        sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
@@ -898,7 +899,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       const d = await Store.liveGet();
       if (dead || !d) return;
       const su = liveRef.current;
-      if (!d.aktif) { if (su) { sonAt = null; durgunRef.current = false; setLiveDurgun(false); dispatch({ type: "live/stop" }); } return; }
+      if (!d.aktif) { if (su) { sonAt = null; durgunRef.current = false; setLiveDurgun(false); setLiveGunluk([]); dispatch({ type: "live/stop" }); } return; }
       /* Kova değiştiyse yaz; değişmediyse dokunma (gereksiz render yok). */
       const durgun = d.yasSaniye >= DURGUN_SN;
       if (durgunRef.current !== durgun) {
@@ -908,11 +909,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
            bir kez söyle. "Bitti" DEMİYORUZ; bildiğimiz tek şey sessizlik. */
         if (durgun) setMsg(`Çizim durdu — ${d.yasSaniye} sn'dir değişiklik yok.`
           + ` İnceleyebilirsiniz; düzenlemek için şeritteki × (KES).`);
+        /* Yeniden yazmaya başladıysa o mesaj artık YANLIŞ: şerit "çiziyor"
+           derken alt çubuk "durdu" diyordu. Ekranda çelişki bırakma. */
+        else setMsg("");
       }
       if (d.at === sonAt) return;              /* değişmedi — planı boşuna çekme */
       const p = await Store.load(d.key);
       if (dead || !p) return;
       sonAt = d.at;
+      setLiveGunluk(d.gunluk || []);
       /* ÖNCE plan, SONRA start: live/start görüntüyü venues[key]'den
          türetiyor, plan daha yoksa çerçeveyi bulamaz. */
       dispatch({ type: "live/apply", payload: { key: d.key, plan: p } });
@@ -3270,7 +3275,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <span className="chev">{propsOpen ? "›" : "‹"}</span><em>Özellikler</em>
           </button>
           {propsOpen && (
-          selSeats.size > 1 ? (
+          /* Canlı görünümde panel GÜNLÜĞÜ gösteriyor. Seçim panelleri
+             düzenleme kontrolü dolu; canlıyken hepsi ölü düğme olurdu.
+             Operatörün o an istediği şey "ne yapılıyor", bir bloğun
+             sıra aralığı değil. KES'ten sonra paneller geri geliyor. */
+          live ? (
+            <CanliGunluk live={live} gunluk={liveGunluk} durgun={liveDurgun} onKes={liveKes} />
+          ) : selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
               onGroup={groupSelected} onUngroup={ungroupSelected}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
@@ -3315,6 +3326,42 @@ export default function PlanEditor({ cssText = "" } = {}) {
 /* ─────────────────────────  PANELLER  ───────────────────────── */
 
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
+
+/** Yapay zekâ çizerken operatörün takip paneli.
+ *
+ *  Neden var: bloklar tuvalde beliriyordu ama operatör NE yapıldığını
+ *  göremiyordu — "bir şeyler oluyor" ile "salon bloğu eklendi, 195 koltuk"
+ *  arasındaki fark bu. Kural bulguları da burada: yapay zekâ bir uyarı
+ *  aldıysa operatör onu ANINDA görüyor, sonunda doğrulama çalıştırmayı
+ *  beklemiyor.
+ *
+ *  En yeni EN ÜSTTE: dar bir panelde canlı akış böyle okunur, kaydırmaya
+ *  gerek kalmaz. */
+function CanliGunluk({ live, gunluk, durgun, onKes }) {
+  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const ters = [...gunluk].reverse();
+  return (
+    <div className="canli">
+      <p className="lab">{durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor"}</p>
+      <p className="cad">{live.name}</p>
+      {!ters.length && <p className="mut sm">Henüz adım yok — ilk değişiklik bekleniyor.</p>}
+      <ol className="gnl">
+        {ters.map((a, i) => (
+          <li key={`${a.t}-${i}`} className={i === 0 && !durgun ? "son" : ""}>
+            <span className="sa">{saat(a.t)}</span>
+            <span className="ne">{a.n}</span>
+            <span className="sy">{Number(a.k).toLocaleString("tr-TR")} koltuk · {a.b} blok</span>
+            {(a.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
+          </li>
+        ))}
+      </ol>
+      <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>
+      <p className="mut sm">Devraldığında yapay zekânın yazması durur; çizim planına
+        işlenir ve ⌘Z ile tümünü geri alabilirsin.</p>
+    </div>
+  );
+}
 
 /** Dikdörtgen seçimle işaretlenmiş koltuklara toplu işlem. */
 function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {

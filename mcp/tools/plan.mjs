@@ -20,7 +20,7 @@ export function registerPlanTools(server, session, z) {
     },
   }, async ({ name, key }) => {
     const k = key || name.toLocaleLowerCase("tr").replace(/[^a-z0-9]+/g, "-").slice(0, 24) || "plan";
-    session.set(yeniPlan(k, name));
+    session.yeni(yeniPlan(k, name));
     return metin(session.summaryText("Yeni plan açıldı."));
   });
 
@@ -39,7 +39,7 @@ export function registerPlanTools(server, session, z) {
     if (!v) throw new Error(`Böyle bir örnek yok: ${key}`);
     /* Derin kopya: örneği bozmadan üstünde çalışmak için. Salon nesneleri
        modül düzeyinde tek örnek, doğrudan mutasyon TÜM oturumu kirletirdi. */
-    session.set(structuredClone(v));
+    session.yeni(structuredClone(v));
     return metin(session.summaryText(`Örnek alındı: ${v.name}`));
   });
 

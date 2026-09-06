@@ -179,6 +179,24 @@ Kapalı olmayanlar bilerek açık: **kaydırma, yakınlaştırma ve seçim**.
 çerçeve kendiliğinden açılıyor, ama yalnız içerik taştığında — her karede
 sığdırmak senin kaydırmanı saniyede bir geri alırdı.
 
+**Özellikler paneli, çizerken ADIM GÜNLÜĞÜ gösterir.** Tuvalde bloklar
+belirirken sağdaki panel ne yapıldığını operatör diliyle yazar — en yenisi
+üstte:
+
+```
+14:42:13   Izgara blok eklendi: "B1" · 6 sıra · Balkon 1
+           402 koltuk · 12 blok
+           ✕ Tekerlekli sandalye alanı tanımlanmamış — en az 6 gerekiyor
+           ⚠ Hiç kapı tanımlanmamış
+14:42:09   "LOCA 1" 9 bloğa çoğaltıldı (yan yana)
+           303 koltuk · 11 blok
+```
+
+Şema dili panele sızmaz: `grid` değil "Izgara", `box` değil "loca",
+`stage` değil "Sahne". Kural bulguları **hedef değeriyle** anında görünür —
+operatör sonunda doğrulama çalıştırmayı beklemez. Adımlar sunucuda son 60
+kayıtla sınırlı ve yeni çizime geçilince sıfırlanır.
+
 **Çizim durunca şerit yeşile döner.** 25 saniyedir değişiklik yoksa şerit
 `✓ Çizim durdu · <ad> · N koltuk · M blok` olur ve alt çubukta bir kez
 mesaj çıkar. **"Bitti" demiyoruz, "durdu" diyoruz** — yapay zekânın işini

@@ -219,3 +219,35 @@ describe("canlı görünüm · tarayıcı sürücüsü", () => {
     expect(await olu.liveStop()).toBe(false);
   });
 });
+
+describe("canlı görünüm · adım günlüğü", () => {
+  const yazAdim = (key, n, k, b, u = []) => fetch(`${base}/live`, {
+    method: "PUT", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ plan: { key, name: key, blocks: [], shapes: [] },
+      adim: { t: new Date().toISOString(), n, k, b, u } }),
+  });
+  beforeEach(() => { db.exec("DELETE FROM editor_prefs WHERE key = '__live'"); });
+
+  it("adımlar SIRAYLA birikiyor — operatör ne yapıldığını okuyabilsin", async () => {
+    await yazAdim("ai-g1", "Salon bloğu eklendi", 195, 1);
+    await yazAdim("ai-g1", "Arka salon eklendi", 267, 2, ["⚠ Tekerlekli sandalye alanı yok"]);
+    const g = (await fetch(`${base}/live`).then((r) => r.json())).gunluk;
+    expect(g.map((x) => x.n)).toEqual(["Salon bloğu eklendi", "Arka salon eklendi"]);
+    expect(g[1].k).toBe(267);
+    expect(g[1].u[0]).toMatch(/Tekerlekli sandalye/);
+  });
+
+  it("YENİ çizime geçilince günlük sıfırlanıyor", async () => {
+    await yazAdim("ai-g2", "Eski salon", 100, 1);
+    await yazAdim("ai-g3", "Yeni salon", 50, 1);
+    const g = (await fetch(`${base}/live`).then((r) => r.json())).gunluk;
+    expect(g.map((x) => x.n)).toEqual(["Yeni salon"]);
+  });
+
+  it("günlük sınırsız büyümüyor — prefs bir metin sütunu", async () => {
+    for (let i = 0; i < 65; i++) await yazAdim("ai-g4", `adım ${i}`, i, 1);
+    const g = (await fetch(`${base}/live`).then((r) => r.json())).gunluk;
+    expect(g.length).toBe(60);
+    expect(g[g.length - 1].n).toBe("adım 64");     /* en yenisi duruyor */
+  });
+});

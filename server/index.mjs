@@ -37,6 +37,7 @@ const TENANT = process.env.TENANT_ID || "t1";
    Hiçbir yerleşik salon anahtarı bu ön ekle başlamıyor. */
 const LIVE_KEY = "__live";
 const LIVE_ONEK = "ai-";
+const GUNLUK_SINIR = 60;
 
 export function createDb(file = ":memory:") {
   const db = createSchema(openDb(file));
@@ -170,7 +171,8 @@ export function handler(db) {
           /* Yaş SUNUCUDA hesaplanıyor: tarayıcı kendi saatiyle karşılaştırsa
              saat kayması yüzünden ya hep bayat ya hiç bayat görünürdü. */
           return json(res, 200, { aktif: true, key: d.key, name: d.name || d.key,
-            at: d.at, yasSaniye: Math.max(0, Math.round((Date.now() - Date.parse(d.at)) / 1000)) });
+            at: d.at, yasSaniye: Math.max(0, Math.round((Date.now() - Date.parse(d.at)) / 1000)),
+            gunluk: d.gunluk || [] });
         }
         if (m === "PUT") {
           const b = await govde(req);
@@ -183,13 +185,25 @@ export function handler(db) {
           if (!String(plan.key).startsWith(LIVE_ONEK))
             return json(res, 400, { hata: `canlı anahtar "${LIVE_ONEK}" ile başlamalı` });
           const d = oku();
-          if (d && d.revoked && d.key === plan.key)
+          /* b.yeni: LLM create_plan/open_sample çağırdı — bu bir DEVAM
+             değil, baştan başlama. İptal düşer. Bayrak yoksa aynı çizime
+             yazmaya çalışıyor demektir ve iptal geçerlidir. */
+          if (d && d.revoked && d.key === plan.key && !b.yeni)
             return json(res, 409, { hata: "operatör devraldı" });
           db.prepare(`INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET document = excluded.document,
                         updated_at = excluded.updated_at`)
             .run(TENANT, plan.key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
-          yaz({ key: plan.key, name: plan.name || plan.key, at: new Date().toISOString(), revoked: false });
+          /* Adım günlüğü: operatörün "ne yapıldı" panelinde okuyacağı
+             satırlar. YENİ BİR ÇİZİME geçilince sıfırlanıyor — önceki
+             salonun adımları yeni salonun altında durmamalı.
+             GUNLUK_SINIR: prefs bir metin sütunu, sınırsız büyüyemez;
+             operatörün geriye dönüp bakacağı derinlik de bu kadar. */
+          const oncekiGunluk = d && d.key === plan.key && !b.yeni ? (d.gunluk || []) : [];
+          const gunluk = b.adim
+            ? [...oncekiGunluk, b.adim].slice(-GUNLUK_SINIR) : oncekiGunluk;
+          yaz({ key: plan.key, name: plan.name || plan.key,
+            at: new Date().toISOString(), revoked: false, gunluk });
           return json(res, 204);
         }
         if (m === "DELETE") {                       /* KES */

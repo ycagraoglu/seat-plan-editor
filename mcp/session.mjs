@@ -23,7 +23,7 @@ import { canliYaz } from "./live.mjs";
 const tr = (n) => Number(n).toLocaleString("tr-TR");
 
 export class Session {
-  constructor() { this.plan = null; this.kesildi = false; }
+  constructor() { this.plan = null; this.kesildi = false; this.yeniCizim = false; }
 
   /** Aktif plan yoksa aracın anlamı yok — net hata, sessiz boş sonuç değil. */
   need() {
@@ -41,15 +41,27 @@ export class Session {
     return this.plan;
   }
 
+  /** Planı değiştirir ama YENİ BİR ÇİZİM SAYILMAZ — set_underlay ve
+   *  cli.mjs'in oturum geri yüklemesi bunu kullanıyor. Kesik bayrağına
+   *  DOKUNMAZ: altlık yüklemek KES'i geri almamalı. */
   set(plan) {
-    /* Yeni çizim = temiz sayfa. KES bir ÇİZİMİ durduruyor, oturumu değil:
-       operatör "şunu bırak, şunu çiz" diyebilmeli. Yanlış temizlense bile
-       sunucu anahtara göre yine 409 verir — hakem orası. */
-    this.kesildi = false;
     /* absorbIds: hazır bir salonu taban alırken id sayacını ileri sarar,
        sonradan eklenen bloklar mevcutlarla çakışmasın. */
     this.plan = absorbIds({ ...plan });
     return this.plan;
+  }
+
+  /** YENİ ÇİZİM: create_plan / open_sample. Temiz sayfa.
+   *
+   *  KES bir ÇİZİMİ durduruyor, oturumu değil — operatör devraldıktan
+   *  sonra "şunu bırak, yeniden çiz" diyebilmeli. Sunucu iptali anahtara
+   *  bağladığı için AYNI adla yeniden çizmek de 409 yiyordu ve bozuk
+   *  görünüyordu (kullanırken çıktı); bu yüzden niyet ayrıca bildiriliyor:
+   *  bir sonraki yazma "yeni çizim" bayrağını taşıyor ve iptali düşürüyor. */
+  yeni(plan) {
+    this.kesildi = false;
+    this.yeniCizim = true;
+    return this.set(plan);
   }
 
   /** Türetilmiş her şeyi tek yerden: metas · gates · kural raporu. */
@@ -65,16 +77,37 @@ export class Session {
     const plan = this.need();
     const next = fn(plan) || plan;
     this.plan = next;
+    /* TEK derive: hem LLM'e dönen özet hem operatörün göreceği adım kaydı
+       aynı hesaptan çıkıyor. İki kez türetmek 52.000 koltuklu planda her
+       araç çağrısını iki katına çıkarırdı. */
+    const d = this.derive(next);
     /* Canlı görünüme yansıt. Beklemiyoruz: SEAT_EDITOR_API yoksa hiç ağa
        çıkmıyor, varsa da sunucu kapalıysa çizim aksamıyor (bkz. live.mjs). */
-    canliYaz(next, () => { this.kesildi = true; });
-    return this.summaryText(baslik);
+    canliYaz(next, this.adim(baslik, d), this.yeniCizim, () => { this.kesildi = true; });
+    this.yeniCizim = false;                 /* yalnız İLK yazmada bildirilir */
+    return this.summaryText(baslik, d);
+  }
+
+  /** Operatörün Özellikler panelinde okuyacağı tek satırlık adım kaydı.
+   *  LLM'e dönen özetten AYRI ve daha kısa: operatör "ne oldu, kaç koltuk
+   *  oldu, bir sorun çıktı mı" bilmek istiyor; kural raporunun tamamını
+   *  değil. Alan adları kısa çünkü bu kayıt sunucuda bir metin sütununda
+   *  biriktiriliyor. */
+  adim(ne, { metas, findings }) {
+    const onemli = findings.filter((f) => f.t === "err" || f.t === "warn");
+    return {
+      t: new Date().toISOString(),
+      n: ne || "değişiklik",
+      k: metas.reduce((a, x) => a + x.m.seatCount, 0),
+      b: metas.length,
+      u: onemli.slice(0, 2).map((f) => `${f.t === "err" ? "✕" : "⚠"} ${f.m}${f.d ? ` — ${f.d}` : ""}`),
+    };
   }
 
   /** LLM'in "sahneyi okuma" çıktısı. Kısa tut — her araç çağrısında dönüyor. */
-  summaryText(baslik = null) {
+  summaryText(baslik = null, turetilmis = null) {
     const plan = this.need();
-    const { metas, gates, findings } = this.derive(plan);
+    const { metas, gates, findings } = turetilmis || this.derive(plan);
     const koltuk = metas.reduce((a, x) => a + x.m.seatCount, 0);
     const sayac = selectLevelCounts(metas);
     const satir = [];
