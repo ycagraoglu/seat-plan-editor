@@ -255,7 +255,7 @@ export function handler(db) {
         if (m === "POST") {
           const b = await govde(req);
           if (!b?.id || !b?.mesaj) return json(res, 400, { hata: "id ve mesaj gerekli" });
-          if (!sohbetAcikMi()) return json(res, 503, { hata: "Sohbet kapalı (ANTHROPIC_API_KEY yok)" });
+          if (!sohbetAcikMi()) return json(res, 503, { hata: "Sohbet kapalı: ANTHROPIC_API_KEY, OPENAI_API_KEY ya da GEMINI_API_KEY tanımlı değil" });
           return json(res, 202, await mesajGonder(b.id, String(b.mesaj)));
         }
       }
