@@ -1,4 +1,5 @@
 import { oturumAc, tur } from "./dongu.mjs";
+import { acikMi } from "./saglayici/index.mjs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    KONUŞMALAR — sunucu belleğinde, konuşma başına bir oturum
@@ -22,7 +23,9 @@ const konusmalar = new Map();
 const OMUR_MS = 30 * 60 * 1000;      /* boşta kalan konuşma bu süre sonra düşer */
 const AKIS_SINIRI = 400;             /* bellekte tutulan satır */
 
-export const sohbetAcikMi = () => !!process.env.ANTHROPIC_API_KEY;
+/* Üç sağlayıcıdan HANGİSİ varsa sohbet açık. Panel yalnız bu cevabı
+   görüyor — anahtarın kendisi tarayıcıya hiç gitmiyor. */
+export const sohbetAcikMi = () => acikMi();
 
 /* Ham SDK hatası operatöre gösterilecek metin değil:
    `401 {"type":"error","error":{"type":"authentication_error",...}}`
@@ -65,7 +68,7 @@ async function konusma(id) {
 
 /** Turu BAŞLATIR ve hemen döner. Sonuç akışa düşer. */
 export async function mesajGonder(id, mesaj) {
-  if (!sohbetAcikMi()) throw new Error("Sohbet kapalı: ANTHROPIC_API_KEY tanımlı değil.");
+  if (!sohbetAcikMi()) throw new Error("Sohbet kapalı: hiçbir sağlayıcı anahtarı tanımlı değil.");
   const k = await konusma(id);
   if (k.calisiyor) return { kabul: false, sebep: "Önceki tur sürüyor." };
 

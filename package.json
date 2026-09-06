@@ -24,8 +24,10 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
+    "@google/genai": "^2.21.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "@resvg/resvg-js": "^2.6.2",
+    "openai": "^7.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

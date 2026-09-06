@@ -14,26 +14,29 @@ import { hepsiniKapat } from "../../chat/oturumlar.mjs";
    göreceği tek şey "açık mı" olmalı.
    ══════════════════════════════════════════════════════════════════════════ */
 
-let srv, base, db, eskiAnahtar;
+let srv, base, db;
+const ANAHTARLAR = ["ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY", "SOHBET_SAGLAYICI"];
+const yedek = {};
 
 beforeAll(async () => {
   db = createDb(":memory:");
   srv = createServer(db);
   await new Promise((ok) => srv.listen(0, "127.0.0.1", ok));
   base = `http://127.0.0.1:${srv.address().port}/api`;
-  eskiAnahtar = process.env.ANTHROPIC_API_KEY;
+  ANAHTARLAR.forEach((a) => { yedek[a] = process.env[a]; });
 });
 afterAll(async () => {
   await hepsiniKapat();
-  if (eskiAnahtar === undefined) delete process.env.ANTHROPIC_API_KEY;
-  else process.env.ANTHROPIC_API_KEY = eskiAnahtar;
+  ANAHTARLAR.forEach((a) => {
+    if (yedek[a] === undefined) delete process.env[a]; else process.env[a] = yedek[a];
+  });
   await new Promise((ok) => srv.close(ok));
 });
 
 const S = () => apiStore(base);
 
 describe("anahtar YOKKEN", () => {
-  beforeEach(() => { delete process.env.ANTHROPIC_API_KEY; });
+  beforeEach(() => { ANAHTARLAR.forEach((a) => delete process.env[a]); });
 
   it("durum 'kapalı' diyor — panel kendini hiç göstermeyecek", async () => {
     expect(await S().sohbetDurum()).toEqual({ acik: false });
@@ -45,12 +48,15 @@ describe("anahtar YOKKEN", () => {
       body: JSON.stringify({ id: "k1", mesaj: "selam" }),
     });
     expect(r.status).toBe(503);
-    expect((await r.json()).hata).toMatch(/ANTHROPIC_API_KEY/);
+    expect((await r.json()).hata).toMatch(/ANTHROPIC_API_KEY|GEMINI_API_KEY/);
   });
 });
 
 describe("anahtar VARKEN", () => {
-  beforeEach(() => { process.env.ANTHROPIC_API_KEY = "sk-test-sahte"; });
+  beforeEach(() => {
+    ANAHTARLAR.forEach((a) => delete process.env[a]);
+    process.env.ANTHROPIC_API_KEY = "sk-test-sahte";
+  });
 
   it("durum 'açık' diyor ama ANAHTARI SIZDIRMIYOR", async () => {
     const d = await (await fetch(`${base}/chat/durum`)).json();

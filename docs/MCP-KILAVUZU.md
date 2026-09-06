@@ -163,14 +163,46 @@ Onun için ikinci bir yol var ve **canlıda kullanılacak olan budur**:
 Operatörün gördüğü şey: sayfayı açar, sağdaki kutuya *"Bursa Tayyare'yi
 çiz"* yazar, izler.
 
-### Kurulum
+### Kurulum — üç sağlayıcıdan biri
+
+Sahada en çok bu üçü kullanılıyor; hangisinin anahtarı elindeyse o çalışır:
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-... npm run live
+ANTHROPIC_API_KEY=sk-ant-...  npm run live     # Claude
+OPENAI_API_KEY=sk-...         npm run live     # GPT
+GEMINI_API_KEY=...            npm run live     # Gemini
 ```
 
-Anahtar **yoksa sohbet paneli hiç görünmez** ve editör eskisi gibi çalışır.
-Panel yalnız "açık mı" cevabını alır; anahtarın kendisi tarayıcıya gitmez.
+Birden çok anahtar tanımlıysa sıra **anthropic → openai → gemini**; açıkça
+seçmek için `SOHBET_SAGLAYICI=gemini`. Modeli değiştirmek için
+`SOHBET_MODEL=...` (OpenAI/Gemini varsayılanları hesaptan hesaba değişiyor,
+kendi hesabında ne varsa onu yaz).
+
+Hiç anahtar **yoksa sohbet paneli hiç görünmez** ve editör eskisi gibi
+çalışır. Panel yalnız "açık mı" cevabını alır; anahtarın kendisi tarayıcıya
+gitmez.
+
+### Sağlayıcı katmanı
+
+```
+chat/dongu.mjs            ← sağlayıcıdan BAĞIMSIZ
+chat/saglayici/
+  ├─ anthropic.mjs
+  ├─ openai.mjs
+  ├─ gemini.mjs
+  └─ sema.mjs             ← katı şema bekleyenler için temizleyici
+```
+
+Dördüncü bir sağlayıcı eklemek **tek dosya** demek; döngüye, rotalara,
+panele, 29 araca dokunulmuyor. Test paketi üçünü de aynı senaryolarla
+koşuyor — soyutlamanın tuttuğunun kanıtı orada.
+
+**İki gerçek fark, ikisi de çözüldü:**
+
+| Fark | Çözüm |
+|---|---|
+| Gemini'nin şeması OpenAPI 3.0 alt kümesi; `exclusiveMinimum` (19 yerde) ve tip dizisi (3 araçta) kabul edilmiyor | `sema.mjs` sadeleştiriyor ve **düşen kısıtı açıklamaya taşıyor** — sessizce atmak modelin `rows: 0` göndermesine kapı açardı |
+| Araç yanıtı yalnız Anthropic'te görsel taşıyabiliyor | Diğer ikisinde görsel **ayrı bir tur** olarak gidiyor. Bir mesaj fazla; "çiz → kendi çizimine bak → düzelt" döngüsü üçünde de çalışıyor |
 
 ### Nasıl kurulu
 
