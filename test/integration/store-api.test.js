@@ -174,6 +174,22 @@ describe("canlı görünüm · MCP çizerken editör izler", () => {
     expect((await canli()).key).toBe("ai-BASKA");
   });
 
+  it("yaş BÜYÜR — arayüz 'çizdi mi durdu mu' ayrımını buna dayandırıyor", async () => {
+    /* İlk kullanımda çıkan eksik: şerit sonsuza dek "çiziyor" diyordu,
+       operatör bitti mi düşünüyor mu ayırt edemiyordu. Arayüz artık bu
+       sayıya bakıp 25 sn'den sonra "durdu" diyor — "bitti" DEMİYOR, çünkü
+       sessizliğin bitiş mi uzun düşünme mi olduğunu bilmenin yolu yok. */
+    await yaz("ai-yas");
+    expect((await canli()).yasSaniye).toBeLessThan(5);
+    /* Zamanı beklemek yerine damgayı eskit — testin 25 sn sürmesi saçma. */
+    const eski = new Date(Date.now() - 120_000).toISOString();
+    db.prepare("UPDATE editor_prefs SET value = ? WHERE key = '__live'")
+      .run(JSON.stringify({ key: "ai-yas", name: "ai-yas", at: eski, revoked: false }));
+    const d = await canli();
+    expect(d.aktif).toBe(true);                  /* hâlâ kilitli — kendiliğinden açılmıyor */
+    expect(d.yasSaniye).toBeGreaterThan(100);    /* ama operatör durduğunu görüyor */
+  });
+
   it("yerleşik örneğin anahtarına canlı yazma REDDEDİLİR", async () => {
     /* Editörün sessiz çatallaması buradan tetikleniyor; ön ek MCP'de
        konuyor ama sunucu da denetliyor. */

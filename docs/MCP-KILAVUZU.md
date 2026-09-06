@@ -179,6 +179,13 @@ Kapalı olmayanlar bilerek açık: **kaydırma, yakınlaştırma ve seçim**.
 çerçeve kendiliğinden açılıyor, ama yalnız içerik taştığında — her karede
 sığdırmak senin kaydırmanı saniyede bir geri alırdı.
 
+**Çizim durunca şerit yeşile döner.** 25 saniyedir değişiklik yoksa şerit
+`✓ Çizim durdu · <ad> · N koltuk · M blok` olur ve alt çubukta bir kez
+mesaj çıkar. **"Bitti" demiyoruz, "durdu" diyoruz** — yapay zekânın işini
+bitirdiğini bilmenin yolu yok; sessizlik ya bitiştir, ya uzun bir düşünme,
+ya da ölmüş bir süreç. Operatöre doğru olan bilgi "N saniyedir değişiklik
+yok". Kilit kendiliğinden açılmaz: kontrolü almak yine KES ile olur.
+
 **KES** (şeritteki ×) üç şey yapıyor: kilidi düşürür, planı kalıcı kılar
 (tek ⌘Z ile yapay zekânın bütün oturumunu geri alabilirsin) ve yapay
 zekânın yazmasını durdurur — sonraki araç çağrısı *"Operatör devraldı"*

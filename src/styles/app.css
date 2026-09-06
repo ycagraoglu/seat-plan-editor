@@ -405,3 +405,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, label:focus-vis
   font-size:13px; font-weight:600; cursor:pointer;
   background:var(--panel2); color:var(--bone); border:1px solid var(--line); }
 .crash-actions button.pri{ background:var(--acc); color:var(--onacc); border-color:var(--acc); }
+
+/* Canlı görünüm durduğunda şerit kırmızıdan yeşile döner: "çiziyor,
+   dokunma" ile "durdu, bakabilirsin" bakışta ayrılsın. Yazı da söylüyor
+   ama renk daha hızlı okunuyor — operatör ekrana sürekli bakmıyor. */
+.modestrip .chip.durgun{ color:var(--ok); border-color:var(--ok); background:var(--okline); }

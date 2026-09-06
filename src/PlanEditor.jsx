@@ -868,8 +868,25 @@ export default function PlanEditor({ cssText = "" } = {}) {
      LLM'in kendi araç turu saniyeler sürüyor.
      ponytail: 1 sn yoklama; gecikme dert olursa aynı rotayı ?since= ile
      uzun yoklamaya çevir — istemci tarafı aynı kalır. */
+  /* Yapay zekânın araç turu (düşünme + çağrı) rahat 10-15 sn sürebiliyor;
+     eşik bunun üstünde olmalı, yoksa çizim sürerken "durdu" der. */
+  const DURGUN_SN = 25;
   const liveRef = useRef(null);
   liveRef.current = live;
+  /* "Çizdi ama bitti mi?" — ilk kullanımda çıkan eksik. Şerit sonsuza dek
+     "çiziyor" diyordu; operatör bitti mi, düşünüyor mu, öldü mü ayırt
+     edemiyordu. Sunucu zaten son yazmanın YAŞINI veriyor, sadece
+     kullanılmıyordu.
+
+     "BİTTİ" DEMİYORUZ, "DURDU" diyoruz: yapay zekânın işini bitirdiğini
+     bilmemizin yolu yok — sessizlik ya bitiştir ya uzun bir düşünme ya da
+     ölmüş bir süreç. Operatöre doğru bilgi "N saniyedir değişiklik yok".
+
+     İki kova var, saniyede bir DEĞİL: yazı değişmediği sürece setState
+     çağrılmıyor, yoksa 52.000 koltuklu planda her saniye yeniden render
+     ederdik. */
+  const [liveDurgun, setLiveDurgun] = useState(false);
+  const durgunRef = useRef(false);
   useEffect(() => {
     /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
        sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
@@ -881,7 +898,17 @@ export default function PlanEditor({ cssText = "" } = {}) {
       const d = await Store.liveGet();
       if (dead || !d) return;
       const su = liveRef.current;
-      if (!d.aktif) { if (su) { sonAt = null; dispatch({ type: "live/stop" }); } return; }
+      if (!d.aktif) { if (su) { sonAt = null; durgunRef.current = false; setLiveDurgun(false); dispatch({ type: "live/stop" }); } return; }
+      /* Kova değiştiyse yaz; değişmediyse dokunma (gereksiz render yok). */
+      const durgun = d.yasSaniye >= DURGUN_SN;
+      if (durgunRef.current !== durgun) {
+        durgunRef.current = durgun;
+        setLiveDurgun(durgun);
+        /* Operatörün asıl sorusu buydu: "çizdi ama bitti mi?" — geçiş anında
+           bir kez söyle. "Bitti" DEMİYORUZ; bildiğimiz tek şey sessizlik. */
+        if (durgun) setMsg(`Çizim durdu — ${d.yasSaniye} sn'dir değişiklik yok.`
+          + ` İnceleyebilirsiniz; düzenlemek için şeritteki × (KES).`);
+      }
       if (d.at === sonAt) return;              /* değişmedi — planı boşuna çekme */
       const p = await Store.load(d.key);
       if (dead || !p) return;
@@ -2391,8 +2418,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
   /* Canlı görünüm de tam olarak bir "anormal mod": uygulama beklenenden
      farklı davranıyor (düzenleme kapalı) ve çıkışı her zaman görünür
      olmalı. Yeni bir bileşen değil, var olan şerit. */
-  if (live) modeChips.push({ k: "lv",
-    label: `● Yapay zekâ çiziyor · ${live.name} — düzenleme kapalı`, x: liveKes });
+  if (live) modeChips.push({ k: "lv", durgun: liveDurgun,
+    /* Esc BİLEREK bu çipi kapatmıyor: kazara bir Esc, yapay zekânın
+       yazmasını kalıcı olarak durdurmamalı. Başlık da onu söylemeli. */
+    cikisBaslik: "Çizimi devral — yapay zekânın yazması durur (KES)",
+    label: liveDurgun
+      ? `✓ Çizim durdu · ${live.name} · ${totalSeats.toLocaleString("tr-TR")} koltuk`
+        + ` · ${plan.blocks.length} blok — devralmak için ×`
+      : `● Yapay zekâ çiziyor · ${live.name} — düzenleme kapalı`,
+    x: liveKes });
 
   return (
     <div className={`ed ${dark ? "dark" : "light"}`}>
@@ -2449,9 +2483,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       {modeChips.length > 0 && (
         <div className="modestrip">
           {modeChips.map((c) => (
-            <span key={c.k} className="chip">
+            <span key={c.k} className={c.durgun ? "chip durgun" : "chip"}>
               {c.label}
-              <button onClick={c.x} title="Çık (Esc)">×</button>
+              <button onClick={c.x} title={c.cikisBaslik || "Çık (Esc)"}>×</button>
             </span>
           ))}
         </div>
