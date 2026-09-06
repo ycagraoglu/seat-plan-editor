@@ -94,9 +94,22 @@ export function handler(db) {
 
     try {
       /* ── taslak belgeler: depolama sözleşmesi ── */
-      if (p === "/api/plans" && m === "GET")
-        return json(res, 200, db.prepare(
-          "SELECT key FROM editor_plans WHERE tenant_id = ? ORDER BY key").all(TENANT).map((r) => r.key));
+      if (p === "/api/plans" && m === "GET") {
+        const satir = db.prepare(
+          "SELECT key, document, updated_at FROM editor_plans WHERE tenant_id = ? ORDER BY key").all(TENANT);
+        /* ?detay=1 SORGU PARAMETRESİ — yeni bir yol açmadım çünkü
+           /api/plans/<şey> deseni her şeyi anahtar sanıyor ("ozet" bir plan
+           anahtarı gibi görünürdü). Parametresiz çağrı, depolama
+           sözleşmesinin beklediği düz anahtar dizisini aynen döndürüyor;
+           list() hiç değişmedi (test/store-contract.js hakem). */
+        if (u.searchParams.get("detay") !== "1")
+          return json(res, 200, satir.map((r) => r.key));
+        return json(res, 200, satir.map((r) => {
+          let d = {}; try { d = JSON.parse(r.document); } catch { /* bozuk kayıt atlanmasın */ }
+          return { key: r.key, name: d.name || r.key,
+            blok: (d.blocks || []).length, guncelleme: r.updated_at };
+        }));
+      }
 
       let g;
       if ((g = p.match(/^\/api\/plans\/([^/]+)$/))) {
