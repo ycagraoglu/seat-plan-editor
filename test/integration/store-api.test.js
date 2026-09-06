@@ -95,3 +95,23 @@ describe("yayımlama · taslak belge → kanonik tablolar", () => {
     await expect(olu.pref("x")).resolves.toBeNull();
   });
 });
+
+describe("şema kurulumu tekrarlanabilir — var olan veritabanına bağlanmak", () => {
+  /* createDb() her açılışta schema.sql + editor.sql'i baştan çalıştırıyor.
+     schema.sql'deki 14 CREATE TABLE ve 4 CREATE INDEX korumasızdı, yani
+     sunucu YALNIZ boş bir dosyaya kalkabiliyordu: `npm run db:build`
+     çalıştırılmış (ya da sunucu bir kez açılıp kapanmış) bir kurulumda
+     "table already exists" ile ölüyordu. Canlı görünüm sunucuyu zorunlu
+     kıldığı için bu, kullanıcının çarpacağı İLK duvardı. */
+  it("aynı dosyaya iki kez bağlanmak patlamıyor", async () => {
+    const { mkdtempSync, rmSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const path = await import("node:path");
+    const dizin = mkdtempSync(path.join(tmpdir(), "sema-"));
+    const dosya = path.join(dizin, "t.db");
+    try {
+      createDb(dosya).close();
+      expect(() => createDb(dosya).close()).not.toThrow();
+    } finally { rmSync(dizin, { recursive: true, force: true }); }
+  });
+});
