@@ -5,6 +5,9 @@ import { nid } from "../../src/core/ids.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
 
+/* Adım günlüğü operatöre gidiyor; "grid" değil "ızgara" okumalı. */
+const TUR = { grid: "Izgara", fan: "Yelpaze", table: "Masalı" };
+
 /* Numaralandırmadan sonra sonucu GÖSTER. "ayarlandı" yazısı yanlış şema
    uygulandığında da çıkıyordu; etiketleri görmeden doğrulanamıyordu. */
 function siraOzeti(session, id) {
@@ -102,7 +105,8 @@ export function registerBlockTools(server, session, z) {
       b = reLabel(b, a.label);
     }
     return { ...plan, blocks: [...plan.blocks, b] };
-  }, `Blok eklendi: ${a.label} (${a.kind})`)));
+  }, `${TUR[a.kind]} blok eklendi: "${a.label}"${a.rows ? ` · ${a.rows} sıra` : ""}`
+     + `${a.level ? ` · ${a.level}` : ""}`)));
 
   server.registerTool("update_block", {
     title: "Blok değiştir",
@@ -140,7 +144,7 @@ export function registerBlockTools(server, session, z) {
         return nb;
       }),
     };
-  }, `Blok güncellendi: ${id}`)));
+  }, `"${id}" bloğu değiştirildi`)));
 
   server.registerTool("delete_block", {
     title: "Blok sil",
@@ -155,7 +159,7 @@ export function registerBlockTools(server, session, z) {
       shapes: (plan.shapes || []).map((s) => (s.blocks
         ? { ...s, blocks: s.blocks.filter((bid) => bid !== hedef.id) } : s)),
     };
-  }, `Blok silindi: ${id}`)));
+  }, `"${id}" bloğu silindi`)));
 
   server.registerTool("array_blocks", {
     title: "Blok dizisi",
@@ -180,7 +184,11 @@ export function registerBlockTools(server, session, z) {
       ? linearArray([hedef], { count: a.count, dx: a.dx ?? 0, dy: a.dy ?? 0 })
       : radialArray([hedef], { count: a.count, cx: a.cx ?? 0, cy: a.cy ?? 0, step: a.step ?? 30 });
     return { ...plan, blocks: [...plan.blocks, ...yeni.map((b) => ({ ...b, id: b.id || nid() }))] };
-  }, `${a.count} bloğa çoğaltıldı (${a.mode})`)));
+     /* "kopya" DEĞİL "blok": count TOPLAM blok sayısı (asıl dahil), 9
+        verince 8 kopya çıkıyor. İlk çevirimde "9 kopyaya" yazmıştım,
+        panelde okuyunca yanlış olduğu görüldü. */
+  }, `"${a.id}" ${a.count} bloğa çoğaltıldı`
+     + ` (${a.mode === "radial" ? "merkez etrafında" : "yan yana"})`)));
 
   server.registerTool("set_numbering", {
     title: "Numaralandırma",
@@ -243,5 +251,5 @@ export function registerBlockTools(server, session, z) {
       blocks: plan.blocks.map((b) => (b.id === hedef.id
         ? { ...b, num: { ...DEF_NUM, ...b.num, ...temiz } } : b)),
     };
-  }, `Numaralandırma: ${id}`) + "\n" + siraOzeti(session, id)));
+  }, `"${id}" bloğunun sıra/koltuk numaraları ayarlandı`) + "\n" + siraOzeti(session, id)));
 }

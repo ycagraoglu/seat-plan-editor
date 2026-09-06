@@ -220,6 +220,8 @@ Editör artık yalnız çizmiyor; mimari raporun şemasına **yazıyor**.
 npm run db:build     # 10 salonu şemaya yükle (db/seating.db)
 npm run server       # http://localhost:8787
 VITE_API_BASE=http://localhost:8787/api npm run dev
+
+npm run live         # ikisi birden — canlı görünüm için (bkz. docs/MCP-KILAVUZU.md)
 ```
 
 **[`db/schema.sql`](db/schema.sql)** raporun §5–§7'sinin çalıştırılabilir

@@ -740,7 +740,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const {
     venues, vk, past, future, rev,
     selIds, selShapeId, selSeat, selSeats,
-    view, levelFilter, report, calib, match, saveState,
+    view, levelFilter, report, calib, match, saveState, live,
   } = state;
   const plan = selectPlan(state);
 
@@ -856,6 +856,99 @@ export default function PlanEditor({ cssText = "" } = {}) {
      gereği yok: her biri saf, tek bir {type,payload} geçişi (bkz.
      ui/state/reducer.js ve test/unit/reducer.test.js). */
   const commit = useCallback((next) => dispatch({ type: "commit", payload: next }), []);
+
+  /* ── CANLI GÖRÜNÜM ────────────────────────────────────────────────
+     Operatör iki ekran açıyor: birinde sohbet, birinde editör. LLM MCP
+     üzerinden çizerken bloklar burada belirsin diye saniyede bir sunucuya
+     soruyoruz. YOKLAMA, akış (SSE) değil — bilinçli: sunucu 195 satırlık,
+     bağlantı durumu tutmayan saf bir istek→yanıt fonksiyonu; açık akış
+     eklemek onu durumlu yapar ve testlerdeki srv.close() asılı kalırdı.
+     Olayın kaynağı zaten AYRI BİR SÜREÇ (MCP), oraya ancak sunucu
+     üzerinden ulaşıyoruz; SSE yalnız son adımı ≤1 sn kısaltırdı, oysa
+     LLM'in kendi araç turu saniyeler sürüyor.
+     ponytail: 1 sn yoklama; gecikme dert olursa aynı rotayı ?since= ile
+     uzun yoklamaya çevir — istemci tarafı aynı kalır. */
+  /* Yapay zekânın araç turu (düşünme + çağrı) rahat 10-15 sn sürebiliyor;
+     eşik bunun üstünde olmalı, yoksa çizim sürerken "durdu" der. */
+  const DURGUN_SN = 25;
+  const liveRef = useRef(null);
+  liveRef.current = live;
+  /* "Çizdi ama bitti mi?" — ilk kullanımda çıkan eksik. Şerit sonsuza dek
+     "çiziyor" diyordu; operatör bitti mi, düşünüyor mu, öldü mü ayırt
+     edemiyordu. Sunucu zaten son yazmanın YAŞINI veriyor, sadece
+     kullanılmıyordu.
+
+     "BİTTİ" DEMİYORUZ, "DURDU" diyoruz: yapay zekânın işini bitirdiğini
+     bilmemizin yolu yok — sessizlik ya bitiştir ya uzun bir düşünme ya da
+     ölmüş bir süreç. Operatöre doğru bilgi "N saniyedir değişiklik yok".
+
+     İki kova var, saniyede bir DEĞİL: yazı değişmediği sürece setState
+     çağrılmıyor, yoksa 52.000 koltuklu planda her saniye yeniden render
+     ederdik. */
+  const [liveDurgun, setLiveDurgun] = useState(false);
+  const durgunRef = useRef(false);
+  const [liveGunluk, setLiveGunluk] = useState([]);
+  useEffect(() => {
+    /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
+       sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
+    if (Store.driver !== "api" || !Store.liveGet) return;
+    let dead = false, sonAt = null;
+    const kapsar = (dis, ic) => !!ic && dis.x >= ic.x && dis.y >= ic.y
+      && dis.x + dis.w <= ic.x + ic.w && dis.y + dis.h <= ic.y + ic.h;
+    const tur = async () => {
+      const d = await Store.liveGet();
+      if (dead || !d) return;
+      const su = liveRef.current;
+      if (!d.aktif) { if (su) { sonAt = null; durgunRef.current = false; setLiveDurgun(false); setLiveGunluk([]); dispatch({ type: "live/stop" }); } return; }
+      /* Kova değiştiyse yaz; değişmediyse dokunma (gereksiz render yok). */
+      const durgun = d.yasSaniye >= DURGUN_SN;
+      if (durgunRef.current !== durgun) {
+        durgunRef.current = durgun;
+        setLiveDurgun(durgun);
+        /* Operatörün asıl sorusu buydu: "çizdi ama bitti mi?" — geçiş anında
+           bir kez söyle. "Bitti" DEMİYORUZ; bildiğimiz tek şey sessizlik. */
+        if (durgun) setMsg(`Çizim durdu — ${d.yasSaniye} sn'dir değişiklik yok.`
+          + ` İnceleyebilirsiniz; düzenlemek için şeritteki × (KES).`);
+        /* Yeniden yazmaya başladıysa o mesaj artık YANLIŞ: şerit "çiziyor"
+           derken alt çubuk "durdu" diyordu. Ekranda çelişki bırakma. */
+        else setMsg("");
+      }
+      if (d.at === sonAt) return;              /* değişmedi — planı boşuna çekme */
+      const p = await Store.load(d.key);
+      if (dead || !p) return;
+      sonAt = d.at;
+      setLiveGunluk(d.gunluk || []);
+      /* ÖNCE plan, SONRA start: live/start görüntüyü venues[key]'den
+         türetiyor, plan daha yoksa çerçeveyi bulamaz. */
+      dispatch({ type: "live/apply", payload: { key: d.key, plan: p } });
+      if (!su || su.key !== d.key) dispatch({ type: "live/start", payload: { key: d.key, name: d.name } });
+      else {
+        /* Çizim büyüdükçe çerçeveyi aç — ama SADECE taştığında. Her
+           karede sığdırmak operatörün kaydırmasını saniyede bir geri
+           alırdı; izlerken kamerayı gezdirebilmek bu modun anlamı. */
+        const h = planHome(p);
+        setView((v) => (kapsar(h, v) ? v : h));
+      }
+    };
+    const t = setInterval(tur, 1000);
+    tur();
+    return () => { dead = true; clearInterval(t); };
+  }, []);
+
+  /* KES: kilidi düşür, yapay zekânın yazmasını durdur, çizimi KALICI kıl.
+     commit şart — live/apply rev'i artırmadığı için plan yalnız sunucuda
+     duruyordu; commit hem otomatik kaydı tetikliyor hem de operatöre tek
+     ⌘Z ile yapay zekânın bütün oturumunu geri alma imkânı veriyor. */
+  const liveKes = useCallback(async () => {
+    const su = liveRef.current;
+    if (!su) return;
+    const p = plan;
+    const ok = await Store.liveStop();
+    dispatch({ type: "live/stop" });
+    if (p) commit(p);
+    setMsg(ok ? "Çizimi devraldınız — yapay zekânın yazması durduruldu."
+      : "Kilit düşürüldü ama sunucuya ulaşılamadı; yapay zekâ hâlâ yazıyor olabilir.");
+  }, [plan, commit]);
   /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
    *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
    *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
@@ -1265,6 +1358,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   useEffect(() => {
     if (!rev) return;
+    /* Canlı görünümde YAZMA YOK: plan yapay zekâdan geliyor, buradan geri
+       yazmak onun yazdığıyla yarışırdı. (Birinci emniyet reducer'da:
+       live/apply rev'i hiç artırmıyor, yani bu efekt zaten tetiklenmemeli
+       — bu ikinci emniyet, kapının iki yanı da kapalı olsun diye.) */
+    if (live) return;
     setSaveState("saving");
     const t = setTimeout(async () => {
       /* plan !== BUILTINS[vk]: sadece venues[vk] BUILTINS'teki taze
@@ -1289,7 +1387,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       setSaved((s) => (s.includes(vk) ? s : [...s, vk]));
     }, 1000);
     return () => clearTimeout(t);
-  }, [rev, plan, vk]);
+  }, [rev, plan, vk, live]);
 
   const newPlan = () => {
     const k = `p${Date.now().toString(36)}`;
@@ -2322,6 +2420,18 @@ export default function PlanEditor({ cssText = "" } = {}) {
     label: `Dizi önizleme: ${arrPrev === "lin" ? "doğrusal" : "radyal"}`, x: () => setArrPrev(null) });
   if (poly) modeChips.push({ k: "pg",
     label: `Çokgen çiziliyor · ${poly.pts.length} nokta`, x: () => { setPoly(null); setTool("select"); } });
+  /* Canlı görünüm de tam olarak bir "anormal mod": uygulama beklenenden
+     farklı davranıyor (düzenleme kapalı) ve çıkışı her zaman görünür
+     olmalı. Yeni bir bileşen değil, var olan şerit. */
+  if (live) modeChips.push({ k: "lv", durgun: liveDurgun,
+    /* Esc BİLEREK bu çipi kapatmıyor: kazara bir Esc, yapay zekânın
+       yazmasını kalıcı olarak durdurmamalı. Başlık da onu söylemeli. */
+    cikisBaslik: "Çizimi devral — yapay zekânın yazması durur (KES)",
+    label: liveDurgun
+      ? `✓ Çizim durdu · ${live.name} · ${totalSeats.toLocaleString("tr-TR")} koltuk`
+        + ` · ${plan.blocks.length} blok — devralmak için ×`
+      : `● Yapay zekâ çiziyor · ${live.name} — düzenleme kapalı`,
+    x: liveKes });
 
   return (
     <div className={`ed ${dark ? "dark" : "light"}`}>
@@ -2332,7 +2442,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       </div>
 
       <header className="top">
-        <select className="venue" value={vk} onChange={(e) => switchVenue(e.target.value)}>
+        <select className="venue" value={vk} disabled={!!live}
+          title={live ? "Yapay zekâ çizerken salon değiştirilemez — KES" : undefined}
+          onChange={(e) => switchVenue(e.target.value)}>
           {Object.entries(venues).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
         </select>
         <span className={`sv ${saveState}`}>
@@ -2376,9 +2488,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       {modeChips.length > 0 && (
         <div className="modestrip">
           {modeChips.map((c) => (
-            <span key={c.k} className="chip">
+            <span key={c.k} className={c.durgun ? "chip durgun" : "chip"}>
               {c.label}
-              <button onClick={c.x} title="Çık (Esc)">×</button>
+              <button onClick={c.x} title={c.cikisBaslik || "Çık (Esc)"}>×</button>
             </span>
           ))}
         </div>
@@ -3163,7 +3275,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <span className="chev">{propsOpen ? "›" : "‹"}</span><em>Özellikler</em>
           </button>
           {propsOpen && (
-          selSeats.size > 1 ? (
+          /* Canlı görünümde panel GÜNLÜĞÜ gösteriyor. Seçim panelleri
+             düzenleme kontrolü dolu; canlıyken hepsi ölü düğme olurdu.
+             Operatörün o an istediği şey "ne yapılıyor", bir bloğun
+             sıra aralığı değil. KES'ten sonra paneller geri geliyor. */
+          live ? (
+            <CanliGunluk live={live} gunluk={liveGunluk} durgun={liveDurgun} onKes={liveKes} />
+          ) : selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
               onGroup={groupSelected} onUngroup={ungroupSelected}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
@@ -3208,6 +3326,42 @@ export default function PlanEditor({ cssText = "" } = {}) {
 /* ─────────────────────────  PANELLER  ───────────────────────── */
 
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
+
+/** Yapay zekâ çizerken operatörün takip paneli.
+ *
+ *  Neden var: bloklar tuvalde beliriyordu ama operatör NE yapıldığını
+ *  göremiyordu — "bir şeyler oluyor" ile "salon bloğu eklendi, 195 koltuk"
+ *  arasındaki fark bu. Kural bulguları da burada: yapay zekâ bir uyarı
+ *  aldıysa operatör onu ANINDA görüyor, sonunda doğrulama çalıştırmayı
+ *  beklemiyor.
+ *
+ *  En yeni EN ÜSTTE: dar bir panelde canlı akış böyle okunur, kaydırmaya
+ *  gerek kalmaz. */
+function CanliGunluk({ live, gunluk, durgun, onKes }) {
+  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const ters = [...gunluk].reverse();
+  return (
+    <div className="canli">
+      <p className="lab">{durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor"}</p>
+      <p className="cad">{live.name}</p>
+      {!ters.length && <p className="mut sm">Henüz adım yok — ilk değişiklik bekleniyor.</p>}
+      <ol className="gnl">
+        {ters.map((a, i) => (
+          <li key={`${a.t}-${i}`} className={i === 0 && !durgun ? "son" : ""}>
+            <span className="sa">{saat(a.t)}</span>
+            <span className="ne">{a.n}</span>
+            <span className="sy">{Number(a.k).toLocaleString("tr-TR")} koltuk · {a.b} blok</span>
+            {(a.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
+          </li>
+        ))}
+      </ol>
+      <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>
+      <p className="mut sm">Devraldığında yapay zekânın yazması durur; çizim planına
+        işlenir ve ⌘Z ile tümünü geri alabilirsin.</p>
+    </div>
+  );
+}
 
 /** Dikdörtgen seçimle işaretlenmiş koltuklara toplu işlem. */
 function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {

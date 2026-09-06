@@ -44,11 +44,70 @@ export function initialState(venues, vk) {
     levelFilter: "*",
     report: null, calib: null, match: null,
     saveState: "idle",
+    live: null,
   };
 }
 
+/* ── CANLI GÖRÜNÜM KİLİDİ ───────────────────────────────────────────────
+   Yapay zekâ MCP üzerinden çizerken operatör izliyor; kazara müdahale
+   etmemeli. Editörde ~40 mutasyon girişi var (tuval sürüklemeleri, klavye,
+   panel alanları, başlık düğmeleri) ama ÖLÇTÜM: hepsi aşağıdaki eylemlere
+   düşüyor. setPlan da paintSeat de "venues/set"e iniyor, o yüzden kırk
+   yere guard koymak gerekmiyor — kapı burada.
+
+   Üç öbek, üçü de ayrı sebeple:
+     · planı değiştirenler  — asıl mesele
+     · geçmiş/rev yazanlar  — rev otomatik kaydı tetikler; canlı akışla
+                              yarışıp yazma döngüsü kurar
+     · vk taşıyanlar        — canlı görünümden kaçış yolu açardı; TEK çıkış
+                              KES olmalı, yoksa operatör salon seçicisiyle
+                              kaçar, yoklama onu geri sürükler
+
+   Kilit DIŞINDA kalanlar bilerek serbest: seçim, görünüm (pan/zoom), kat
+   süzgeci, doğrulama. İzlerken kamerayı gezdirebilmek canlı görünümün
+   bütün anlamı. */
+const CANLI_KAPALI = new Set([
+  "commit", "nudgeCommit", "venues/set", "undo", "redo",
+  "finalizeDrag", "rev/set", "past/set", "future/set",
+  "switchVenue", "vk/set",
+]);
+
 export function reducer(state, action) {
+  if (state.live && CANLI_KAPALI.has(action.type)) return state;
+
   switch (action.type) {
+    /* ── canlı görünüm ──────────────────────────────────────────────
+       live/start: yeni bir canlı çizim başlıyor. switchVenue'nun
+       sıfırlama kümesinin AYNISI — geçmiş özellikle temizleniyor, çünkü
+       past/future başka bir anahtarın anlık görüntülerini tutuyor olabilir
+       ve KES'ten sonraki ilk ⌘Z o eski planı BU anahtarın üstüne yazardı.
+       Yalnız ANAHTAR DEĞİŞTİĞİNDE çağrılmalı: her karede çağrılırsa view
+       sıfırlanır ve operatörün yakınlaştırması saniyede bir geri atar. */
+    case "live/start": {
+      const { key, name } = action.payload;
+      return {
+        ...state,
+        live: { key, name: name || key },
+        vk: key,
+        past: [], future: [],
+        selIds: [], selShapeId: null, selSeat: null, selSeats: new Set(),
+        levelFilter: "*",
+        view: state.venues[key] ? planHome(state.venues[key]) : state.view,
+        report: null, calib: null, match: null,
+      };
+    }
+    /* live/apply: akıştan gelen yeni plan. past/future'a DOKUNMAZ ve rev'i
+       ARTIRMAZ — artırsaydı 1 sn'lik otomatik kayıt efekti her karede
+       tetiklenip sunucuya geri yazardı, yani yapay zekânın yazdığıyla
+       yarışan bir döngü kurulurdu. */
+    case "live/apply":
+      return { ...state, venues: { ...state.venues, [action.payload.key]: action.payload.plan } };
+    /* live/stop: KES. Kilit düşer. Planı KALICI kılmak çağıranın işi
+       (PlanEditor bunun ardından commit atıyor) — böylece operatör
+       yapay zekânın bütün oturumunu tek ⌘Z ile geri alabiliyor. */
+    case "live/stop":
+      return { ...state, live: null };
+
     /* ── plan(lar) — düz alan güncellemesi (ör. localStorage'dan yükleme,
        salon silme, arka planda çatallama). setVenues'ün doğrudan karşılığı. */
     case "venues/set":

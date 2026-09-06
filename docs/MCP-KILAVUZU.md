@@ -144,6 +144,95 @@ Yayına sen göndermezsin. Ürettiğin şey taslaktır.
 
 ---
 
+## Canlı görünüm — çizerken izlemek
+
+Blender'daki his: bir ekranda sohbet, öbüründe editör. "Bu salonu çiz"
+dediğinde bloklar editörde **belirirken** izlersin.
+
+```bash
+npm run live      # sunucu (8787) + editör (5173) birlikte
+```
+
+MCP tarafında tek değişken:
+
+```json
+{ "mcpServers": { "seat-plan-editor": {
+    "command": "node", "args": ["mcp/index.mjs"],
+    "env": { "SEAT_EDITOR_API": "http://localhost:8787/api" } } } }
+```
+
+Değişken **verilmezse hiçbir şey değişmez** — sunucusuz akış (çiz →
+`export_plan` → editörde "Aç") aynen çalışır, ağa hiç çıkılmaz.
+
+### Nasıl çalışıyor
+
+Her araç çağrısı planı değiştirdikten sonra sunucuya yazıyor; editör
+saniyede bir sorup güncelliyor. Akış (SSE) değil **yoklama** — bilinçli:
+sunucu 195 satırlık, bağlantı durumu tutmayan saf bir istek→yanıt
+fonksiyonu ve olayın kaynağı zaten ayrı bir süreç; SSE yalnız son adımı
+≤1 sn kısaltırdı, oysa LLM'in kendi araç turu saniyeler sürüyor.
+
+**Yapay zekâ çizerken düzenleme kapalı.** Editörde ~40 mutasyon girişi var
+ama hepsi 11 reducer eylemine düşüyor, kilit orada — kırk yerde değil.
+Kapalı olmayanlar bilerek açık: **kaydırma, yakınlaştırma ve seçim**.
+İzlerken kamerayı gezdirebilmek bu modun bütün anlamı. Çizim büyüdükçe
+çerçeve kendiliğinden açılıyor, ama yalnız içerik taştığında — her karede
+sığdırmak senin kaydırmanı saniyede bir geri alırdı.
+
+**Özellikler paneli, çizerken ADIM GÜNLÜĞÜ gösterir.** Tuvalde bloklar
+belirirken sağdaki panel ne yapıldığını operatör diliyle yazar — en yenisi
+üstte:
+
+```
+14:42:13   Izgara blok eklendi: "B1" · 6 sıra · Balkon 1
+           402 koltuk · 12 blok
+           ✕ Tekerlekli sandalye alanı tanımlanmamış — en az 6 gerekiyor
+           ⚠ Hiç kapı tanımlanmamış
+14:42:09   "LOCA 1" 9 bloğa çoğaltıldı (yan yana)
+           303 koltuk · 11 blok
+```
+
+Şema dili panele sızmaz: `grid` değil "Izgara", `box` değil "loca",
+`stage` değil "Sahne". Kural bulguları **hedef değeriyle** anında görünür —
+operatör sonunda doğrulama çalıştırmayı beklemez. Adımlar sunucuda son 60
+kayıtla sınırlı ve yeni çizime geçilince sıfırlanır.
+
+**Çizim durunca şerit yeşile döner.** 25 saniyedir değişiklik yoksa şerit
+`✓ Çizim durdu · <ad> · N koltuk · M blok` olur ve alt çubukta bir kez
+mesaj çıkar. **"Bitti" demiyoruz, "durdu" diyoruz** — yapay zekânın işini
+bitirdiğini bilmenin yolu yok; sessizlik ya bitiştir, ya uzun bir düşünme,
+ya da ölmüş bir süreç. Operatöre doğru olan bilgi "N saniyedir değişiklik
+yok". Kilit kendiliğinden açılmaz: kontrolü almak yine KES ile olur.
+
+**KES** (şeritteki ×) üç şey yapıyor: kilidi düşürür, planı kalıcı kılar
+(tek ⌘Z ile yapay zekânın bütün oturumunu geri alabilirsin) ve yapay
+zekânın yazmasını durdurur — sonraki araç çağrısı *"Operatör devraldı"*
+hatası alır.
+
+### Üç tasarım kararı
+
+| Karar | Gerekçe |
+|---|---|
+| Kilit **sahibe değil çizime** bağlı | `mcp/cli.mjs` her çağrıda yeni bir oturum kuruyor; oturum kimliğine bağlı bir iptal bir sonraki çağrıda geri alınır ve KES hiçbir şey ifade etmezdi. İptal edilen şey çizim: aynı plana yazan 409 alır, **yeni** bir çizim (`create_plan`/`open_sample`) serbesttir |
+| Canlı anahtar `ai-` ön ekli | `open_sample` planı yerleşik salonun anahtarıyla tutuyor. O anahtara yazmak editörün "örnek salon değişmiş" çatallamasını tetikler ve yeniden yüklemede plan **sessizce atılır** — yapay zekânın bütün işi kaybolurdu |
+| Ağ hatası **yutuluyor**, 409 yutulmuyor | Canlı görünüm bir görüntüleme özelliği. Sunucu kapalı diye `add_block`'un patlaması, işe yarayan bir ürünü göstermelik bir özellik uğruna kırmak olurdu |
+
+### Bilinen sınırlar
+
+- Sunucu gerekiyor: `VITE_API_BASE` verilmemişse editör localStorage'la
+  çalışır ve canlı görünüm **hiç açılmaz**.
+- KES'ten sonra yapay zekâ **bir çağrı geç** öğreniyor. O yazma da sunucuda
+  reddedildiği için operatörün tuvaline dokunulmuyor; yalnız haber bir tur
+  gecikiyor.
+- `open_sample` tek başına canlı görünümü açmıyor — ilk **değişiklikte**
+  açılıyor.
+- Altlık canlı görünüme gönderilmiyor (her yazmada megabaytlarca base64
+  olurdu). Ayrıca `set_underlay` altlığı düz metin olarak tutuyor, editör
+  ise `.src` alanlı nesne bekliyor — bu ayrı bir uyumsuzluk, henüz
+  ısırmıyor çünkü çıktıda altlık zaten atılıyor.
+
+---
+
 ## Yapamadıkları — baştan bilinsin
 
 | Sınır | Sonuç |

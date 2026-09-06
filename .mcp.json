@@ -2,7 +2,10 @@
   "mcpServers": {
     "seat-plan-editor": {
       "command": "node",
-      "args": ["mcp/index.mjs"]
+      "args": ["mcp/index.mjs"],
+      "env": {
+        "SEAT_EDITOR_API": "http://localhost:8787/api"
+      }
     }
   }
 }

@@ -6,6 +6,14 @@ import { nid } from "../../src/core/ids.js";
 import { pitchDims } from "../../src/core/pitches.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
+
+/* Şema sözlüğü İngilizce (veritabanı CHECK kısıtı); operatörün panelinde
+   Türkçesi görünsün. */
+const BOLUM_ADI = { floor: "parter/zemin", balcony: "balkon", stand: "tribün",
+  tier: "kademe", section: "bölüm", box: "loca", table_area: "masalı alan",
+  general_admission_area: "ayakta alan" };
+const SEKIL_ADI = { stage: "Sahne", screen: "Perde", pitch: "Saha", door: "Kapı",
+  wall: "Duvar", standing: "Ayakta alan", note: "Not", icon: "İşaret" };
 const cokgenNot = (a) => (Array.isArray(a.points) && a.points.length >= 3
   ? ` (çokgen, ${a.points.length} nokta)` : "");
 const json = (o) => ({ content: [{ type: "text", text: JSON.stringify(o, null, 2) }] });
@@ -92,7 +100,7 @@ export function registerVenueTools(server, session, z) {
   }, async (a) => metin(session.mutate((plan) => {
     const yeni = bowl(a);
     return { ...plan, blocks: [...plan.blocks, ...yeni] };
-  }, `Kâse kuruldu: ${a.level}`)));
+  }, `${a.level} kâsesi kuruldu — sahayı çevreleyen tribün halkası`)));
 
   server.registerTool("add_tier", {
     title: "Radyal kademe",
@@ -168,7 +176,7 @@ export function registerVenueTools(server, session, z) {
     const kapilar = a.labelGatesAs ? labelGates(doors) : doors;
     return { ...plan, blocks: [...digerleri, ...blocks],
       shapes: [...(plan.shapes || []), ...kapilar] };
-  }, "Vomitorium'lar oyuldu")));
+  }, "Tribüne tünel (vomitorium) oyuldu — kapılar boşluklara yerleşti")));
 
   server.registerTool("add_accessible", {
     title: "Erişilebilir konum ekle",
@@ -227,7 +235,7 @@ export function registerVenueTools(server, session, z) {
     const s = sec(level, kind);
     const digerleri = (plan.sections || []).filter((x) => x.id !== s.id);
     return { ...plan, sections: [...digerleri, s] };
-  }, `Bölüm türü: ${level} → ${kind}`)));
+  }, `"${level}" bölümü ${BOLUM_ADI[kind] || kind} olarak tanımlandı`)));
 
   /* ── şekiller ve kapılar ──────────────────────────────────────────── */
   server.registerTool("add_shape", {
@@ -299,8 +307,8 @@ export function registerVenueTools(server, session, z) {
       ...(a.type === "door" ? { blocks: [] } : {}),
     };
     return { ...plan, shapes: [...(plan.shapes || []), s] };
-  }, `Şekil eklendi: ${a.type}${a.icon ? `/${a.icon}` : ""}`
-     + `${cokgenNot(a)}${a.label ? ` "${a.label}"` : ""}`)));
+  }, `${SEKIL_ADI[a.type] || a.type}${a.icon ? ` (${a.icon})` : ""} kondu`
+     + `${a.label ? `: "${a.label}"` : ""}${cokgenNot(a)}`)));
 
   server.registerTool("assign_gate", {
     title: "Kapıya blok ata",
@@ -333,7 +341,7 @@ export function registerVenueTools(server, session, z) {
       shapes: plan.shapes.map((s) => (s.id === kapi.id
         ? { ...s, blocks: [...new Set([...onceki, ...idler])] } : s)),
     };
-  }, `${a.gate} → ${a.blocks.length} blok`)));
+  }, `"${a.gate}" kapısına ${a.blocks.length} blok bağlandı`)));
 
   server.registerTool("auto_gates", {
     title: "Kapıları mesafeye göre ata",
@@ -361,6 +369,6 @@ export function registerVenueTools(server, session, z) {
     return metin(session.mutate((p) => ({
       ...p,
       shapes: autoGates(p, p.blocks.map((b) => ({ b, m: buildMeta(b) }))),
-    }), `Kapılar mesafeye göre atandı (${kapilar.length} kapı)`));
+    }), `${kapilar.length} kapı bloklara en yakınlık ölçüsüyle atandı`));
   });
 }
