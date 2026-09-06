@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.5"
   },
   "scripts": {
     "dev": "vite",
@@ -17,9 +17,17 @@
     "snapshot:golden": "node scripts/snapshot-golden.mjs",
     "check:golden": "node scripts/check-golden.mjs",
     "db:build": "node scripts/db-build.mjs",
-    "server": "node server/index.mjs"
+    "server": "node server/index.mjs",
+    "mcp": "node mcp/index.mjs",
+    "test:mcp": "vitest run test/mcp",
+    "live": "node scripts/live.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
+    "@google/genai": "^2.21.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "openai": "^7.10.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

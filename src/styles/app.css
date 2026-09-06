@@ -405,3 +405,44 @@ button:focus-visible, input:focus-visible, select:focus-visible, label:focus-vis
   font-size:13px; font-weight:600; cursor:pointer;
   background:var(--panel2); color:var(--bone); border:1px solid var(--line); }
 .crash-actions button.pri{ background:var(--acc); color:var(--onacc); border-color:var(--acc); }
+
+/* Canlı görünüm durduğunda şerit kırmızıdan yeşile döner: "çiziyor,
+   dokunma" ile "durdu, bakabilirsin" bakışta ayrılsın. Yazı da söylüyor
+   ama renk daha hızlı okunuyor — operatör ekrana sürekli bakmıyor. */
+.modestrip .chip.durgun{ color:var(--ok); border-color:var(--ok); background:var(--okline); }
+
+/* Canlı görünüm takip paneli — yapay zekâ çizerken Özellikler'in yerini
+   alır. Adım listesi en yenisi üstte; dar panelde kaydırmadan okunsun. */
+.canli{ padding:12px; display:flex; flex-direction:column; gap:8px; min-height:0; }
+.canli .cad{ font-weight:600; font-size:13px; margin:0; }
+.canli .gnl{ list-style:none; margin:0; padding:0; overflow-y:auto; min-height:0;
+  display:flex; flex-direction:column; gap:6px; }
+.canli .gnl li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+  padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+.canli .gnl li.son{ border-color:var(--acc); background:var(--accline); }
+.canli .gnl .sa{ font:10.5px var(--mono); color:var(--mut); padding-top:1px; }
+.canli .gnl .ne{ font-size:12px; font-weight:600; }
+.canli .gnl .sy{ grid-column:2; font-size:11px; color:var(--mut); }
+.canli .gnl .uy{ grid-column:2; font-size:11px; color:var(--warn); }
+.canli .btn.wide{ width:100%; justify-content:center; }
+
+/* Panel içi sohbet — mesajlar ve araç adımları TEK zaman çizelgesinde.
+   .props'u flex kolona çeviriyoruz ki girdi altta sabit kalsın ve yalnız
+   liste kaysın (.canli ile aynı kalıp). */
+.props:has(.sohbet){ display:flex; flex-direction:column; overflow:hidden; }
+.sohbet{ flex:1; min-height:0; display:flex; flex-direction:column; gap:8px; padding:12px; }
+.sohbet .akis{ list-style:none; margin:0; padding:0; flex:1; min-height:0; overflow-y:auto;
+  display:flex; flex-direction:column; gap:6px; }
+.sohbet .akis li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+  padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+.sohbet .akis .sa{ font:10.5px var(--mono); color:var(--mut); padding-top:2px; }
+.sohbet .akis .mt{ font-size:12px; white-space:pre-wrap; }
+.sohbet .akis .sy{ grid-column:2; font-size:11px; color:var(--mut); }
+.sohbet .akis .uy{ grid-column:2; font-size:11px; color:var(--warn); }
+.sohbet .akis li.kullanici{ border-color:var(--acc); background:var(--accline); }
+.sohbet .akis li.kullanici .mt{ font-weight:600; }
+.sohbet .akis li.asistan{ border-color:var(--ok); }
+.sohbet .akis li.hata .mt, .sohbet .akis li.uyari .mt{ color:var(--err); }
+.sohbet .akis li.bekle .mt{ color:var(--mut); font-style:italic; }
+.sohbet .akis li.ipucu{ display:block; border-style:dashed; color:var(--mut); font-size:11.5px; }
+.sohbet .pubrow{ flex:none; }

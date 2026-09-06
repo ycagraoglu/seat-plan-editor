@@ -3,8 +3,9 @@ import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeat
 import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
-import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
-import { diffPlans, stripUnderlay, planFingerprint, planHome } from "./core/plan.js";
+import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey, matchSeats, applyAdoptedIds } from "./core/identity.js";
+import { diffPlans, stripUnderlay, planFingerprint, planHome, contentBBox } from "./core/plan.js";
+import { etiketSigdirici } from "./core/labelfit.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
@@ -16,6 +17,7 @@ import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
 import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels, deleteTarget } from "./ui/state/selectors.js";
+import { PITCH_DIMS } from "./core/pitches.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -244,8 +246,8 @@ const arc = (x1, y1, r, sw, x2, y2) =>
 
 const PITCHES = {
   football: {
-    label: "Futbol sahası (FIFA)", w: 10500, h: 6800, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
-    note: "105 × 68 m · nizami",
+    ...PITCH_DIMS.football, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
@@ -269,9 +271,9 @@ const PITCHES = {
   },
 
   basket: {
-    label: "Basketbol sahası (FIBA)", w: 2800, h: 1500, surf: "#8A5A32", surf2: "#8F6239",
+    ...PITCH_DIMS.basket, surf: "#8A5A32", surf2: "#8F6239",
     stripes: 21, line: "#F2E8DA", lw: 5, blw: 11, paint: "#1B4E75",
-    note: "28 × 15 m · nizami",
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "circle", cx: 0, cy: 0, r: 180, fill: this.paint });
@@ -297,8 +299,8 @@ const PITCHES = {
   },
 
   volley: {
-    label: "Voleybol sahası (FIVB)", w: 1800, h: 900, surf: "#2F5F92", line: "#F4F4F0", lw: 5,
-    note: "18 × 9 m · nizami",
+    ...PITCH_DIMS.volley, surf: "#2F5F92", line: "#F4F4F0", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 8 });
@@ -309,8 +311,8 @@ const PITCHES = {
   },
 
   handball: {
-    label: "Hentbol sahası (IHF)", w: 4000, h: 2000, surf: "#4A7C7E", line: "#F0F4F4", lw: 5,
-    note: "40 × 20 m · nizami",
+    ...PITCH_DIMS.handball, surf: "#4A7C7E", line: "#F0F4F4", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
@@ -335,8 +337,8 @@ const PITCHES = {
   },
 
   tennis: {
-    label: "Tenis kortu (ITF)", w: 2377, h: 1097, surf: "#2E6DA4", line: "#F4F4F0", lw: 5,
-    note: "23,77 × 10,97 m · çiftler",
+    ...PITCH_DIMS.tennis, surf: "#2E6DA4", line: "#F4F4F0", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, sW = 411.5, m = [];
       [-1, 1].forEach((v) => m.push({ t: "line", x1: -L, y1: v * sW, x2: L, y2: v * sW })); // tekler
@@ -351,8 +353,8 @@ const PITCHES = {
   },
 
   hockey: {
-    label: "Buz hokeyi (IIHF)", w: 6000, h: 3000, surf: "#DCE6EC", line: "#B03A4A", lw: 8, rx: 850,
-    note: "60 × 30 m · nizami",
+    ...PITCH_DIMS.hockey, surf: "#DCE6EC", line: "#B03A4A", lw: 8, rx: 850,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 30 });                      // orta kırmızı
@@ -373,8 +375,8 @@ const PITCHES = {
     },
   },
 
-  generic: { label: "Düz zemin", w: 3000, h: 2000, surf: "#22452C", line: "#3E6B4A", lw: 8,
-    note: "işaretlemesiz", marks: () => [] },
+  generic: { ...PITCH_DIMS.generic, surf: "#22452C", line: "#3E6B4A", lw: 8,
+     marks: () => [] },
 };
 
 
@@ -739,7 +741,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const {
     venues, vk, past, future, rev,
     selIds, selShapeId, selSeat, selSeats,
-    view, levelFilter, report, calib, match, saveState,
+    view, levelFilter, report, calib, match, saveState, live,
   } = state;
   const plan = selectPlan(state);
 
@@ -855,6 +857,148 @@ export default function PlanEditor({ cssText = "" } = {}) {
      gereği yok: her biri saf, tek bir {type,payload} geçişi (bkz.
      ui/state/reducer.js ve test/unit/reducer.test.js). */
   const commit = useCallback((next) => dispatch({ type: "commit", payload: next }), []);
+
+  /* ── CANLI GÖRÜNÜM ────────────────────────────────────────────────
+     Operatör iki ekran açıyor: birinde sohbet, birinde editör. LLM MCP
+     üzerinden çizerken bloklar burada belirsin diye saniyede bir sunucuya
+     soruyoruz. YOKLAMA, akış (SSE) değil — bilinçli: sunucu 195 satırlık,
+     bağlantı durumu tutmayan saf bir istek→yanıt fonksiyonu; açık akış
+     eklemek onu durumlu yapar ve testlerdeki srv.close() asılı kalırdı.
+     Olayın kaynağı zaten AYRI BİR SÜREÇ (MCP), oraya ancak sunucu
+     üzerinden ulaşıyoruz; SSE yalnız son adımı ≤1 sn kısaltırdı, oysa
+     LLM'in kendi araç turu saniyeler sürüyor.
+     ponytail: 1 sn yoklama; gecikme dert olursa aynı rotayı ?since= ile
+     uzun yoklamaya çevir — istemci tarafı aynı kalır. */
+  /* Yapay zekânın araç turu (düşünme + çağrı) rahat 10-15 sn sürebiliyor;
+     eşik bunun üstünde olmalı, yoksa çizim sürerken "durdu" der. */
+  const DURGUN_SN = 25;
+  const liveRef = useRef(null);
+  liveRef.current = live;
+  /* "Çizdi ama bitti mi?" — ilk kullanımda çıkan eksik. Şerit sonsuza dek
+     "çiziyor" diyordu; operatör bitti mi, düşünüyor mu, öldü mü ayırt
+     edemiyordu. Sunucu zaten son yazmanın YAŞINI veriyor, sadece
+     kullanılmıyordu.
+
+     "BİTTİ" DEMİYORUZ, "DURDU" diyoruz: yapay zekânın işini bitirdiğini
+     bilmemizin yolu yok — sessizlik ya bitiştir ya uzun bir düşünme ya da
+     ölmüş bir süreç. Operatöre doğru bilgi "N saniyedir değişiklik yok".
+
+     İki kova var, saniyede bir DEĞİL: yazı değişmediği sürece setState
+     çağrılmıyor, yoksa 52.000 koltuklu planda her saniye yeniden render
+     ederdik. */
+  const [liveDurgun, setLiveDurgun] = useState(false);
+  const durgunRef = useRef(false);
+  const [liveGunluk, setLiveGunluk] = useState([]);
+
+  /* ── PANEL İÇİ SOHBET ──────────────────────────────────────────────
+     Operatör sağdaki kutuya "Bursa Tayyare'yi çiz" yazıyor; model
+     SUNUCUDA çalışıyor ve editörün araçlarını çağırıyor. Operatörün
+     bilgisayarında hiçbir program yok, hiçbir ayar yok, token yok.
+
+     Anahtar sunucuda: panel yalnız "açık mı" sorusunun cevabını alıyor.
+     Kapalıysa bu panel HİÇ görünmüyor, editör bugünkü gibi çalışıyor. */
+  const [sohbetAcik, setSohbetAcik] = useState(false);
+  const [sohbetAkis, setSohbetAkis] = useState([]);
+  const [sohbetCalisiyor, setSohbetCalisiyor] = useState(false);
+  const [sohbetGirdi, setSohbetGirdi] = useState("");
+  /* Konuşma kimliği sekme ömürlü — yenilenince yeni konuşma başlar.
+     Kalıcı olması gereken şey PLAN, o zaten depoda. */
+  const sohbetId = useRef(`k${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`);
+  useEffect(() => {
+    /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
+       sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
+    if (Store.driver !== "api" || !Store.liveGet) return;
+    let dead = false, sonAt = null;
+    const kapsar = (dis, ic) => !!ic && dis.x >= ic.x && dis.y >= ic.y
+      && dis.x + dis.w <= ic.x + ic.w && dis.y + dis.h <= ic.y + ic.h;
+    const tur = async () => {
+      const d = await Store.liveGet();
+      if (dead || !d) return;
+      const su = liveRef.current;
+      if (!d.aktif) { if (su) { sonAt = null; durgunRef.current = false; setLiveDurgun(false); setLiveGunluk([]); dispatch({ type: "live/stop" }); } return; }
+      /* Kova değiştiyse yaz; değişmediyse dokunma (gereksiz render yok). */
+      const durgun = d.yasSaniye >= DURGUN_SN;
+      if (durgunRef.current !== durgun) {
+        durgunRef.current = durgun;
+        setLiveDurgun(durgun);
+        /* Operatörün asıl sorusu buydu: "çizdi ama bitti mi?" — geçiş anında
+           bir kez söyle. "Bitti" DEMİYORUZ; bildiğimiz tek şey sessizlik. */
+        if (durgun) setMsg(`Çizim durdu — ${d.yasSaniye} sn'dir değişiklik yok.`
+          + ` İnceleyebilirsiniz; düzenlemek için şeritteki × (KES).`);
+        /* Yeniden yazmaya başladıysa o mesaj artık YANLIŞ: şerit "çiziyor"
+           derken alt çubuk "durdu" diyordu. Ekranda çelişki bırakma. */
+        else setMsg("");
+      }
+      if (d.at === sonAt) return;              /* değişmedi — planı boşuna çekme */
+      const p = await Store.load(d.key);
+      if (dead || !p) return;
+      sonAt = d.at;
+      setLiveGunluk(d.gunluk || []);
+      /* ÖNCE plan, SONRA start: live/start görüntüyü venues[key]'den
+         türetiyor, plan daha yoksa çerçeveyi bulamaz. */
+      dispatch({ type: "live/apply", payload: { key: d.key, plan: p } });
+      if (!su || su.key !== d.key) dispatch({ type: "live/start", payload: { key: d.key, name: d.name } });
+      else {
+        /* Çizim büyüdükçe çerçeveyi aç — ama SADECE taştığında. Her
+           karede sığdırmak operatörün kaydırmasını saniyede bir geri
+           alırdı; izlerken kamerayı gezdirebilmek bu modun anlamı. */
+        const h = planHome(p);
+        setView((v) => (kapsar(h, v) ? v : h));
+      }
+    };
+    const t = setInterval(tur, 1000);
+    tur();
+    return () => { dead = true; clearInterval(t); };
+  }, []);
+
+  useEffect(() => {
+    if (Store.driver !== "api" || !Store.sohbetDurum) return;
+    let dead = false;
+    (async () => {
+      const d = await Store.sohbetDurum();
+      if (!dead) setSohbetAcik(!!d?.acik);
+    })();
+    /* Canlı görünümle AYNI hızda: iki yoklama da yerel sunucuda, ikisi
+       birlikte saniyede iki küçük istek — ölçülebilir bir yük değil. */
+    const t = setInterval(async () => {
+      const r = await Store.sohbetOku(sohbetId.current);
+      if (dead || !r) return;
+      setSohbetCalisiyor(r.calisiyor);
+      setSohbetAkis((o) => (o.length === r.akis.length ? o : r.akis));
+    }, 1000);
+    return () => { dead = true; clearInterval(t); };
+  }, []);
+
+  const sohbetYolla = useCallback(async () => {
+    const m = sohbetGirdi.trim();
+    if (!m || sohbetCalisiyor) return;
+    setSohbetGirdi("");
+    /* İyimser satır: ağ turunu beklemeden görünsün, yoklama zaten
+       sunucudaki gerçek akışla değiştirecek. */
+    setSohbetAkis((o) => [...o, { t: new Date().toISOString(), rol: "kullanici", metin: m }]);
+    setSohbetCalisiyor(true);
+    const r = await Store.sohbetGonder(sohbetId.current, m);
+    if (!r) {
+      setSohbetAkis((o) => [...o, { t: new Date().toISOString(), rol: "hata",
+        metin: "Sunucuya ulaşılamadı." }]);
+      setSohbetCalisiyor(false);
+    }
+  }, [sohbetGirdi, sohbetCalisiyor]);
+
+  /* KES: kilidi düşür, yapay zekânın yazmasını durdur, çizimi KALICI kıl.
+     commit şart — live/apply rev'i artırmadığı için plan yalnız sunucuda
+     duruyordu; commit hem otomatik kaydı tetikliyor hem de operatöre tek
+     ⌘Z ile yapay zekânın bütün oturumunu geri alma imkânı veriyor. */
+  const liveKes = useCallback(async () => {
+    const su = liveRef.current;
+    if (!su) return;
+    const p = plan;
+    const ok = await Store.liveStop();
+    dispatch({ type: "live/stop" });
+    if (p) commit(p);
+    setMsg(ok ? "Çizimi devraldınız — yapay zekânın yazması durduruldu."
+      : "Kilit düşürüldü ama sunucuya ulaşılamadı; yapay zekâ hâlâ yazıyor olabilir.");
+  }, [plan, commit]);
   /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
    *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
    *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
@@ -952,6 +1096,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
       return { b, m, ...hit };
     });
   }, [shown, seatMode]);
+
+  /* Rozet sığdırıcısı, o an ÇİZİLEN blokların etiket kümesini bilir: kısa
+     ada ("LOCA 3" → "3") ancak o kısa ad ayırt ediciyse düşer. Stadyumda
+     "KUZEY ALT A" → "A" sekiz bloğa aynı harfi yazmak olurdu. */
+  const sigdirici = useMemo(
+    () => etiketSigdirici(shown.map(({ b }) => b.label).filter(Boolean)),
+    [shown]);
 
   const selSeatInfo = useMemo(() => {
     if (!selSeat) return null;
@@ -1129,13 +1280,60 @@ export default function PlanEditor({ cssText = "" } = {}) {
       label: best >= 100 ? `${(best / 100).toLocaleString("tr-TR")} m` : `${best} cm` };
   }, [pxPerCm]);
 
+  /* ── ROZETLER: sığdır, sonra ÇAKIŞANI ELE ───────────────────────────
+     Yalnız genişliğe sığdırmak yetmiyordu. Yamuk duran tribün bloklarının
+     EKSEN HİZALI kutusu gerçek ayak izinden çok geniş; sığdırıcı "yer var"
+     sanıp tam etiketi yazıyor, komşusunun rozeti üstüne biniyor ve ekranda
+     "FEN FEN FEN FEN" görünüyordu (Şükrü Saracoğlu, 56 blok).
+
+     Gerçek harita etiketlemesinin yaptığı: önce önemliyi yerleştir, çakışanı
+     hiç çizme. Öncelik KOLTUK SAYISI — büyük tribünün adı küçüğünkine
+     feda edilmez. Elenen etiket kaybolmaz, yakınlaşınca yer açılıp geri
+     gelir.
+     ponytail: O(n²) çakışma taraması. Görünen blok sayısıyla sınırlı
+     (en kalabalık plan 96 blok → ~4.600 kutu testi); yavaşlarsa ızgara
+     indeksi gerekir. */
+  const rozetler = useMemo(() => {
+    /* Koltuk görünümünde rozet bloğun ÜSTÜNDE durur (koltukları kapatmasın),
+       blok görünümünde bloğun İÇİNDE — koltuk yok, orası boş. Sığdırma ve
+       eleme ikisinde de aynı. */
+    const kaynak = seatMode ? drawn : shown;
+    const enBuyuk = seatMode ? 15 * U : 17 * U;
+    const aday = kaynak
+      .filter(({ b }) => b.kind !== "table")
+      .map(({ b, m }) => {
+        const vx0 = Math.max(m.bbox.x0, view.x), vx1 = Math.min(m.bbox.x1, view.x + view.w);
+        const vy0 = Math.max(m.bbox.y0, view.y), vy1 = Math.min(m.bbox.y1, view.y + view.h);
+        if (vx1 <= vx0 || vy1 <= vy0) return null;
+        const uy = sigdirici(b.label, Math.max(1, m.bbox.x1 - m.bbox.x0), enBuyuk, pxPerCm);
+        if (!uy) return null;
+        const f = uy.boy, bw = f * uy.oran;
+        const cx = seatMode ? (vx0 + vx1) / 2 : m.cx;
+        const by = seatMode
+          ? (view.y > m.bbox.y0 + 1 ? view.y + f * 0.35 : m.bbox.y0 - f * 1.5)
+          : m.cy - f * 0.62;
+        return { b, metin: uy.metin, f, bw, cx, by, h: f * 1.32, agirlik: m.seatCount || 0 };
+      })
+      .filter(Boolean)
+      .sort((a, z) => z.agirlik - a.agirlik);
+
+    const bos = 2 * U;                       /* rozetler birbirine değmesin */
+    const kalan = [];
+    for (const r of aday) {
+      const x0 = r.cx - r.bw / 2 - bos, x1 = r.cx + r.bw / 2 + bos;
+      const y0 = r.by - bos, y1 = r.by + r.h + bos;
+      if (kalan.some((k) => x0 < k.x1 && x1 > k.x0 && y0 < k.y1 && y1 > k.y0)) continue;
+      kalan.push({ ...r, x0, x1, y0, y1 });
+    }
+    return kalan;
+  }, [drawn, shown, seatMode, view, pxPerCm, U, sigdirici]);
+
   /* aspect: hedef yükseklik/genişlik oranı. view'in eski oranı yerine
      canvas'ın gerçek piksel oranını kullanır — pencere yeniden
      boyutlandığında view hemen düzelmez, eski oranla sığdırmak
      gereksiz boşluk (letterbox) bırakırdı. */
-  const fitBBoxRect = (items, aspect) => {
-    const x0 = Math.min(...items.map((m) => m.bbox.x0)), x1 = Math.max(...items.map((m) => m.bbox.x1));
-    const y0 = Math.min(...items.map((m) => m.bbox.y0)), y1 = Math.max(...items.map((m) => m.bbox.y1));
+  const fitRect = (b, aspect) => {
+    const { x0, x1, y0, y1 } = b;
     const pad = Math.max(x1 - x0, y1 - y0) * 0.12 + 100;
     const w = Math.max(MINW, (x1 - x0) + 2 * pad);
     const h = w * aspect;
@@ -1143,23 +1341,40 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const W = need > 1 ? w * need : w;
     return { x: (x0 + x1) / 2 - W / 2, y: (y0 + y1) / 2 - (W * aspect) / 2, w: W, h: W * aspect };
   };
-  const zoomToBBox = (items) => {
-    if (!items.length) return;
-    setView(fitBBoxRect(items, canvasSize.h / canvasSize.w));
+  const birlestir = (kutular) => {
+    const bb = kutular.filter((b) => b && Number.isFinite(b.x0));
+    if (!bb.length) return null;
+    return {
+      x0: Math.min(...bb.map((b) => b.x0)), x1: Math.max(...bb.map((b) => b.x1)),
+      y0: Math.min(...bb.map((b) => b.y0)), y1: Math.max(...bb.map((b) => b.y1)),
+    };
   };
-  const zoomToSelection = () => zoomToBBox(selIds.length
-    ? selIds.map((id) => metaById.get(id)).filter(Boolean)
-    : metas.map((x) => x.m));
+  const zoomToBBox = (kutu) => {
+    if (!kutu) return;
+    setView(fitRect(kutu, canvasSize.h / canvasSize.w));
+  };
+  const zoomToSelection = () => (selIds.length
+    ? zoomToBBox(birlestir(selIds.map((id) => metaById.get(id)?.bbox)))
+    : zoomToAll());
   /* Sığdır: plan.home sabit bir değer — bir oturumda büyüyen bloklar onun
      dışına taştığında sessizce ekran dışında kalıyordu. Gerçek içerik
-     sınırını hesapla; plan boşsa (Yeni plan) home'a düş. */
-  const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(planHome(plan)));
+     sınırını hesapla; plan boşsa (Yeni plan) home'a düş.
+
+     İÇERİK bloklardan ibaret DEĞİL: sahne blokların üstünde durur, sığdırma
+     yalnız bloklara bakınca sahne ekran dışında kalıyordu — Tayyare'de
+     450 cm'lik sahnenin 395 cm'i ve "SAHNE" yazısının TAMAMI kesiliyordu.
+     contentBBox şekilleri de sayar (bkz. src/core/plan.js). */
+  const zoomToAll = () => {
+    const b = contentBBox(plan);
+    if (b) zoomToBBox(b); else setView(planHome(plan));
+  };
   /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
      olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
      birimi paylaşmıyor). %100 = Sığdır'ın ürettiği görünüm — Sığdır'a
      basınca bu yüzden her zaman tam %100 görünür. */
-  const homeRect = metas.length
-    ? fitBBoxRect(metas.map((x) => x.m), canvasSize.h / canvasSize.w)
+  const icerik = useMemo(() => contentBBox(plan), [plan.blocks, plan.shapes]);
+  const homeRect = icerik
+    ? fitRect(icerik, canvasSize.h / canvasSize.w)
     : planHome(plan);
   const homePxPerCm = Math.min(canvasSize.w / homeRect.w, canvasSize.h / homeRect.h);
   const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
@@ -1264,6 +1479,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   useEffect(() => {
     if (!rev) return;
+    /* Canlı görünümde YAZMA YOK: plan yapay zekâdan geliyor, buradan geri
+       yazmak onun yazdığıyla yarışırdı. (Birinci emniyet reducer'da:
+       live/apply rev'i hiç artırmıyor, yani bu efekt zaten tetiklenmemeli
+       — bu ikinci emniyet, kapının iki yanı da kapalı olsun diye.) */
+    if (live) return;
     setSaveState("saving");
     const t = setTimeout(async () => {
       /* plan !== BUILTINS[vk]: sadece venues[vk] BUILTINS'teki taze
@@ -1288,7 +1508,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
       setSaved((s) => (s.includes(vk) ? s : [...s, vk]));
     }, 1000);
     return () => clearTimeout(t);
-  }, [rev, plan, vk]);
+  }, [rev, plan, vk, live]);
 
   const newPlan = () => {
     const k = `p${Date.now().toString(36)}`;
@@ -1596,29 +1816,12 @@ export default function PlanEditor({ cssText = "" } = {}) {
      uygulamada yok" sınıfı ayrışmayı doğuran şey kuralın iki yere
      kopyalanmasıydı; kimlik eşleştirmesi de aynı hataya açık. */
   const runMatch = (list, fileName, cols) => {
-    /* çizimdeki koltukları anahtara göre indeksle */
-    const drawnMap = new Map();
-    metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (!s.gap) drawnMap.set(seatKey(s.block, s.row, s.num), { s, bid: b.id });
-    }));
-
-    const hits = [], missing = [], dupes = [];
-    const usedKeys = new Set();
-    list.forEach((r) => {
-      const key = seatKey(r.block, r.row, r.seat);
-      if (!r.id) return;
-      if (usedKeys.has(key)) { dupes.push(key); return; }
-      const hit = drawnMap.get(key);
-      if (hit) { usedKeys.add(key); hits.push({ ...hit, csvId: r.id, key }); }
-      else missing.push({ key, id: r.id });
-    });
-    const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k)).map(([, v]) => v.s);
-    const changing = hits.filter((h) => h.csvId !== h.s.id);
-
-    setMatch({ file: fileName, cols, total: list.length,
-      hits, missing, extra, dupes, changing });
+    /* Eşleştirmenin kendisi core/identity.js'te — MCP'nin match_seat_list
+       aracı da AYNI fonksiyonu çağırıyor, iki yerde ayrışmasın diye. */
+    const r = matchSeats(list, metas, buildSeats, plan.idTemplate);
+    setMatch({ file: fileName, cols, total: list.length, ...r });
     setVerOpen(false); setReport(null);
-    setMsg(`${hits.length} koltuk eşleşti`);
+    setMsg(`${r.hits.length} koltuk eşleşti`);
   };
 
   const readFile = (e, parse, tur) => {
@@ -1666,18 +1869,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   /** Eşleşen koltuklara listedeki kimliği yazar — çizim değil, kimlik uyarlanır. */
   const adoptIds = () => {
     if (!match) return;
-    const byBlock = new Map();
-    match.changing.forEach(({ bid, s, csvId }) => {
-      if (!byBlock.has(bid)) byBlock.set(bid, {});
-      byBlock.get(bid)[`${s.r},${s.c}`] = csvId;
-    });
-    commit({ ...plan, blocks: plan.blocks.map((b) => {
-      const patch = byBlock.get(b.id);
-      if (!patch) return b;
-      const ov = { ...b.ov };
-      Object.entries(patch).forEach(([k, id]) => { ov[k] = { ...(ov[k] || {}), id }; });
-      return { ...b, ov };
-    }) });
+    commit(applyAdoptedIds(plan, match.changing));
     setMsg(`${match.changing.length} koltuk kimliği benimsendi`);
     setMatch({ ...match, changing: [] });
   };
@@ -2314,7 +2506,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
      "single" varsayılanına döner; SeatPanel eff.seatKind'i KOŞULSUZ okur,
      null asla geçmemeli. */
   const seatEffAttr = selSeat ? resolveSeatKind(seatOvBlock || {}, seatOv || {}) : null;
-  const lodFont = 17 * U;
   const hSize = Math.max(24, 9 / (pxPerCm || 0.01));
   const arrProps = { lin, setLin, rad, setRad, onArrayL: doLinear, onArrayR: doRadial,
     prev: arrPrev, setPrev: setArrPrev };
@@ -2349,6 +2540,18 @@ export default function PlanEditor({ cssText = "" } = {}) {
     label: `Dizi önizleme: ${arrPrev === "lin" ? "doğrusal" : "radyal"}`, x: () => setArrPrev(null) });
   if (poly) modeChips.push({ k: "pg",
     label: `Çokgen çiziliyor · ${poly.pts.length} nokta`, x: () => { setPoly(null); setTool("select"); } });
+  /* Canlı görünüm de tam olarak bir "anormal mod": uygulama beklenenden
+     farklı davranıyor (düzenleme kapalı) ve çıkışı her zaman görünür
+     olmalı. Yeni bir bileşen değil, var olan şerit. */
+  if (live) modeChips.push({ k: "lv", durgun: liveDurgun,
+    /* Esc BİLEREK bu çipi kapatmıyor: kazara bir Esc, yapay zekânın
+       yazmasını kalıcı olarak durdurmamalı. Başlık da onu söylemeli. */
+    cikisBaslik: "Çizimi devral — yapay zekânın yazması durur (KES)",
+    label: liveDurgun
+      ? `✓ Çizim durdu · ${live.name} · ${totalSeats.toLocaleString("tr-TR")} koltuk`
+        + ` · ${plan.blocks.length} blok — devralmak için ×`
+      : `● Yapay zekâ çiziyor · ${live.name} — düzenleme kapalı`,
+    x: liveKes });
 
   return (
     <div className={`ed ${dark ? "dark" : "light"}`}>
@@ -2359,7 +2562,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       </div>
 
       <header className="top">
-        <select className="venue" value={vk} onChange={(e) => switchVenue(e.target.value)}>
+        <select className="venue" value={vk} disabled={!!live}
+          title={live ? "Yapay zekâ çizerken salon değiştirilemez — KES" : undefined}
+          onChange={(e) => switchVenue(e.target.value)}>
           {Object.entries(venues).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
         </select>
         <span className={`sv ${saveState}`}>
@@ -2403,9 +2608,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       {modeChips.length > 0 && (
         <div className="modestrip">
           {modeChips.map((c) => (
-            <span key={c.k} className="chip">
+            <span key={c.k} className={c.durgun ? "chip durgun" : "chip"}>
               {c.label}
-              <button onClick={c.x} title="Çık (Esc)">×</button>
+              <button onClick={c.x} title={c.cikisBaslik || "Çık (Esc)"}>×</button>
             </span>
           ))}
         </div>
@@ -2675,23 +2880,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </g>
             )}
 
-            {!seatMode && shown.map(({ b, m }) => {
-              const col = chanColor(b);
-              const bw = lodFont * (String(b.label).length * 0.62 + 0.7);
-              return (
-                <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
-                  <polygon data-b={b.id}
-                    points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
-                    fill={col} fillOpacity={dark ? 0.24 : 0.17}
-                    stroke={col} strokeOpacity={0.95}
-                    strokeWidth={Math.max(4, 1.6 / (pxPerCm || 0.01))} />
-                  <rect className="badge" x={m.cx - bw / 2} y={m.cy - lodFont * 0.62}
-                    width={bw} height={lodFont * 1.24} rx={lodFont * 0.34} fill={badgeColor(col)} />
-                  <text x={m.cx} y={m.cy + lodFont * 0.36} fill="#FBFAF7"
-                    style={{ fontSize: lodFont }}>{b.label}</text>
-                </g>
-              );
-            })}
+            {/* Blok görünümü: taban. Etiket AYRI çiziliyor (rozetler memo'su)
+                — eskiden burada sabit boyda, sığdırmasız, çakışma denetimsiz
+                kendi kopyası vardı ve 56 bloklu stadyumda "FEN FEN FEN FEN"
+                diye üst üste biniyordu. */}
+            {!seatMode && shown.map(({ b, m }) => (
+              <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
+                <polygon data-b={b.id}
+                  points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                  fill={chanColor(b)} fillOpacity={dark ? 0.24 : 0.17}
+                  stroke={chanColor(b)} strokeOpacity={0.95}
+                  strokeWidth={Math.max(4, 1.6 / (pxPerCm || 0.01))} />
+              </g>
+            ))}
 
             {seatMode && drawn.filter(({ b }) => b.kind === "table").map(({ b }) => (
               <g key={`t${b.id}`} className="tbl"
@@ -2724,23 +2925,16 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 kenarına yapıştırmak koltukların üstüne oturtuyordu. Şimdi:
                 blok tam görünüyorsa rozet tabanın biraz DIŞINA (üstüne)
                 taşıyor; blok üstten kesilmişse ekran kenarına sabitleniyor. */}
-            {seatMode && drawn.filter(({ b }) => b.kind !== "table").map(({ b, m }) => {
-              const vx0 = Math.max(m.bbox.x0, view.x), vx1 = Math.min(m.bbox.x1, view.x + view.w);
-              const vy0 = Math.max(m.bbox.y0, view.y), vy1 = Math.min(m.bbox.y1, view.y + view.h);
-              if (vx1 <= vx0 || vy1 <= vy0) return null;
-              const f = 15 * U;
-              const bw = f * (String(b.label).length * 0.62 + 0.9);
-              const clipped = view.y > m.bbox.y0 + 1;
-              const by = clipped ? view.y + f * 0.35 : m.bbox.y0 - f * 1.5;
-              return (
-                <g key={`sb${b.id}`} className="stick">
-                  <rect x={(vx0 + vx1) / 2 - bw / 2} y={by}
-                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(chanColor(b))} />
-                  <text x={(vx0 + vx1) / 2} y={by + f * 1.04}
-                    style={{ fontSize: f }}>{b.label}</text>
-                </g>
-              );
-            })}
+            {/* Sığdırma ve çakışma eleme yukarıda (rozetler memo'su);
+                burada yalnız çizim var. */}
+            {rozetler.map((r) => (
+              <g key={`sb${r.b.id}`} className={seatMode ? "stick" : "lod"}>
+                <rect className="badge" x={r.cx - r.bw / 2} y={r.by} width={r.bw} height={r.h}
+                  rx={r.f * 0.36} fill={badgeColor(chanColor(r.b))} />
+                <text x={r.cx} y={r.by + r.f * 1.04} fill={seatMode ? undefined : "#FBFAF7"}
+                  style={{ fontSize: r.f }}>{r.metin}</text>
+              </g>
+            ))}
 
             {seatMode && drawn.map(({ b, seats, labels }) => (
               <g key={b.id} className={selIds.includes(b.id) ? "blk on" : "blk"}>
@@ -3175,7 +3369,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 <div key={k} className={i.ids && i.ids.length ? `${i.t} go` : i.t}
                   onClick={i.ids && i.ids.length ? () => {
                     setSelIds(i.ids); setSelShapeId(null);
-                    zoomToBBox(i.ids.map((id) => metaById.get(id)).filter(Boolean));
+                    zoomToBBox(birlestir(i.ids.map((id) => metaById.get(id)?.bbox)));
                   } : undefined}>
                   {i.m}{i.d && <em>{i.d}</em>}
                 </div>
@@ -3190,7 +3384,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <span className="chev">{propsOpen ? "›" : "‹"}</span><em>Özellikler</em>
           </button>
           {propsOpen && (
-          selSeats.size > 1 ? (
+          /* Canlı görünümde panel GÜNLÜĞÜ gösteriyor. Seçim panelleri
+             düzenleme kontrolü dolu; canlıyken hepsi ölü düğme olurdu.
+             Operatörün o an istediği şey "ne yapılıyor", bir bloğun
+             sıra aralığı değil. KES'ten sonra paneller geri geliyor. */
+          /* Sohbet açıksa panel ODUR: adım günlüğünü de içinde taşıyor,
+             292px'e iki kutu sığmaz. Kapalıysa bugünkü davranış aynen. */
+          sohbetAcik ? (
+            <SohbetPaneli akis={sohbetAkis} gunluk={liveGunluk} calisiyor={sohbetCalisiyor}
+              live={live} durgun={liveDurgun} onKes={liveKes}
+              girdi={sohbetGirdi} setGirdi={setSohbetGirdi} onYolla={sohbetYolla} />
+          ) : live ? (
+            <CanliGunluk live={live} gunluk={liveGunluk} durgun={liveDurgun} onKes={liveKes} />
+          ) : selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
               onGroup={groupSelected} onUngroup={ungroupSelected}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
@@ -3235,6 +3441,99 @@ export default function PlanEditor({ cssText = "" } = {}) {
 /* ─────────────────────────  PANELLER  ───────────────────────── */
 
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
+
+/** Panel içi sohbet — operatörün yazdığı yer VE ne yapıldığının akışı.
+ *
+ *  TEK ZAMAN ÇİZELGESİ: mesajlar ve araç adımları ayrı kutularda değil,
+ *  kronolojik olarak aynı listede. Sağ panel 292px; iki kutu sığmaz ve
+ *  zaten operatörün okuduğu şey tek bir hikâye — "şunu istedim, şunlar
+ *  yapıldı, şu cevap geldi".
+ *
+ *  Adımlar SOHBET akışından değil CANLI GÜNLÜKTEN geliyor: sohbet tarafı
+ *  yalnız araç adını biliyor, günlük ise koltuk sayısını ve kural
+ *  bulgularını da taşıyor. İkisi zaman damgasıyla birleştiriliyor. */
+function SohbetPaneli({ akis, gunluk, calisiyor, live, durgun, onKes, girdi, setGirdi, onYolla }) {
+  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  /* Sohbetin kendi "arac" satırları atılıyor — aynı olayın zengin hâli
+     günlükte var, ikisini de göstermek tekrar olurdu. */
+  const satirlar = [
+    ...akis.filter((x) => x.rol !== "arac").map((x) => ({ ...x, tip: x.rol })),
+    ...gunluk.map((a) => ({ t: a.t, tip: "adim", metin: a.n, k: a.k, b: a.b, u: a.u })),
+  ].sort((x, y) => String(x.t).localeCompare(String(y.t)));
+
+  return (
+    <div className="sohbet">
+      <p className="lab">
+        {live ? (durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor") : "Yapay zekâ yardımcısı"}
+      </p>
+      {live && <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>}
+
+      <ol className="akis">
+        {!satirlar.length && (
+          <li className="ipucu">Bir salon adı yazıp çizdirebilirsin.<br />
+            Örnek: <em>“Bursa Tayyare Kültür Merkezi’ni çiz”</em> ya da
+            <em> “kayıtlı planlarımı listele”</em>.</li>
+        )}
+        {satirlar.map((r, i) => (
+          <li key={`${r.t}-${i}`} className={r.tip}>
+            <span className="sa">{saat(r.t)}</span>
+            <span className="mt">{r.metin}</span>
+            {r.tip === "adim" && (
+              <span className="sy">{Number(r.k).toLocaleString("tr-TR")} koltuk · {r.b} blok</span>
+            )}
+            {(r.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
+          </li>
+        ))}
+        {calisiyor && <li className="bekle"><span className="sa" /><span className="mt">çalışıyor…</span></li>}
+      </ol>
+
+      <div className="pubrow">
+        <input value={girdi} placeholder={calisiyor ? "yanıt bekleniyor…" : "Ne çizelim?"}
+          disabled={calisiyor}
+          onChange={(e) => setGirdi(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && onYolla()} />
+        <button className="pri" onClick={onYolla} disabled={calisiyor || !girdi.trim()}>Gönder</button>
+      </div>
+    </div>
+  );
+}
+
+/** Yapay zekâ çizerken operatörün takip paneli.
+ *
+ *  Neden var: bloklar tuvalde beliriyordu ama operatör NE yapıldığını
+ *  göremiyordu — "bir şeyler oluyor" ile "salon bloğu eklendi, 195 koltuk"
+ *  arasındaki fark bu. Kural bulguları da burada: yapay zekâ bir uyarı
+ *  aldıysa operatör onu ANINDA görüyor, sonunda doğrulama çalıştırmayı
+ *  beklemiyor.
+ *
+ *  En yeni EN ÜSTTE: dar bir panelde canlı akış böyle okunur, kaydırmaya
+ *  gerek kalmaz. */
+function CanliGunluk({ live, gunluk, durgun, onKes }) {
+  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const ters = [...gunluk].reverse();
+  return (
+    <div className="canli">
+      <p className="lab">{durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor"}</p>
+      <p className="cad">{live.name}</p>
+      {!ters.length && <p className="mut sm">Henüz adım yok — ilk değişiklik bekleniyor.</p>}
+      <ol className="gnl">
+        {ters.map((a, i) => (
+          <li key={`${a.t}-${i}`} className={i === 0 && !durgun ? "son" : ""}>
+            <span className="sa">{saat(a.t)}</span>
+            <span className="ne">{a.n}</span>
+            <span className="sy">{Number(a.k).toLocaleString("tr-TR")} koltuk · {a.b} blok</span>
+            {(a.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
+          </li>
+        ))}
+      </ol>
+      <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>
+      <p className="mut sm">Devraldığında yapay zekânın yazması durur; çizim planına
+        işlenir ve ⌘Z ile tümünü geri alabilirsin.</p>
+    </div>
+  );
+}
 
 /** Dikdörtgen seçimle işaretlenmiş koltuklara toplu işlem. */
 function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {
@@ -4015,7 +4314,8 @@ function BlockPanel({ b, levels, meta, arr, doors, sectionKinds, sectionKind, on
               <option value="seq">Ardışık (1, 2, 3)</option>
               <option value="odd">Sadece tek (101, 103…)</option>
               <option value="even">Sadece çift (102, 104…)</option>
-              <option value="center">Merkezden dışa · tek/çift</option>
+              <option value="center">Merkezden dışa · tek/çift (1-2 ortada)</option>
+              <option value="center-in">Duvardan içeri · tek/çift (1-2 kenarda)</option>
             </select>
           </Row>
           <Row label="Yön">
