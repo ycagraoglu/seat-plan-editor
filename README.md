@@ -374,6 +374,8 @@ sırayla ne yapılacağı. Olduğu gibi prompt olarak verilebilir.
 **Yapay zekâya çizdirmek** (panel içi sohbet, MCP, kurulum, 29 araç):
 [`docs/NASIL-KULLANILIR.md`](docs/NASIL-KULLANILIR.md) — tasarım gerekçeleri
 ve deneme raporları [`docs/MCP-KILAVUZU.md`](docs/MCP-KILAVUZU.md)'de.
+Ana uygulamaya taşıyacak geliştirici/LLM için tam talimat:
+[`docs/CODEX-BRIEF-YAPAY-ZEKA.md`](docs/CODEX-BRIEF-YAPAY-ZEKA.md).
 
 Ayrıntılı kullanım: [`docs/KULLANIM-KILAVUZU.md`](docs/KULLANIM-KILAVUZU.md) ·
 korunan davranışlar ve koruması olmayanlar:

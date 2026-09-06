@@ -388,6 +388,11 @@ Hiyerarşiye dokunan her şeyi ikincisi sınar.
 
 ## 11.5 · MCP — editörü LLM'e açmak (varsa)
 
+> **Bu bölüm özettir.** Yapay zekâ katmanının tam uygulama talimatı ayrı bir
+> belgede: [`CODEX-BRIEF-YAPAY-ZEKA.md`](CODEX-BRIEF-YAPAY-ZEKA.md) — MCP
+> sunucusu, canlı görünüm, panel içi sohbet, üç sağlayıcı adaptörü, her
+> değişmezin gerekçesi ve karşılaştığımız dokuz tuzak.
+
 Bu depoda `mcp/` altında, editörü Blender gibi bir LLM'e açan bir MCP
 sunucusu var: 27 tipli araç, saf çekirdeğin ince sarmalayıcısı. Ayrıntı
 [`docs/MCP-KILAVUZU.md`](MCP-KILAVUZU.md).
