@@ -246,3 +246,70 @@ describe("ikon ve çokgen şekiller", () => {
       points: [{ x: 0, y: 0 }, { x: 10, y: 10 }] })).rejects.toThrow();
   });
 });
+
+describe("auto_gates — kapı yokken 'atandı' DEMEZ", () => {
+  /* Soğuk stadyum testinin bulduğu sessiz başarısızlık: planda hiç kapı
+     şekli yokken autoGates() boş dizi döndürüyor, araç ise koşulsuz
+     "Kapılar mesafeye göre atandı" yazıyordu. Sınayan model kapısız bir
+     planı teslim etmek üzereydi; yalnız plan_summary'yi çapraz kontrol
+     ettiği için fark etti. Araç, kullanıcının çapraz kontrol yapmasına
+     GÜVENMEMELİ. */
+  beforeEach(async () => {
+    await t.cagir("create_plan", { name: "T" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "Tribün", x: 0, y: 0, rows: 10, cols: 20 });
+  });
+
+  it("kapı yokken hata verir ve NE YAPILACAĞINI söyler", async () => {
+    await expect(t.cagir("auto_gates")).rejects.toThrow(/hiç kapı YOK/i);
+    await expect(t.cagir("auto_gates")).rejects.toThrow(/add_shape/);
+  });
+
+  it("kapı yokken plan DEĞİŞMEZ — yarım iş bırakmaz", async () => {
+    const once = await t.jsonCagir("plan_summary");
+    await expect(t.cagir("auto_gates")).rejects.toThrow();
+    const sonra = await t.jsonCagir("plan_summary");
+    expect(sonra.shapes).toEqual(once.shapes);
+    expect(sonra.blocks.map((b) => b.gates)).toEqual(once.blocks.map((b) => b.gates));
+  });
+
+  it("kapı VARSA çalışır ve kaç kapıya baktığını söyler", async () => {
+    await t.cagir("add_shape", { type: "door", label: "K1", x: 0, y: -600, w: 200, h: 100 });
+    await t.cagir("add_shape", { type: "door", label: "K2", x: 0, y: 1600, w: 200, h: 100 });
+    const r = await t.cagir("auto_gates");
+    expect(r).toMatch(/2 kapı/);
+    const d = await t.jsonCagir("plan_summary");
+    /* Asıl kanıt metin değil, bloğun gerçekten bağlanmış olması. */
+    expect(d.blocks[0].gates.length).toBeGreaterThan(0);
+  });
+});
+
+describe("add_shape pitch — nizami ölçü GERÇEKTEN geliyor", () => {
+  /* Açıklama "ölçü nizamnameden gelir, w/h yok sayılır" diye söz veriyordu
+     ama sözlük React dosyasındaydı; MCP ona bakamadığı için 0×0 saha
+     yazıyordu. Üstelik metin "w/h yok sayılır" dediği için dikkatli
+     kullanıcı onları BİLEREK vermiyor — açıklama doğrudan hataya
+     yönlendiriyordu. Soğuk stadyum testinin planında saha böyle kayboldu;
+     hiçbir kural da bunu yakalamıyordu (0 hata veriyordu). */
+  beforeEach(async () => { await t.cagir("create_plan", { name: "T" }); });
+
+  const saha = async (sport) => {
+    await t.cagir("add_shape", { type: "pitch", sport, x: 0, y: 0 });
+    const d = await t.jsonCagir("plan_summary");
+    return d.shapes.find((s) => s.type === "pitch");
+  };
+
+  it("futbol sahası 105 × 68 m çıkar, 0×0 DEĞİL", async () => {
+    const s = await saha("football");
+    expect([s.w, s.h]).toEqual([10500, 6800]);
+  });
+
+  it("her spor kendi nizami ölçüsünü alır", async () => {
+    expect(await saha("basket").then((s) => [s.w, s.h])).toEqual([2800, 1500]);
+  });
+
+  it("w/h verilse bile nizamname KAZANIR — açıklama böyle söz veriyor", async () => {
+    await t.cagir("add_shape", { type: "pitch", sport: "football", x: 0, y: 0, w: 111, h: 222 });
+    const d = await t.jsonCagir("plan_summary");
+    expect([d.shapes[0].w, d.shapes[0].h]).toEqual([10500, 6800]);
+  });
+});

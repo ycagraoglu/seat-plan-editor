@@ -186,6 +186,63 @@ kullanıyor**. `skipAmbig` üçünü birden atladığı için işe yaramıyor;
 
 ---
 
+## Soğuk stadyum testi — Beşiktaş Tüpraş Stadyumu
+
+Kâse araçları (`create_bowl`, `solve_tiers`, `cut_vomitories`) testlerle
+kapsanıyordu — ama **parametrelerini zaten bilen** biri tarafından yazılmış
+testlerle. Asıl soru başkaydı: yalnız araç açıklamalarına bakan biri bunları
+sürebiliyor mu?
+
+Kod tabanını hiç görmemiş bir modele Beşiktaş'ın **kendi sitesindeki** resmî
+blok planı verildi (`images.bjk.com.tr`), tek erişimi `mcp/cli.mjs`.
+
+**Sonucu tuttu:** 56 blok · 41.508 koltuk · 2 kademe · doğrulama 0 hata
+(gerçek kapasite ~41.900, fark %1'in altında). `create_bowl` + `solve_tiers`
+zinciri açıklamalardan doğru kuruldu.
+
+### Bulunan iki sessiz başarısızlık
+
+**1. `auto_gates` kapı yokken "atandı" diyordu.** Planda hiç kapı şekli
+yokken `autoGates()` boş dizi döndürüyor, araç ise koşulsuz *"Kapılar
+mesafeye göre atandı"* yazıyordu. Model kapısız bir planı teslim etmek
+üzereydi; yalnız `plan_summary`'yi çapraz kontrol ettiği için fark etti.
+Araç artık ön koşulu kesiyor ve ne yapılacağını söylüyor.
+
+**2. `add_shape type=pitch` 0×0 saha üretiyordu.** Açıklama *"ölçü
+nizamnameden gelir, w/h yok sayılır"* diye söz veriyordu ama nizami ölçü
+sözlüğü `PlanEditor.jsx` içindeydi — MCP ona bakamıyordu ve `w: 0, h: 0`
+yazıyordu. Üstelik metin "w/h yok sayılır" dediği için dikkatli kullanıcı
+onları **bilerek** vermiyor: açıklama doğrudan hataya yönlendiriyordu.
+Hiçbir kural da yakalamıyordu (plan 0 hata veriyordu). Ölçüler
+`src/core/pitches.js`'e alındı, UI ve MCP artık aynı kaynaktan okuyor.
+
+Bu ikincisini **model raporlamadı** — sahayı eklediğini sanıyordu. Çizimi
+render edip bakınca ortaya çıktı. Sebebi de bulundu: `plan_summary` şekillerin
+**ölçüsünü hiç göstermiyordu**, yani modelin görmesi mümkün değildi. Özet
+artık `w`/`h` taşıyor: okunmayan şey doğrulanamaz.
+
+### Doğrulanmayan iddialar
+
+Modelin bildirdiği her şey doğru çıkmadı; ölçülmeden düzeltme yapılmadı:
+
+| İddia | Ölçüm |
+|---|---|
+| `create_bowl` (pad 80) ile `solve_tiers` (pad 55) farklı varsayılan taşıyor, kademe çakışması doğurur | Varsayılanlar gerçekten farklı, **ama** kademeler arası çakışma her denemede sıfır çıktı. Testteki çakışmaların hepsi kademe İÇİNDE ve `gapFromPrev`'den bağımsızdı — çözücünün garantisi tutuyor |
+| `door` için `w`/`h` zorunluluğu hiçbir yerde yazmıyor | Alan açıklamasında yazıyor ("pitch dışında zorunlu"); eksik olan JSON Schema'nın `required` dizisi. Hata mesajı zaten açık, model tek turda düzeltti |
+| `tools` dizi alanlarının iç şemasını vermiyor | Doğru, **ama** yalnız `mcp/cli.mjs`'in özet yazıcısında. Gerçek MCP şeması öğe alanlarını taşıyor; gerçek istemci tam şemayı alıyor |
+
+### Modelin kendi belirttiği sınırlar
+
+Sıra sayısı/aralığı, köşe yarıçapı, kenar başına blok dağılımı ve 8 kapının
+konumu kaynakta yok — uydurma olduklarını açıkça yazdı. `create_bowl`'un
+numaralandırma **yönü ve başlangıç köşesi** açıklamada yazmıyor; sonuç
+kaynağın ters yönünde çıktı ve düzeltmek 28 bloğu elle yeniden adlandırmayı
+gerektirdiği için yapılmadı. Vomitoryum kesimi yapılmadı (kaynakta tünel izi
+yok). Kapasiteyi hedeflemek için bir parametre yok; model ilk denemede %25
+fazla çıkardı ve planı sıfırdan kurmak zorunda kaldı.
+
+---
+
 ## Gerçek plan denemesi 2 — Bursa Tayyare Kültür Merkezi
 
 Bu, MCP sunucusunun **araç listesine bağlıyken** (Bash'ten değil) yürütülen

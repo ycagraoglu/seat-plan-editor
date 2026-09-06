@@ -16,6 +16,7 @@ import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
 import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels, deleteTarget } from "./ui/state/selectors.js";
+import { PITCH_DIMS } from "./core/pitches.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -244,8 +245,8 @@ const arc = (x1, y1, r, sw, x2, y2) =>
 
 const PITCHES = {
   football: {
-    label: "Futbol sahası (FIFA)", w: 10500, h: 6800, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
-    note: "105 × 68 m · nizami",
+    ...PITCH_DIMS.football, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
@@ -269,9 +270,9 @@ const PITCHES = {
   },
 
   basket: {
-    label: "Basketbol sahası (FIBA)", w: 2800, h: 1500, surf: "#8A5A32", surf2: "#8F6239",
+    ...PITCH_DIMS.basket, surf: "#8A5A32", surf2: "#8F6239",
     stripes: 21, line: "#F2E8DA", lw: 5, blw: 11, paint: "#1B4E75",
-    note: "28 × 15 m · nizami",
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "circle", cx: 0, cy: 0, r: 180, fill: this.paint });
@@ -297,8 +298,8 @@ const PITCHES = {
   },
 
   volley: {
-    label: "Voleybol sahası (FIVB)", w: 1800, h: 900, surf: "#2F5F92", line: "#F4F4F0", lw: 5,
-    note: "18 × 9 m · nizami",
+    ...PITCH_DIMS.volley, surf: "#2F5F92", line: "#F4F4F0", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 8 });
@@ -309,8 +310,8 @@ const PITCHES = {
   },
 
   handball: {
-    label: "Hentbol sahası (IHF)", w: 4000, h: 2000, surf: "#4A7C7E", line: "#F0F4F4", lw: 5,
-    note: "40 × 20 m · nizami",
+    ...PITCH_DIMS.handball, surf: "#4A7C7E", line: "#F0F4F4", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
@@ -335,8 +336,8 @@ const PITCHES = {
   },
 
   tennis: {
-    label: "Tenis kortu (ITF)", w: 2377, h: 1097, surf: "#2E6DA4", line: "#F4F4F0", lw: 5,
-    note: "23,77 × 10,97 m · çiftler",
+    ...PITCH_DIMS.tennis, surf: "#2E6DA4", line: "#F4F4F0", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, sW = 411.5, m = [];
       [-1, 1].forEach((v) => m.push({ t: "line", x1: -L, y1: v * sW, x2: L, y2: v * sW })); // tekler
@@ -351,8 +352,8 @@ const PITCHES = {
   },
 
   hockey: {
-    label: "Buz hokeyi (IIHF)", w: 6000, h: 3000, surf: "#DCE6EC", line: "#B03A4A", lw: 8, rx: 850,
-    note: "60 × 30 m · nizami",
+    ...PITCH_DIMS.hockey, surf: "#DCE6EC", line: "#B03A4A", lw: 8, rx: 850,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 30 });                      // orta kırmızı
@@ -373,8 +374,8 @@ const PITCHES = {
     },
   },
 
-  generic: { label: "Düz zemin", w: 3000, h: 2000, surf: "#22452C", line: "#3E6B4A", lw: 8,
-    note: "işaretlemesiz", marks: () => [] },
+  generic: { ...PITCH_DIMS.generic, surf: "#22452C", line: "#3E6B4A", lw: 8,
+     marks: () => [] },
 };
 
 

@@ -117,6 +117,11 @@ export class Session {
       shapes: (plan.shapes || []).map((s) => ({
         id: s.id, type: s.type, label: s.label || "",
         x: +Number(s.x).toFixed(0), y: +Number(s.y).toFixed(0),
+        /* ÖLÇÜ de sahnenin parçası: 0×0 bir saha eklendiğinde özet bunu
+           göstermediği için soğuk stadyum testindeki model sahanın hiç
+           çizilmediğini fark edemedi — kural motoru da şekil ölçüsüne
+           bakmıyor. Okunmayan şey doğrulanamıyor. */
+        w: +Number(s.w || 0).toFixed(0), h: +Number(s.h || 0).toFixed(0),
         blocks: s.blocks || undefined,
       })),
       findings,

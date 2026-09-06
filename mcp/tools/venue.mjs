@@ -3,6 +3,7 @@ import { solveBowlTiers, solveRadialTiers } from "../../src/core/solve.js";
 import { autoGates } from "../../src/core/gates.js";
 import { buildMeta } from "../../src/core/geometry.js";
 import { nid } from "../../src/core/ids.js";
+import { pitchDims } from "../../src/core/pitches.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
 const cokgenNot = (a) => (Array.isArray(a.points) && a.points.length >= 3
@@ -283,8 +284,14 @@ export function registerVenueTools(server, session, z) {
       id: nid("s"),
       kind: cokgen ? "poly" : a.type === "icon" ? "icon" : "rect",
       type: a.type,
-      x: a.x, y: a.y, w: a.w ?? (a.type === "icon" ? 120 : 0),
-      h: a.h ?? (a.type === "icon" ? 120 : 0), rot: a.rot ?? 0,
+      x: a.x, y: a.y,
+      /* pitch'in ölçüsü NİZAMNAMEDEN gelir (açıklamanın verdiği söz);
+         sözlük src/core/pitches.js'te, UI ile ORTAK. Eskiden burada 0
+         yazılıyordu: araç "eklendi" deyip 0×0 bir saha bırakıyordu. */
+      ...(a.type === "pitch"
+        ? { w: pitchDims(a.sport).w, h: pitchDims(a.sport).h }
+        : { w: a.w ?? (a.type === "icon" ? 120 : 0), h: a.h ?? (a.type === "icon" ? 120 : 0) }),
+      rot: a.rot ?? 0,
       label: a.label ?? "", capacity: a.capacity ?? 0, fs: a.fs ?? 150,
       ...(cokgen ? { pts: a.points } : {}),
       ...(a.type === "icon" ? { icon: a.icon, size: 30 } : {}),
@@ -336,8 +343,24 @@ export function registerVenueTools(server, session, z) {
       "yoksa makul bir başlangıç verir.",
     ].join(" "),
     inputSchema: {},
-  }, async () => metin(session.mutate((plan) => ({
-    ...plan,
-    shapes: autoGates(plan, plan.blocks.map((b) => ({ b, m: buildMeta(b) }))),
-  }), "Kapılar mesafeye göre atandı")));
+  }, async () => {
+    /* ÖN KOŞUL: planda kapı yoksa autoGates() boş dizi döndürüyor, araç ise
+       koşulsuz "Kapılar mesafeye göre atandı" yazıyordu. Soğuk stadyum
+       testi bunu yakaladı: model kapısız bir planı "kapılar atandı" sanıp
+       teslim etmek üzereydi, ancak plan_summary'yi çapraz kontrol edince
+       fark etti. add_block'ta kesilen sessiz başarısızlık sınıfının aynısı
+       — araç sınırında kesiliyor. */
+    const plan = session.need();
+    const kapilar = (plan.shapes || []).filter((s) => s.type === "door");
+    if (!kapilar.length) {
+      throw new Error("Planda hiç kapı YOK — atanacak bir şey de yok."
+        + " Önce add_shape ile type:\"door\" şekilleri koy (door için w ve h"
+        + " zorunludur), sonra auto_gates çağır. Tribün tüneli istiyorsan"
+        + " cut_vomitories kapıyı zaten kendisi oyup yerleştirir.");
+    }
+    return metin(session.mutate((p) => ({
+      ...p,
+      shapes: autoGates(p, p.blocks.map((b) => ({ b, m: buildMeta(b) }))),
+    }), `Kapılar mesafeye göre atandı (${kapilar.length} kapı)`));
+  });
 }
