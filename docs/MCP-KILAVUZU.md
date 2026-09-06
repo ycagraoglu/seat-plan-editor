@@ -1,4 +1,9 @@
-# MCP kılavuzu — editörü LLM'e bağlamak
+# MCP kılavuzu — tasarım ve kanıt
+
+> **Kullanmak mı istiyorsun?** → [`NASIL-KULLANILIR.md`](NASIL-KULLANILIR.md)
+> Operatör adımları, kurulum, araç tablosu ve ana uygulamaya taşıma orada.
+> Bu belge NEDEN öyle tasarlandığını ve hangi hataların nasıl bulunduğunu
+> anlatıyor.
 
 Blender'ın MCP eklentisiyle aynı fikir: uygulamanın kendi API'si araç olarak
 dışarı verilir, LLM onları çağırarak çizer. Operatör sohbet ekranına
@@ -70,7 +75,7 @@ sonuç kendiliğinden gerçek santimetrede çıkar. Kaynak görselden mesafe
 
 ---
 
-## Araçlar (27)
+## Araçlar (29)
 
 | Araç | İşi |
 |---|---|

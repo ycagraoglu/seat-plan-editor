@@ -221,7 +221,7 @@ npm run db:build     # 10 salonu şemaya yükle (db/seating.db)
 npm run server       # http://localhost:8787
 VITE_API_BASE=http://localhost:8787/api npm run dev
 
-npm run live         # ikisi birden — canlı görünüm için (bkz. docs/MCP-KILAVUZU.md)
+npm run live         # ikisi birden — sohbet + canlı görünüm (bkz. docs/NASIL-KULLANILIR.md)
 ```
 
 **[`db/schema.sql`](db/schema.sql)** raporun §5–§7'sinin çalıştırılabilir
@@ -370,6 +370,10 @@ kırılmıştır.
 [`docs/CODEX-BRIEF.md`](docs/CODEX-BRIEF.md) — kapsam sınırı, veri modeli,
 kendi kendine keşfedilemeyecek alan bilgisi, çarptığımız tuzaklar ve
 sırayla ne yapılacağı. Olduğu gibi prompt olarak verilebilir.
+
+**Yapay zekâya çizdirmek** (panel içi sohbet, MCP, kurulum, 29 araç):
+[`docs/NASIL-KULLANILIR.md`](docs/NASIL-KULLANILIR.md) — tasarım gerekçeleri
+ve deneme raporları [`docs/MCP-KILAVUZU.md`](docs/MCP-KILAVUZU.md)'de.
 
 Ayrıntılı kullanım: [`docs/KULLANIM-KILAVUZU.md`](docs/KULLANIM-KILAVUZU.md) ·
 korunan davranışlar ve koruması olmayanlar:
