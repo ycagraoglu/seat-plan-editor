@@ -33,6 +33,22 @@ olarak sınıflandırır:
 Sınıflandırma deterministiktir ve incelemesi için Codex'e döndürülür. İki tür
 aynı derecede olasıysa sistem sessizce seçim yapmaz; `needsReview` ile durur.
 
+## Odak Noktası Ve Yön
+
+Genel yerleşim sayfasındaki `SAHNE`, `PERDE`, `FUTBOL SAHASI`, `BASKETBOL
+SAHASI`, `OYUN ALANI` veya eş anlamlı açık etiketler planın odak noktasıdır.
+Etiket birleşik, dolgulu veya kenarlıklı bir hücre bölgesindeyse bu bölgenin
+sınırları odak şeklinin kaynak geometrisi kabul edilir. Yalnız tek hücrelik bir
+etiket varsa hücre merkezi yön referansı olur; kanıtlanmış bir genişlik ve
+yükseklik bulunmadığı için fiziksel şekil üretilmez.
+
+Blokların konumu ve dönüşü odak noktasına göre değil, kaynak hücre
+koordinatlarından ölçülür; odak noktası bu koordinatların yönünü ve anlamını
+doğrular. Böylece sahnenin solundaki blok solda, karşısındaki blok karşıda kalır
+ve bütün plan kaynak sayfadaki göreli yerleşimini korur. Birden fazla bağımsız
+odak adayı varsa veya etiket ile çizili alan çelişiyorsa derleme başlamadan
+`needsReview` döner.
+
 ## Ayrıştırma Ve Sınırlar
 
 Eski OLE `.xls` ve OOXML `.xlsx` dosyaları için `@e965/xlsx` kullanılacak.
@@ -85,6 +101,12 @@ oluşturup oturumda saklar:
   "family": "named-range-plan",
   "workbook": "manifest.xlsx",
   "seatCount": 4134,
+  "focal": {
+    "type": "stage",
+    "label": "SAHNE",
+    "bbox": { "x": 900, "y": 20, "w": 600, "h": 160 },
+    "confidence": 1
+  },
   "groups": [
     {
       "groupId": "group-1",
@@ -141,6 +163,9 @@ medyan uzaklık 50 cm olacak biçimde tek bir ölçekle editör koordinatlarına
 mevcut `fan` bloklara derlenir. Her koltuk `ov` düzeltmesiyle ölçülen hücre
 merkezine taşınır. Bir sıra içindeki boş hücreler boşluk olarak korunur; komşu
 koltukların numarası değiştirilmeden kaldırılmış/boşluk düzeltmesiyle gösterilir.
+Kaynakta sınırları belirlenmiş odak bölgesi mevcut `stage`, `screen` veya `pitch`
+şekline dönüştürülür. Bütün bloklar ve odak şekli aynı dönüşüm matrisini
+kullandığından kaynakta aralarındaki mesafe, yön ve göreli konum değişmez.
 
 Bölüm manifestolarında her sayfanın yerel hücre geometrisi korunur ve bölüm
 çakışmasız bir yelpaze dilimine oturtulur. Bölüm kodları saat yönündeki sırayı,
@@ -163,6 +188,8 @@ sağlanmalıdır:
 - Blok, sıra ve koltuk sayıları kabul edilen Excel analiziyle eşleşmeli.
 - Kaynak koordinatlı planlarda koltukların en az %99'u, medyan kaynak koltuk
   aralığının 0,35 katı içinde bulunmalı.
+- Kaynakta sınırları ölçülmüş odak öğesinin bbox IoU değeri en az 0,90 olmalı;
+  yalnız etiketi bulunan odak öğesi için merkez ve yön eşleşmesi raporlanmalı.
 - Bölüm manifestolarında yerel sıra şekli ve koltuk sırası eksiksiz korunmalı;
   global konum kaynak doğrulamalı değil, türetilmiş olarak bildirilmeli.
 - Yinelenen kaynak kimliği bulunmamalı.
@@ -226,6 +253,8 @@ Dört Excel türü için üretilmiş test dosyaları eklenecek. Test kapsamı:
 - `.xls` ve `.xlsx` çözümleme.
 - Adlandırılmış blok alanları ve birden fazla aralıktan oluşan adlar.
 - Sayısal ve harf-rakam koltuk algılama.
+- Sahne, perde, futbol sahası ve basketbol sahası odak noktası algılama; birleşik
+  hücre sınırı, tek hücre etiketi ve birden fazla aday senaryoları.
 - Birleşik etiketler, stille ayrılan bölgeler, boş koridorlar, gizli hücreler ve
   özet tablo dışlama.
 - Bölüm sayfası sıralaması ve çakışmasız türetilmiş halka yerleşimi.
