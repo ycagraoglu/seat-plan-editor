@@ -1,80 +1,83 @@
-# Spreadsheet Reference Import Design
+# Excel Referans İçe Aktarma Tasarımı
 
-## Goal
+## Amaç
 
-Allow Codex to turn customer-provided `.xls` and `.xlsx` seating manifests into
-editable seat-plan-editor drafts without a vision API. Preserve every explicit
-seat, row, block, gap, label, and workbook total that can be established from
-the spreadsheet. Geometry that is inferred from numbering rather than drawn in
-the workbook must be identified as inferred.
+Codex'in müşterilerden gelen `.xls` ve `.xlsx` oturma manifestolarını ek
+bir görsel API kullanmadan seat-plan-editor içinde düzenlenebilir taslaklara
+dönüştürmesini sağlamak. Excel'den kesin olarak belirlenebilen her koltuğu,
+sırayı, bloğu, boşluğu, etiketi ve toplamı korumak. Excel'de çizilmeyip yalnız
+numaralandırmadan çıkarılan geometriler açıkça "türetilmiş" olarak bildirilecek.
 
-## Supported Workbook Families
+## Desteklenen Excel Türleri
 
-The scanner classifies each workbook before producing geometry:
+Tarayıcı, geometri üretmeden önce çalışma kitabını aşağıdaki türlerden biri
+olarak sınıflandırır:
 
-1. **Named-range plan**: one or more worksheets contain a spatial plan and
-   workbook names such as `BLOK001` identify block cell ranges. Named ranges are
-   authoritative block membership and cell positions are authoritative local
-   geometry.
-2. **Canvas-sheet plan**: a dense worksheet contains positioned seat values,
-   block labels, merged headings, fills, borders, and blank aisles. Labels and
-   style-connected seat regions determine block membership; cell positions
-   determine geometry.
-3. **Section manifest**: each worksheet represents one section and contains a
-   local row/seat matrix, but no overview sheet gives global placement. Local
-   geometry comes from cells. Numeric section codes are ordered clockwise in an
-   inferred oval ring, beginning with the smallest code at the top center.
-4. **Flat list**: a worksheet has block, row, and seat columns but no spatial
-   cell layout. It remains a verification source and cannot create geometry by
-   itself unless the user explicitly selects the inferred ring layout.
+1. **Adlandırılmış alanlı plan**: Bir veya daha fazla sayfa mekânsal plan
+   içerir; `BLOK001` gibi Excel adları blok hücre aralıklarını tanımlar.
+   Adlandırılmış alanlar blok üyeliğinde, hücre konumları ise yerel geometride
+   asıl kaynaktır.
+2. **Tuval sayfası planı**: Yoğun bir çalışma sayfasında konumlandırılmış
+   koltuk değerleri, blok etiketleri, birleşik başlıklar, dolgular, kenarlıklar
+   ve boş koridorlar bulunur. Etiketler ile aynı stile bağlı koltuk bölgeleri
+   blokları; hücre konumları geometriyi belirler.
+3. **Bölüm manifestosu**: Her sayfa tek bir bölümü ve o bölümün yerel
+   sıra/koltuk matrisini içerir; ancak genel konumları gösteren bir sayfa
+   yoktur. Yerel geometri hücrelerden alınır. Sayısal bölüm kodları, en küçük
+   kod üst ortadan başlayacak şekilde saat yönünde oval bir halkaya dizilir.
+4. **Düz liste**: Bir sayfada blok, sıra ve koltuk sütunları bulunur; fakat
+   mekânsal hücre düzeni yoktur. Bu dosya doğrulama kaynağı olarak kullanılır.
+   Kullanıcı türetilmiş halka düzenini açıkça seçmedikçe tek başına geometri
+   oluşturmaz.
 
-Classification is deterministic and returned to Codex for inspection. If two
-families are equally plausible, scanning stops with `needsReview` rather than
-silently choosing one.
+Sınıflandırma deterministiktir ve incelemesi için Codex'e döndürülür. İki tür
+aynı derecede olasıysa sistem sessizce seçim yapmaz; `needsReview` ile durur.
 
-## Parsing And Limits
+## Ayrıştırma Ve Sınırlar
 
-Use `@e965/xlsx` for both legacy OLE `.xls` and OOXML `.xlsx`. The parser runs
-locally and never evaluates macros or external links.
+Eski OLE `.xls` ve OOXML `.xlsx` dosyaları için `@e965/xlsx` kullanılacak.
+Ayrıştırma tamamen yerelde yapılır; makrolar ve dış bağlantılar çalıştırılmaz.
 
-Limits:
+Sınırlar:
 
-- Maximum file size: 25 MB.
-- Maximum worksheets: 200.
-- Maximum non-empty cells: 1,000,000.
-- Maximum generated seats: 100,000.
-- Password-protected, macro-dependent, or unreadable workbooks fail with a
-  specific error before a plan is created or changed.
+- En fazla dosya boyutu: 25 MB.
+- En fazla çalışma sayfası: 200.
+- En fazla dolu hücre: 1.000.000.
+- En fazla üretilecek koltuk: 100.000.
+- Parolalı, makroya bağımlı veya okunamayan dosyalar plan oluşturulmadan ya da
+  mevcut plan değiştirilmeden açık bir hatayla reddedilir.
 
-Cell coordinates use actual column widths and row heights when available,
-falling back to workbook defaults. Hidden rows and columns are ignored unless a
-named block range explicitly includes non-empty cells in them; those cells are
-then reported for review.
+Hücre koordinatları, varsa gerçek sütun genişlikleri ve satır yükseklikleriyle;
+yoksa Excel varsayılanlarıyla hesaplanır. Gizli satır ve sütunlar normalde yok
+sayılır. Ancak bir blok alanı gizli fakat dolu hücreleri açıkça kapsıyorsa bu
+hücreler inceleme gerektiren veri olarak raporlanır.
 
-## Source Priority
+## Kaynak Önceliği
 
-Evidence is applied in this order:
+Kanıtlar şu sırayla değerlendirilir:
 
-1. Workbook named ranges whose normalized names match block/section terms.
-2. Explicit block labels, merged labels, and summary formulas that reference
-   seat regions.
-3. Repeated seat-like cells grouped by style, regular spacing, and connected
-   row segments.
-4. Worksheet names and numeric section order.
+1. Adı normalize edildiğinde blok/bölüm anlamı taşıyan Excel adlandırılmış
+   alanları.
+2. Açık blok etiketleri, birleşik etiketler ve koltuk bölgelerine başvuran özet
+   formülleri.
+3. Stil, düzenli aralık ve bağlı sıra segmentleriyle gruplanan tekrar eden
+   koltuk hücreleri.
+4. Çalışma sayfası adları ve sayısal bölüm sırası.
 
-Higher-priority evidence may split or label lower-priority components. It may
-not create a seat absent from a non-empty source cell. Decorative totals,
-headers, row counters, and summary tables are excluded using formula references,
-style frequency, and their separation from seat regions.
+Üst sıradaki kanıt, alt sıradaki bileşenleri bölebilir veya etiketleyebilir;
+ancak kaynakta dolu bir hücresi olmayan koltuk üretemez. Dekoratif toplamlar,
+başlıklar, sıra sayaçları ve özet tablolar; formül başvuruları, stil sıklığı ve
+koltuk bölgelerinden uzaklıkları kullanılarak dışlanır.
 
-Seat-like values include numeric labels and alphanumeric values such as `A12`.
-The scanner separates the row and seat portions only when the pattern is
-unambiguous. Otherwise it keeps the original value as the source identity and
-marks the row for review.
+Koltuk adayı değerler sayısal etiketleri ve `A12` gibi harf-rakam değerlerini
+kapsar. Tarayıcı sıra ve koltuk parçalarını yalnız desen kesin olduğunda ayırır.
+Aksi halde özgün değeri kaynak kimliği olarak korur ve sırayı inceleme için
+işaretler.
 
-## Spreadsheet Scan Contract
+## Excel Tarama Sözleşmesi
 
-Add `scan_spreadsheet({ path })`. It returns and stores an ephemeral scan:
+Yeni `scan_spreadsheet({ path })` aracı aşağıdaki yapıda geçici bir tarama
+oluşturup oturumda saklar:
 
 ```json
 {
@@ -106,74 +109,75 @@ Add `scan_spreadsheet({ path })`. It returns and stores an ephemeral scan:
 }
 ```
 
-Raw filesystem paths are not repeated in user-visible output. The scan remains
-in the MCP session and is not written into the persistent plan schema.
+Ham dosya yolu kullanıcıya gösterilen çıktılarda tekrar edilmez. Tarama yalnız
+MCP oturumunda yaşar ve kalıcı plan şemasına yazılmaz.
 
-## Semantic Confirmation
+## Anlamsal Onay
 
-Add `submit_spreadsheet_analysis({ scanId, venueKind, groups?, layout? })`.
-Codex may correct labels and levels, but cannot alter detected seat cells or
-their local positions.
+Yeni `submit_spreadsheet_analysis({ scanId, venueKind, groups?, layout? })`
+aracı eklenecek. Codex etiket ve kat adlarını düzeltebilir; bulunan koltuk
+hücrelerini veya yerel konumlarını değiştiremez.
 
-`layout` is one of:
+`layout` seçenekleri:
 
-- `source`: required for named-range and canvas-sheet plans; preserves worksheet
-  coordinates.
-- `ring`: default for section manifests; orders numeric sections clockwise in
-  an oval. This geometry is tagged `inferredFrom: "section-order"` in ephemeral
-  verification state, not in the persistent plan schema.
+- `source`: Adlandırılmış alanlı ve tuval sayfası planlarında zorunludur;
+  çalışma sayfasındaki koordinatları korur.
+- `ring`: Bölüm manifestolarında varsayılandır; sayısal bölümleri oval bir
+  halkada saat yönünde sıralar. Bu geometri kalıcı plan şemasında değil, geçici
+  doğrulama durumunda `inferredFrom: "section-order"` olarak işaretlenir.
 
-Every detected group must be accepted or excluded with a source-based reason.
-Every unresolved ambiguity or duplicate seat identity must be explicitly
-resolved before compilation. Workbook formula mismatches remain visible even
-after a user selects which source is authoritative.
+Bulunan her grup kabul edilmeli veya kaynağa dayalı bir gerekçeyle dışlanmalıdır.
+Çözülemeyen her belirsizlik ve yinelenen koltuk kimliği derlemeden önce açıkça
+çözülmelidir. Excel formüllerindeki uyuşmazlıklar, kullanıcı hangi kaynağın
+asıl kabul edileceğini seçse bile görünür kalır.
 
-## Deterministic Compilation
+## Deterministik Derleme
 
-Add `build_spreadsheet_layout()`.
+Yeni `build_spreadsheet_layout()` aracı eklenecek.
 
-For source-positioned plans, convert cell centers to editor centimeters using a
-single workbook scale whose median adjacent-seat distance is 50 cm. Straight
-row segments compile to existing `grid` blocks; common-center curved segments
-compile to existing `fan` blocks. Per-seat `ov` adjustments place every seat on
-its measured cell center. Blank cells inside a row stay blank and are represented
-by removed/gap overrides without renumbering neighboring seats.
+Kaynakta konumlandırılmış planlarda hücre merkezleri, komşu koltuklar arasındaki
+medyan uzaklık 50 cm olacak biçimde tek bir ölçekle editör koordinatlarına
+çevrilir. Düz sıra segmentleri mevcut `grid`, ortak merkezli kavisli segmentler
+mevcut `fan` bloklara derlenir. Her koltuk `ov` düzeltmesiyle ölçülen hücre
+merkezine taşınır. Bir sıra içindeki boş hücreler boşluk olarak korunur; komşu
+koltukların numarası değiştirilmeden kaldırılmış/boşluk düzeltmesiyle gösterilir.
 
-For section manifests, preserve each worksheet's local cell geometry, then fit
-its section into a non-overlapping fan sector. Section codes define clockwise
-order; the smallest numeric code starts at top center. Ring radius expands until
-all section footprints have at least the normal aisle clearance. No focal
-shape, door, boundary, accessible place, or corridor is created unless it is an
-explicit workbook object.
+Bölüm manifestolarında her sayfanın yerel hücre geometrisi korunur ve bölüm
+çakışmasız bir yelpaze dilimine oturtulur. Bölüm kodları saat yönündeki sırayı,
+en küçük sayısal kod ise üst orta başlangıcı belirler. Bütün bölüm dış hatları
+normal koridor açıklığını sağlayana kadar halka yarıçapı büyütülür. Excel'de
+açıkça bulunmayan odak şekli, kapı, sınır, erişilebilir alan veya koridor
+üretilmez.
 
-Compilation happens against a temporary plan. The active session and live
-editor update once, only after mutation blockers are zero. Failure leaves the
-current plan untouched.
+Derleme geçici plan üzerinde yapılır. Mutasyon engelleyici bulgular sıfır
+olduktan sonra aktif oturum ve canlı editör tek seferde güncellenir. Başarısızlık
+mevcut planı değiştirmez.
 
-## Verification
+## Doğrulama
 
-Add `verify_spreadsheet()` and require all of the following for success:
+Yeni `verify_spreadsheet()` aracı eklenecek. Başarı için şu koşulların tamamı
+sağlanmalıdır:
 
-- Every accepted source seat maps to exactly one plan seat.
-- No extra plan seat exists.
-- Block, row, and seat counts match the accepted spreadsheet analysis.
-- Source-positioned plans place at least 99% of seats within 0.35 times the
-  median source seat spacing.
-- Section-manifest plans preserve exact local row shape and seat order; global
-  position is reported as inferred rather than source-verified.
-- Duplicate source identities are zero.
-- Existing hard geometry and data-integrity blockers are zero.
-- Explicit workbook totals equal detected totals, or the chosen conflict
-  resolution is reported with both values.
-- No physical object absent from the workbook has been added.
+- Kabul edilen her kaynak koltuğu planda tam bir koltuğa karşılık gelmeli.
+- Fazladan plan koltuğu bulunmamalı.
+- Blok, sıra ve koltuk sayıları kabul edilen Excel analiziyle eşleşmeli.
+- Kaynak koordinatlı planlarda koltukların en az %99'u, medyan kaynak koltuk
+  aralığının 0,35 katı içinde bulunmalı.
+- Bölüm manifestolarında yerel sıra şekli ve koltuk sırası eksiksiz korunmalı;
+  global konum kaynak doğrulamalı değil, türetilmiş olarak bildirilmeli.
+- Yinelenen kaynak kimliği bulunmamalı.
+- Mevcut sert geometri ve veri bütünlüğü engelleri sıfır olmalı.
+- Excel'deki açık toplamlar bulunan toplamla eşleşmeli veya seçilen uyuşmazlık
+  çözümü iki değeri de göstererek raporlanmalı.
+- Excel'de bulunmayan fiziksel bir nesne eklenmemiş olmalı.
 
-The result distinguishes `verifiedSourceGeometry` from `verifiedInferredLayout`.
-The UI and Codex completion report must not describe an inferred ring as an
-architecturally verified venue.
+Sonuç `verifiedSourceGeometry` ile `verifiedInferredLayout` durumlarını ayrı
+gösterir. Arayüz ve Codex sonuç raporu, türetilmiş bir halkayı mimari olarak
+doğrulanmış mekân diye tanımlayamaz.
 
-## MCP State Machine
+## MCP Durum Makinesi
 
-Spreadsheet mode uses:
+Excel modu şu sırayı kullanır:
 
 ```text
 no-plan
@@ -183,64 +187,64 @@ no-plan
 -> spreadsheet-verified
 ```
 
-`scan_spreadsheet` runs before `create_plan`; invalid or unsupported files do
-not leave blank plans in the plan list. Compilation creates the new plan name
-from an explicit user name or the workbook filename. Spreadsheet mode blocks
-low-level mutation tools until verification completes or the user explicitly
-abandons the import.
+`scan_spreadsheet`, `create_plan` işleminden önce çalışır. Geçersiz veya
+desteklenmeyen dosyalar plan listesinde boş plan bırakmaz. Derleme, açıkça
+verilmiş kullanıcı adından veya Excel dosya adından yeni plan adını üretir.
+Excel modu, doğrulama tamamlanana veya kullanıcı içe aktarmadan açıkça vazgeçene
+kadar düşük seviyeli mutasyon araçlarını engeller.
 
-`editor_capabilities` reports accepted extensions, workbook limits, detected
-family, current phase, allowed next tools, and the distinction between source
-and inferred geometry. The MCP system prompt directs Codex to inspect, resolve
-only reported ambiguity, build, verify, and never call the image-reference
-workflow for spreadsheets.
+`editor_capabilities`; kabul edilen uzantıları, Excel sınırlarını, algılanan
+türü, mevcut fazı, sıradaki izinli araçları ve kaynak/türetilmiş geometri
+ayrımını döndürür. MCP sistem promptu Codex'e dosyayı incelemesini, yalnız
+raporlanan belirsizlikleri çözmesini, derlemesini ve doğrulamasını söyler;
+Excel dosyalarını görsel referans akışına göndermez.
 
-## Application Upload
+## Uygulama Dosya Yükleme
 
-The existing upload endpoint accepts `.xls` and `.xlsx` and returns
-`kind: "spreadsheet"`. The browser sends only the saved server-side path to the
-MCP/chat bridge and displays the original basename. File contents and temporary
-paths are never echoed into chat history. Existing image, CSV, and JSON behavior
-is unchanged.
+Mevcut yükleme uç noktası `.xls` ve `.xlsx` kabul edip
+`kind: "spreadsheet"` döndürür. Tarayıcı MCP/sohbet köprüsüne yalnız sunucuda
+kaydedilen yolu iletir; kullanıcıya özgün dosya adını gösterir. Dosya içeriği
+ve geçici tam yol sohbet geçmişine yazılmaz. Mevcut görsel, CSV ve JSON
+davranışı değişmez.
 
-## Error Handling
+## Hata Yönetimi
 
-- Unsupported or corrupt workbook: reject before creating a plan.
-- Ambiguous workbook family: return evidence and request one user decision.
-- Duplicate seat identity: block compilation and list bounded examples.
-- Total mismatch: show formula total and detected total; require a declared
-  authority (`cells` or `summary`) before compiling.
-- Unlabeled connected component: keep its measured seats but require a label or
-  explicit exclusion.
-- Block overlap after compilation: rollback and report the involved source
-  groups.
+- Desteklenmeyen veya bozuk Excel: Plan oluşturulmadan reddedilir.
+- Belirsiz Excel türü: Kanıtlar gösterilir ve kullanıcıdan tek karar istenir.
+- Yinelenen koltuk kimliği: Derleme durdurulur ve sınırlı sayıda örnek verilir.
+- Toplam uyuşmazlığı: Formül toplamı ile bulunan toplam gösterilir; derlemeden
+  önce asıl kaynağın `cells` veya `summary` olduğu belirtilmelidir.
+- Etiketsiz bağlı bileşen: Ölçülen koltuklar korunur; etiket verilmesi veya
+  açıkça dışlanması istenir.
+- Derleme sonrası blok çakışması: İşlem geri alınır ve ilgili kaynak grupları
+  bildirilir.
 
-## Tests
+## Testler
 
-Add generated fixtures for all four workbook families. Tests cover:
+Dört Excel türü için üretilmiş test dosyaları eklenecek. Test kapsamı:
 
-- `.xls` and `.xlsx` decoding.
-- Named-range block extraction and multi-range names.
-- Numeric and alphanumeric seat detection.
-- Merged labels, style-separated regions, blank aisles, hidden cells, and
-  summary-table exclusion.
-- Section-sheet ordering and collision-free inferred ring layout.
-- Duplicate identities, contradictory totals, corrupt files, limits, and
-  ambiguous classification.
-- Atomic rollback when compilation fails.
-- Exact seat count and source identity verification.
-- Upload classification and path redaction.
-- MCP state transitions and low-level mutation blocking.
+- `.xls` ve `.xlsx` çözümleme.
+- Adlandırılmış blok alanları ve birden fazla aralıktan oluşan adlar.
+- Sayısal ve harf-rakam koltuk algılama.
+- Birleşik etiketler, stille ayrılan bölgeler, boş koridorlar, gizli hücreler ve
+  özet tablo dışlama.
+- Bölüm sayfası sıralaması ve çakışmasız türetilmiş halka yerleşimi.
+- Yinelenen kimlikler, çelişkili toplamlar, bozuk dosyalar, sınırlar ve belirsiz
+  sınıflandırma.
+- Derleme başarısızlığında atomik geri alma.
+- Kesin koltuk sayısı ve kaynak kimliği doğrulaması.
+- Yükleme sınıflandırması ve dosya yolu gizleme.
+- MCP durum geçişleri ve düşük seviyeli mutasyon engelleme.
 
-The three supplied workbook shapes are represented by synthetic fixtures so
-tests do not depend on files in a user's Downloads directory. The full existing
-test suite, venue geometry checks, interaction checks, and production build
-remain release gates.
+Kullanıcının `Downloads` dizinindeki dosyalara test bağımlılığı oluşturmamak
+için verilen üç Excel biçimi sentetik test dosyalarıyla temsil edilecek. Mevcut
+testlerin tamamı, mekân geometri kontrolleri, etkileşim kontrolleri ve üretim
+derlemesi yayım kapısı olarak korunacak.
 
-## Non-Goals
+## Kapsam Dışı
 
-- Executing workbook macros or refreshing external links.
-- Inferring doors, accessibility, walls, stages, or fields that are absent from
-  workbook cells.
-- Claiming architectural accuracy for section-order ring layouts.
-- Adding a new persistent plan schema or a second geometry engine.
+- Excel makrolarını çalıştırmak veya dış bağlantıları yenilemek.
+- Excel hücrelerinde bulunmayan kapı, erişilebilirlik, duvar, sahne veya saha
+  üretmek.
+- Bölüm sırasından türetilen halka yerleşimini mimari doğrulukta göstermek.
+- Yeni bir kalıcı plan şeması veya ikinci bir geometri motoru oluşturmak.
