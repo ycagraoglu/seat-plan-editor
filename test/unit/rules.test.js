@@ -4,6 +4,7 @@ import { buildMeta, syntheticSectionId } from "../../src/core/geometry.js";
 
 const overlapRule = RULES.find((r) => r.id === "footprint-overlap-same-level");
 const crossLevelRule = RULES.find((r) => r.id === "footprint-overlap-cross-level");
+const seatClashRule = RULES.find((r) => r.id === "seat-clash");
 const companionGroupRule = RULES.find((r) => r.id === "companion-group-incomplete");
 
 /* outlineOverlapArea sadece köşe noktası listesi (m.outline) ve m.bbox
@@ -51,6 +52,16 @@ describe("footprint-overlap-same-level — maxArea canlı büyüklük gösterges
     const [finding] = overlapRule.check(ctx);
     expect(finding.maxArea).toBeCloseTo(5000, 6); // A↔B (5000) > B↔C (2000)
   });
+});
+
+it("aynı bloktaki 41 cm koltuklar 33 cm aralıkla yerleşirse seat-clash yakalar", () => {
+  const block = {
+    id: "b1", kind: "grid", label: "A", name: "A", level: "", x: 0, y: 0, rot: 0,
+    cols: 2, rows: 1, taper: 0, curve: 0, seatGap: 33, rowGap: 90, counts: "",
+    align: "center", color: "", attr: "", num: {}, ov: {},
+  };
+  const ctx = buildCtx({ blocks: [block], shapes: [] }, [{ b: block, m: buildMeta(block) }], new Map());
+  expect(seatClashRule.check(ctx)).toHaveLength(1);
 });
 
 /* ─────────────────────────────────────────────────────────────────────

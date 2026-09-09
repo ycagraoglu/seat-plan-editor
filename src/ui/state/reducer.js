@@ -102,6 +102,17 @@ export function reducer(state, action) {
        yarışan bir döngü kurulurdu. */
     case "live/apply":
       return { ...state, venues: { ...state.venues, [action.payload.key]: action.payload.plan } };
+    case "import/accept": {
+      const { key, plan } = action.payload;
+      return {
+        ...state,
+        venues: { ...state.venues, [key]: plan }, vk: key,
+        past: [], future: [], rev: state.rev + 1,
+        selIds: [], selShapeId: null, selSeat: null, selSeats: new Set(),
+        levelFilter: "*", view: planHome(plan),
+        report: null, calib: null, match: null,
+      };
+    }
     /* live/stop: KES. Kilit düşer. Planı KALICI kılmak çağıranın işi
        (PlanEditor bunun ardından commit atıyor) — böylece operatör
        yapay zekânın bütün oturumunu tek ⌘Z ile geri alabiliyor. */

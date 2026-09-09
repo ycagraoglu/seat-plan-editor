@@ -13,7 +13,7 @@ async function png(svg, width) {
 }
 
 const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
-  ".webp": "image/webp", ".gif": "image/gif" };
+  ".webp": "image/webp", ".pdf": "application/pdf" };
 
 /* ══════════════════════════════════════════════════════════════════════════
    GÖRME ARAÇLARI
@@ -28,11 +28,11 @@ export function registerRenderTools(server, session, z) {
   server.registerTool("render", {
     title: "Çizimi göster",
     description: [
-      "Aktif planın resmini döndürür — çizdiğine BAK.",
+      "Aktif bir içe aktarma varsa staged önizlemenin, yoksa aktif planın resmini döndürür — çizdiğine BAK.",
       "",
       "scope ile yakınlaş: \"all\" tüm plan · blok kodu (\"MARATON ÜST A\") ·",
       "kat yolu (\"Maraton\" ya da \"Maraton / Üst\"). Yakınlaşınca koltuklar",
-      "tek tek çizilir; tüm plan görünümünde 4.000'in üstünde koltuk varsa",
+      "tek tek çizilir; tüm plan görünümünde 10.000'in üstünde koltuk varsa",
       "blok tabanları çizilir (o ölçekte koltuk zaten okunmaz).",
       "",
       "underlay ile organizatörün planını ARKAYA bindirir (önce set_underlay).",
@@ -45,14 +45,20 @@ export function registerRenderTools(server, session, z) {
       scope: z.string().optional().describe("\"all\" (varsayılan) · blok kodu · kat yolu"),
       seats: z.enum(["auto", "on", "off"]).optional().describe("Koltuk çizimi, varsayılan auto"),
       withUnderlay: z.boolean().optional().describe("Altlığı arkaya bindir (varsa)"),
+      outlines: z.boolean().optional().describe("Blok dış hatlarını göster; kaynak karşılaştırmasında varsayılan açık"),
       width: z.number().int().min(400).max(2400).optional().describe("Piksel genişlik, varsayılan 1400"),
     },
-  }, async ({ scope = "all", seats = "auto", withUnderlay = true, width = 1400 }) => {
-    const plan = session.need();
+  }, async ({ scope = "all", seats = "auto", withUnderlay = true, outlines, width = 1400 }) => {
+    const plan = session.referencePreviewPlan || session.spreadsheetPreviewPlan || session.need();
+    if (withUnderlay && plan.underlay && plan.blocks.length && !plan.underlayRect) {
+      throw new Error("Altlık hizasız; bu render kaynak karşılaştırması sayılamaz."
+        + " set_underlay için x/y/width/height ver veya submit_reference_analysis ardından replace_layout kullan.");
+    }
     const r = renderSvg(plan, {
       scope, seats, width,
       underlay: withUnderlay ? plan.underlay || null : null,
       underlayRect: plan.underlayRect || null,
+      outlines: outlines ?? (withUnderlay && !!plan.underlay),
     });
     const buf = await png(r.svg, r.width);
     const ozet = `${r.blocks} blok · ${r.seats.toLocaleString("tr-TR")} koltuk`
@@ -74,21 +80,9 @@ export function registerRenderTools(server, session, z) {
   server.registerTool("set_underlay", {
     title: "Altlık yükle (organizatörün planı)",
     description: [
-      "Organizatörden gelen plan görselini altlık olarak koyar. render ile",
-      "arkaya bindirilir; blokları onun üstünden kurup karşılaştırırsın.",
-      "",
-      "Altlık ÖLÇEK vermez ve vermesine gerek yok: blokları koltuk SAYISINDAN",
-      "kurduğun için sonuç zaten gerçek santimetrede çıkıyor. Altlıktan",
-      "okuyacağın şey NE ve NEREDE — kaç blok, hangi adlar, nasıl dizilmiş.",
-      "",
-      "HİZALAMA: x/y/width/height verirsen altlık DÜNYADA o dikdörtgene",
-      "oturur ve çizimle karşılaştırılabilir. Vermezsen görüntü kutusuna",
-      "gerilir — kaba bir referans olur, üst üste bindirme HİZALANMAZ.",
-      "Ölçüyü bilmiyorsan: bir bloğu kur, plan_summary'den bbox'ını oku,",
-      "altlığı ona göre yerleştir.",
-      "",
-      "Altlık dışa aktarılmaz (dosya boyutunu şişirmemek için), yalnız",
-      "oturum boyunca karşılaştırma amacıyla tutulur.",
+      "Organizatörün PNG/JPEG/WebP/PDF kaynağını referans oturumuna yükler.",
+      "Sonraki zorunlu adım scan_reference'tır; koltuk sayısı ve koordinatı elle üretilmez.",
+      "Görsel altlık dışa aktarılmaz. PDF taranır fakat tuval altlığı olarak gösterilmez.",
     ].join("\n"),
     inputSchema: {
       path: z.string().describe("Görselin yerel dosya yolu (png/jpg/webp)"),
@@ -105,8 +99,16 @@ export function registerRenderTools(server, session, z) {
     const plan = session.need();
     const rect = [x, y, width, height].every((v) => v != null)
       ? { x, y, w: width, h: height } : null;
-    session.set({ ...plan, underlay: `data:${mime};base64,${buf.toString("base64")}`,
+    session.startImport("reference");
+    session.set({ ...plan, underlay: mime === "application/pdf" ? null : `data:${mime};base64,${buf.toString("base64")}`,
       underlayRect: rect });
+    session.referenceMode = true;
+    session.referenceSource = { path: dosya };
+    session.referenceScan = null;
+    session.referenceAnalysis = null;
+    session.referenceCompilation = null;
+    session.referencePreviewPlan = null;
+    session.referenceVerified = false;
     return metin(`Altlık yüklendi: ${path.basename(dosya)} (${Math.round(buf.length / 1024)} KB)`
       + (rect ? `\nDünyada yeri: ${rect.w}×${rect.h} cm, sol üst (${rect.x}, ${rect.y}).`
         : `\nDünyadaki yeri VERİLMEDİ — görüntü kutusuna gerilecek, bindirme`

@@ -41,7 +41,18 @@ async function baglan() {
   if (existsSync(DURUM)) {
     const d = JSON.parse(readFileSync(DURUM, "utf8"));
     /* Eski biçim düz plandı; ikisini de oku. */
-    session.set(d.plan || d);
+    const plan = Object.hasOwn(d, "plan") ? d.plan : d;
+    if (plan) session.set(plan);
+    for (const field of ["referenceMode", "referenceSource", "referenceScan", "referenceAnalysis",
+      "referenceCompilation", "referencePreviewPlan", "referenceVerified",
+      "spreadsheetScan", "spreadsheetAnalysis", "spreadsheetCompilation",
+      "spreadsheetPreviewPlan", "spreadsheetVerified", "importKind"]) {
+      if (d[field] != null) session[field] = d[field];
+    }
+    if (!session.importKind) {
+      if (session.spreadsheetScan) session.importKind = "spreadsheet";
+      else if (session.referenceMode || session.referenceScan) session.importKind = "reference";
+    }
     /* set() kesik bayrağını temizliyor — SONRA geri koy. Bu bayrak süreç
        ömürlü olamaz: cli her çağrıda yeni Session kuruyor, oysa KES bir
        ÇİZİMİ durduruyor. Dosyada taşınmazsa LLM kesildiğini hiç öğrenmez. */
@@ -51,7 +62,22 @@ async function baglan() {
 }
 
 const kaydet = (session) => {
-  if (session.plan) writeFileSync(DURUM, JSON.stringify({ plan: session.plan, kesildi: session.kesildi }));
+  if (session.plan || session.spreadsheetScan) writeFileSync(DURUM, JSON.stringify({
+    plan: session.plan, kesildi: session.kesildi,
+    referenceMode: session.referenceMode,
+    referenceSource: session.referenceSource,
+    referenceScan: session.referenceScan ? { ...session.referenceScan, overlay: undefined } : null,
+    referenceAnalysis: session.referenceAnalysis,
+    referenceCompilation: session.referenceCompilation,
+    referencePreviewPlan: session.referencePreviewPlan,
+    referenceVerified: session.referenceVerified,
+    spreadsheetScan: session.spreadsheetScan ? { ...session.spreadsheetScan, overlay: undefined } : null,
+    spreadsheetAnalysis: session.spreadsheetAnalysis,
+    spreadsheetCompilation: session.spreadsheetCompilation,
+    spreadsheetPreviewPlan: session.spreadsheetPreviewPlan,
+    spreadsheetVerified: session.spreadsheetVerified,
+    importKind: session.importKind,
+  }));
 };
 
 const [, , komut, ...arg] = process.argv;

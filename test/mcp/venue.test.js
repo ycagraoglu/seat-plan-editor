@@ -40,8 +40,8 @@ async function gsKur(t, { vomitorium = true } = {}) {
       nLong: 6, nShort: 4, nCorner: 3, first: first[k.id], level: ad[k.id],
       aisle: aisle[k.id], pad: k.pad,
     });
-    if (vomitorium) await t.cagir("cut_vomitories", { level: ad[k.id] });
   }
+  if (vomitorium) await t.cagir("cut_vomitories", {});
   return K;
 }
 
@@ -168,9 +168,15 @@ describe("şekiller ve kapılar", () => {
       .rejects.toThrow(/w ve h zorunlu/);
   });
 
+  it("görünmez etiketli boş not dikdörtgeni oluşturmaz", async () => {
+    await expect(t.cagir("add_shape", {
+      type: "note", label: "\u200b", x: 0, y: 0, w: 500, h: 100,
+    })).rejects.toThrow(/görünür label/);
+  });
+
   it("BİR BLOK BİRDEN ÇOK KAPIDAN girilebilir (Şükrü Saracoğlu Maraton Üst A-E → 26 ve 27)", async () => {
-    await t.cagir("add_shape", { type: "door", x: -500, y: 4000, w: 300, h: 300, label: "KAPI 26" });
-    await t.cagir("add_shape", { type: "door", x: 500, y: 4000, w: 300, h: 300, label: "KAPI 27" });
+    await t.cagir("add_shape", { type: "door", x: -500, y: 4000, w: 300, h: 300, label: "KAPI 26", blocks: ["A"] });
+    await t.cagir("add_shape", { type: "door", x: 500, y: 4000, w: 300, h: 300, label: "KAPI 27", blocks: ["A"] });
     await t.cagir("assign_gate", { gate: "KAPI 26", blocks: ["A"] });
     await t.cagir("assign_gate", { gate: "KAPI 27", blocks: ["A"] });
     const d = await t.jsonCagir("plan_summary");
@@ -226,9 +232,9 @@ describe("ikon ve çokgen şekiller", () => {
     /* Dikdörtgen duvar düzensiz bir salonu temsil edemez; CSO ve Harbiye'nin
        sınırı çokgen. Sınır kuralları (koltuk salon dışına taşmasın) duvara
        bakıyor, yani çokgen olmadan o salonlar doğru denetlenemez. */
-    await t.cagir("add_shape", { type: "wall", x: 0, y: 0,
-      points: [{ x: -600, y: -400 }, { x: 600, y: -400 }, { x: 0, y: 600 }] });
     await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 4, cols: 20 });
+    t.session.plan.shapes.push({ id: "test-wall", type: "wall", x: 0, y: 0,
+      points: [{ x: -600, y: -400 }, { x: 600, y: -400 }, { x: 0, y: 600 }] });
     const v = await t.jsonCagir("validate");
     expect(v.findings.some((f) => f.rule === "seats-outside-boundary")).toBe(true);
   });
@@ -273,8 +279,8 @@ describe("auto_gates — kapı yokken 'atandı' DEMEZ", () => {
   });
 
   it("kapı VARSA çalışır ve kaç kapıya baktığını söyler", async () => {
-    await t.cagir("add_shape", { type: "door", label: "K1", x: 0, y: -600, w: 200, h: 100 });
-    await t.cagir("add_shape", { type: "door", label: "K2", x: 0, y: 1600, w: 200, h: 100 });
+    await t.cagir("add_shape", { type: "door", label: "K1", x: 0, y: -600, w: 200, h: 100, blocks: ["A"] });
+    await t.cagir("add_shape", { type: "door", label: "K2", x: 0, y: 1600, w: 200, h: 100, blocks: ["A"] });
     const r = await t.cagir("auto_gates");
     expect(r).toMatch(/2 kapı/);
     const d = await t.jsonCagir("plan_summary");

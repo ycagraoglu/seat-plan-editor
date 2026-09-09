@@ -19,6 +19,7 @@
    çağrılıyor: biri regressiona uğrarsa bu test onu kopyasız yakalar. */
 import { describe, it, expect } from "vitest";
 import { newGrid, newFan, newTable, newFree, adoptPlan, mirrorBlock } from "../../src/PlanEditor.jsx";
+import { deliveryReadiness, markSourceVerified } from "../../src/core/readiness.js";
 
 /* ── 1) blok fabrikaları ───────────────────────────────────────────────
    REGRESYON: yeni blok fabrikaları (operatörün TUVALE ÇİZDİĞİ bloklar)
@@ -63,6 +64,17 @@ describe("adoptPlan renk enjekte etmez, girdinin rengini KORUR", () => {
   it("renkli girdi (kullanıcının o planda seçtiği renk) → çıktıda AYNEN korunur, ezilmez", () => {
     const plan = adoptPlan(rawPlan([{ label: "A", color: "#C1743C" }]), "k");
     expect(plan.blocks[0].color).toBe("#C1743C");
+  });
+
+  it("JSON kaynağındaki doğrulama damgasını güven sınırında geçersiz kılar", () => {
+    const verified = markSourceVerified(rawPlan([{ id: "old", label: "A", cols: 4, rows: 4 }]), {
+      kind: "reference", scanId: "scan-test",
+    });
+    const plan = adoptPlan(verified, "k");
+    expect(plan.importVerification).toMatchObject({ kind: "reference", scanId: "scan-test",
+      sourceVerified: false, geometryVerified: false, identityVerified: false,
+      invalidationReason: "json-import-untrusted" });
+    expect(deliveryReadiness(plan).ready).toBe(false);
   });
 });
 

@@ -41,5 +41,10 @@ console.log(`● sunucu  http://localhost:${PORT}`);
 console.log(`● editör  http://localhost:5173  (VITE_API_BASE=${API})`);
 console.log("  MCP tarafında:  SEAT_EDITOR_API=" + API + " node mcp/index.mjs\n");
 
-baslat("sunucu", process.execPath, ["server/index.mjs"], { PORT });
+/* Geliştirme sırasında büyük salonlar 40 çağrıdan uzun sürebilir. Üretim
+   varsayılanı değişmez; live akışı yüksek, ayrıca ezilebilir bir limit alır. */
+baslat("sunucu", process.execPath, ["server/index.mjs"], {
+  PORT, SEAT_EDITOR_AUTH_DEV_BYPASS: "1",
+  SOHBET_ARAC_SINIRI: process.env.SOHBET_ARAC_SINIRI || "1000",
+});
 baslat("editör", "npx", ["vite"], { VITE_API_BASE: API });

@@ -3,6 +3,8 @@ import { createServer as httpSunucu } from "node:http";
 import { createDb, createServer } from "../../server/index.mjs";
 import { apiStore } from "../../src/store/api.js";
 import { hepsiniKapat } from "../../chat/oturumlar.mjs";
+import { baglan as sohbetMcpBaglan } from "../../chat/kopru.mjs";
+import { bekle as canliBekle } from "../../mcp/live.mjs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    UÇTAN UCA — operatörün yazdığı cümleden kaydedilmiş plana
@@ -19,7 +21,7 @@ import { hepsiniKapat } from "../../chat/oturumlar.mjs";
 
      POST /api/chat → oturum → sağlayıcı adaptörü → @anthropic-ai/sdk →
      HTTP + SSE ayrıştırma → araç çağrısı → süreç-içi MCP köprüsü →
-     29 aracın gerçeği → src/core geometrisi → GET /api/chat akışı
+     32 aracın gerçeği → src/core geometrisi → GET /api/chat akışı
 
    Taklit edilen tek şey modelin KARARI. Para harcanmıyor, ağa çıkılmıyor.
    ══════════════════════════════════════════════════════════════════════════ */
@@ -92,7 +94,7 @@ beforeAll(async () => {
   process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${taklit.address().port}`;
 
   db = createDb(":memory:");
-  srv = createServer(db);
+  srv = createServer(db, { auth: { devBypass: true } });
   await new Promise((ok) => srv.listen(0, "127.0.0.1", ok));
   base = `http://127.0.0.1:${srv.address().port}/api`;
   /* server/index.mjs açılışta bunu KENDİSİ veriyor (bkz. oradaki not);
@@ -129,6 +131,27 @@ async function tur(id, mesaj) {
 }
 
 describe("operatörün cümlesinden kaydedilmiş plana", () => {
+  it("sohbet MCP oturumu depo ve canlı yazılarda kendi tenant bağlamından çıkmaz", async () => {
+    const A = apiStore(base, "tenant-a"), B = apiStore(base, "tenant-b");
+    await A.save("yalniz-a", { key: "yalniz-a", name: "A planı", unit: "cm",
+      blocks: [], shapes: [], home: { x: 0, y: 0, w: 100, h: 100 } });
+    const a = await sohbetMcpBaglan({ context: { api: base, tenant: "tenant-a", token: null } });
+    const b = await sohbetMcpBaglan({ context: { api: base, tenant: "tenant-b", token: null } });
+    try {
+      const listA = await a.client.callTool({ name: "list_plans", arguments: {} });
+      const listB = await b.client.callTool({ name: "list_plans", arguments: {} });
+      expect(JSON.stringify(listA.content)).toContain("yalniz-a");
+      expect(JSON.stringify(listB.content)).not.toContain("yalniz-a");
+      const readAFromB = await b.client.callTool({ name: "open_plan", arguments: { key: "yalniz-a" } });
+      expect(readAFromB.isError).toBe(true);
+
+      await b.client.callTool({ name: "create_plan", arguments: { name: "B canlı", key: "tenant-write" } });
+      await canliBekle();
+      expect(await B.load("ai-tenant-write")).not.toBeNull();
+      expect(await A.load("ai-tenant-write")).toBeNull();
+    } finally { await Promise.all([a.kapat(), b.kapat()]); }
+  }, 20_000);
+
   it("model araç çağırıyor, ARAÇLAR GERÇEKTEN çalışıyor, plan kuruluyor", async () => {
     senaryo = [
       aracYaniti([["t1", "create_plan", { name: "Sınav Salonu", key: "sv" }]]),
@@ -142,6 +165,12 @@ describe("operatörün cümlesinden kaydedilmiş plana", () => {
 
     /* 1 — operatörün mesajı akışın başında duruyor */
     expect(d.akis[0]).toMatchObject({ rol: "kullanici" });
+
+    const other = await fetch(`${base}/chat?id=uc1`, { headers: { "x-tenant-id": "baska" } }).then((r) => r.json());
+    expect(other).toEqual({ calisiyor: false, akis: [] });
+    expect((await fetch(`${base}/chat?id=uc1`, { method: "DELETE",
+      headers: { "x-tenant-id": "baska" } })).status).toBe(204);
+    expect((await S().sohbetOku("uc1")).akis.length).toBe(d.akis.length);
 
     /* 2 — hangi araçların koştuğu sohbet akışında */
     const hepsi = JSON.stringify(d.akis);
@@ -181,7 +210,7 @@ describe("operatörün cümlesinden kaydedilmiş plana", () => {
     expect(hepsi).toMatch(/Salon hazır/);
   }, 60_000);
 
-  it("MCP'nin 29 aracı modele GERÇEKTEN gönderiliyor — tek kaynak", async () => {
+  it("MCP'nin 32 aracı modele GERÇEKTEN gönderiliyor — tek kaynak", async () => {
     /* Araç şemaları elle yazılmıyor, MCP sunucusundan geliyor. Bunu
        kanıtlamanın yolu: tel üstünde görmek. */
     const g = istekler.map((x) => x.govde).join("");

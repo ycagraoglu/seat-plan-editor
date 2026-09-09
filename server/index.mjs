@@ -2,11 +2,14 @@ import http from "node:http";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import { openDb, createSchema, loadPayload } from "../db/load.mjs";
 import { buildDbPayload } from "../src/core/db-export.js";
 import { buildMeta } from "../src/core/geometry.js";
 import { gateMap } from "../src/core/gates.js";
-import { sohbetAcikMi, mesajGonder, akisOku } from "../chat/oturumlar.mjs";
+import { assertDeliveryReady } from "../src/core/readiness.js";
+import { sohbetAcikMi, sohbetBilgi, mesajGonder, akisOku, sohbetTemizle } from "../chat/oturumlar.mjs";
+import { createImportService } from "./import-service.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,8 +30,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
    /api/versions/*   Yayımlanmış kanonik veri — okuma. Bilet/envanter
                      sistemlerinin göreceği yüzey bu.
 
-   Bağımlılık yok: node:http + node:sqlite. Kimlik/tenant tek bir sabitte;
-   gerçek kurulumda oturum katmanından gelir, editörden DEĞİL.
+   Üretimde JWT/JWKS doğrulaması açıksa tenant token claim'inden gelir.
+   Devde auth kapalıysa eski tek kiracılı davranış korunur.
    ══════════════════════════════════════════════════════════════════════════ */
 
 const TENANT = process.env.TENANT_ID || "t1";
@@ -46,14 +49,69 @@ export function createDb(file = ":memory:") {
   return db;
 }
 
-const json = (res, code, body) => {
+/** Canlı çizim süreç durumudur; sunucu yeniden başladıysa artık aktif değildir. */
+export function clearLiveSessions(db) {
+  db.prepare("DELETE FROM editor_prefs WHERE key = ?").run(LIVE_KEY);
+}
+
+const json = (res, code, body, extraHeaders = {}) => {
   const s = body === undefined ? "" : JSON.stringify(body);
   res.writeHead(code, { "content-type": "application/json; charset=utf-8",
-    "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
-    "access-control-allow-headers": "content-type, x-tenant-id" });
+    "access-control-allow-headers": "content-type, authorization, x-tenant-id, x-file-name",
+    ...extraHeaders });
   res.end(s);
 };
+
+function corsHeaders(req, origins) {
+  const origin = req.headers.origin;
+  if (!origins?.length) return { "access-control-allow-origin": "*" };
+  return origin && origins.includes(origin) ? { "access-control-allow-origin": origin, vary: "origin" } : {};
+}
+
+function localRequest(req) {
+  const a = req.socket?.remoteAddress || "";
+  return ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(a);
+}
+
+function authConfig(opts = {}) {
+  const a = opts.auth || {};
+  const jwksUrl = a.jwksUrl || process.env.SEAT_EDITOR_JWKS_URL;
+  return {
+    jwksUrl,
+    issuer: a.issuer || process.env.SEAT_EDITOR_JWT_ISSUER,
+    audience: a.audience || process.env.SEAT_EDITOR_JWT_AUDIENCE,
+    tenantClaim: a.tenantClaim || process.env.SEAT_EDITOR_TENANT_CLAIM || "tenant_id",
+    devBypass: a.devBypass ?? process.env.SEAT_EDITOR_AUTH_DEV_BYPASS === "1",
+  };
+}
+
+function corsConfig(opts = {}) {
+  const raw = opts.corsOrigins ?? process.env.SEAT_EDITOR_CORS_ORIGINS;
+  return Array.isArray(raw) ? raw : String(raw || "").split(",").map((x) => x.trim()).filter(Boolean);
+}
+
+function authenticator(opts = {}) {
+  const cfg = authConfig(opts);
+  const jwks = cfg.jwksUrl ? createRemoteJWKSet(new URL(cfg.jwksUrl)) : null;
+  return async (req) => {
+    if (!jwks && cfg.devBypass && localRequest(req)) {
+      return String(req.headers["x-tenant-id"] || TENANT);
+    }
+    if (!jwks) throw Object.assign(new Error("JWT/JWKS yapılandırması eksik"), { statusCode: 503 });
+    const token = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i)?.[1];
+    if (!token) throw Object.assign(new Error("Bearer token gerekli"), { statusCode: 401 });
+    const verifyOpts = {};
+    if (cfg.issuer) verifyOpts.issuer = cfg.issuer;
+    if (cfg.audience) verifyOpts.audience = cfg.audience;
+    const { payload } = await jwtVerify(token, jwks, verifyOpts);
+    const tenant = payload[cfg.tenantClaim];
+    if (!tenant || typeof tenant !== "string") {
+      throw Object.assign(new Error(`JWT içinde ${cfg.tenantClaim} tenant claim'i yok`), { statusCode: 403 });
+    }
+    return tenant;
+  };
+}
 
 const govde = (req) => new Promise((ok, no) => {
   let b = ""; let n = 0;
@@ -66,10 +124,29 @@ const govde = (req) => new Promise((ok, no) => {
   req.on("error", no);
 });
 
+const yuklemeAdi = (header) => {
+  const encoded = Array.isArray(header) ? header[0] : String(header || "kaynak");
+  try { return decodeURIComponent(encoded); }
+  catch { return encoded; }
+};
+
+const hamGovde = (req) => new Promise((ok, no) => {
+  const cs = []; let n = 0;
+  req.on("data", (c) => {
+    n += c.length;
+    if (n > 32 * 1024 * 1024) { no(new Error("gövde çok büyük")); req.destroy(); return; }
+    cs.push(c);
+  });
+  req.on("end", () => ok(Buffer.concat(cs)));
+  req.on("error", no);
+});
+
 /** Yayımlama: taslak belgeden kanonik satırları üretip yazar. */
 export function publish(db, plan, key, tenant = TENANT) {
   const metas = (plan.blocks || []).map((b) => ({ b, m: buildMeta(b) }));
-  const payload = buildDbPayload(plan, metas, gateMap(plan));
+  const gates = gateMap(plan);
+  assertDeliveryReady(plan, metas, gates);
+  const payload = buildDbPayload(plan, metas, gates);
   const surum = (db.prepare(
     `SELECT COALESCE(MAX(version), 0) + 1 AS v FROM seating_seat_plan_versions
       WHERE tenant_id = ? AND seat_plan_id = ?`).get(tenant, `plan:${key}`) || {}).v || 1;
@@ -86,22 +163,19 @@ export function publish(db, plan, key, tenant = TENANT) {
   return { ...r, version: surum };
 }
 
-export function handler(db) {
+export function handler(db, opts = {}) {
+  const auth = authenticator(opts);
+  const origins = corsConfig(opts);
+  const importService = opts.importService || createImportService();
   return async (req, res) => {
     const u = new URL(req.url, "http://x");
-    /* KİMLİK DİKİŞİ — ana uygulamanın bağlanacağı yer.
-       Bu depo tek operatörlük; canlıda editör login'in arkasında bir sayfa
-       ve her isteğin kimin adına geldiği bilinmeli. Burada AUTH YAZMIYORUZ
-       (o ana uygulamanın oturum katmanının işi) — yalnız sabiti değişkene
-       çeviriyoruz ki bağlanacak yer hazır olsun. Dosya başındaki yorum
-       zaten bunu vaat ediyordu.
-       Başlık YOKSA eski davranış birebir sürüyor. */
-    const tenant = String(req.headers["x-tenant-id"] || TENANT);
+    const reply = (code, body) => json(res, code, body, corsHeaders(req, origins));
     const p = u.pathname.replace(/\/+$/, "");
     const m = req.method;
-    if (m === "OPTIONS") return json(res, 204);
+    if (m === "OPTIONS") return reply(204);
 
     try {
+      const tenant = await auth(req);
       /* ── taslak belgeler: depolama sözleşmesi ── */
       if (p === "/api/plans" && m === "GET") {
         const satir = db.prepare(
@@ -112,8 +186,8 @@ export function handler(db) {
            sözleşmesinin beklediği düz anahtar dizisini aynen döndürüyor;
            list() hiç değişmedi (test/store-contract.js hakem). */
         if (u.searchParams.get("detay") !== "1")
-          return json(res, 200, satir.map((r) => r.key));
-        return json(res, 200, satir.map((r) => {
+          return reply(200, satir.map((r) => r.key));
+        return reply(200, satir.map((r) => {
           let d = {}; try { d = JSON.parse(r.document); } catch { /* bozuk kayıt atlanmasın */ }
           return { key: r.key, name: d.name || r.key,
             blok: (d.blocks || []).length, guncelleme: r.updated_at };
@@ -126,20 +200,20 @@ export function handler(db) {
         if (m === "GET") {
           const r = db.prepare(
             "SELECT document FROM editor_plans WHERE tenant_id = ? AND key = ?").get(tenant, key);
-          return r ? json(res, 200, JSON.parse(r.document)) : json(res, 404, null);
+          return r ? reply(200, JSON.parse(r.document)) : reply(404, null);
         }
         if (m === "PUT") {
           const plan = await govde(req);
-          if (!plan || typeof plan !== "object") return json(res, 400, { hata: "plan bekleniyor" });
+          if (!plan || typeof plan !== "object") return reply(400, { hata: "plan bekleniyor" });
           db.prepare(`INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET document = excluded.document,
                         updated_at = excluded.updated_at`)
             .run(tenant, key, JSON.stringify({ ...plan, underlay: null }), new Date().toISOString());
-          return json(res, 204);
+          return reply(204);
         }
         if (m === "DELETE") {
           db.prepare("DELETE FROM editor_plans WHERE tenant_id = ? AND key = ?").run(tenant, key);
-          return json(res, 204);
+          return reply(204);
         }
       }
 
@@ -148,15 +222,41 @@ export function handler(db) {
         if (m === "GET") {
           const r = db.prepare(
             "SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?").get(tenant, key);
-          return json(res, 200, r ? r.value : null);
+          return reply(200, r ? r.value : null);
         }
         if (m === "PUT") {
           const b = await govde(req);
           db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
             .run(tenant, key, String(b?.value ?? ""));
-          return json(res, 204);
+          return reply(204);
         }
+      }
+
+      if (p === "/api/imports" && m === "POST") {
+        const item = await importService.save({
+          tenant,
+          name: yuklemeAdi(req.headers["x-file-name"]),
+          bytes: await hamGovde(req),
+        });
+        return reply(200, importService.public(item));
+      }
+
+      if ((g = p.match(/^\/api\/imports\/([^/]+)$/)) && m === "GET") {
+        try {
+          const item = importService.get(tenant, decodeURIComponent(g[1]));
+          return reply(200, importService.public(item));
+        } catch { return reply(404, null); }
+      }
+
+      if ((g = p.match(/^\/api\/imports\/([^/]+)\/(scan|analysis|build|verify|accept|cancel)$/))) {
+        const id = decodeURIComponent(g[1]), action = g[2];
+        if (action === "scan" && m === "POST") return reply(200, await importService.scan(tenant, id, await govde(req).catch(() => ({}))));
+        if (action === "analysis" && m === "POST") return reply(200, await importService.analyze(tenant, id, await govde(req)));
+        if (action === "build" && m === "POST") return reply(200, await importService.build(tenant, id));
+        if (action === "verify" && m === "POST") return reply(200, await importService.verify(tenant, id));
+        if (action === "accept" && m === "POST") return reply(200, await importService.accept(tenant, id));
+        if (action === "cancel" && m === "POST") return reply(200, await importService.cancel(tenant, id));
       }
 
       /* ── CANLI GÖRÜNÜM ─────────────────────────────────────────────
@@ -189,10 +289,10 @@ export function handler(db) {
 
         if (m === "GET") {
           const d = oku();
-          if (!d || d.revoked) return json(res, 200, { aktif: false });
+          if (!d || d.revoked) return reply(200, { aktif: false });
           /* Yaş SUNUCUDA hesaplanıyor: tarayıcı kendi saatiyle karşılaştırsa
              saat kayması yüzünden ya hep bayat ya hiç bayat görünürdü. */
-          return json(res, 200, { aktif: true, key: d.key, name: d.name || d.key,
+          return reply(200, { aktif: true, key: d.key, name: d.name || d.key,
             at: d.at, yasSaniye: Math.max(0, Math.round((Date.now() - Date.parse(d.at)) / 1000)),
             gunluk: d.gunluk || [] });
         }
@@ -200,18 +300,18 @@ export function handler(db) {
           const b = await govde(req);
           const plan = b?.plan;
           if (!plan || typeof plan !== "object" || !plan.key)
-            return json(res, 400, { hata: "plan bekleniyor" });
+            return reply(400, { hata: "plan bekleniyor" });
           /* Derinlemesine savunma: canlı yazma ASLA yerleşik bir örneğin
              anahtarına düşmemeli (editörün sessiz çatallaması oradan
              tetikleniyor). Ön ek MCP tarafında konuyor, burada denetleniyor. */
           if (!String(plan.key).startsWith(LIVE_ONEK))
-            return json(res, 400, { hata: `canlı anahtar "${LIVE_ONEK}" ile başlamalı` });
+            return reply(400, { hata: `canlı anahtar "${LIVE_ONEK}" ile başlamalı` });
           const d = oku();
           /* b.yeni: LLM create_plan/open_sample çağırdı — bu bir DEVAM
              değil, baştan başlama. İptal düşer. Bayrak yoksa aynı çizime
              yazmaya çalışıyor demektir ve iptal geçerlidir. */
           if (d && d.revoked && d.key === plan.key && !b.yeni)
-            return json(res, 409, { hata: "operatör devraldı" });
+            return reply(409, { hata: "operatör devraldı" });
           db.prepare(`INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)
                       ON CONFLICT (tenant_id,key) DO UPDATE SET document = excluded.document,
                         updated_at = excluded.updated_at`)
@@ -226,12 +326,12 @@ export function handler(db) {
             ? [...oncekiGunluk, b.adim].slice(-GUNLUK_SINIR) : oncekiGunluk;
           yaz({ key: plan.key, name: plan.name || plan.key,
             at: new Date().toISOString(), revoked: false, gunluk });
-          return json(res, 204);
+          return reply(204);
         }
         if (m === "DELETE") {                       /* KES */
           const d = oku();
           if (d) yaz({ ...d, revoked: true });
-          return json(res, 204);
+          return reply(204);
         }
       }
 
@@ -244,19 +344,47 @@ export function handler(db) {
          saniyede bir okur. Canlı görünümün yoklama kalıbının aynısı;
          sunucuya ilk durumlu bağlantı girmiyor. */
       if (p === "/api/chat/durum" && m === "GET")
-        return json(res, 200, { acik: sohbetAcikMi() });
+        return reply(200, sohbetBilgi());
+
+      if (p === "/api/chat/upload" && m === "POST") {
+        const item = await importService.save({
+          tenant,
+          name: yuklemeAdi(req.headers["x-file-name"]),
+          bytes: await hamGovde(req),
+        });
+        return reply(200, { ...importService.public(item), path: item.path });
+      }
 
       if (p === "/api/chat") {
         if (m === "GET") {
           const id = u.searchParams.get("id");
-          if (!id) return json(res, 400, { hata: "id gerekli" });
-          return json(res, 200, await akisOku(id));
+          if (!id) return reply(400, { hata: "id gerekli" });
+          return reply(200, await akisOku(tenant, id));
+        }
+        if (m === "DELETE") {
+          const id = u.searchParams.get("id");
+          if (!id) return reply(400, { hata: "id gerekli" });
+          const ok = await sohbetTemizle(tenant, id);
+          const r = db.prepare("SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?")
+            .get(tenant, LIVE_KEY);
+          if (r) {
+            try {
+              const d = JSON.parse(r.value);
+              db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
+                ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
+                .run(tenant, LIVE_KEY, JSON.stringify({ ...d, gunluk: [] }));
+            } catch { /* bozuk günlük temizlenmez */ }
+          }
+          return reply(ok ? 204 : 409);
         }
         if (m === "POST") {
           const b = await govde(req);
-          if (!b?.id || !b?.mesaj) return json(res, 400, { hata: "id ve mesaj gerekli" });
-          if (!sohbetAcikMi()) return json(res, 503, { hata: "Sohbet kapalı: ANTHROPIC_API_KEY, OPENAI_API_KEY ya da GEMINI_API_KEY tanımlı değil" });
-          return json(res, 202, await mesajGonder(b.id, String(b.mesaj)));
+          if (!b?.id || !b?.mesaj) return reply(400, { hata: "id ve mesaj gerekli" });
+          if (!sohbetAcikMi()) return reply(503, { hata: "Sohbet kapalı: ANTHROPIC_API_KEY, OPENAI_API_KEY ya da GEMINI_API_KEY tanımlı değil" });
+          const bearer = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i)?.[1] || null;
+          return reply(202, await mesajGonder(tenant, b.id, String(b.mesaj), {
+            api: process.env.SEAT_EDITOR_API || null, tenant, token: bearer,
+          }));
         }
       }
 
@@ -265,18 +393,18 @@ export function handler(db) {
         const key = decodeURIComponent(g[1]);
         const r = db.prepare(
           "SELECT document FROM editor_plans WHERE tenant_id = ? AND key = ?").get(tenant, key);
-        if (!r) return json(res, 404, { hata: "taslak yok" });
-        try { return json(res, 200, publish(db, JSON.parse(r.document), key, tenant)); }
+        if (!r) return reply(404, { hata: "taslak yok" });
+        try { return reply(200, publish(db, JSON.parse(r.document), key, tenant)); }
         catch (e) {
           /* Şema reddettiyse SEBEBİ görünsün — sessiz başarısızlık, bu
              projede en pahalı hata sınıfıydı. */
-          return json(res, 422, { hata: "plan şemaya oturmadı", detay: String(e.message) });
+          return reply(422, { hata: "plan şemaya oturmadı", detay: String(e.message) });
         }
       }
 
       /* ── yayımlanmış kanonik veri: okuma ── */
       if (p === "/api/versions" && m === "GET")
-        return json(res, 200, db.prepare(
+        return reply(200, db.prepare(
           `SELECT v.id, v.seat_plan_id, v.version, v.status, v.published_at, sp.name,
                   (SELECT COUNT(*) FROM seating_seats s
                     WHERE s.tenant_id = v.tenant_id AND s.version_id = v.id) AS seats
@@ -285,7 +413,7 @@ export function handler(db) {
             WHERE v.tenant_id = ? ORDER BY sp.name, v.version`).all(tenant));
 
       if ((g = p.match(/^\/api\/versions\/([^/]+)\/sections$/)) && m === "GET")
-        return json(res, 200, db.prepare(
+        return reply(200, db.prepare(
           `SELECT id, parent_section_id, code, name, kind, geometry_kind,
                   (SELECT COUNT(*) FROM seating_rows r
                     WHERE r.tenant_id = s.tenant_id AND r.version_id = s.version_id
@@ -296,7 +424,7 @@ export function handler(db) {
       if ((g = p.match(/^\/api\/versions\/([^/]+)\/seats$/)) && m === "GET") {
         const vid = decodeURIComponent(g[1]);
         const limit = Math.min(Number(u.searchParams.get("limit")) || 500, 5000);
-        return json(res, 200, db.prepare(
+        return reply(200, db.prepare(
           `SELECT s.code, s.label, s.x, s.y, s.rotation, t.seat_kind, s.group_id,
                   r.code AS row_code, sec.code AS section_code
              FROM seating_seats s
@@ -307,19 +435,20 @@ export function handler(db) {
           .all(tenant, vid, limit));
       }
 
-      return json(res, 404, { hata: "yol yok" });
+      return reply(404, { hata: "yol yok" });
     } catch (e) {
-      return json(res, 500, { hata: String(e.message) });
+      return reply(e.statusCode || 500, { hata: String(e.message) });
     }
   };
 }
 
-export function createServer(db) { return http.createServer(handler(db)); }
+export function createServer(db, opts) { return http.createServer(handler(db, opts)); }
 
 /* doğrudan çalıştırıldığında */
 if (process.argv[1] && process.argv[1].endsWith("server/index.mjs")) {
   const port = Number(process.env.PORT) || 8787;
   const db = createDb(process.env.DB_FILE || "db/seating.db");
+  clearLiveSessions(db);
   /* PANEL İÇİ SOHBET DE CANLI YAZSIN.
      canliYaz() SEAT_EDITOR_API yoksa hiçbir şey yapmıyor (bilinçli: MCP
      sunucusuz da çalışsın). stdio yolunda operatör bunu elle veriyor, ama

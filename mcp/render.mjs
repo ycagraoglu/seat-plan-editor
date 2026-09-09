@@ -1,8 +1,9 @@
-import { buildMeta, buildSeats, DEF } from "../src/core/geometry.js";
+import { buildMeta, buildSeats, displayOutline, DEF } from "../src/core/geometry.js";
 import { boundaryPolys } from "../src/core/gates.js";
 import { planHome } from "../src/core/plan.js";
 import { selectBlockLevels, levelMatches } from "../src/ui/state/selectors.js";
-import { etiketSigdirici } from "../src/core/labelfit.js";
+import { disEtiketYeri, etiketSigdirici } from "../src/core/labelfit.js";
+import { bboxUnion } from "../src/core/bounds.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    GÖRME KATMANI — LLM'in kendi çizdiğine bakması için
@@ -56,7 +57,7 @@ function seatRects(b, m, tpl, renk) {
  * @param underlay data: URI — organizatörün planı, arkaya bindirilir
  */
 export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null,
-  underlayRect = null, maxSeats = 4000, width = 1400 } = {}) {
+  underlayRect = null, outlines = null, maxSeats = 10000, width = 1400 } = {}) {
   const tumMetas = plan.blocks.map((b) => ({ b, m: buildMeta(b) }));
 
   /* Kapsam: tek blok, tek kat ya da hepsi. Tek bloğa yakınlaşmak LOD'u da
@@ -64,10 +65,13 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   const secili = scope === "all" ? tumMetas
     : tumMetas.filter(({ b }) => b.id === scope || b.label === scope
       || levelMatches(b.level, scope));
-  if (!secili.length) throw new Error(`Kapsamda blok yok: ${scope}`);
+  /* Yüklenen kaynak, ilk blok çizilmeden ÖNCE görülebilmeli. Altlık yoksa
+     boş kapsam hâlâ hatadır; altlık varsa boş plan onun inceleme tuvalidir. */
+  if (!secili.length && !underlay) throw new Error(`Kapsamda blok yok: ${scope}`);
 
   const koltukSayisi = secili.reduce((a, x) => a + x.m.seatCount, 0);
   const koltukCiz = seats === "on" || (seats === "auto" && koltukSayisi <= maxSeats);
+  const disHatCiz = outlines == null ? !koltukCiz : outlines;
 
   /* Görüntü kutusu: kapsam "all" ise planın çerçevesi, değilse seçilenlerin
      sınırı + pay. */
@@ -80,8 +84,7 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
     vb = planHome(plan);
   } else {
     const bb = secili.map((x) => x.m.bbox);
-    const x0 = Math.min(...bb.map((b) => b.x0)), x1 = Math.max(...bb.map((b) => b.x1));
-    const y0 = Math.min(...bb.map((b) => b.y0)), y1 = Math.max(...bb.map((b) => b.y1));
+    const { x0, x1, y0, y1 } = bboxUnion(bb);
     const pay = Math.max(x1 - x0, y1 - y0) * 0.08;
     vb = { x: x0 - pay, y: y0 - pay, w: x1 - x0 + 2 * pay, h: y1 - y0 + 2 * pay };
   }
@@ -107,7 +110,7 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   /* Bloklar ve şekiller AYRI ad uzayı: "MARATON" adlı bir not ile "MARATON
      ALT B" bloğu kardeş değildir. Tek kümede toplanınca ortak önek sıfıra
      düşüyor ve tribüne yakınlaşınca 7 blok etiketsiz kalıyordu. */
-  const sigdir = kur(secili.map(({ b }) => b.label));
+  const sigdir = kur(secili.map(({ b }) => b.hideLabel ? "" : b.label));
   const sigdirSekil = kur((plan.shapes || []).map((s) => s.label));
 
   const parca = [];
@@ -159,7 +162,7 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   /* 4 — bloklar: taban + (LOD açıksa) koltuklar */
   secili.forEach(({ b, m }) => {
     const renk = cc(b);
-    parca.push(`<polygon points="${pts(m.outline)}" fill="${renk}"`
+    if (disHatCiz) parca.push(`<polygon points="${pts(displayOutline(b, m))}" fill="${renk}"`
       + ` fill-opacity="${koltukCiz ? 0.18 : 0.75}" stroke="${renk}"`
       + ` stroke-width="${num(olcek * 1.5)}"/>`);
     if (koltukCiz) parca.push(seatRects(b, m, plan.idTemplate, renk));
@@ -167,12 +170,20 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
 
   /* 5 — blok etiketleri en üstte, her biri kendi bloğuna sığacak boyda */
   let yazilmayan = 0;
+  const etiketKutulari = [];
   secili.forEach(({ b, m }) => {
-    const uy = sigdir(b.label, m.bbox.x1 - m.bbox.x0);
+    const uy = sigdir(b.hideLabel ? "" : b.label, m.bbox.x1 - m.bbox.x0);
     if (!uy) { yazilmayan++; return; }
-    parca.push(`<text x="${num(m.cx)}" y="${num(m.cy + uy.boy * 0.35)}" font-size="${num(uy.boy)}"`
-      + ` fill="#111" stroke="#FFF" stroke-width="${num(uy.boy * 0.14)}"`
-      + ` paint-order="stroke" text-anchor="middle" font-weight="700"`
+    const bw = uy.boy * uy.oran, h = uy.boy * 1.32;
+    const yer = disEtiketYeri(m.bbox, bw, h,
+      [...secili.filter((x) => x.b.id !== b.id).map((x) => x.m.bbox), ...etiketKutulari], 2 * olcek);
+    if (!yer) { yazilmayan++; return; }
+    etiketKutulari.push(yer);
+    const renk = cc(b);
+    parca.push(`<rect x="${num(yer.x0)}" y="${num(yer.by)}" width="${num(bw)}" height="${num(h)}"`
+      + ` rx="${num(uy.boy * 0.36)}" fill="${renk}"/>`
+      + `<text x="${num(yer.cx)}" y="${num(yer.by + uy.boy * 1.04)}" font-size="${num(uy.boy)}"`
+      + ` fill="#FFF" text-anchor="middle" font-weight="700"`
       + ` font-family="sans-serif">${esc(uy.metin)}</text>`);
   });
 

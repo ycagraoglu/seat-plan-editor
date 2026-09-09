@@ -1,6 +1,7 @@
 import { buildMeta, buildSeats } from "../src/core/geometry.js";
 import { gateMap } from "../src/core/gates.js";
 import { buildCtx, runRules } from "../src/core/rules.js";
+import { DELIVERY_BLOCKERS, invalidateSourceVerification } from "../src/core/readiness.js";
 import { absorbIds } from "../src/core/ids.js";
 import { planHome } from "../src/core/plan.js";
 import { selectLevels, selectLevelCounts } from "../src/ui/state/selectors.js";
@@ -21,9 +22,101 @@ import { canliYaz } from "./live.mjs";
    ══════════════════════════════════════════════════════════════════════════ */
 
 const tr = (n) => Number(n).toLocaleString("tr-TR");
+export const MUTATION_BLOCKERS = new Set(DELIVERY_BLOCKERS);
+
+function findingScore(f) {
+  const ids = Array.isArray(f.ids) ? f.ids.length : 0;
+  const pairs = Array.isArray(f.pairs) ? f.pairs.length : 0;
+  return (Number(f.count) || pairs || ids || 1)
+    + (Number(f.maxArea) || 0) / 1000
+    + (Number(f.severity) || 0) / 100;
+}
+
+function blockerScore(findings, id) {
+  return findings.filter((f) => f.id === id && f.t === "err")
+    .reduce((n, f) => n + findingScore(f), 0);
+}
+
+function findingKeys(f) {
+  const norm = (xs) => xs.map(String).sort((a, b) => a.localeCompare(b)).join("+");
+  if (Array.isArray(f.pairs) && f.pairs.length) return f.pairs.map((p) =>
+    `${f.id}|pair:${Array.isArray(p) ? norm(p) : String(p)}`);
+  if (Array.isArray(f.ids) && f.ids.length) {
+    if (["footprint-overlap-same-level", "seat-clash", "narrow-aisle"].includes(f.id)) {
+      return [`${f.id}|pair:${norm(f.ids.slice(0, 2))}`];
+    }
+    return f.ids.map((id) => `${f.id}|id:${id}`);
+  }
+  return [`${f.id}|global`];
+}
+
+function blockerSignature(findings, { includeOrphan = true } = {}) {
+  const out = new Map();
+  for (const f of findings.filter((x) => x.t === "err" && MUTATION_BLOCKERS.has(x.id))) {
+    if (f.id === "orphan-blocks" && !includeOrphan) continue;
+    const score = findingScore(f);
+    for (const key of findingKeys(f)) out.set(key, Math.max(out.get(key) || 0, score));
+  }
+  return out;
+}
 
 export class Session {
-  constructor() { this.plan = null; this.kesildi = false; this.yeniCizim = false; }
+  constructor(context = null) {
+    this.context = context ? { api: context.api || null, tenant: context.tenant || null,
+      token: context.token || null } : null;
+    this.plan = null;
+    this.kesildi = false;
+    this.yeniCizim = false;
+    this.referenceAnalysis = null;
+    this.referenceMode = false;
+    this.referenceSource = null;
+    this.referenceScan = null;
+    this.referenceCompilation = null;
+    this.referencePreviewPlan = null;
+    this.referenceVerified = false;
+    this.spreadsheetScan = null;
+    this.spreadsheetAnalysis = null;
+    this.spreadsheetCompilation = null;
+    this.spreadsheetPreviewPlan = null;
+    this.spreadsheetVerified = false;
+    this.importKind = null;
+  }
+
+  setContext(context) {
+    this.context = context ? { api: context.api || null, tenant: context.tenant || null,
+      token: context.token || null } : null;
+  }
+
+  clearReferenceImport() {
+    this.referenceAnalysis = null;
+    this.referenceMode = false;
+    this.referenceSource = null;
+    this.referenceScan = null;
+    this.referenceCompilation = null;
+    this.referencePreviewPlan = null;
+    this.referenceVerified = false;
+    if (this.importKind === "reference") this.importKind = null;
+  }
+
+  clearSpreadsheetImport() {
+    this.spreadsheetScan = null;
+    this.spreadsheetAnalysis = null;
+    this.spreadsheetCompilation = null;
+    this.spreadsheetPreviewPlan = null;
+    this.spreadsheetVerified = false;
+    if (this.importKind === "spreadsheet") this.importKind = null;
+  }
+
+  clearImports() {
+    this.clearReferenceImport();
+    this.clearSpreadsheetImport();
+    this.importKind = null;
+  }
+
+  startImport(kind) {
+    this.clearImports();
+    this.importKind = kind;
+  }
 
   /** Aktif plan yoksa aracın anlamı yok — net hata, sessiz boş sonuç değil. */
   need() {
@@ -58,10 +151,15 @@ export class Session {
    *  bağladığı için AYNI adla yeniden çizmek de 409 yiyordu ve bozuk
    *  görünüyordu (kullanırken çıktı); bu yüzden niyet ayrıca bildiriliyor:
    *  bir sonraki yazma "yeni çizim" bayrağını taşıyor ve iptali düşürüyor. */
-  yeni(plan) {
+  yeni(plan, { baslik = null } = {}) {
     this.kesildi = false;
     this.yeniCizim = true;
-    return this.set(plan);
+    this.clearImports();
+    const next = this.set(plan);
+    canliYaz(next, baslik ? this.adim(baslik, this.derive(next)) : null, true,
+      () => { this.kesildi = true; }, this.context);
+    this.yeniCizim = false;
+    return next;
   }
 
   /** Türetilmiş her şeyi tek yerden: metas · gates · kural raporu. */
@@ -73,19 +171,51 @@ export class Session {
   }
 
   /** Planı değiştir, sonra ne olduğunu anlat. Tüm değiştirici araçlar bunu kullanır. */
-  mutate(fn, baslik) {
+  mutate(fn, baslik, { reference = false, spreadsheet = false, guard = true, requireClean = false } = {}) {
+    if (this.referenceMode && !reference) {
+      throw new Error("Referans görseli modunda düşük seviyeli düzenleme kapalı."
+        + " scan_reference ve submit_reference_analysis ardından replace_layout kullan;"
+        + " düzeltme gerekiyorsa analizi yenileyip bütünü tekrar kur.");
+    }
+    if (this.spreadsheetScan && !this.spreadsheetVerified && !spreadsheet) {
+      throw new Error("Excel aktarımı sürerken düşük seviyeli düzenleme kapalı."
+        + " submit_spreadsheet_analysis, build_spreadsheet_layout ve verify_spreadsheet sırasını kullan;"
+        + " aktarımı iptal etmek için create_plan, open_plan veya open_sample çağır.");
+    }
     const plan = this.need();
-    const next = fn(plan) || plan;
-    this.plan = next;
+    const beforePlan = structuredClone(plan);
+    const before = this.derive(beforePlan);
+    const draft = structuredClone(plan);
+    const next = fn(draft) || draft;
+    const d = this.derive(next);
+    if (guard) {
+      const beforeSig = blockerSignature(before.findings);
+      const afterSig = blockerSignature(d.findings);
+      const worsened = [...afterSig].filter(([key, score]) => requireClean
+        ? score > 0 : score > (beforeSig.get(key) || 0)).map(([key]) => key.split("|")[0]);
+      if (worsened.length) {
+        const detail = d.findings.filter((f) => worsened.includes(f.id) && f.t === "err").slice(0, 3)
+          .map((f) => `${f.id}: ${f.m}${f.d ? ` — ${f.d}` : ""}`).join(" · ");
+        throw new Error(`Değişiklik geri alındı; yeni/kötüleşen bulgu: ${detail || worsened.join(", ")}`);
+      }
+    }
+    this.plan = (reference || spreadsheet) ? next : invalidateSourceVerification(next);
+    if (this.spreadsheetVerified && !spreadsheet) this.spreadsheetVerified = false;
+    if (this.referenceVerified && !reference) this.referenceVerified = false;
     /* TEK derive: hem LLM'e dönen özet hem operatörün göreceği adım kaydı
        aynı hesaptan çıkıyor. İki kez türetmek 52.000 koltuklu planda her
        araç çağrısını iki katına çıkarırdı. */
-    const d = this.derive(next);
     /* Canlı görünüme yansıt. Beklemiyoruz: SEAT_EDITOR_API yoksa hiç ağa
        çıkmıyor, varsa da sunucu kapalıysa çizim aksamıyor (bkz. live.mjs). */
-    canliYaz(next, this.adim(baslik, d), this.yeniCizim, () => { this.kesildi = true; });
+    canliYaz(this.plan, this.adim(baslik, d), this.yeniCizim,
+      () => { this.kesildi = true; }, this.context);
     this.yeniCizim = false;                 /* yalnız İLK yazmada bildirilir */
     return this.summaryText(baslik, d);
+  }
+
+  notify(baslik) {
+    const plan = this.need(), d = this.derive(plan);
+    canliYaz(plan, this.adim(baslik, d), false, () => { this.kesildi = true; }, this.context);
   }
 
   /** Operatörün Özellikler panelinde okuyacağı tek satırlık adım kaydı.
@@ -155,7 +285,8 @@ export class Session {
       seatCount: metas.reduce((a, x) => a + x.m.seatCount, 0),
       levels: selectLevels(plan).map((l) => ({ level: l, seats: selectLevelCounts(metas)[l] || 0 })),
       blocks: metas.map(({ b, m }) => ({
-        id: b.id, label: b.label, name: b.name || "", level: b.level || "", kind: b.kind,
+        id: b.id, label: b.hideLabel ? "" : b.label, code: b.label,
+        name: b.name || "", level: b.level || "", kind: b.kind,
         seats: m.seatCount, rows: m.rows,
         /* Sıra etiketleri: LLM'in numaralandırmayı DOĞRULAYABİLMESİ için.
            "22 sıra var" yetmez — "4'ten 25'e mi, 25'ten 4'e mi" sorusunun

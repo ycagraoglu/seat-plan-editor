@@ -14,7 +14,7 @@ export async function baglan() {
   const cagir = async (name, args = {}) => {
     const r = await client.callTool({ name, arguments: args });
     if (r.isError) throw new Error(r.content?.map((c) => c.text).join("\n") || "araç hatası");
-    return r.content.map((c) => c.text).join("\n");
+    return r.content.filter((c) => c.type === "text").map((c) => c.text).join("\n");
   };
   const jsonCagir = async (name, args = {}) => JSON.parse(await cagir(name, args));
 

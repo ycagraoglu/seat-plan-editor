@@ -6,6 +6,7 @@ import { nid } from "../../src/core/ids.js";
 import { pitchDims } from "../../src/core/pitches.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
+const temizEtiket = (v) => String(v ?? "").replace(/\p{Cf}/gu, "").trim();
 
 /* Şema sözlüğü İngilizce (veritabanı CHECK kısıtı); operatörün panelinde
    Türkçesi görünsün. */
@@ -277,6 +278,7 @@ export function registerVenueTools(server, session, z) {
       sport: z.enum(["football", "basket", "volley", "handball", "tennis", "hockey", "generic"])
         .optional().describe("pitch için zorunlu"),
       capacity: z.number().int().optional().describe("standing için kişi kapasitesi"),
+      blocks: z.array(z.string()).optional().describe("door için zorunlu: bu kapıya bağlı blok kodları ya da kimlikleri"),
       fs: z.number().optional().describe("Yazı boyu (cm)"),
       points: z.array(z.object({ x: z.number(), y: z.number() })).min(3).optional()
         .describe("ÇOKGEN şekil için köşe noktaları (dünya cm). Verilirse w/h "
@@ -291,13 +293,29 @@ export function registerVenueTools(server, session, z) {
           + "· spot ışık · smoke sigara · parking otopark · wifi · nursery emzirme · "
           + "lounge oturma alanı · show gösteri"),
     },
-  }, async (a) => metin(session.mutate((plan) => {
+  }, async (a) => {
+    const label = temizEtiket(a.label);
+    if (a.type === "note" && !label) {
+      throw new Error("note için görünür label zorunlu; boşluk veya görünmez karakter kullanma.");
+    }
+    return metin(session.mutate((plan) => {
     if (a.type === "pitch" && !a.sport) throw new Error("pitch için sport zorunlu.");
     if (a.type === "icon" && !a.icon) throw new Error("icon için icon türü zorunlu (bkz. sözlük).");
     /* Çokgen ve ikon kendi ölçüsünü taşır; gerisi w/h ister. */
     const cokgen = Array.isArray(a.points) && a.points.length >= 3;
     if (!cokgen && a.type !== "pitch" && a.type !== "icon" && (a.w == null || a.h == null)) {
       throw new Error(`${a.type} için w ve h zorunlu (ya da çokgen için points).`);
+    }
+    const doorBlocks = [];
+    if (a.type === "door") {
+      if (plan.blocks.length && !(a.blocks || []).length) {
+        throw new Error("door için blocks zorunlu; kapıyı bağlı bloklarla aynı araç çağrısında ekle.");
+      }
+      for (const x of a.blocks || []) {
+        const b = plan.blocks.find((y) => y.id === x || y.label === x);
+        if (!b) throw new Error(`Blok bulunamadı: ${x}`);
+        doorBlocks.push(b.id);
+      }
     }
     const s = {
       id: nid("s"),
@@ -311,15 +329,16 @@ export function registerVenueTools(server, session, z) {
         ? { w: pitchDims(a.sport).w, h: pitchDims(a.sport).h }
         : { w: a.w ?? (a.type === "icon" ? 120 : 0), h: a.h ?? (a.type === "icon" ? 120 : 0) }),
       rot: a.rot ?? 0,
-      label: a.label ?? "", capacity: a.capacity ?? 0, fs: a.fs ?? 150,
+      label, capacity: a.capacity ?? 0, fs: a.fs ?? 150,
       ...(cokgen ? { pts: a.points } : {}),
       ...(a.type === "icon" ? { icon: a.icon, size: 30 } : {}),
       ...(a.sport ? { sport: a.sport } : {}),
-      ...(a.type === "door" ? { blocks: [] } : {}),
+      ...(a.type === "door" ? { blocks: [...new Set(doorBlocks)] } : {}),
     };
     return { ...plan, shapes: [...(plan.shapes || []), s] };
-  }, `${SEKIL_ADI[a.type] || a.type}${a.icon ? ` (${a.icon})` : ""} kondu`
-     + `${a.label ? `: "${a.label}"` : ""}${cokgenNot(a)}`)));
+    }, `${SEKIL_ADI[a.type] || a.type}${a.icon ? ` (${a.icon})` : ""} kondu`
+       + `${label ? `: "${label}"` : ""}${cokgenNot(a)}`));
+  });
 
   server.registerTool("assign_gate", {
     title: "Kapıya blok ata",

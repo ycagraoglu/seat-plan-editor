@@ -33,17 +33,17 @@ import { sec } from "./saglayici/index.mjs";
 /* Bir turda izin verilen araç çağrısı. Kaçak bir döngü bir biletleme
    panelinde hem para hem çöp plan demek; sınır aşılınca durup SEBEBİNİ
    söylüyoruz — sessizce kesmiyoruz. */
-export const ARAC_SINIRI = 40;
+export const ARAC_SINIRI = Number(process.env.SOHBET_ARAC_SINIRI) || 40;
 
 /** Sohbet oturumu: kendi MCP sunucusu, kendi planı, kendi geçmişi.
  *  Konuşma başına bir tane — iki operatör birbirinin planını ezmiyor. */
-export async function oturumAc({ saglayici, istemci, model } = {}) {
+export async function oturumAc({ saglayici, istemci, model, mcpContext = null } = {}) {
   const s = saglayici || sec();
   if (!s) {
     throw new Error("Sohbet kapalı: hiçbir sağlayıcı anahtarı tanımlı değil"
       + " (ANTHROPIC_API_KEY, OPENAI_API_KEY ya da GEMINI_API_KEY).");
   }
-  const k = await baglan();
+  const k = await baglan({ context: mcpContext });
   const { tools } = await k.client.listTools();
   return {
     ...k, s,
@@ -56,8 +56,8 @@ export async function oturumAc({ saglayici, istemci, model } = {}) {
 
 /** Bir tur: operatörün mesajı → (araçlar) → asistanın cevabı.
  *  onOlay her araç çağrısından ÖNCE çağrılıyor; panel ilerlemeyi oradan yazıyor. */
-export async function tur(o, kullaniciMesaji, onOlay = () => {}) {
-  o.s.kullaniciEkle(o.mesajlar, kullaniciMesaji);
+export async function tur(o, kullaniciMesaji, onOlay = () => {}, kullaniciGorselleri = []) {
+  o.s.kullaniciEkle(o.mesajlar, kullaniciMesaji, kullaniciGorselleri);
   let sayac = 0;
 
   for (;;) {

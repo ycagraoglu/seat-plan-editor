@@ -7,7 +7,7 @@ import * as gemini from "./gemini.mjs";
 
    Üçü de destekleniyor çünkü sahada en çok bu üçü kullanılıyor ve hangi
    anahtarın elde olduğu operatörden operatöre değişiyor. Panel, rotalar,
-   29 araç ve oturum katmanı sağlayıcıdan HABERSİZ — değişen tek şey
+   32 araç ve oturum katmanı sağlayıcıdan HABERSİZ — değişen tek şey
    chat/saglayici/*.mjs.
 
    SEÇİM: SOHBET_SAGLAYICI verilmişse o. Verilmemişse hangi anahtar

@@ -75,7 +75,7 @@ sonuç kendiliğinden gerçek santimetrede çıkar. Kaynak görselden mesafe
 
 ---
 
-## Araçlar (29)
+## Araçlar (38)
 
 | Araç | İşi |
 |---|---|
@@ -107,6 +107,15 @@ sonuç kendiliğinden gerçek santimetrede çıkar. Kaynak görselden mesafe
 | **Görme** | |
 | `render` | Çizimin PNG'si; kapsam ve altlık bindirmesiyle |
 | `set_underlay` | Organizatörün plan görselini altlık yap |
+| `scan_reference` | PNG/JPEG/WebP/PDF içindeki koltukları ve sıraları yerel olarak ölç |
+| `submit_reference_analysis` | Tarama `rowId` değerlerini blok/kat anlamlarıyla grupla |
+| `replace_layout` | Taramayı atomik ve deterministik biçimde plana çevir |
+| `verify_reference` | Kaynak ile koltuk/sıra/konum/focal eşleşmesini doğrula |
+| **Excel** | |
+| `scan_spreadsheet` | Tek görünür sayfalı `.xls/.xlsx` dosyasındaki hücreleri, blokları, sıraları ve odak alanını yerel tara |
+| `submit_spreadsheet_analysis` | Yalnız plan adı ile blok/kat etiketlerini düzelt |
+| `build_spreadsheet_layout` | Geçici planı sert kontrollerden sonra atomik olarak canlıya aktar |
+| `verify_spreadsheet` | Kaynak hücre-koltuk kimliğini, konumu, sırayı ve focal alanını doğrula |
 | **Kaynak** | |
 | `match_seat_list` | CSV/db.json listesiyle karşılaştır |
 | `remove_extra_seats` | Listede olmayan koltukları kaldır |
@@ -122,29 +131,19 @@ Sunucu bunu `instructions` olarak zaten gönderiyor (`mcp/server.mjs`).
 Operatör kendi sistem talimatına ekleyecekse taslak:
 
 ```
-Sen bir mekân oturma planı çiziyorsun. Kaynak organizatörden gelir:
-görsel (nerede ne var) ve/veya liste (kaç tane).
+Önce editor_capabilities çağır ve session.next sırasını izle.
+Referans için create_plan → set_underlay → scan_reference →
+submit_reference_analysis → replace_layout → verify_reference kullan.
+Koltuk sayısı, sıra ve koordinatı scan_reference ölçer; model bunları
+elle üretmez. Model yalnız rowId değerlerine blok, kat ve görünür etiket
+anlamı ekler. needsReview satırı çözülmeden çizime geçilmez. Kaynakta
+görünmeyen fiziksel nesne eklenmez. verify_reference verified:true
+dönmeden çalışma tamamlandı denmez. Sonuç taslaktır; MCP yayımlamaz.
 
-SIRAYLA:
-1. Kaynağı oku. Görsel varsa set_underlay ile altlık yap — karşılaştırma
-   yapacaksan x/y/width/height ver, yoksa altlık gerilir ve HİZALANMAZ.
-2. create_plan. Sahneyi/sahayı add_shape ile koy — yönü kaynaktan oku.
-3. Blokları kur. Kat alanına YOL yaz ("Maraton / Üst"), böylece bölüm
-   ağacı oluşur. Stadyum/arena ise önce solve_tiers, sonra create_bowl —
-   yarıçapları elle uydurma.
-4. Numaralandırmayı kaynağa göre ayarla. Sıra 1'den başlamak zorunda
-   değil ve ters akabilir (set_numbering: rowStart, rowRev).
-5. Her adımdan sonra dönen özeti oku. Kural bulgusu HEDEF DEĞER verir,
-   ona göre düzelt.
-6. render ile ÇİZİMİNE BAK; altlık varsa üstüne bindir ve karşılaştır.
-7. Liste varsa match_seat_list. "eksik" ya da "fazla" varsa plan HENÜZ
-   DOĞRU DEĞİL — önce blok sıra/koltuk sayılarını düzelt. Geriye dağınık
-   birkaç "fazla" kalıyorsa (kapı, merdiven boşluğu) remove_extra_seats.
-8. export_plan ile teslim et.
-9. RAPORLA: kaynaktan neyi OKUDUN, neyi VARSAYDIN, operatörün neyi
-   doğrulaması gerekiyor. Varsayımı gerçek gibi sunma.
-
-Yayına sen göndermezsin. Ürettiğin şey taslaktır.
+Excel için set_underlay/scan_reference kullanma. Doğrudan scan_spreadsheet →
+submit_spreadsheet_analysis → build_spreadsheet_layout → verify_spreadsheet
+sırasını izle. Tek tek koltuk hücreleri kapasite özetinden üstündür;
+uyuşmazlığı uyarı olarak bildir, koltuk ekleme veya silme.
 ```
 
 ---
@@ -199,7 +198,7 @@ chat/saglayici/
 ```
 
 Dördüncü bir sağlayıcı eklemek **tek dosya** demek; döngüye, rotalara,
-panele, 29 araca dokunulmuyor. Test paketi üçünü de aynı senaryolarla
+panele, 32 araca dokunulmuyor. Test paketi üçünü de aynı senaryolarla
 koşuyor — soyutlamanın tuttuğunun kanıtı orada.
 
 **İki gerçek fark, ikisi de çözüldü:**
@@ -218,7 +217,7 @@ Tarayıcı ──POST /api/chat──► sunucu ──► Claude (claude-opus-5)
                                  ▼  ▼
                          süreç-içi MCP istemcisi
                                  │
-                                 ▼  29 araç — TEK KAYNAK
+                                 ▼  32 araç — TEK KAYNAK
                             src/core/**
 ```
 
@@ -246,9 +245,11 @@ kaydı olduğu gibi durur, beğenirse üstüne kendisi geçer.
 
 ### Ana uygulamaya taşırken
 
-- **Kimlik:** `x-tenant-id` başlığı hazır (`server/index.mjs`). Auth
-  yazılmadı — ana uygulama kendi oturum katmanından dolduracak. Başlık
-  yoksa tek kiracılı davranış sürüyor.
+- **Kimlik:** üretimde `SEAT_EDITOR_JWKS_URL` ile JWT/JWKS doğrulaması
+  açılır; kiracı token claim'inden gelir. JWKS yokken erişim varsayılan
+  olarak kapalıdır. Yalnız yerel geliştirmede açıkça
+  `SEAT_EDITOR_AUTH_DEV_BYPASS=1` verilirse localhost isteklerinde
+  `x-tenant-id` başlığı kullanılabilir.
 - **Oturum:** konuşma başına bir MCP oturumu (`chat/oturumlar.mjs`),
   bellekte, 30 dk boşta kalınca düşüyor. Kalıcı olması gereken şey plan,
   o zaten `editor_plans`'ta.
@@ -352,15 +353,16 @@ hatası alır.
 
 ---
 
-## Yapamadıkları — baştan bilinsin
+## Referans tarama sınırları
 
 | Sınır | Sonuç |
 |---|---|
-| Görselde **tek tek koltuk sayamaz** | Sıra başına koltuk ya listeden gelir ya varsayımdır; işaretlenmeli |
-| İlk turda konumlar tutmaz | `render` + `validate` döngüsüyle düzeltilir; 2–3 tur normaldir |
+| Salon fotoğrafı, el çizimi, perspektif görüntü | İlk sürüm temiz dijital PNG/JPEG/WebP ve PDF planlara odaklanır |
+| Belirsiz veya düzensiz sıra | `needsReview` olur; kullanıcı çözmeden `replace_layout` çalışmaz |
+| Dosya/raster sınırı | 25 MB, 40 MP ve PDF'de en fazla 20. sayfa |
 | Geometri geri okunamaz | `db.json` bölüm/satır/koltuk taşır; koltuk konumlarından "ızgara mıydı yelpaze miydi" çıkarmak tahmindir |
 | Yayımlayamaz | Aracı yok; operatör editörde açıp onaylar |
-| Excel doğrudan okunamaz | CSV dışa aktarımı istenmeli |
+| Excel `.xls/.xlsx` | `scan_spreadsheet` ile hücre koordinatı, adlandırılmış alan, stil ve birleşik odak alanı okunur |
 | `free` blok türü açık değil | Editörde var ama on salonun 334 bloğunun HİÇBİRİ kullanmıyor; olmayan ihtiyaç için araç açılmadı. Düzensiz oturma gerekirse eklenir |
 
 ---

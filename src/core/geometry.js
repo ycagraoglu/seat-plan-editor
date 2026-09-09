@@ -1,6 +1,7 @@
 import { offsetPoly } from "./polygon.js";
 import { numberRow, rowLabel } from "./labels.js";
 import { formatId } from "./identity.js";
+import { pointBounds } from "./bounds.js";
 
 export const RAD = Math.PI / 180;
 export const DEF = { seatGap: 50, rowGap: 90, seatW: 41, seatH: 38 };
@@ -370,7 +371,7 @@ export function prep(b) {
       : Math.max(1, b.cols + r * (b.taper || 0));
     return Math.max(1, countAt(spec, r, b.rows, fb));
   });
-  const maxN = Math.max(...counts);
+  const maxN = counts.reduce((max, n) => Math.max(max, n), 0);
   let R0 = 0, sgn = 1;
   if (b.kind === "grid" && Math.abs(b.curve) > 1) {
     const W = Math.max(1, (maxN - 1) * b.seatGap);
@@ -483,7 +484,10 @@ export const polarPt = (r, a) => ({ x: r * Math.sin(a * RAD), y: -r * Math.cos(a
 
 export function buildMeta(b) {
   const P = prep(b);
-  const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
+  /* Eski/kullanıcı kaynaklı planlarda rot alanı olmayabilir. Eksik açı
+     geometrinin tamamını NaN yapmamalı; şema açısından doğal varsayılan 0. */
+  const rot = Number.isFinite(Number(b.rot)) ? Number(b.rot) : 0;
+  const cos = Math.cos(rot * RAD), sin = Math.sin(rot * RAD);
   const rows = P.counts.length;
   let removed = 0, gaps = 0;
   Object.values(b.ov || {}).forEach((o) => { if (o.rm) removed++; else if (o.gap) gaps++; });
@@ -592,15 +596,15 @@ export function buildMeta(b) {
      düzensiz kenarlar koltuklardan türetilemez. */
   if (b.kind === "table" && !(b.foot && b.foot.length >= 3)) {
     const pad2 = (b.pad != null ? b.pad : 18) + Math.hypot(DEF.seatW, DEF.seatH) / 2;
-    const R = Math.max(...ring.map((p) => Math.hypot(p.x - b.x, p.y - b.y))) + pad2;
+    const R = ring.reduce((max, p) => Math.max(max, Math.hypot(p.x - b.x, p.y - b.y)), 0) + pad2;
     const ol = Array.from({ length: 28 }, (_, i) => {
       const t = (i / 28) * Math.PI * 2;
       return { x: b.x + R * Math.sin(t), y: b.y + R * Math.cos(t) };
     });
-    const xs2 = ol.map((p) => p.x), ys2 = ol.map((p) => p.y);
+    const box = pointBounds(ol);
     return { P, seatCount, kinds, features, outline: ol, auto: ol, manual: false,
       cx: b.x, cy: b.y, rows,
-      bbox: { x0: Math.min(...xs2), x1: Math.max(...xs2), y0: Math.min(...ys2), y1: Math.max(...ys2) } };
+      bbox: box };
   }
   /* Tek sıralı blokta ön ve arka sıra aynı sıradır; dış hat çöküp
      tel gibi bir çizgiye dönüyordu. Kapsül olarak kuruluyor. */
@@ -612,18 +616,17 @@ export function buildMeta(b) {
     const bot = [...line].reverse().map((q) => W({ x: q.x, y: q.y + hh }));
     const ring1 = [...top, W({ x: z.x + hw, y: z.y }), ...bot, W({ x: a.x - hw, y: a.y })];
     const ol = offsetPoly(ring1, b.pad != null ? b.pad : 55);
-    const xs1 = ol.map((p) => p.x), ys1 = ol.map((p) => p.y);
+    const box = pointBounds(ol);
     return { P, seatCount, kinds, features, outline: ol, auto: ol, manual: false,
-      cx: (Math.min(...xs1) + Math.max(...xs1)) / 2,
-      cy: (Math.min(...ys1) + Math.max(...ys1)) / 2, rows,
-      bbox: { x0: Math.min(...xs1), x1: Math.max(...xs1), y0: Math.min(...ys1), y1: Math.max(...ys1) } };
+      cx: (box.x0 + box.x1) / 2,
+      cy: (box.y0 + box.y1) / 2, rows, bbox: box };
   }
 
   const manual = b.foot && b.foot.length >= 3;
   const outline = manual ? b.foot.map(W) : auto;
   const cx = outline.reduce((a, p) => a + p.x, 0) / outline.length;
   const cy = outline.reduce((a, p) => a + p.y, 0) / outline.length;
-  const xs = outline.map((p) => p.x), ys = outline.map((p) => p.y);
+  const box = pointBounds(outline);
   /* leftEdge/rightEdge dışa aktarılıyor: A5'teki kenar-düzgünlüğü testi
      (test/invariants) bu ikisini OKUR, kendi kopyasını üretmez — dışbükey
      zincirin TEK kaynağı burası, yoksa test ile buildMeta'nın kenar
@@ -634,7 +637,7 @@ export function buildMeta(b) {
      onları yok saymalı, çünkü gerçek dış hat b.foot'tur ve kasıtlı
      köşeli olabilir (sütun, merdiven boşluğu). */
   return { P, seatCount, kinds, features, outline, auto, manual, cx, cy, rows, leftEdge, rightEdge,
-    bbox: { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) } };
+    bbox: box };
 }
 
 export function buildSeats(b, meta, tpl) {
@@ -662,12 +665,31 @@ export function buildSeats(b, meta, tpl) {
         ...resolveSeatKind(b, o), groupId: resolveSeatGroup(b, o, r, c),
         x: w.x, y: w.y, rot: p.a + b.rot + (o.rot || 0), color: b.color });
     });
-    if (b.kind !== "free" && b.kind !== "table" && row.length && P.counts.length > 1) {
-      [[row[0], -1], [row[row.length - 1], 1]].forEach(([p, k], i) => {
+    if (b.kind !== "free" && b.kind !== "table" && row.length && P.counts.length > 1
+      && b.rowLabelSources?.[r] !== "sheet-row") {
+      const visible = row.flatMap((p, c) => {
+        const o = b.ov[`${r},${c}`] || {};
+        return o.rm || o.gap ? [] : [{ x: p.x + (o.dx || 0), y: p.y + (o.dy || 0) }];
+      });
+      const ends = visible.length ? [
+        visible.reduce((a, p) => p.x < a.x ? p : a),
+        visible.reduce((a, p) => p.x > a.x ? p : a),
+      ] : [];
+      ends.forEach((p, i) => {
+        const k = i === 0 ? -1 : 1;
         const w = toWorld(b, { x: p.x + k * b.seatGap * 1.15, y: p.y }, cos, sin);
-        labels.push({ key: `${b.id}-${r}-${i}`, text: rl, x: w.x, y: w.y });
+        labels.push({ key: `${b.id}-${r}-${i}`, text: rl, x: w.x, y: w.y,
+          blockId: b.id, level: b.level || "", nx: k * cos, ny: k * sin,
+          reach: b.seatGap * 1.15 });
       });
     }
   }
   return { seats, labels };
+}
+
+/** Kaynak şemadaki dış hat görseldir; teknik koltuk zarfını değiştirmez. */
+export function displayOutline(b, meta) {
+  if (!b.visualFoot?.length) return meta.outline;
+  const cos = Math.cos((b.rot || 0) * RAD), sin = Math.sin((b.rot || 0) * RAD);
+  return b.visualFoot.map((p) => toWorld(b, p, cos, sin));
 }

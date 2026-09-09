@@ -2,12 +2,15 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { baglan, aracCagir, INSTRUCTIONS } from "../../chat/kopru.mjs";
 import { sadelestir, aciklama } from "../../chat/saglayici/sema.mjs";
 import { sec, HEPSI } from "../../chat/saglayici/index.mjs";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
 /* ══════════════════════════════════════════════════════════════════════════
    KÖPRÜ ve SAĞLAYICI SEÇİMİ
 
    Köprü NÖTR: hiçbir sağlayıcının biçimini bilmiyor, çeviri adaptörlerin
-   işi. Buradaki iddia, 29 aracın tanımının TEK YERDE (mcp/tools/**)
+   işi. Buradaki iddia, 32 aracın tanımının TEK YERDE (mcp/tools/**)
    kalması ve sonucun kayıpsız taşınması.
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -16,9 +19,28 @@ beforeAll(async () => { k = await baglan(); });
 afterAll(async () => { await k?.kapat(); });
 
 describe("köprü · nötr sonuç", () => {
+  it("gömülü sohbet dosya sistemine export aracı açmaz ve dosya ezemez", async () => {
+    const { tools } = await k.client.listTools();
+    expect(tools.some((tool) => tool.name === "export_plan")).toBe(false);
+    const dir = await mkdtemp(path.join(tmpdir(), "chat-export-"));
+    const target = path.join(dir, "koru.json");
+    await writeFile(target, "koru");
+    try {
+      const r = await aracCagir(k.client, "fs1", "export_plan", { format: "plan", path: target });
+      expect(r.hata).toBe(true);
+      expect(await readFile(target, "utf8")).toBe("koru");
+    } finally { await rm(dir, { recursive: true, force: true }); }
+  });
+
   it("sistem talimatı MCP'den geliyor — ikinci bir metin yok", () => {
-    expect(INSTRUCTIONS).toMatch(/SANTİMETREDİR/);
-    expect(INSTRUCTIONS).toMatch(/TASLAKTIR/);
+    expect(INSTRUCTIONS).toMatch(/scan_reference.*submit_reference_analysis/s);
+    expect(INSTRUCTIONS).toMatch(/Koltuk sayma, koordinat veya bbox üretme/);
+    expect(INSTRUCTIONS).toMatch(/Sonuç\s+taslaktır/);
+    expect(INSTRUCTIONS).toMatch(/editor_capabilities/);
+    expect(INSTRUCTIONS).toMatch(/needsReview.*kullanıcıya sor/s);
+    expect(INSTRUCTIONS).toMatch(/verify_reference verified:true.*tamamlandı/s);
+    expect(INSTRUCTIONS).toMatch(/görünmeyen.*fiziksel nesne ekleme/s);
+    expect(INSTRUCTIONS).toMatch(/dosya sistemine yazma aracı verilmez/);
   });
 
   it("gerçek araç çalışıyor, metin nötr biçimde dönüyor", async () => {

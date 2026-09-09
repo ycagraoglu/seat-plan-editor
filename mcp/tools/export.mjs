@@ -5,6 +5,7 @@ import { buildDbPayload } from "../../src/core/db-export.js";
 import { buildMeta } from "../../src/core/geometry.js";
 import { gateMap } from "../../src/core/gates.js";
 import { stripUnderlay } from "../../src/core/plan.js";
+import { assertDeliveryReady } from "../../src/core/readiness.js";
 import { selectLevelCounts } from "../../src/ui/state/selectors.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
@@ -47,6 +48,7 @@ export function registerExportTools(server, session, z) {
     const plan = session.need();
     const metas = plan.blocks.map((b) => ({ b, m: buildMeta(b) }));
     const gates = gateMap(plan);
+    assertDeliveryReady(plan, metas, gates);
 
     let yuk, ozet;
     if (format === "plan") {
@@ -71,15 +73,10 @@ export function registerExportTools(server, session, z) {
     const uzantiNotu = /\.json$/i.test(dosya) ? ""
       : `\nNOT: içerik JSON (üç biçim de JSON'dur), dosya adı .json değil.`;
 
-    const { findings } = session.derive();
-    const hata = findings.filter((f) => f.t === "err").length;
     return metin([
       `${path.basename(dosya)} yazıldı · ${Math.round(govde.length / 1024)} KB${uzantiNotu}`,
       ozet,
-      hata
-        ? `\nDİKKAT: doğrulamada ${hata} hata var — bu plan yayına hazır DEĞİL.`
-          + ` validate ile bak, düzelt, tekrar yaz.`
-        : "\nDoğrulama temiz. Operatör editörde açıp onaylayabilir.",
+      "\nDoğrulama temiz. Operatör editörde açıp onaylayabilir.",
     ].join("\n"));
   });
 }

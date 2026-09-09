@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { baglan } from "./harness.js";
 import { BUILTINS } from "../../src/venues/index.js";
 import { buildMeta } from "../../src/core/geometry.js";
+import { Session } from "../../mcp/session.mjs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    MCP ARAÇ YÜZEYİ
@@ -31,6 +32,33 @@ describe("bağlantı ve araç listesi", () => {
 
   it("aktif plan yokken araç NET hata verir (sessiz boş sonuç değil)", async () => {
     await expect(t.cagir("plan_summary")).rejects.toThrow(/Aktif plan yok/);
+  });
+
+  it("editör yeteneklerini plan açmadan makine-okunur biçimde anlatır", async () => {
+    const d = await t.jsonCagir("editor_capabilities");
+    expect(d.unit).toBe("cm");
+    expect(d.coordinateSystem.grid.y).toMatch(/ilk sıra/i);
+    expect(d.coordinateSystem.fan.origin).toMatch(/yay merkezi/i);
+    expect(d.blocks.map((x) => x.kind)).toEqual(["grid", "fan", "table"]);
+    expect(d.reference.workflow).toEqual([
+      "create_plan", "set_underlay", "scan_reference", "submit_reference_analysis",
+      "replace_layout", "verify_reference", "accept_import",
+    ]);
+    expect(d.reference.limitations.join(" ")).toMatch(/dijital|OCR/i);
+    expect(d.spreadsheet.extensions).toEqual([".xls", ".xlsx"]);
+    expect(d.spreadsheet.workflow).toEqual(["scan_spreadsheet", "submit_spreadsheet_analysis",
+      "build_spreadsheet_layout", "verify_spreadsheet", "accept_import"]);
+    expect(d.validation.hardErrors).toContain("footprint-overlap-same-level");
+    expect(d.validation.geometryMustBeZero).toContain("seat-clash");
+    expect(d.validation.sourceDependent).toContain("wheelchair-adequacy");
+    expect(d.validation.note).toMatch(/uydurulmaz/);
+    expect(d.session).toMatchObject({ phase: "no-plan",
+      next: ["scan_spreadsheet", "create_plan", "open_plan", "open_sample"] });
+  });
+
+  it("yetenek yanıtı aktif referans aşamasını da bildirir", async () => {
+    await t.cagir("create_plan", { name: "Bağlam" });
+    expect((await t.jsonCagir("editor_capabilities")).session.phase).toBe("blank-plan");
   });
 });
 
@@ -66,11 +94,88 @@ describe("plan yaşam döngüsü", () => {
 describe("blok araçları", () => {
   beforeEach(async () => { await t.cagir("create_plan", { name: "Test Salonu" }); });
 
+  it("görünmez Unicode etiketi blok kodu saymıyor", async () => {
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "\u200b\u200b", level: "P", x: 0, y: 0, rows: 2, cols: 4,
+    })).rejects.toThrow(/görünür bir kod/);
+  });
+
   it("grid blok koltuk sayısından kurulur (rows × cols)", async () => {
     await t.cagir("add_block", { kind: "grid", label: "A", level: "Parter", x: 0, y: 0, rows: 10, cols: 20 });
     const d = await t.jsonCagir("plan_summary");
     expect(d.seatCount).toBe(200);
     expect(d.blocks[0]).toMatchObject({ label: "A", level: "Parter", kind: "grid", seats: 200 });
+  });
+
+  it("MCP üst üste blok ekleyerek geometriyi kötüleştiremez", async () => {
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 4, cols: 8 });
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "B", level: "P", x: 0, y: 0, rows: 4, cols: 8,
+    })).rejects.toThrow(/geri alındı|footprint-overlap|seat-clash/);
+  });
+
+  it("aynı bulgu id'si zaten varken çakışma şiddeti artarsa da geri alır", async () => {
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 4, cols: 8 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 1200, y: 0, rows: 4, cols: 8 });
+    t.session.plan.blocks[1].x = 0;          /* fixture: mevcut tek çakışmalı kötü plan */
+    const onceki = structuredClone(t.session.plan);
+
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "C", level: "P", x: 0, y: 0, rows: 4, cols: 8,
+    })).rejects.toThrow(/geri alındı|kötüleşen|footprint-overlap|seat-clash/);
+    expect(t.session.plan.blocks).toEqual(onceki.blocks);
+  });
+
+  it("eski çakışma azalırken yeni blok çifti oluşursa toplam skor düşse bile geri alır", async () => {
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 4, cols: 8 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 1200, y: 0, rows: 4, cols: 8 });
+    await t.cagir("add_block", { kind: "grid", label: "C", level: "P", x: 2600, y: 0, rows: 2, cols: 3 });
+    await t.cagir("add_block", { kind: "grid", label: "D", level: "P", x: 3600, y: 0, rows: 2, cols: 3 });
+    t.session.plan.blocks.find((b) => b.label === "B").x = 0;
+    const onceki = structuredClone(t.session.plan);
+    await expect(() => t.session.mutate((plan) => {
+      plan.blocks.find((b) => b.label === "B").x = 1200;
+      plan.blocks.find((b) => b.label === "C").x = 3600;
+      return plan;
+    }, "çakışma değişimi")).toThrow(/geri alındı|footprint-overlap|seat-clash/);
+    expect(t.session.plan.blocks).toEqual(onceki.blocks);
+  });
+
+  it("aynı sayıda seat-clash farklı koltuk çiftine taşınırsa geri alır", () => {
+    const session = new Session();
+    session.plan = { phase: "before", blocks: [], shapes: [] };
+    session.derive = (plan) => ({ findings: [{ id: "seat-clash", t: "err", count: 1,
+      pairs: [plan.phase === "before" ? "A:0,0|B:0,0" : "C:0,0|D:0,0"] }] });
+    expect(() => session.mutate((plan) => ({ ...plan, phase: "after" }), "çift değişimi"))
+      .toThrow(/geri alındı|seat-clash/);
+    expect(session.plan.phase).toBe("before");
+  });
+
+  it("MCP kapıyı blok bağlantısı olmadan ekleyip orphan-blocks üretmez", async () => {
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 2, cols: 2 });
+    await expect(t.cagir("add_shape", { type: "door", label: "K1", x: 0, y: -200, w: 100, h: 60 }))
+      .rejects.toThrow(/blocks/i);
+    await t.cagir("add_shape", { type: "door", label: "K1", x: 0, y: -200, w: 100, h: 60, blocks: ["A"] });
+    const d = await t.jsonCagir("plan_summary");
+    expect(d.blocks[0].gates).toEqual(["K1"]);
+  });
+
+  it("aynı dar koridor id'sinde açıklık kötüleşirse geri alır", async () => {
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 3, cols: 5 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 720, y: 0, rows: 3, cols: 5 });
+    t.session.plan.blocks[1].x = 430;
+    const before = structuredClone(t.session.plan);
+    await expect(t.cagir("update_block", { id: "B", x: 380 })).rejects.toThrow(/narrow-aisle|kötüleşen|geri alındı/);
+    expect(t.session.plan.blocks).toEqual(before.blocks);
+  });
+
+  it("sınır dışına taşan koltuk sayısı artarsa geri alır", async () => {
+    await t.cagir("add_shape", { type: "wall", label: "SALON", x: 0, y: 0, w: 1000, h: 1000 });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 2, cols: 3 });
+    t.session.plan.blocks[0].x = 430;
+    const before = structuredClone(t.session.plan);
+    await expect(t.cagir("update_block", { id: "A", cols: 12 })).rejects.toThrow(/outside|sınır|geri alındı|kötüleşen/);
+    expect(t.session.plan.blocks).toEqual(before.blocks);
   });
 
   it("gerçek santimetre üretir — kaynaktan ölçü almadan", async () => {
@@ -173,9 +278,9 @@ describe("kural motoru geri bildirimi — LLM'i kendini düzeltebilir yapan şey
   it("çakışan blokları hangi çift olduğunu söyleyerek bildirir", async () => {
     await t.cagir("create_plan", { name: "Test" });
     await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 5, cols: 10 });
-    const r = await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 100, y: 0, rows: 5, cols: 10 });
-    expect(r).toMatch(/çakış/i);
-    expect(r).toMatch(/A|B/);
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "B", level: "P", x: 100, y: 0, rows: 5, cols: 10,
+    })).rejects.toThrow(/çakış|A↔P · B|A.*B/i);
   });
 });
 
@@ -253,6 +358,15 @@ describe("soğuk LLM testinin bulduğu eksikler", () => {
     const os = await import("node:os"); const p = await import("node:path");
     const yol = p.join(mkdtempSync(p.join(os.tmpdir(), "uzanti-")), "x.csv");
     expect(await t.cagir("export_plan", { format: "seats", path: yol })).toContain("içerik JSON");
+  });
+
+  it("sert geometri hatası varsa export_plan dosya yazmaz", async () => {
+    const { mkdtempSync, existsSync } = await import("node:fs");
+    const os = await import("node:os"); const p = await import("node:path");
+    t.session.plan.blocks[1] = { ...t.session.plan.blocks[1], x: t.session.plan.blocks[0].x, y: t.session.plan.blocks[0].y };
+    const yol = p.join(mkdtempSync(p.join(os.tmpdir(), "export-gate-")), "bad.json");
+    await expect(t.cagir("export_plan", { format: "plan", path: yol })).rejects.toThrow(/yayına hazır değil|footprint-overlap|seat-clash/);
+    expect(existsSync(yol)).toBe(false);
   });
 });
 

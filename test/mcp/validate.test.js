@@ -35,7 +35,8 @@ describe("validate — düzeltilebilir bilgi döndürüyor", () => {
        "geçit için en az 90 cm gerekir", "P · A↔P · B (28.611cm²)".
        target'ı düşürmek döngüyü kırar — bu test onu yakalamalı, mesajın
        içindeki sayıya bakarak DEĞİL. */
-    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 600, y: 0, rows: 5, cols: 10 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 1400, y: 0, rows: 5, cols: 10 });
+    t.session.plan.blocks[1] = { ...t.session.plan.blocks[1], x: 600 };
     const v = await t.jsonCagir("validate", { severity: "err" });
     const c = v.findings.find((f) => f.rule === "footprint-overlap-same-level");
     expect(c.target).toBeTruthy();
@@ -49,7 +50,8 @@ describe("validate — düzeltilebilir bilgi döndürüyor", () => {
   });
 
   it("bulgu ilgili BLOK KİMLİKLERİNİ veriyor", async () => {
-    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 600, y: 0, rows: 5, cols: 10 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 1400, y: 0, rows: 5, cols: 10 });
+    t.session.plan.blocks[1] = { ...t.session.plan.blocks[1], x: 600 };
     const v = await t.jsonCagir("validate", { severity: "err" });
     const c = v.findings.find((f) => f.rule === "footprint-overlap-same-level");
     expect(c.blocks.length).toBeGreaterThanOrEqual(2);
@@ -67,9 +69,13 @@ describe("KABUL: LLM kendini düzeltip temize çıkabiliyor", () => {
   it("çakışma → uzaklaştır → tekerlekli sandalye hedefi → ekle → TEMİZ", async () => {
     await t.cagir("create_plan", { name: "Döngü" });
     await t.cagir("add_block", { kind: "grid", label: "A", level: "P", x: 0, y: 0, rows: 5, cols: 10 });
-    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 600, y: 0, rows: 5, cols: 10 });
+    await t.cagir("add_block", { kind: "grid", label: "B", level: "P", x: 1400, y: 0, rows: 5, cols: 10 });
+    t.session.plan.blocks[1] = { ...t.session.plan.blocks[1], x: 600 };
     await t.cagir("add_shape", { type: "stage", x: 0, y: -1500, w: 1200, h: 400, label: "SAHNE" });
-    await t.cagir("add_shape", { type: "door", x: -1500, y: 0, w: 300, h: 300, label: "KAPI 1" });
+    await t.cagir("add_shape", {
+      type: "door", x: -1500, y: 0, w: 300, h: 300, label: "KAPI 1",
+      blocks: ["A", "B"],
+    });
     await t.cagir("auto_gates");
 
     /* 1 — başlangıçta hata var */

@@ -1,6 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createMcpServer, INSTRUCTIONS } from "../mcp/server.mjs";
+import { createMcpServer, CHAT_INSTRUCTIONS } from "../mcp/server.mjs";
 
 /* ══════════════════════════════════════════════════════════════════════════
    KÖPRÜ — MCP araçları ↔ sohbet katmanı
@@ -9,7 +9,7 @@ import { createMcpServer, INSTRUCTIONS } from "../mcp/server.mjs";
    çağırıyor. Bu dosyanın tek işi MCP'ye bağlanmak ve sonucu NÖTR bir biçimde
    döndürmek.
 
-   NEDEN KÖPRÜ: 29 aracın şeması, açıklaması ve doğrulaması mcp/tools/**
+   NEDEN KÖPRÜ: 32 aracın şeması, açıklaması ve doğrulaması mcp/tools/**
    içinde duruyor ve soğuk LLM testleriyle defalarca düzeltildi. Sohbet için
    ikinci bir tanım yazmak o düzeltmelerin bir kopyasını daha bakmak demekti.
    MCP sunucusuna SÜREÇ-İÇİ bağlanıp listTools() ile şemayı OKUYORUZ.
@@ -20,11 +20,11 @@ import { createMcpServer, INSTRUCTIONS } from "../mcp/server.mjs";
    sağlayıcı eklemek tek dosya demek.
    ══════════════════════════════════════════════════════════════════════════ */
 
-export { INSTRUCTIONS };
+export { CHAT_INSTRUCTIONS as INSTRUCTIONS };
 
 /** Süreç-içi MCP istemcisi. mcp/cli.mjs ile aynı kalıp — ağ yok, taşıma yok. */
-export async function baglan() {
-  const { server, session } = createMcpServer();
+export async function baglan({ context = null } = {}) {
+  const { server, session } = createMcpServer({ context, profile: "chat" });
   const [a, b] = InMemoryTransport.createLinkedPair();
   const client = new Client({ name: "panel-sohbet", version: "0" });
   await Promise.all([server.connect(b), client.connect(a)]);

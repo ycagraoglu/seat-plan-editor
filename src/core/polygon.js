@@ -1,3 +1,5 @@
+import { pointBounds } from "./bounds.js";
+
 /** Poligonu kendi dış normali boyunca büyütür.
  *  Önce payı ağırlık merkezinden dışa doğru veriyordum; uzun ve sığ
  *  bloklarda bu pay yanlış yöne gidip koltukları dışarıda bırakıyordu. */
@@ -76,10 +78,8 @@ export function clipPoly(subject, clip) {
 }
 /** İki dış hattın kesişim alanı (cm²) — kesişmiyorsa 0. */
 export function outlineOverlapArea(polyA, polyB) {
-  const xa = polyA.map((p) => p.x), ya = polyA.map((p) => p.y);
-  const xb = polyB.map((p) => p.x), yb = polyB.map((p) => p.y);
-  if (Math.max(...xa) < Math.min(...xb) || Math.max(...xb) < Math.min(...xa)) return 0;
-  if (Math.max(...ya) < Math.min(...yb) || Math.max(...yb) < Math.min(...ya)) return 0;
+  const a = pointBounds(polyA), b = pointBounds(polyB);
+  if (!a || !b || a.x1 < b.x0 || b.x1 < a.x0 || a.y1 < b.y0 || b.y1 < a.y0) return 0;
   const result = clipPoly(polyCCW(polyA), polyCCW(polyB));
   return result.length < 3 ? 0 : Math.abs(polySignedArea(result));
 }

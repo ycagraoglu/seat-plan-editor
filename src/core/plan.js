@@ -1,4 +1,5 @@
 import { buildMeta, buildSeats } from "./geometry.js";
+import { bboxUnion, pointBounds } from "./bounds.js";
 
 /* ─────────────────────────  SÜRÜM FARKI  ─────────────────────────
    İki plan arasındaki koltuk kimliği farkı. Kaldırılan kimlik = satılmış
@@ -58,8 +59,8 @@ export const FALLBACK_HOME = { x: -2000, y: -2000, w: 4000, h: 4000 };
 export function shapeBBox(s) {
   if (!s || !Number.isFinite(s.x) || !Number.isFinite(s.y)) return null;
   if (s.kind === "poly" && Array.isArray(s.pts) && s.pts.length) {
-    const xs = s.pts.map((p) => s.x + p.x), ys = s.pts.map((p) => s.y + p.y);
-    return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+    const b = pointBounds(s.pts);
+    return { x0: s.x + b.x0, x1: s.x + b.x1, y0: s.y + b.y0, y1: s.y + b.y1 };
   }
   const w = s.w || 0, h = s.h || 0;
   return { x0: s.x - w / 2, x1: s.x + w / 2, y0: s.y - h / 2, y1: s.y + h / 2 };
@@ -75,11 +76,7 @@ export function contentBBox(plan) {
   const bb = (plan?.blocks || []).map(buildMeta).map((m) => m.bbox)
     .concat((plan?.shapes || []).map(shapeBBox))
     .filter((b) => b && Number.isFinite(b.x0) && Number.isFinite(b.y0));
-  if (!bb.length) return null;
-  return {
-    x0: Math.min(...bb.map((b) => b.x0)), x1: Math.max(...bb.map((b) => b.x1)),
-    y0: Math.min(...bb.map((b) => b.y0)), y1: Math.max(...bb.map((b) => b.y1)),
-  };
+  return bboxUnion(bb);
 }
 
 export function planHome(plan, bos = FALLBACK_HOME) {

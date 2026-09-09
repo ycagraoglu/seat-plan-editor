@@ -34,9 +34,6 @@ async function kur(t) {
   /* Sahne ve orkestra çukuru */
   await t.cagir("add_shape", { type: "stage", x: 0, y: 620, w: 1500, h: 750, label: "SAHNE", fs: 90 });
   await t.cagir("add_shape", { type: "screen", x: 0, y: 140, w: 950, h: 220, label: "ORKESTRA ÇUKURU", fs: 46 });
-  for (const [n, x] of [[1, -700], [2, 700]]) {
-    await t.cagir("add_shape", { type: "door", x, y: 940, w: 90, h: 90, label: `KAPI ${n}`, fs: 34 });
-  }
 
   /* Parter — sahne önü yelpaze */
   await t.cagir("add_block", {
@@ -79,6 +76,13 @@ async function kur(t) {
   }
   await t.cagir("add_accessible", { level: "Zemin Loca", pairs: 2 });
   await t.cagir("add_accessible", { labels: ["P"], pairs: 2 });
+  const labels = (await t.jsonCagir("plan_summary")).blocks.map((b) => b.label);
+  for (const [n, x] of [[1, -700], [2, 700]]) {
+    await t.cagir("add_shape", {
+      type: "door", x, y: 940, w: 90, h: 90, label: `KAPI ${n}`, fs: 34,
+      blocks: labels,
+    });
+  }
   await t.cagir("auto_gates");
 }
 

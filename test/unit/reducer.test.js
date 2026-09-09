@@ -277,6 +277,18 @@ describe("switchVenue", () => {
     expect(s.saveState).toBe("saved");
     expect(s.venues).toBe(dirty.venues);
   });
+
+  it("import/accept yeni planı tek geçişte açar ve ilk kaydı tetiklemek için rev artırır", () => {
+    const venues = venuesFixture();
+    const accepted = { ...venues.b, key: "accepted" };
+    const s = reducer(initialState(venues, "a"), {
+      type: "import/accept", payload: { key: "accepted", plan: accepted },
+    });
+    expect(s.vk).toBe("accepted");
+    expect(s.venues.accepted).toBe(accepted);
+    expect(s.rev).toBe(1);
+    expect(s.view).toBe(accepted.home);
+  });
 });
 
 describe("blok silince seçim temizlenir", () => {

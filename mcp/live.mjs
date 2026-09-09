@@ -34,6 +34,20 @@ import { stripUnderlay } from "../src/core/plan.js";
 
 export const ONEK = "ai-";
 
+/** Loginli ana uygulama için MCP kimliği. Yerelde ikisi de boş kalabilir. */
+export const editorApi = (context = null) => {
+  const api = context ? context.api : process.env.SEAT_EDITOR_API;
+  return api ? String(api).replace(/\/+$/, "") : null;
+};
+
+export const editorHeaders = (ek = {}, context = null) => ({
+  ...((context ? context.token : process.env.SEAT_EDITOR_TOKEN)
+    ? { authorization: `Bearer ${context ? context.token : process.env.SEAT_EDITOR_TOKEN}` } : {}),
+  ...((context ? context.tenant : process.env.SEAT_EDITOR_TENANT)
+    ? { "x-tenant-id": context ? context.tenant : process.env.SEAT_EDITOR_TENANT } : {}),
+  ...ek,
+});
+
 /** Canlı görünümde kullanılacak anahtar. Ön ek zaten varsa iki kez konmaz. */
 export const canliAnahtar = (key) => {
   const k = String(key || "plan");
@@ -50,8 +64,8 @@ export const canliAnahtar = (key) => {
 let bekleyen = null;
 export const bekle = () => bekleyen || Promise.resolve();
 
-export function canliYaz(plan, adim, yeni, onKesildi) {
-  const taban = process.env.SEAT_EDITOR_API;
+export function canliYaz(plan, adim, yeni, onKesildi, context = null) {
+  const taban = editorApi(context);
   if (!taban || !plan) return;
   const govde = JSON.stringify({
     plan: { ...stripUnderlay(plan), key: canliAnahtar(plan.key) },
@@ -64,9 +78,11 @@ export function canliYaz(plan, adim, yeni, onKesildi) {
        "bu, devam değil, baştan başlama" diyor. */
     yeni: !!yeni,
   });
-  bekleyen = fetch(`${taban.replace(/\/+$/, "")}/live`, {
-    method: "PUT", headers: { "content-type": "application/json" }, body: govde,
-  })
+  /* Yeni boş plan ile hemen arkasından gelen ilk değişiklik ters sırada
+     ulaşırsa eski çizim geri gelebilir. Canlı yazmaları çağrı sırasıyla yap. */
+  bekleyen = (bekleyen || Promise.resolve()).then(() => fetch(`${taban.replace(/\/+$/, "")}/live`, {
+    method: "PUT", headers: editorHeaders({ "content-type": "application/json" }, context), body: govde,
+  }))
     .then((r) => { if (r.status === 409 && onKesildi) onKesildi(); })
     .catch(() => { /* sunucu kapalı/erişilemez — çizim devam etmeli */ });
 }

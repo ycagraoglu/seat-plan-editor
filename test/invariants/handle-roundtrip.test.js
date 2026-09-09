@@ -112,6 +112,15 @@ describe("invariant: tutamaç duruş noktası kendi formülünde no-op kalıyor"
     expect(keys).toEqual(expect.arrayContaining(["rot", "curve", "rows"]));
   });
 
+  it("çok noktalı dış hat tutamaklarını yalnız dış hat düzenlenirken gösterir", () => {
+    const grid = { ...base, kind: "grid", cols: 10, rows: 3, taper: 0, curve: 0,
+      foot: Array.from({ length: 24 }, (_, i) => ({ x: i * 10, y: i % 2 ? 100 : 0 })) };
+    const m = buildMeta(grid);
+    expect(handlesFor(grid, m).every((h) => h.k.startsWith("foot:"))).toBe(true);
+    expect(handlesFor(grid, m, false).map((h) => h.k)).toEqual(
+      expect.arrayContaining(["rot", "curve", "rows"]));
+  });
+
   it("testin testi: yuvarlama hassasiyetinde olmayan rot/r0/aStart/aEnd YİNE DE sunulur", () => {
     /* İkinci turda yapılan hata BUYDU: bu alanları da GATED_HANDLES'a
        sokmuştuk. Koordinatör düzeltti — burada kalıcı olarak kilitleniyor:

@@ -62,7 +62,7 @@ describe("sunucu ayrı süreçte stdio üstünden çalışıyor", () => {
   it("büyük base64 PNG boruyu bozmadan geçiyor", async () => {
     /* En büyük gerçekçi yük: 52.838 koltukluk plan, geniş render. */
     await cagir("open_sample", { key: "fener" });
-    const r = await cagir("render", { scope: "all", width: 2000 });
+    const r = await cagir("render", { scope: "all", width: 2000, outlines: true });
     const buf = Buffer.from(r.content.find((c) => c.type === "image").data, "base64");
     expect(buf.length).toBeGreaterThan(100_000);
     expect(buf.subarray(0, 4)).toEqual(PNG_BASLIK);

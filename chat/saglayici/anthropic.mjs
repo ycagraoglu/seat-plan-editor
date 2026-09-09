@@ -15,7 +15,14 @@ export const araclariCevir = (tools) => tools.map((t) => ({
   input_schema: t.inputSchema || { type: "object", properties: {} },
 }));
 
-export const kullaniciEkle = (mesajlar, metin) => mesajlar.push({ role: "user", content: metin });
+export const kullaniciEkle = (mesajlar, metin, gorseller = []) => mesajlar.push({
+  role: "user",
+  content: gorseller.length ? [
+    { type: "text", text: metin },
+    ...gorseller.map((g) => ({ type: "image",
+      source: { type: "base64", media_type: g.mimeType, data: g.data } })),
+  ] : metin,
+});
 
 /* Görsel araç sonucunun içinde gitti — ayrı tura gerek yok. */
 export const gorselEkle = () => {};

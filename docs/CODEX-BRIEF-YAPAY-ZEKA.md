@@ -55,7 +55,7 @@ server/index.mjs ── chat/oturumlar.mjs ── chat/dongu.mjs
                                                           │
                                                           ▼
                                               mcp/server.mjs → mcp/tools/**
-                                                          │  29 araç
+                                                          │  32 araç
                                                           ▼
                                                     src/core/**
                                                     (saf: React yok, DOM yok)
@@ -71,7 +71,7 @@ server/index.mjs ── chat/oturumlar.mjs ── chat/dongu.mjs
 | `mcp/live.mjs` | 72 | Canlı görünüme yazma, `ai-` ad alanı |
 | `mcp/render.mjs` | 196 | SVG→PNG, LOD, kat renkleri, altlık bindirmesi |
 | `mcp/cli.mjs` | 116 | Hata ayıklama arayüzü (üretimde kullanılmaz) |
-| `mcp/tools/*.mjs` | 1206 | 29 araç. **Tek kaynak** |
+| `mcp/tools/*.mjs` | 1206+ | 32 araç. **Tek kaynak** |
 | `chat/kopru.mjs` | 72 | MCP ↔ sohbet. Nötr sonuç üretir |
 | `chat/dongu.mjs` | 93 | Araç döngüsü. Sağlayıcıdan bağımsız |
 | `chat/oturumlar.mjs` | 102 | Konuşma başına oturum, akış, arka plan turu |
@@ -404,7 +404,7 @@ export async function baglan() {
 ```
 
 Sonra `client.listTools()` → şemalar. **Bu, bu katmanın bel kemiği.**
-29 aracın şeması, açıklaması ve doğrulaması `mcp/tools/**` içinde ve soğuk
+32 aracın şeması, açıklaması ve doğrulaması `mcp/tools/**` içinde ve soğuk
 LLM testleriyle defalarca düzeltildi. Sohbet için ikinci bir tanım yazmak, o
 düzeltmelerin bir kopyasını daha bakmak demek. Bir araç değişince sohbet
 tarafında **hiçbir şey yapılmıyor**.
@@ -593,6 +593,69 @@ katmanından dolduracak. Başlık yoksa tek kiracılı davranış sürüyor.
 // Ana uygulamanın proxy'si:
 headers["x-tenant-id"] = oturum.tenantId;
 ```
+
+### 6.1 · GÜVENLİK — dağıtımdan ÖNCE oku
+
+Bu bölüm bir öneri listesi değil; **atlanırsa veri kaybı ve fatura demek.**
+
+#### Bu API'de kimlik doğrulama YOK
+
+`server/index.mjs`'te tek satır auth kodu yok. Bilerek: editörün canlıda
+login'in arkasında bir sayfa olacağı varsayılıyor. Sonuç, açıkça:
+
+`/api/*` internete açık bırakılırsa **adresi bilen herkes**
+
+- her kiracının bütün oturma planlarını okur (`GET /api/plans`),
+- üzerine yazar ve siler (`PUT`/`DELETE /api/plans/<key>`),
+- `POST /api/chat`'e vurup **senin API anahtarını harcar** (hız sınırı yok),
+- `x-tenant-id` başlığını kendi yazıp **başka müşterinin verisine geçer.**
+
+Son madde en sinsisi: sunucu başlığa koşulsuz güveniyor, çünkü onu dolduran
+tarafın güvenilir olduğu varsayılıyor. **Başlığın tarayıcıdan gelmesine asla
+izin verme** — ters vekilde ez ve oturumdan doldur.
+
+#### Zorunlu üç kapı
+
+```nginx
+location /seat-api/ {
+    auth_request /_oturum_dogrula;                    # 1) login şart
+    proxy_set_header X-Tenant-Id $oturum_tenant_id;   # 2) kiracıyı SEN yaz
+    proxy_hide_header Access-Control-Allow-Origin;    # 3) CORS'u kapat
+    proxy_pass http://127.0.0.1:8787/api/;
+}
+```
+
+**1)** Auth katmanı senin. Depo bunu sağlamıyor.
+
+**2)** `proxy_set_header` istemciden geleni EZER — istenen davranış bu.
+
+**3)** Sunucu `access-control-allow-origin: *` gönderiyor
+(`server/index.mjs:52`), geliştirme kolaylığı için. Editör kendi domaininde
+duracaksa buna gerek yok.
+
+#### Dağıtım kontrol listesi
+
+| # | İş | Nasıl doğrularsın |
+|---|---|---|
+| 1 | Node **22.5+** | `node -v`. Sunucu `node:sqlite` kullanıyor; Node 18'de `ERR_UNKNOWN_BUILTIN_MODULE` ile ilk satırda ölür |
+| 2 | Editörü derle | `VITE_API_BASE=https://…/seat-api npm run build` — **derleme anında** pakete gömülür (`src/store/index.js:128`), sonradan değişmez |
+| 3 | `dist/` servis et | Node sunucusu **statik dosya servis etmiyor**, yalnız `/api/*` konuşuyor |
+| 4 | Sunucuyu başlat | `DB_FILE=… PORT=8787 <SAGLAYICI>_API_KEY=… node server/index.mjs` |
+| 5 | Ters vekil | Yukarıdaki üç kapı |
+| 6 | Anahtar görülüyor mu | `curl …/seat-api/chat/durum` → `{"acik":true}` |
+| 7 | **Auth çalışıyor mu** | Aynı curl'ü **login olmadan** at. Cevap alıyorsan **dur ve düzelt** |
+
+Anahtar yalnız sunucuda durur; tarayıcıya asla gitmez. Panelin gördüğü tek
+şey `{"acik":…}`.
+
+#### Bilerek kapsam dışı — bilmen gerekenler
+
+| Sınır | Sonucu |
+|---|---|
+| SQLite tek dosya (`node:sqlite`) | Tek sunucu için yeterli. Yatay büyütürsen iki sunucu ayrı dosyaya yazar — gerçek yükte Postgres'e taşı |
+| `node:sqlite` deneysel | Çalışıyor, ama Node sürüm yükseltmelerinde davranışı değişebilir |
+| `/api/chat`'te hız sınırı yok | Tur başına 40 araç sınırı VAR, tur sayısına sınır YOK. Login arkasında bile bir kullanıcı faturayı şişirebilir |
+| Yayım (publish) API'si açık | Yapay zekâda yayım aracı yok, ama `/api/versions` rotası var — yetkiyi sen sınırla |
 
 ### Şema kurulumu tekrarlanabilir olmalı
 
