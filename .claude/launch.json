@@ -21,6 +21,14 @@
         "4173"
       ],
       "port": 4173
+    },
+    {
+      "name": "seat-editor-live",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/live.mjs"
+      ],
+      "port": 5173
     }
   ]
 }

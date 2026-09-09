@@ -65,7 +65,7 @@ function sectionGeometry(b, m) {
       a_start: r1(b.aStart), a_end: r1(b.aEnd), rotation: r1(b.rot || 0) } };
   }
   if (b.kind === "table" && b.tShape === "round") {
-    const R = Math.max(...m.outline.map((p) => Math.hypot(p.x - m.cx, p.y - m.cy)));
+    const R = m.outline.reduce((max, p) => Math.max(max, Math.hypot(p.x - m.cx, p.y - m.cy)), 0);
     return { geometry_kind: "ellipse.v1", geometry_data: {
       cx: r1(m.cx), cy: r1(m.cy), rx: r1(R), ry: r1(R), rotation: 0 } };
   }

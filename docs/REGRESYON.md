@@ -113,9 +113,9 @@ beş madde daha:
    bloklar" yerine yanlışlıkla "görünen/süzülmüş bloklar"ı fit etmeye
    başlasa hiçbir test bunu yakalamaz.
 2. **LOD eşiği (blok görünümü ↔ koltuk görünümü)** — `seatMode = shownSeats
-   <= SEAT_BUDGET` (`SEAT_BUDGET = 3500`, `src/PlanEditor.jsx`). Bu sabitin
-   değişmesi ya da anahtarın tamamen kırılması (`test`/`scripts` içinde
-   `SEAT_BUDGET`/`seatMode` hiç geçmiyor) test edilmez.
+   <= SEAT_BUDGET` (`SEAT_BUDGET = 10000`, `src/PlanEditor.jsx`). MCP render
+   tarafındaki orta ölçek/stadyum ayrımı `test/mcp/render.test.js` içinde
+   sabitlendi; canlı React eşiğinin kendisi hâlâ DOM testiyle korunmuyor.
 3. **POI ikonlarının iki temada da görünmesi** — `design-assets.test.js`
    token/POI'nin sadece VAR OLDUĞUNU doğruluyor (bkz. §2); A7 token'ları
    `src/styles/tokens.css`'e taşısa da bu sınır değişmedi. Simgelerin koyu

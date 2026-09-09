@@ -7,3 +7,7 @@ dist-ssr
 
 # uretilen veritabani (npm run db:build ile yeniden kurulur)
 db/*.db
+
+# MCP komut satırı oturum/çıktı dosyaları
+.mcp-session.json
+.mcp-render.png

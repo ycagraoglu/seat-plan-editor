@@ -1,21 +1,25 @@
 import React, { useState, useReducer, useMemo, useRef, useCallback, useEffect } from "react";
-import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats, resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND, sectionPath, resolveBlockSectionId, resolvePlanSections } from "./core/geometry.js";
+import { RAD, DEF, prep, rowPts, toWorld, toLocal, polarPt, buildMeta, buildSeats, displayOutline, resolveSeatKind, seatKindWidth, legacyAtToKind, DEFAULT_SEAT_KIND, sectionPath, resolveBlockSectionId, resolvePlanSections } from "./core/geometry.js";
 import { offsetPoly } from "./core/polygon.js";
 import { reLabel, relabelPatch, relevelPatch, freeLabel, DEF_NUM } from "./core/labels.js";
 import { linearArray, radialArray, arrayPreview, alignSetup, alignDelta } from "./core/arrays.js";
-import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey } from "./core/identity.js";
-import { diffPlans, stripUnderlay, planFingerprint, planHome } from "./core/plan.js";
+import { DEF_TPL, ID_TOKENS, parseCSV, mapColumns, seatKey, matchSeats, applyAdoptedIds } from "./core/identity.js";
+import { diffPlans, stripUnderlay, planFingerprint, planHome, contentBBox } from "./core/plan.js";
+import { disEtiketYeri, etiketSigdirici, mergeRowLabels } from "./core/labelfit.js";
 import { gateMap, autoGates } from "./core/gates.js";
 import { nid } from "./core/ids.js";
 import { buildSeatsPayload } from "./core/export.js";
 import { buildDbPayload, dbSeatRows } from "./core/db-export.js";
 import { Store } from "./store/index.js";
 import { buildCtx, runRules } from "./core/rules.js";
+import { deliveryReadiness, markSourceVerified,
+  planFingerprint as sourceFingerprint } from "./core/readiness.js";
 import { BUILTINS, EMPTY } from "./venues/index.js";
-import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
 import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels, deleteTarget } from "./ui/state/selectors.js";
+import { PITCH_DIMS } from "./core/pitches.js";
+import { bboxUnion, pointBounds } from "./core/bounds.js";
 
 /* ══════════════════════════════════════════════════════════════════════════
    OTURMA PLANI EDİTÖRÜ · v7
@@ -39,7 +43,8 @@ import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSe
       kimliklerini yok ediyor? Satılmış biletin karşılığı odur.
    ══════════════════════════════════════════════════════════════════════════ */
 
-const SEAT_BUDGET = 3500;
+const SEAT_BUDGET = 10000;
+const READABLE_SEAT_PX = 32;
 
 
 
@@ -77,6 +82,7 @@ const ICONS = {
   info: [{d:"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"},{d:"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"}],
   undo: [{d:"M9 13l-4 -4l4 -4"},{d:"M5 9h7a4 4 0 1 1 0 8h-1"}],
   redo: [{d:"M15 13l4 -4l-4 -4"},{d:"M19 9h-7a4 4 0 1 0 0 8h1"}],
+  trash: [{d:"M4 7h16"},{d:"M10 11v6"},{d:"M14 11v6"},{d:"M5 7l1 14h12l1 -14"},{d:"M9 7v-3h6v3"}],
 };
 
 /* Tabler Icons (MIT) — 24'lük ızgara, 2 kalınlık, yuvarlak uçlar.
@@ -204,6 +210,13 @@ const FEATURES = {
 const seatBadge = (s) => (s.seatKind !== DEFAULT_SEAT_KIND && ATTRS[s.seatKind])
   || (s.seatFeatures[0] && FEATURES[s.seatFeatures[0]]) || null;
 
+export const koltukNumarasiGoster = (pxPerCm) => pxPerCm * DEF.seatW >= 12;
+export const okunurlukZoomPct = (pxPerCm) =>
+  Math.round((pxPerCm * DEF.seatW / READABLE_SEAT_PX) * 100) || 100;
+export const okunurGorunumGenisligi = (canvasWidth) =>
+  Math.round(canvasWidth / (READABLE_SEAT_PX / DEF.seatW));
+export const okunurZoomKisayolu = (key) => key === "0";
+
 /* features dizisini FEATURES'in kanonik anahtar sırasına göre sıralar +
    tekilleştirir — brush/panelde biriken toggle'lar HER ZAMAN aynı sırada
    dursun diye (sameAttr'ın dizi eşitliği buna güvenir, sırasız bir Set
@@ -244,8 +257,8 @@ const arc = (x1, y1, r, sw, x2, y2) =>
 
 const PITCHES = {
   football: {
-    label: "Futbol sahası (FIFA)", w: 10500, h: 6800, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
-    note: "105 × 68 m · nizami",
+    ...PITCH_DIMS.football, surf: "#2B5236", surf2: "#316049", line: "#DCE8DD", lw: 12,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
@@ -269,9 +282,9 @@ const PITCHES = {
   },
 
   basket: {
-    label: "Basketbol sahası (FIBA)", w: 2800, h: 1500, surf: "#8A5A32", surf2: "#8F6239",
+    ...PITCH_DIMS.basket, surf: "#8A5A32", surf2: "#8F6239",
     stripes: 21, line: "#F2E8DA", lw: 5, blw: 11, paint: "#1B4E75",
-    note: "28 × 15 m · nizami",
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "circle", cx: 0, cy: 0, r: 180, fill: this.paint });
@@ -297,8 +310,8 @@ const PITCHES = {
   },
 
   volley: {
-    label: "Voleybol sahası (FIVB)", w: 1800, h: 900, surf: "#2F5F92", line: "#F4F4F0", lw: 5,
-    note: "18 × 9 m · nizami",
+    ...PITCH_DIMS.volley, surf: "#2F5F92", line: "#F4F4F0", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 8 });
@@ -309,8 +322,8 @@ const PITCHES = {
   },
 
   handball: {
-    label: "Hentbol sahası (IHF)", w: 4000, h: 2000, surf: "#4A7C7E", line: "#F0F4F4", lw: 5,
-    note: "40 × 20 m · nizami",
+    ...PITCH_DIMS.handball, surf: "#4A7C7E", line: "#F0F4F4", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W });
@@ -335,8 +348,8 @@ const PITCHES = {
   },
 
   tennis: {
-    label: "Tenis kortu (ITF)", w: 2377, h: 1097, surf: "#2E6DA4", line: "#F4F4F0", lw: 5,
-    note: "23,77 × 10,97 m · çiftler",
+    ...PITCH_DIMS.tennis, surf: "#2E6DA4", line: "#F4F4F0", lw: 5,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, sW = 411.5, m = [];
       [-1, 1].forEach((v) => m.push({ t: "line", x1: -L, y1: v * sW, x2: L, y2: v * sW })); // tekler
@@ -351,8 +364,8 @@ const PITCHES = {
   },
 
   hockey: {
-    label: "Buz hokeyi (IIHF)", w: 6000, h: 3000, surf: "#DCE6EC", line: "#B03A4A", lw: 8, rx: 850,
-    note: "60 × 30 m · nizami",
+    ...PITCH_DIMS.hockey, surf: "#DCE6EC", line: "#B03A4A", lw: 8, rx: 850,
+    
     marks(w, h) {
       const L = w / 2, W = h / 2, m = [];
       m.push({ t: "line", x1: 0, y1: -W, x2: 0, y2: W, lw: 30 });                      // orta kırmızı
@@ -373,8 +386,8 @@ const PITCHES = {
     },
   },
 
-  generic: { label: "Düz zemin", w: 3000, h: 2000, surf: "#22452C", line: "#3E6B4A", lw: 8,
-    note: "işaretlemesiz", marks: () => [] },
+  generic: { ...PITCH_DIMS.generic, surf: "#22452C", line: "#3E6B4A", lw: 8,
+     marks: () => [] },
 };
 
 
@@ -532,18 +545,161 @@ export function adoptPlan(raw, key) {
      görülmeden GÖLGELENİRDİ. ...b spread'i ne varsa (attr, ya da
      seatKind/seatFeatures) olduğu gibi taşır, resolveSeatKind ikisini de
      çalışma anında doğru yorumlar. */
-  const blocks = raw.blocks.map((b) => ({
-    kind: "grid", x: 0, y: 0, rot: 0, cols: 10, rows: 5, counts: "", align: "center",
-    seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "",
-    mode: "span", r0: 500, aStart: -40, aEnd: 40, aCenter: 0, pts: [],
-    ...b, id: nid(), ov: b.ov || {}, num: { ...DEF_NUM, ...(b.num || {}) },
-    label: String(b.label ?? "A"), level: b.level || "",
-  }));
+  const blocks = raw.blocks.map((b) => {
+    const id = nid();
+    return {
+      kind: "grid", x: 0, y: 0, rot: 0, cols: 10, rows: 5, counts: "", align: "center",
+      seatGap: DEF.seatGap, rowGap: DEF.rowGap, curve: 0, taper: 0, color: "",
+      mode: "span", r0: 500, aStart: -40, aEnd: 40, aCenter: 0, pts: [],
+      ...b, id, ov: b.ov || {}, num: { ...DEF_NUM, ...(b.num || {}) },
+      label: String(b.label ?? "A"), level: b.level || "",
+    };
+  });
   const shapes = (raw.shapes || []).map((s) => ({ ...s, id: nid("s") }));
   /* home türetmesi core/plan.js'te TEK kaynak — burada kopyası vardı ve
      bu yoldan geçmeyen (yerleşik salon, reducer) her giriş korumasızdı. */
-  return { key, name: raw.name || "İçe aktarılan plan", unit: "cm",
+  const adopted = { key, name: raw.name || "İçe aktarılan plan", unit: "cm",
     home: planHome({ ...raw, blocks }, EMPTY.home), underlay: null, blocks, shapes };
+  if (!raw.importVerification) return adopted;
+  return { ...adopted, importVerification: {
+    kind: raw.importVerification.kind || "json-import",
+    scanId: raw.importVerification.scanId || null,
+    sourceHash: raw.importVerification.sourceHash || null,
+    sourceVerified: false,
+    geometryVerified: false,
+    identityVerified: false,
+    fingerprint: null,
+    notes: [...(raw.importVerification.notes || []), "JSON içe aktarma doğrulama kanıtı güvenilir sayılmadı."],
+    invalidatedAt: new Date().toISOString(),
+    invalidationReason: "json-import-untrusted",
+  } };
+}
+
+export async function persistAcceptedImport(raw, key, store = Store) {
+  const verification = raw?.importVerification;
+  if (!verification?.sourceVerified || !verification.geometryVerified
+    || verification.fingerprint !== sourceFingerprint(raw)) {
+    throw new Error("Kabul edilen kaynak planının doğrulama damgası geçersiz.");
+  }
+  const adopted = adoptPlan({ ...raw, importVerification: undefined }, key);
+  const plan = markSourceVerified(adopted, { ...verification, notes: verification.notes || [] });
+  const saved = await store.save(plan.key, stampSchema(plan));
+  return { plan, saved };
+}
+
+export function visibleCanvasPlan(activePlan, importJob) {
+  return importJob?.previewPlan || activePlan;
+}
+
+export function canvasRenderState(activePlan, importJob) {
+  const plan = visibleCanvasPlan(activePlan, importJob);
+  const isImportPreview = plan !== activePlan;
+  return { plan, isImportPreview, interactive: !isImportPreview,
+    levelFilter: isImportPreview ? "*" : null, fitPlan: plan };
+}
+
+export const livePollingAllowed = (importJob) => !importJob?.previewPlan;
+
+export function deliveryExportState(plan, isImportPreview = false) {
+  if (isImportPreview) return { ok: false, reason: "Önizleme kabul edilmeden dışa aktarılamaz", blockers: [] };
+  const readiness = deliveryReadiness(plan);
+  return { ok: readiness.ready, reason: readiness.ready ? "" : "Dışa aktarım engellendi: "
+    + [...new Set(readiness.blockers.map((f) => f.id))].join(", "), blockers: readiness.blockers };
+}
+
+export function buildManualImageImportAnalysis(job) {
+  if (!job?.scan) throw new Error("Önce görsel taranmalı.");
+  const groups = new Map();
+  const excludedRows = [];
+  const reviewedRowIds = [];
+  const errors = [];
+  for (const row of job.scan.rows || []) {
+    const a = job.rowAssignments?.[row.rowId] || {};
+    if (a.action === "exclude") {
+      const reason = String(a.reason || "").trim();
+      if (!reason) errors.push(`${row.rowId}: dışlama nedeni gerekli`);
+      else excludedRows.push({ rowId: row.rowId, reason });
+      if (a.reviewed || row.needsReview) reviewedRowIds.push(row.rowId);
+      continue;
+    }
+    const label = String(a.label || "").trim();
+    const level = String(a.level || "").trim();
+    if (!label) errors.push(`${row.rowId}: blok etiketi gerekli`);
+    if (!level) errors.push(`${row.rowId}: kat gerekli`);
+    if (row.needsReview && !a.reviewed) errors.push(`${row.rowId}: düşük güvenli sıra incelenmeli`);
+    if (a.reviewed) reviewedRowIds.push(row.rowId);
+    if (label && level) {
+      const key = `${label}\n${level}`;
+      if (!groups.has(key)) groups.set(key, { label, level, rowIds: [] });
+      groups.get(key).rowIds.push(row.rowId);
+    }
+  }
+  const focalCandidates = job.scan.focalCandidates || [];
+  let focalDecision = null;
+  if (job.focalChoice === "none" || (!focalCandidates.length && !job.focalChoice)) {
+    focalDecision = { type: "none" };
+  } else if (job.focalChoice) {
+    focalDecision = { candidateId: job.focalChoice };
+  } else {
+    errors.push("Odak kararı gerekli");
+  }
+  if (errors.length) throw new Error(errors.join(" · "));
+  return {
+    scanId: job.scan.scanId,
+    venueKind: "theater",
+    groups: [...groups.values()],
+    excludedRows,
+    reviewedRowIds: [...new Set(reviewedRowIds)],
+    focalDecision,
+  };
+}
+
+export function manualImageImportReady(job) {
+  try {
+    buildManualImageImportAnalysis(job);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e.message };
+  }
+}
+
+export function buildManualSpreadsheetImportAnalysis(job) {
+  if (!job?.scan) throw new Error("Önce Excel taranmalı.");
+  const errors = [], groupOverrides = [], excludedGroups = [];
+  const layout = job.spreadsheetLayout || (job.scan.family === "flat-list" ? "" : "source");
+  if (!layout) errors.push("Global konum bulunamadı; halka yerleşimini açıkça seçin");
+  for (const group of job.scan.groups || []) {
+    const a = job.groupAssignments?.[group.groupId] || {};
+    if (a.action === "exclude") {
+      const reason = String(a.reason || "").trim();
+      if (!reason) errors.push(`${group.label}: dışlama nedeni gerekli`);
+      else excludedGroups.push({ groupId: group.groupId, reason });
+      continue;
+    }
+    groupOverrides.push({ groupId: group.groupId,
+      label: String(a.label ?? group.label ?? "").trim(),
+      name: String(a.name ?? group.name ?? group.label ?? "").trim(),
+      level: String(a.level ?? group.level ?? "").trim() });
+  }
+  const excludedCells = (job.scan.unresolvedCells || []).map((cell) => {
+    const reason = String(job.cellReviews?.[cell.sourceId]?.reason || "").trim();
+    if (!reason) errors.push(`${cell.sourceId}: belirsiz hücre kararı gerekli`);
+    return { sourceId: cell.sourceId, reason };
+  }).filter((x) => x.reason);
+  let focalDecision;
+  if (job.scan.conflicts?.focal) {
+    if (job.spreadsheetFocalChoice === "none") focalDecision = { type: "none" };
+    else if (job.spreadsheetFocalChoice) focalDecision = { candidateId: job.spreadsheetFocalChoice };
+    else errors.push("Çelişen odak adaylarından biri seçilmeli veya kaynakta odak yok denmeli");
+  }
+  if (errors.length) throw new Error(errors.join(" · "));
+  return { scanId: job.scan.scanId, venueKind: "general", name: job.name,
+    layout, groupOverrides, excludedGroups, excludedCells, ...(focalDecision ? { focalDecision } : {}) };
+}
+
+export function manualSpreadsheetImportReady(job) {
+  try { buildManualSpreadsheetImportAnalysis(job); return { ok: true }; }
+  catch (e) { return { ok: false, reason: e.message }; }
 }
 
 /* ─────────────────────────  DOĞRULAMA  ─────────────────────────
@@ -569,8 +725,8 @@ function validate(plan, metas, gates) {
 
 /* ─────────────────────────  TUTAMAKLAR  ───────────────────────── */
 
-export function handlesFor(b, m) {
-  if (b.foot && b.foot.length >= 3) {
+export function handlesFor(b, m, showFoot = true) {
+  if (showFoot && b.foot && b.foot.length >= 3) {
     const cos = Math.cos(b.rot * RAD), sin = Math.sin(b.rot * RAD);
     return b.foot.map((p, i) => ({ k: `foot:${i}`, ...toWorld(b, p, cos, sin) }));
   }
@@ -735,11 +891,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
      fazla alanı ilgilendiren HER ŞEY tek bir saf reducer'da. Okuma
      tarafı aşağıda düz const'lara açılıyor, geri kalan ~3000 satır
      bu isimleri DEĞİŞMEDEN okumaya devam ediyor. */
-  const [state, dispatch] = useReducer(reducer, initialState(BUILTINS, "gs"));
+  const [state, dispatch] = useReducer(reducer, initialState(BUILTINS, "empty"));
   const {
     venues, vk, past, future, rev,
     selIds, selShapeId, selSeat, selSeats,
-    view, levelFilter, report, calib, match, saveState,
+    view, levelFilter, report, calib, match, saveState, live,
   } = state;
   const plan = selectPlan(state);
 
@@ -776,7 +932,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     brushKind: Object.keys(ATTRS)[0], brushFeatures: [], poiKind: "wc",
     snapOn: true, gridStep: 50,
     lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
-    wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
+    wheelPref: "auto", theme: "system", legend: false, plates: false, q: "",
     toolsOpen: true, propsOpen: true,
     /* A6.4: tek renk kanalı — "level" (Kat) varsayılan, bugünkü davranış.
        toolPrefs'te yaşıyor çünkü belgeden bağımsız bir görünüm tercihi,
@@ -834,10 +990,17 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const [guides, setGuides] = useState([]);
   const [hoverId, setHoverId] = useState("");
   const [setOpen, setSetOpen] = useState(false);
+  const [planDeleteArmed, setPlanDeleteArmed] = useState(false);
   const [footDraft, setFootDraft] = useState(null);
   const [sysDark, setSysDark] = useState(true);
   const [msg, setMsgOk] = useState("");
   const [msgErr, setMsgErr] = useState(false);
+  const [importJob, setImportJob] = useState(null);
+  const { plan: canvasPlan, isImportPreview } = canvasRenderState(plan, importJob);
+  const importJobRef = useRef(importJob);
+  importJobRef.current = importJob;
+  const canvasLevelFilter = isImportPreview ? "*" : levelFilter;
+  const importPreviewPlan = isImportPreview ? canvasPlan : null;
   const setMsg = (text) => { setMsgOk(text); setMsgErr(false); };
   const setErr = (text) => { setMsgOk(text); setMsgErr(true); };
 
@@ -847,14 +1010,114 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const pointers = useRef(new Map());
   const pinch = useRef(null);
 
-  const setPlan = useCallback((p) => setVenues((v) => ({ ...v, [vk]: p })), [vk]);
+  const setPlan = useCallback((p) => {
+    if (!isImportPreview) setVenues((v) => ({ ...v, [vk]: p }));
+  }, [vk, isImportPreview]);
   /* commit/finalizeDrag/undo/redo/switchVenue: TEK dispatch, TEK geçiş.
      Eskiden undo/redo setPast'in updater'ı İÇİNDE setFuture+setPlan
      çağırıyordu — React updater'ı saf olmak zorunda, StrictMode'da iki
      kez koşunca future'a çift kayıt giriyordu. Reducer'da bu tanım
      gereği yok: her biri saf, tek bir {type,payload} geçişi (bkz.
      ui/state/reducer.js ve test/unit/reducer.test.js). */
-  const commit = useCallback((next) => dispatch({ type: "commit", payload: next }), []);
+  const commit = useCallback((next) => {
+    if (!isImportPreview) dispatch({ type: "commit", payload: next });
+  }, [isImportPreview]);
+
+  /* ── CANLI GÖRÜNÜM ────────────────────────────────────────────────
+     Operatör iki ekran açıyor: birinde sohbet, birinde editör. LLM MCP
+     üzerinden çizerken bloklar burada belirsin diye saniyede bir sunucuya
+     soruyoruz. YOKLAMA, akış (SSE) değil — bilinçli: sunucu 195 satırlık,
+     bağlantı durumu tutmayan saf bir istek→yanıt fonksiyonu; açık akış
+     eklemek onu durumlu yapar ve testlerdeki srv.close() asılı kalırdı.
+     Olayın kaynağı zaten AYRI BİR SÜREÇ (MCP), oraya ancak sunucu
+     üzerinden ulaşıyoruz; SSE yalnız son adımı ≤1 sn kısaltırdı, oysa
+     LLM'in kendi araç turu saniyeler sürüyor.
+     ponytail: 1 sn yoklama; gecikme dert olursa aynı rotayı ?since= ile
+     uzun yoklamaya çevir — istemci tarafı aynı kalır. */
+  /* Yapay zekânın araç turu (düşünme + çağrı) rahat 10-15 sn sürebiliyor;
+     eşik bunun üstünde olmalı, yoksa çizim sürerken "durdu" der. */
+  const DURGUN_SN = 25;
+  const liveRef = useRef(null);
+  liveRef.current = live;
+  /* "Çizdi ama bitti mi?" — ilk kullanımda çıkan eksik. Şerit sonsuza dek
+     "çiziyor" diyordu; operatör bitti mi, düşünüyor mu, öldü mü ayırt
+     edemiyordu. Sunucu zaten son yazmanın YAŞINI veriyor, sadece
+     kullanılmıyordu.
+
+     "BİTTİ" DEMİYORUZ, "DURDU" diyoruz: yapay zekânın işini bitirdiğini
+     bilmemizin yolu yok — sessizlik ya bitiştir ya uzun bir düşünme ya da
+     ölmüş bir süreç. Operatöre doğru bilgi "N saniyedir değişiklik yok".
+
+     İki kova var, saniyede bir DEĞİL: yazı değişmediği sürece setState
+     çağrılmıyor, yoksa 52.000 koltuklu planda her saniye yeniden render
+     ederdik. */
+  const [liveDurgun, setLiveDurgun] = useState(false);
+  const durgunRef = useRef(false);
+  const [liveGunluk, setLiveGunluk] = useState([]);
+
+  useEffect(() => {
+    /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
+       sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
+    if (Store.driver !== "api" || !Store.liveGet) return;
+    let dead = false, sonAt = null;
+    const kapsar = (dis, ic) => !!ic && dis.x >= ic.x && dis.y >= ic.y
+      && dis.x + dis.w <= ic.x + ic.w && dis.y + dis.h <= ic.y + ic.h;
+    const tur = async () => {
+      if (!livePollingAllowed(importJobRef.current)) return;
+      const d = await Store.liveGet();
+      if (dead || !d || !livePollingAllowed(importJobRef.current)) return;
+      const su = liveRef.current;
+      if (!d.aktif) { if (su) { sonAt = null; durgunRef.current = false; setLiveDurgun(false); setLiveGunluk([]); dispatch({ type: "live/stop" }); } return; }
+      /* Kova değiştiyse yaz; değişmediyse dokunma (gereksiz render yok). */
+      const durgun = d.yasSaniye >= DURGUN_SN;
+      if (durgunRef.current !== durgun) {
+        durgunRef.current = durgun;
+        setLiveDurgun(durgun);
+        /* Operatörün asıl sorusu buydu: "çizdi ama bitti mi?" — geçiş anında
+           bir kez söyle. "Bitti" DEMİYORUZ; bildiğimiz tek şey sessizlik. */
+        if (durgun) setMsg(`Çizim durdu — ${d.yasSaniye} sn'dir değişiklik yok.`
+          + ` İnceleyebilirsiniz; düzenlemek için şeritteki × (KES).`);
+        /* Yeniden yazmaya başladıysa o mesaj artık YANLIŞ: şerit "çiziyor"
+           derken alt çubuk "durdu" diyordu. Ekranda çelişki bırakma. */
+        else setMsg("");
+      }
+      if (d.at === sonAt) return;              /* değişmedi — planı boşuna çekme */
+      const p = await Store.load(d.key);
+      if (dead || !p || !livePollingAllowed(importJobRef.current)) return;
+      sonAt = d.at;
+      setLiveGunluk(d.gunluk || []);
+      /* ÖNCE plan, SONRA start: live/start görüntüyü venues[key]'den
+         türetiyor, plan daha yoksa çerçeveyi bulamaz. */
+      dispatch({ type: "live/apply", payload: { key: d.key, plan: p } });
+      if (!su || su.key !== d.key) dispatch({ type: "live/start", payload: { key: d.key, name: d.name } });
+      else {
+        /* Çizim büyüdükçe çerçeveyi aç — ama SADECE taştığında. Her
+           karede sığdırmak operatörün kaydırmasını saniyede bir geri
+           alırdı; izlerken kamerayı gezdirebilmek bu modun anlamı. */
+        const h = planHome(p);
+        setView((v) => (kapsar(h, v) ? v : h));
+      }
+    };
+    const t = setInterval(tur, 1000);
+    tur();
+    return () => { dead = true; clearInterval(t); };
+  }, []);
+
+  /* KES: kilidi düşür, yapay zekânın yazmasını durdur, çizimi KALICI kıl.
+     commit şart — live/apply rev'i artırmadığı için plan yalnız sunucuda
+     duruyordu; commit hem otomatik kaydı tetikliyor hem de operatöre tek
+     ⌘Z ile yapay zekânın bütün oturumunu geri alma imkânı veriyor. */
+  const liveKes = useCallback(async () => {
+    if (isImportPreview) return;
+    const su = liveRef.current;
+    if (!su) return;
+    const p = plan;
+    const ok = await Store.liveStop();
+    dispatch({ type: "live/stop" });
+    if (p) commit(p);
+    setMsg(ok ? "Çizimi devraldınız — yapay zekânın yazması durduruldu."
+      : "Kilit düşürüldü ama sunucuya ulaşılamadı; yapay zekâ hâlâ yazıyor olabilir.");
+  }, [plan, commit, isImportPreview]);
   /** commit()'in sürükleme-bitti sürümü: plan zaten onMove sırasında
    *  güncellendi, tek eksik checkpoint (geri-al + otomatik kayıt) — bunu
    *  tek yerden yapar ki her sürükleme modu (move/moveShape/seat/handle/
@@ -886,9 +1149,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       ? { ...b, ...patch, ...("level" in patch ? relevelPatch(b, patch.level) : null) } : b)) });
   const patchShape = (id, patch) =>
     commit({ ...plan, shapes: plan.shapes.map((s) => (s.id === id ? { ...s, ...patch } : s)) });
-  const undo = () => dispatch({ type: "undo" });
-  const redo = () => dispatch({ type: "redo" });
-  const switchVenue = (k) => dispatch({ type: "switchVenue", payload: k });
+  const undo = () => { if (!isImportPreview) dispatch({ type: "undo" }); };
+  const redo = () => { if (!isImportPreview) dispatch({ type: "redo" }); };
+  const switchVenue = (k) => { if (!isImportPreview) dispatch({ type: "switchVenue", payload: k }); };
 
   /* metas/metaById: buildMeta AĞIR (geometri türetimi) — bu yüzden
      PlanEditor.jsx'te useMemo olarak kalıyor (bkz. ui/state/selectors.js
@@ -902,15 +1165,22 @@ export default function PlanEditor({ cssText = "" } = {}) {
   /* Renk indeksi yaprak katlara göre — bkz. selectBlockLevels. */
   const renkKatlari = useMemo(() => selectBlockLevels(plan), [plan.blocks]);
   const levelCounts = useMemo(() => selectLevelCounts(metas), [metas]);
+  const canvasMetas = useMemo(() => canvasPlan === plan
+    ? metas : canvasPlan.blocks.map((b) => ({ b, m: buildMeta(b) })), [canvasPlan, plan, metas]);
+  const canvasTotalSeats = useMemo(() => selectTotalSeats(canvasMetas), [canvasMetas]);
+  const canvasLevels = useMemo(() => selectLevels(canvasPlan), [canvasPlan.blocks]);
+  const canvasLevelCounts = useMemo(() => selectLevelCounts(canvasMetas), [canvasMetas]);
+  const canvasRenkKatlari = useMemo(() => canvasPlan === plan
+    ? renkKatlari : selectBlockLevels(canvasPlan), [canvasPlan, plan, renkKatlari]);
 
   const shown = useMemo(() => {
     const pad = view.w * 0.08;
     const vx0 = view.x - pad, vx1 = view.x + view.w + pad;
     const vy0 = view.y - pad, vy1 = view.y + view.h + pad;
-    return metas.filter(({ b, m }) =>
-      levelMatches(b.level, levelFilter) &&
+    return canvasMetas.filter(({ b, m }) =>
+      levelMatches(b.level, canvasLevelFilter) &&
       m.bbox.x1 > vx0 && m.bbox.x0 < vx1 && m.bbox.y1 > vy0 && m.bbox.y0 < vy1);
-  }, [metas, view, levelFilter]);
+  }, [canvasMetas, view, canvasLevelFilter]);
   /* Sadece kesişen değil, GERÇEKTEN görünen koltuk sayısı: yelpaze gibi
      büyük bloklarda ekranın köşesine değen tek bir blok bile tüm koltuk
      sayısını eklerse, o blok tek başına koltuk moduna geçişi bloklardı —
@@ -935,23 +1205,30 @@ export default function PlanEditor({ cssText = "" } = {}) {
      bina içindeki konumunu da görsün. Seçilemez/tıklanamaz: marquee
      seçimi ve diğer tüm etkileşimler zaten levelFilter'a göre süzülüyor. */
   const dimmedBlocks = useMemo(() => {
-    if (levelFilter === "*") return [];
+    if (canvasLevelFilter === "*") return [];
     const pad = view.w * 0.08;
     const vx0 = view.x - pad, vx1 = view.x + view.w + pad;
     const vy0 = view.y - pad, vy1 = view.y + view.h + pad;
-    return metas.filter(({ b, m }) => !levelMatches(b.level, levelFilter) &&
+    return canvasMetas.filter(({ b, m }) => !levelMatches(b.level, canvasLevelFilter) &&
       m.bbox.x1 > vx0 && m.bbox.x0 < vx1 && m.bbox.y1 > vy0 && m.bbox.y0 < vy1);
-  }, [metas, view, levelFilter]);
+  }, [canvasMetas, view, canvasLevelFilter]);
 
   const drawn = useMemo(() => {
     if (!seatMode) return [];
     return shown.map(({ b, m }) => {
       let hit = seatCache.current.get(b);
-      if (!hit) { hit = buildSeats(b, m, plan.idTemplate); seatCache.current.set(b, hit); }
+      if (!hit) { hit = buildSeats(b, m, canvasPlan.idTemplate); seatCache.current.set(b, hit); }
       if (seatCache.current.size > 300) seatCache.current.clear();
       return { b, m, ...hit };
     });
-  }, [shown, seatMode]);
+  }, [shown, seatMode, canvasPlan.idTemplate]);
+
+  /* Rozet sığdırıcısı, o an ÇİZİLEN blokların etiket kümesini bilir: kısa
+     ada ("LOCA 3" → "3") ancak o kısa ad ayırt ediciyse düşer. Stadyumda
+     "KUZEY ALT A" → "A" sekiz bloğa aynı harfi yazmak olurdu. */
+  const sigdirici = useMemo(
+    () => etiketSigdirici(shown.map(({ b }) => b.hideLabel ? "" : b.label).filter(Boolean)),
+    [shown]);
 
   const selSeatInfo = useMemo(() => {
     if (!selSeat) return null;
@@ -966,21 +1243,22 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const usedLabels = useMemo(() => new Set(plan.blocks.map((b) => b.label)), [plan.blocks]);
   const selShape = plan.shapes.find((s) => s.id === selShapeId) || null;
   const handles = useMemo(() => {
-    if (!selBlock || tool !== "select") return [];
+    if (live || isImportPreview || !selBlock || tool !== "select") return [];
     const m = metaById.get(selBlock.id);
-    return m ? handlesFor(selBlock, m) : [];
-  }, [selBlock, metaById, tool]);
+    return m ? handlesFor(selBlock, m, plates && (selBlock.foot?.length || 0) <= 12) : [];
+  }, [live, isImportPreview, selBlock, metaById, tool, plates]);
 
   const ghosts = useMemo(() => {
-    if (!arrPrev || !selBlocks.length) return [];
+    if (isImportPreview || !arrPrev || !selBlocks.length) return [];
     const made = arrayPreview(selBlocks, arrPrev, arrPrev === "lin" ? lin : rad);
     return made.map((b) => buildMeta(b).outline);
-  }, [arrPrev, selBlocks, lin, rad]);
+  }, [isImportPreview, arrPrev, selBlocks, lin, rad]);
 
   /* Blok rengi yoksa kat sırasına göre otomatik — sadece görünüm. */
   const cc = useCallback((b) => b.color || levelColor(
-    Math.max(0, renkKatlari.indexOf(b.level || ""))), [renkKatlari]);
+    Math.max(0, canvasRenkKatlari.indexOf(b.level || ""))), [canvasRenkKatlari]);
   const gates = useMemo(() => gateMap(plan), [plan.shapes]);
+  const canvasGates = useMemo(() => canvasPlan === plan ? gates : gateMap(canvasPlan), [canvasPlan, plan, gates]);
 
   /* ── A6.4: tek renk kanalı ────────────────────────────────────────
      Kat, blok rengi, nitelik, kapı — dördü de aynı anda çizilince hangi
@@ -991,16 +1269,17 @@ export default function PlanEditor({ cssText = "" } = {}) {
      vurgusu (.blk.on rect / .sel — CSS stroke override) ve canlı
      breach/collide bundan ETKİLENMEZ, chanColor'dan hiç geçmiyorlar. */
   const gateShapes = useMemo(() => plan.shapes.filter((s) => s.type === "door"), [plan.shapes]);
+  const canvasGateShapes = useMemo(() => canvasPlan.shapes.filter((s) => s.type === "door"), [canvasPlan.shapes]);
   const gateColor = useCallback((label) => {
     if (!label) return NEUTRAL;
-    const i = gateShapes.findIndex((d) => d.label === label);
+    const i = canvasGateShapes.findIndex((d) => d.label === label);
     return PALETTE[(i < 0 ? 0 : i) % PALETTE.length];
-  }, [gateShapes]);
+  }, [canvasGateShapes]);
   const chanColor = useCallback((b) => {
-    if (colorChan === "gate") return gateColor(gates.get(b.id)?.[0]);
+    if (colorChan === "gate") return gateColor(canvasGates.get(b.id)?.[0]);
     if (colorChan !== "level") return NEUTRAL; // "attr" / "valid": blok rengi bu sorunun cevabı değil
     return cc(b);
-  }, [colorChan, cc, gateColor, gates]);
+  }, [colorChan, cc, gateColor, canvasGates]);
 
   /* Sınır taşması VE aynı kat çakışması canlı izleniyor — ikisi de artık
      core/rules.js'teki AYNI runRules() motorundan geliyor (liveOnly: true):
@@ -1115,12 +1394,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const pxPerCm = Math.min(canvasSize.w / view.w, canvasSize.h / view.h);
   /* Koltuk numarası ancak koltuk ekranda okunacak kadar büyükse yazılır.
      Sabit bir zoom eşiği yerine gerçek piksel boyu ölçülüyor. */
-  const seatNums = pxPerCm * DEF.seatW > 16;
+  const seatNums = koltukNumarasiGoster(pxPerCm);
   /* U = bir ekran pikselinin dünya karşılığı. Koltuk ve masa fiziksel
      nesne, santimetreyle çizilir. Etiket, rozet, işaret ise anotasyondur;
      ekranda sabit boyda durmalı. Stadyumda doğru görünen 6 metrelik yazı
      12 metrelik barda ekranı kaplıyordu — hata buradaydı. */
   const U = 1 / (pxPerCm || 0.01);
+  const rowLabels = useMemo(() => mergeRowLabels(
+    drawn.filter(({ b }) => pxPerCm * b.rowGap > 22).flatMap(({ labels }) => labels)
+  ), [drawn, pxPerCm]);
   const scaleBar = useMemo(() => {
     const steps = [10, 25, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000];
     let best = steps[0];
@@ -1129,13 +1411,67 @@ export default function PlanEditor({ cssText = "" } = {}) {
       label: best >= 100 ? `${(best / 100).toLocaleString("tr-TR")} m` : `${best} cm` };
   }, [pxPerCm]);
 
+  /* ── ROZETLER: sığdır, sonra ÇAKIŞANI ELE ───────────────────────────
+     Yalnız genişliğe sığdırmak yetmiyordu. Yamuk duran tribün bloklarının
+     EKSEN HİZALI kutusu gerçek ayak izinden çok geniş; sığdırıcı "yer var"
+     sanıp tam etiketi yazıyor, komşusunun rozeti üstüne biniyor ve ekranda
+     "FEN FEN FEN FEN" görünüyordu (Şükrü Saracoğlu, 56 blok).
+
+     Gerçek harita etiketlemesinin yaptığı: önce önemliyi yerleştir, çakışanı
+     hiç çizme. Öncelik KOLTUK SAYISI — büyük tribünün adı küçüğünkine
+     feda edilmez. Elenen etiket kaybolmaz, yakınlaşınca yer açılıp geri
+     gelir.
+     ponytail: O(n²) çakışma taraması. Görünen blok sayısıyla sınırlı
+     (en kalabalık plan 96 blok → ~4.600 kutu testi); yavaşlarsa ızgara
+     indeksi gerekir. */
+  const rozetler = useMemo(() => {
+    /* Rozet mümkünse bloğun DIŞINDA durur; kaynak hücre şeklini ve koltuk
+       alanını kapatmasın. Üstten kesilmiş yakın görünümde ekran kenarına
+       sabitlenir. */
+    const kaynak = seatMode ? drawn : shown;
+    const enBuyuk = seatMode ? 15 * U : 17 * U;
+    const aday = kaynak
+      .filter(({ b }) => b.kind !== "table")
+      .map(({ b, m }) => {
+        const vx0 = Math.max(m.bbox.x0, view.x), vx1 = Math.min(m.bbox.x1, view.x + view.w);
+        const vy0 = Math.max(m.bbox.y0, view.y), vy1 = Math.min(m.bbox.y1, view.y + view.h);
+        if (vx1 <= vx0 || vy1 <= vy0) return null;
+        const uy = sigdirici(b.hideLabel ? "" : b.label,
+          Math.max(1, m.bbox.x1 - m.bbox.x0), enBuyuk, pxPerCm);
+        if (!uy) return null;
+        const f = uy.boy, bw = f * uy.oran;
+        let cx, by;
+        if (seatMode && view.y > m.bbox.y0 + 1) {
+          cx = (vx0 + vx1) / 2;
+          by = view.y + f * 0.35;
+        } else {
+          const yer = disEtiketYeri(m.bbox, bw, f * 1.32,
+            kaynak.filter((x) => x.b.id !== b.id).map((x) => x.m.bbox), 2 * U);
+          if (!yer) return null;
+          ({ cx, by } = yer);
+        }
+        return { b, metin: uy.metin, f, bw, cx, by, h: f * 1.32, agirlik: m.seatCount || 0 };
+      })
+      .filter(Boolean)
+      .sort((a, z) => z.agirlik - a.agirlik);
+
+    const bos = 2 * U;                       /* rozetler birbirine değmesin */
+    const kalan = [];
+    for (const r of aday) {
+      const x0 = r.cx - r.bw / 2 - bos, x1 = r.cx + r.bw / 2 + bos;
+      const y0 = r.by - bos, y1 = r.by + r.h + bos;
+      if (kalan.some((k) => x0 < k.x1 && x1 > k.x0 && y0 < k.y1 && y1 > k.y0)) continue;
+      kalan.push({ ...r, x0, x1, y0, y1 });
+    }
+    return kalan;
+  }, [drawn, shown, seatMode, view, pxPerCm, U, sigdirici]);
+
   /* aspect: hedef yükseklik/genişlik oranı. view'in eski oranı yerine
      canvas'ın gerçek piksel oranını kullanır — pencere yeniden
      boyutlandığında view hemen düzelmez, eski oranla sığdırmak
      gereksiz boşluk (letterbox) bırakırdı. */
-  const fitBBoxRect = (items, aspect) => {
-    const x0 = Math.min(...items.map((m) => m.bbox.x0)), x1 = Math.max(...items.map((m) => m.bbox.x1));
-    const y0 = Math.min(...items.map((m) => m.bbox.y0)), y1 = Math.max(...items.map((m) => m.bbox.y1));
+  const fitRect = (b, aspect) => {
+    const { x0, x1, y0, y1 } = b;
     const pad = Math.max(x1 - x0, y1 - y0) * 0.12 + 100;
     const w = Math.max(MINW, (x1 - x0) + 2 * pad);
     const h = w * aspect;
@@ -1143,31 +1479,42 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const W = need > 1 ? w * need : w;
     return { x: (x0 + x1) / 2 - W / 2, y: (y0 + y1) / 2 - (W * aspect) / 2, w: W, h: W * aspect };
   };
-  const zoomToBBox = (items) => {
-    if (!items.length) return;
-    setView(fitBBoxRect(items, canvasSize.h / canvasSize.w));
+  const birlestir = (kutular) => {
+    const bb = kutular.filter((b) => b && Number.isFinite(b.x0));
+    return bboxUnion(bb);
   };
-  const zoomToSelection = () => zoomToBBox(selIds.length
-    ? selIds.map((id) => metaById.get(id)).filter(Boolean)
-    : metas.map((x) => x.m));
+  const zoomToBBox = (kutu) => {
+    if (!kutu) return;
+    setView(fitRect(kutu, canvasSize.h / canvasSize.w));
+  };
+  const zoomToSelection = () => (selIds.length
+    && !isImportPreview ? zoomToBBox(birlestir(selIds.map((id) => metaById.get(id)?.bbox)))
+    : zoomToAll());
   /* Sığdır: plan.home sabit bir değer — bir oturumda büyüyen bloklar onun
      dışına taştığında sessizce ekran dışında kalıyordu. Gerçek içerik
-     sınırını hesapla; plan boşsa (Yeni plan) home'a düş. */
-  const zoomToAll = () => (metas.length ? zoomToBBox(metas.map((x) => x.m)) : setView(planHome(plan)));
-  /* Zum yüzdesi: mutlak bir px/cm oranı salon ölçeğine göre anlamsız
-     olurdu (47 koltukluk bar ile 50.000 koltukluk stadyum aynı fiziksel
-     birimi paylaşmıyor). %100 = Sığdır'ın ürettiği görünüm — Sığdır'a
-     basınca bu yüzden her zaman tam %100 görünür. */
-  const homeRect = metas.length
-    ? fitBBoxRect(metas.map((x) => x.m), canvasSize.h / canvasSize.w)
-    : planHome(plan);
-  const homePxPerCm = Math.min(canvasSize.w / homeRect.w, canvasSize.h / homeRect.h);
-  const zoomPct = Math.round((pxPerCm / homePxPerCm) * 100) || 100;
+     sınırını hesapla; plan boşsa (Yeni plan) home'a düş.
+
+     İÇERİK bloklardan ibaret DEĞİL: sahne blokların üstünde durur, sığdırma
+     yalnız bloklara bakınca sahne ekran dışında kalıyordu — Tayyare'de
+     450 cm'lik sahnenin 395 cm'i ve "SAHNE" yazısının TAMAMI kesiliyordu.
+     contentBBox şekilleri de sayar (bkz. src/core/plan.js). */
+  const zoomToAll = () => {
+    const b = contentBBox(canvasPlan);
+    if (b) zoomToBBox(b); else setView(planHome(canvasPlan));
+  };
+  /* %100 = koltuk numarasının okunabildiği eşik. "Sığdır'a göre %817" gerçek
+     durumu anlatmıyordu; kullanıcı hâlâ numara göremiyordu. */
+  const zoomPct = okunurlukZoomPct(pxPerCm);
 
   const zoomTo = (m) => {
     const w = Math.max(900, (m.bbox.x1 - m.bbox.x0) * 1.6);
     const h = (w * view.h) / view.w;
     setView({ x: m.cx - w / 2, y: m.cy - h / 2, w, h });
+  };
+  const zoomToReadable = () => {
+    const w = Math.min(MAXW, Math.max(MINW, okunurGorunumGenisligi(canvasSize.w)));
+    const h = w * (canvasSize.h / canvasSize.w);
+    setView((v) => ({ x: v.x + v.w / 2 - w / 2, y: v.y + v.h / 2 - h / 2, w, h }));
   };
 
   const doLinear = () => {
@@ -1218,6 +1565,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
     [published, plan, versions.length]);
 
   const doPublish = () => {
+    if (isImportPreview) {
+      setErr("Önizleme kabul edilmeden yayınlanamaz");
+      return;
+    }
+    const ready = deliveryReadiness(plan, metas, gates);
+    if (!ready.ready) {
+      setErr("Yayın engellendi: " + [...new Set(ready.blockers.map((f) => f.m || f.id))].join(" · "));
+      return;
+    }
     const v = (versions.reduce((a, x) => Math.max(a, x.v), 0) || 0) + 1;
     const snapshot = JSON.parse(JSON.stringify(stripUnderlay(
       { ...plan, versions: undefined, published: undefined })));
@@ -1264,6 +1620,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   useEffect(() => {
     if (!rev) return;
+    /* Canlı görünümde YAZMA YOK: plan yapay zekâdan geliyor, buradan geri
+       yazmak onun yazdığıyla yarışırdı. (Birinci emniyet reducer'da:
+       live/apply rev'i hiç artırmıyor, yani bu efekt zaten tetiklenmemeli
+       — bu ikinci emniyet, kapının iki yanı da kapalı olsun diye.) */
+    if (live) return;
     setSaveState("saving");
     const t = setTimeout(async () => {
       /* plan !== BUILTINS[vk]: sadece venues[vk] BUILTINS'teki taze
@@ -1288,29 +1649,18 @@ export default function PlanEditor({ cssText = "" } = {}) {
       setSaved((s) => (s.includes(vk) ? s : [...s, vk]));
     }, 1000);
     return () => clearTimeout(t);
-  }, [rev, plan, vk]);
+  }, [rev, plan, vk, live]);
 
   const newPlan = () => {
+    if (isImportPreview) return;
     const k = `p${Date.now().toString(36)}`;
     const p = { ...EMPTY, key: k, name: "Yeni plan", blocks: [], shapes: [], versions: [], published: null };
     setVenues((v) => ({ ...v, [k]: p }));
     switchVenue2(k, p);
     setRev((r) => r + 1);
   };
-  /* Şablondan yeni plan — newPlan() ile AYNI akış (p<timestamp> anahtarı,
-     versions/published sıfırlanır), tek fark boş EMPTY yerine şablon
-     üretecinin (src/venues/templates.js) döndürdüğü bloklar/şekillerle
-     başlaması. build() ÇAĞRILDIĞINDA nid() üretir — duplicatePlan()'daki
-     gibi kimlikler o an paylaşılan sayaçtan gelir, örnek salonların modül
-     yüklemede sabitlenmiş sırasına hiç dokunmaz (bkz. templates.js başlığı). */
-  const newPlanFromTemplate = (build, name) => {
-    const k = `p${Date.now().toString(36)}`;
-    const p = { ...build(), key: k, name, versions: [], published: null };
-    setVenues((v) => ({ ...v, [k]: p }));
-    switchVenue2(k, p);
-    setRev((r) => r + 1);
-  };
   const duplicatePlan = () => {
+    if (isImportPreview) return;
     const k = `p${Date.now().toString(36)}`;
     const copy = JSON.parse(JSON.stringify({ ...plan, underlay: null }));
     copy.key = k;
@@ -1325,6 +1675,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
     setRev((r) => r + 1);
   };
   const deletePlan = async (k) => {
+    if (isImportPreview) return;
+    setPlanDeleteArmed(false);
     await Store.remove(k);
     setSaved((s) => s.filter((x) => x !== k));
     setVenues((v) => { const n = { ...v }; delete n[k]; return n; });
@@ -1335,12 +1687,14 @@ export default function PlanEditor({ cssText = "" } = {}) {
     setMsg("Plan silindi");
   };
   const switchVenue2 = (k, p) => {
+    if (isImportPreview) return;
     setVk(k); setPast([]); setFuture([]); setSelIds([]); setSelShapeId(null);
     setSelSeat(null); setSelSeats(new Set()); setLevelFilter("*"); setView(planHome(p));
     setReport(null); setMatch(null);
   };
 
   const exportSVG = () => {
+    if (!readyForDelivery()) return;
     const svg = svgRef.current.cloneNode(true);
     svg.querySelectorAll(".hnd, .marq, .draft, .ghost, .cal, .mtxt").forEach((n) => n.remove());
     const NS = "http://www.w3.org/2000/svg";
@@ -1374,8 +1728,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     const it = selBlocks.map((b) => ({ b, m: metaById.get(b.id) })).filter((x) => x.m);
     if (it.length < 2) return;
     const all = it.map((x) => x.m.bbox);
-    const X0 = Math.min(...all.map((b) => b.x0)), X1 = Math.max(...all.map((b) => b.x1));
-    const Y0 = Math.min(...all.map((b) => b.y0)), Y1 = Math.max(...all.map((b) => b.y1));
+    const { x0: X0, x1: X1, y0: Y0, y1: Y1 } = bboxUnion(all);
     const d = new Map();
     it.forEach(({ b, m }) => {
       const bb = m.bbox;
@@ -1596,29 +1949,12 @@ export default function PlanEditor({ cssText = "" } = {}) {
      uygulamada yok" sınıfı ayrışmayı doğuran şey kuralın iki yere
      kopyalanmasıydı; kimlik eşleştirmesi de aynı hataya açık. */
   const runMatch = (list, fileName, cols) => {
-    /* çizimdeki koltukları anahtara göre indeksle */
-    const drawnMap = new Map();
-    metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
-      if (!s.gap) drawnMap.set(seatKey(s.block, s.row, s.num), { s, bid: b.id });
-    }));
-
-    const hits = [], missing = [], dupes = [];
-    const usedKeys = new Set();
-    list.forEach((r) => {
-      const key = seatKey(r.block, r.row, r.seat);
-      if (!r.id) return;
-      if (usedKeys.has(key)) { dupes.push(key); return; }
-      const hit = drawnMap.get(key);
-      if (hit) { usedKeys.add(key); hits.push({ ...hit, csvId: r.id, key }); }
-      else missing.push({ key, id: r.id });
-    });
-    const extra = [...drawnMap.entries()].filter(([k]) => !usedKeys.has(k)).map(([, v]) => v.s);
-    const changing = hits.filter((h) => h.csvId !== h.s.id);
-
-    setMatch({ file: fileName, cols, total: list.length,
-      hits, missing, extra, dupes, changing });
+    /* Eşleştirmenin kendisi core/identity.js'te — MCP'nin match_seat_list
+       aracı da AYNI fonksiyonu çağırıyor, iki yerde ayrışmasın diye. */
+    const r = matchSeats(list, metas, buildSeats, plan.idTemplate);
+    setMatch({ file: fileName, cols, total: list.length, ...r });
     setVerOpen(false); setReport(null);
-    setMsg(`${hits.length} koltuk eşleşti`);
+    setMsg(`${r.hits.length} koltuk eşleşti`);
   };
 
   const readFile = (e, parse, tur) => {
@@ -1666,23 +2002,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
   /** Eşleşen koltuklara listedeki kimliği yazar — çizim değil, kimlik uyarlanır. */
   const adoptIds = () => {
     if (!match) return;
-    const byBlock = new Map();
-    match.changing.forEach(({ bid, s, csvId }) => {
-      if (!byBlock.has(bid)) byBlock.set(bid, {});
-      byBlock.get(bid)[`${s.r},${s.c}`] = csvId;
-    });
-    commit({ ...plan, blocks: plan.blocks.map((b) => {
-      const patch = byBlock.get(b.id);
-      if (!patch) return b;
-      const ov = { ...b.ov };
-      Object.entries(patch).forEach(([k, id]) => { ov[k] = { ...(ov[k] || {}), id }; });
-      return { ...b, ov };
-    }) });
+    commit(applyAdoptedIds(plan, match.changing));
     setMsg(`${match.changing.length} koltuk kimliği benimsendi`);
     setMatch({ ...match, changing: [] });
   };
 
   const exportCSV = () => {
+    if (!readyForDelivery()) return;
     const lines = ["id;kat;blok;sira;koltuk"];
     metas.forEach(({ b, m }) => buildSeats(b, m, plan.idTemplate).seats.forEach((s) => {
       if (!s.gap) lines.push([s.id, s.level, s.block, s.row, s.num].join(";"));
@@ -2030,8 +2356,8 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
   const finishPoly = () => {
     if (!poly || poly.pts.length < 3) { setPoly(null); return; }
-    const xs = poly.pts.map((p) => p.x), ys = poly.pts.map((p) => p.y);
-    const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+    const bounds = pointBounds(poly.pts);
+    const cx = (bounds.x0 + bounds.x1) / 2, cy = (bounds.y0 + bounds.y1) / 2;
     const sh = { id: nid("s"), kind: "poly", type: shapeType, x: cx, y: cy, rot: 0,
       pts: poly.pts.map((p) => ({ x: p.x - cx, y: p.y - cy })),
       label: SHAPES[shapeType].label, capacity: shapeType === "standing" ? 100 : 0, fs: 100 };
@@ -2103,9 +2429,36 @@ export default function PlanEditor({ cssText = "" } = {}) {
     });
   };
 
+  const deleteSelection = () => {
+    switch (deleteTarget({ selSeats, selSeat, selIds, selShapeId })) {
+      case "seats":
+        seatOps((o) => ({ ...o, rm: true, gap: false }));
+        setMsg(`${selSeats.size} koltuk silindi`); return;
+      case "seat": toggleOv(selSeat, "rm"); return;
+      case "blocks":
+        commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) });
+        setSelIds([]); return;
+      case "shape":
+        commit({ ...plan, shapes: plan.shapes.filter((s) => s.id !== selShapeId) });
+        setSelShapeId(null); return;
+      default: return;
+    }
+  };
+
+  const clearCanvas = () => {
+    commit({ ...plan, blocks: [], shapes: [], groups: [], sections: [],
+      underlay: null, underlayRect: null });
+    setSelIds([]); setSelShapeId(null); setSelSeat(null); setSelSeats(new Set());
+    setReport(null); setMatch(null); setMsg("Tuval temizlendi — geri almak için ⌘Z");
+  };
+
   useEffect(() => {
     const h = (e) => {
       if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
+      if (isImportPreview) {
+        if (okunurZoomKisayolu(e.key)) { e.preventDefault(); zoomToAll(); }
+        return;
+      }
       const k = e.key.toLowerCase();
       if ((e.ctrlKey || e.metaKey) && k === "z") { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
       if ((e.ctrlKey || e.metaKey) && k === "a") {
@@ -2113,6 +2466,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
         setSelIds(metas.filter(({ b }) => levelMatches(b.level, levelFilter)).map((x) => x.b.id));
         return;
       }
+      if (okunurZoomKisayolu(e.key)) { e.preventDefault(); zoomToReadable(); return; }
       if (e.key === "Enter" && footDraft) { footFinish(); return; }
       if (e.key === "Enter" && poly) { finishPoly(); return; }
       /* A6.4: Esc, "normal olmayan" altı durumun (arrPrev, levelFilter,
@@ -2149,20 +2503,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
         /* Öncelik sırası ui/state/selectors.js'te (deleteTarget) — koltuk
            seçimi HER ZAMAN bloktan önce. Sıra oradaki notta anlatılan bir
            veri kaybı hatasının karşılığı, burada tekrar yazılmıyor. */
-        switch (deleteTarget({ selSeats, selSeat, selIds, selShapeId })) {
-          case "seats":
-            seatOps((o) => ({ ...o, rm: true, gap: false }));
-            setMsg(`${selSeats.size} koltuk silindi`);
-            return;
-          case "seat": toggleOv(selSeat, "rm"); return;
-          case "blocks":
-            commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) });
-            setSelIds([]); return;
-          case "shape":
-            commit({ ...plan, shapes: plan.shapes.filter((s) => s.id !== selShapeId) });
-            setSelShapeId(null); return;
-          default: return;
-        }
+        deleteSelection(); return;
       }
     };
     window.addEventListener("keydown", h);
@@ -2223,6 +2564,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   };
 
   const importPlan = (e) => {
+    if (isImportPreview) { e.target.value = ""; return; }
     const f = e.target.files?.[0];
     if (!f) return;
     const rd = new FileReader();
@@ -2244,6 +2586,107 @@ export default function PlanEditor({ cssText = "" } = {}) {
     rd.readAsText(f);
     e.target.value = "";
   };
+  const importSource = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    e.target.value = "";
+    setImportJob({ status: "uploading", name: f.name });
+    const fail = (text) => { setImportJob((j) => ({ ...(j || {}), error: text })); setErr(text); };
+    const r = await Store.importSource?.(f);
+    if (!r) return fail("Kaynak yüklenemedi");
+    setImportJob(r); setMsg(`${r.name} yüklendi · taranıyor`);
+    const scanned = await Store.importScan?.(r.id);
+    if (!scanned || scanned.error) return fail(scanned?.error || "Kaynak taranamadı");
+    setImportJob(scanned);
+    if (scanned.kind === "image") {
+      const rowAssignments = Object.fromEntries((scanned.scan?.rows || []).map((row) =>
+        [row.rowId, { action: "include", label: "", level: "", reviewed: !row.needsReview }]));
+      setMsg(`${scanned.name} tarandı · satır/blok anlamlandırması gerekiyor`);
+      setImportJob({ ...scanned, rowAssignments,
+        focalChoice: (scanned.scan?.focalCandidates || []).length ? "" : "none",
+        bulkLabel: "", bulkLevel: "" });
+      return;
+    }
+    const groupAssignments = Object.fromEntries((scanned.scan?.groups || []).map((group) =>
+      [group.groupId, { action: "include", label: group.label || "", name: group.label || "",
+        level: group.level || "" }]));
+    setImportJob({ ...scanned, groupAssignments, cellReviews: {},
+      spreadsheetLayout: scanned.scan?.family === "flat-list" ? "" : "source",
+      spreadsheetFocalChoice: "" });
+    setMsg(`${scanned.name} tarandı · Excel kararlarını inceleyin`);
+  };
+  const acceptImportJob = async () => {
+    if (!importJob?.id) return;
+    const r = await Store.importAccept?.(importJob.id);
+    if (!r || r.error || !r.plan) { setErr(r?.error || "Doğrulanmış önizleme kabul edilemedi"); return; }
+    const { plan: p, saved } = await persistAcceptedImport(
+      r.plan, r.plan.key || `imp${Date.now().toString(36)}`, Store);
+    dispatch({ type: "import/accept", payload: { key: p.key, plan: p } });
+    setSaveState(saved ? "saved" : "error");
+    setImportJob(null);
+    if (!saved) setErr("Plan kabul edildi ancak kalıcı kayda yazılamadı");
+    else setMsg(`${p.name} kaynak doğrulamasıyla açıldı`);
+  };
+  const cancelImportJob = async () => {
+    if (importJob?.id) await Store.importCancel?.(importJob.id);
+    setView(planHome(plan));
+    setImportJob(null); setMsg("Kaynak aktarımı iptal edildi");
+  };
+  const patchImportRow = (rowId, patch) => setImportJob((j) => ({ ...j, error: null,
+    rowAssignments: { ...(j?.rowAssignments || {}),
+      [rowId]: { ...(j?.rowAssignments?.[rowId] || {}), ...patch } } }));
+  const patchImportJob = (patch) => setImportJob((j) => ({ ...j, ...patch, error: null }));
+  const patchSpreadsheetGroup = (groupId, patch) => setImportJob((j) => ({ ...j, error: null,
+    groupAssignments: { ...(j?.groupAssignments || {}),
+      [groupId]: { ...(j?.groupAssignments?.[groupId] || {}), ...patch } } }));
+  const patchSpreadsheetCell = (sourceId, patch) => setImportJob((j) => ({ ...j, error: null,
+    cellReviews: { ...(j?.cellReviews || {}),
+      [sourceId]: { ...(j?.cellReviews?.[sourceId] || {}), ...patch } } }));
+  const bulkImportRows = () => setImportJob((j) => {
+    const label = String(j?.bulkLabel || "").trim(), level = String(j?.bulkLevel || "").trim();
+    if (!label || !level) return { ...j, error: "Toplu atama için blok etiketi ve kat gerekli." };
+    return { ...j, error: null, rowAssignments: Object.fromEntries((j.scan?.rows || []).map((row) =>
+      [row.rowId, { ...(j.rowAssignments?.[row.rowId] || {}), action: "include", label, level,
+        reviewed: j.rowAssignments?.[row.rowId]?.reviewed || !row.needsReview }])) };
+  });
+  const buildImageImportPreview = async () => {
+    if (!importJob?.id) return;
+    try {
+      const body = buildManualImageImportAnalysis(importJob);
+      for (const [step, payload] of [["importAnalyze", body], ["importBuild"], ["importVerify"]]) {
+        const next = await Store[step]?.(importJob.id, payload);
+        if (!next || next.error) throw new Error(next?.error || "Kaynak aktarımı tamamlanamadı");
+        setImportJob((j) => ({ ...next, rowAssignments: j?.rowAssignments,
+          focalChoice: j?.focalChoice, bulkLabel: j?.bulkLabel, bulkLevel: j?.bulkLevel }));
+        if (next.previewPlan) {
+          setSelIds([]); setSelShapeId(null);
+          setView(planHome(next.previewPlan));
+        }
+        setMsg(`${next.name} · ${next.phase}`);
+      }
+    } catch (e) {
+      setImportJob((j) => ({ ...j, error: e.message }));
+      setErr(e.message);
+    }
+  };
+  const buildSpreadsheetImportPreview = async () => {
+    if (!importJob?.id) return;
+    try {
+      const body = buildManualSpreadsheetImportAnalysis(importJob);
+      for (const [step, payload] of [["importAnalyze", body], ["importBuild"], ["importVerify"]]) {
+        const next = await Store[step]?.(importJob.id, payload);
+        if (!next || next.error) throw new Error(next?.error || "Excel aktarımı tamamlanamadı");
+        setImportJob((j) => ({ ...next, groupAssignments: j?.groupAssignments,
+          cellReviews: j?.cellReviews, spreadsheetLayout: j?.spreadsheetLayout,
+          spreadsheetFocalChoice: j?.spreadsheetFocalChoice }));
+        if (next.previewPlan) {
+          setSelIds([]); setSelShapeId(null); setView(planHome(next.previewPlan));
+        }
+      }
+    } catch (e) {
+      setImportJob((j) => ({ ...j, error: e.message })); setErr(e.message);
+    }
+  };
 
   const download = (name, obj) => {
     const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
@@ -2251,7 +2694,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
     a.href = URL.createObjectURL(blob); a.download = name; a.click();
     URL.revokeObjectURL(a.href); setMsg(`${name} indirildi`);
   };
+  const readyForDelivery = () => {
+    const base = isImportPreview ? null : deliveryReadiness(plan, metas, gates);
+    const r = isImportPreview ? deliveryExportState(plan, true) : { ...base, ok: base.ready };
+    if (r.ok) return true;
+    setErr(r.reason || "Dışa aktarım engellendi: " + [...new Set(r.blockers.map((f) => f.id))].join(", "));
+    return false;
+  };
   const exportSeats = () => {
+    if (!readyForDelivery()) return;
     setMsg("koltuklar üretiliyor…");
     download(`${plan.key}-seats.json`, buildSeatsPayload(plan, metas, levelCounts, gates));
   };
@@ -2261,11 +2712,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
      Referans bütünlüğü test/invariants/db-export.test.js'te 9 salon
      üstünde otomatik sınanıyor. */
   const exportDb = () => {
+    if (!readyForDelivery()) return;
     setMsg("tablolar üretiliyor…");
     download(`${plan.key}-db.json`, buildDbPayload(plan, metas, gates));
   };
-  const exportPlan = () => download(`${plan.key}-plan.json`,
-    { ...plan, underlay: plan.underlay ? { ...plan.underlay, src: null } : null });
+  const exportPlan = () => {
+    if (!readyForDelivery()) return;
+    download(`${plan.key}-plan.json`,
+      { ...plan, underlay: plan.underlay ? { ...plan.underlay, src: null } : null });
+  };
 
   const mirror = () => {
     if (!selBlocks.length) return;
@@ -2314,7 +2769,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
      "single" varsayılanına döner; SeatPanel eff.seatKind'i KOŞULSUZ okur,
      null asla geçmemeli. */
   const seatEffAttr = selSeat ? resolveSeatKind(seatOvBlock || {}, seatOv || {}) : null;
-  const lodFont = 17 * U;
   const hSize = Math.max(24, 9 / (pxPerCm || 0.01));
   const arrProps = { lin, setLin, rad, setRad, onArrayL: doLinear, onArrayR: doRadial,
     prev: arrPrev, setPrev: setArrPrev };
@@ -2349,9 +2803,21 @@ export default function PlanEditor({ cssText = "" } = {}) {
     label: `Dizi önizleme: ${arrPrev === "lin" ? "doğrusal" : "radyal"}`, x: () => setArrPrev(null) });
   if (poly) modeChips.push({ k: "pg",
     label: `Çokgen çiziliyor · ${poly.pts.length} nokta`, x: () => { setPoly(null); setTool("select"); } });
+  /* Canlı görünüm de tam olarak bir "anormal mod": uygulama beklenenden
+     farklı davranıyor (düzenleme kapalı) ve çıkışı her zaman görünür
+     olmalı. Yeni bir bileşen değil, var olan şerit. */
+  if (live) modeChips.push({ k: "lv", durgun: liveDurgun,
+    /* Esc BİLEREK bu çipi kapatmıyor: kazara bir Esc, yapay zekânın
+       yazmasını kalıcı olarak durdurmamalı. Başlık da onu söylemeli. */
+    cikisBaslik: "Çizimi devral — yapay zekânın yazması durur (KES)",
+    label: liveDurgun
+      ? `✓ Çizim durdu · ${live.name} · ${totalSeats.toLocaleString("tr-TR")} koltuk`
+        + ` · ${plan.blocks.length} blok — devralmak için ×`
+      : `● Yapay zekâ çiziyor · ${live.name} — düzenleme kapalı`,
+    x: liveKes });
 
   return (
-    <div className={`ed ${dark ? "dark" : "light"}`}>
+    <div className={`ed ${dark ? "dark" : "light"}${live && !liveDurgun ? " ai-working" : ""}`}>
       <div className="gate">
         <p>Bu editör geniş bir çalışma alanı gerektirir.
           <span>Lütfen masaüstü tarayıcıda veya en az 1024px genişliğinde bir pencerede açın.</span>
@@ -2359,9 +2825,18 @@ export default function PlanEditor({ cssText = "" } = {}) {
       </div>
 
       <header className="top">
-        <select className="venue" value={vk} onChange={(e) => switchVenue(e.target.value)}>
+        <select className="venue" value={vk} disabled={!!live || isImportPreview}
+          title={live ? "Yapay zekâ çizerken salon değiştirilemez — KES"
+            : isImportPreview ? "Önce kaynak önizlemesini kabul edin veya iptal edin" : undefined}
+          onChange={(e) => { setPlanDeleteArmed(false); switchVenue(e.target.value); }}>
           {Object.entries(venues).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
         </select>
+        <button className={`plan-delete${planDeleteArmed ? " armed" : ""}`}
+          disabled={!!live || isImportPreview || isProtectedSample(vk, BUILTINS)}
+          title={isProtectedSample(vk, BUILTINS) ? "Yerleşik örnek planlar silinemez" : "Seçili planı tamamen sil"}
+          onClick={() => planDeleteArmed ? deletePlan(vk) : setPlanDeleteArmed(true)}>
+          <Icon n="trash" />{planDeleteArmed ? "Emin misin?" : "Planı sil"}
+        </button>
         <span className={`sv ${saveState}`}>
           {saveState === "saving" ? "kaydediliyor" : saveState === "saved" ? "kaydedildi"
             : saveState === "error" ? "kaydedilemedi" : "otomatik kayıt"}
@@ -2380,9 +2855,14 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
         <div className="grow" />
 
-        <button className="ib" onClick={undo} disabled={!past.length} title="Geri al (⌘Z)"><Icon n="undo" /></button>
-        <button className="ib" onClick={redo} disabled={!future.length} title="Yinele (⇧⌘Z)"><Icon n="redo" /></button>
+        <button className="ib" onClick={undo} disabled={isImportPreview || !past.length} title="Geri al (⌘Z)"><Icon n="undo" /></button>
+        <button className="ib" onClick={redo} disabled={isImportPreview || !future.length} title="Yinele (⇧⌘Z)"><Icon n="redo" /></button>
+        <button className="delete-command" onClick={clearCanvas}
+          disabled={!!live || isImportPreview || (!plan.blocks.length && !plan.shapes.length && !plan.underlay)}
+          title="Tuvaldeki tüm öğeleri sil"><Icon n="trash" /><span>Tuvali temizle</span></button>
         <span className="tsep" />
+        <button onClick={newPlan} disabled={!!live || isImportPreview}
+          title={live ? "Önce canlı çizimi devral (KES)" : "Yeni boş plan oluştur"}>+ Yeni plan</button>
         <button className={setOpen ? "on" : ""} onClick={() => { setSetOpen(!setOpen); setVerOpen(false); }}>Ayarlar</button>
         <button className={verOpen ? "on" : ""} onClick={() => { setVerOpen(!verOpen); setSetOpen(false); }}>Sürümler</button>
         <button onClick={runValidate}>Doğrula
@@ -2403,9 +2883,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
       {modeChips.length > 0 && (
         <div className="modestrip">
           {modeChips.map((c) => (
-            <span key={c.k} className="chip">
+            <span key={c.k} className={c.durgun ? "chip durgun" : "chip"}>
               {c.label}
-              <button onClick={c.x} title="Çık (Esc)">×</button>
+              <button onClick={c.x} title={c.cikisBaslik || "Çık (Esc)"}>×</button>
             </span>
           ))}
         </div>
@@ -2490,17 +2970,18 @@ export default function PlanEditor({ cssText = "" } = {}) {
           )}
           {poly && <button className="pri sm" onClick={finishPoly}>Poligonu kapat ({poly.pts.length})</button>}
 
-          {levels.length > 1 && (<>
+          {canvasLevels.length > 1 && (<>
             <div className="sep" />
             <p className="lab">Kat / kuşak</p>
-            <select className="mini full" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)}>
+            <select className="mini full" value={canvasLevelFilter} disabled={isImportPreview}
+              onChange={(e) => setLevelFilter(e.target.value)}>
               <option value="*">Tümü · {totalSeats.toLocaleString("tr-TR")}</option>
               {/* Yol yazılmış katlar derinliğine göre girintili görünür:
                   "Batı Tribünü / Alt Kat" listede "  › Alt Kat" olur. */}
-              {levels.map((l) => {
+              {canvasLevels.map((l) => {
                 const yol = sectionPath(l);
                 const etiket = yol.length > 1 ? `${"\u00a0\u00a0".repeat(yol.length - 1)}› ${yol[yol.length - 1]}` : l;
-                return <option key={l} value={l}>{etiket} · {(levelCounts[l] || 0).toLocaleString("tr-TR")}</option>;
+                return <option key={l} value={l}>{etiket} · {(canvasLevelCounts[l] || 0).toLocaleString("tr-TR")}</option>;
               })}
             </select>
           </>)}
@@ -2508,16 +2989,16 @@ export default function PlanEditor({ cssText = "" } = {}) {
           <div className="sep" />
           {/* Filtre açıkken toplam sayıyı göstermek yanıltıcı: liste 18
               satır gösterirken başlık 56 diyordu. Süzülmüş sayı + toplam. */}
-          <p className="lab">Bloklar ({levelFilter === "*" ? metas.length
-            : `${metas.filter(({ b }) => levelMatches(b.level, levelFilter)).length} / ${metas.length}`})</p>
+          <p className="lab">Bloklar ({canvasLevelFilter === "*" ? canvasMetas.length
+            : `${canvasMetas.filter(({ b }) => levelMatches(b.level, canvasLevelFilter)).length} / ${canvasMetas.length}`})</p>
           <input className="find" value={q} placeholder="Blok ara…"
             onChange={(e) => setQ(e.target.value)} />
           <ul className="tree">
-            {metas.filter(({ b }) => levelMatches(b.level, levelFilter) &&
+            {canvasMetas.filter(({ b }) => levelMatches(b.level, canvasLevelFilter) &&
                 (!q.trim() || `${b.name || ""} ${b.label}`.toLocaleLowerCase("tr").includes(q.toLocaleLowerCase("tr"))))
               .slice(0, 200).map(({ b, m }) => (
               <li key={b.id} className={selIds.includes(b.id) ? "on" : ""}
-                onClick={(e) => setSelIds(e.shiftKey
+                onClick={isImportPreview ? undefined : (e) => setSelIds(e.shiftKey
                   ? (selIds.includes(b.id) ? selIds.filter((i) => i !== b.id) : [...selIds, b.id])
                   : [b.id])}
                 onDoubleClick={() => zoomTo(m)}>
@@ -2525,13 +3006,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 <i>{m.seatCount}</i>
               </li>
             ))}
-            {plan.shapes.map((s) => (
-              <li key={s.id} className={selShapeId === s.id ? "on" : ""}
-                onClick={() => { setSelShapeId(s.id); setSelIds([]); }}>
+            {canvasPlan.shapes.map((s) => (
+              <li key={s.id} className={!isImportPreview && selShapeId === s.id ? "on" : ""}
+                onClick={isImportPreview ? undefined : () => { setSelShapeId(s.id); setSelIds([]); }}>
                 <span className="nm dim">{s.type === "icon" ? "◈" : "◇"} {s.label || SHAPES[s.type]?.label || POI[s.icon]?.label || "İşaret"}</span>
               </li>
             ))}
-            {!plan.blocks.length && !plan.shapes.length && <li className="mut">Boş tuval</li>}
+            {!canvasPlan.blocks.length && !canvasPlan.shapes.length && <li className="mut">Boş tuval</li>}
           </ul>
           </>}
         </nav>
@@ -2539,10 +3020,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
         <main className="canvas">
           <svg ref={svgRef} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
             preserveAspectRatio="xMidYMid meet" className={spaceDown ? "t-pan" : `t-${tool}`}
-            onWheel={onWheel} onPointerDown={onDown} onPointerMove={onMove}
-            onPointerUp={onUp} onPointerCancel={onUp}
+            onWheel={onWheel} onPointerDown={isImportPreview ? undefined : onDown}
+            onPointerMove={isImportPreview ? undefined : onMove}
+            onPointerUp={isImportPreview ? undefined : onUp} onPointerCancel={isImportPreview ? undefined : onUp}
             onContextMenu={(e) => e.preventDefault()}
-            onDoubleClick={() => { if (footDraft) footFinish(); else if (poly) finishPoly(); }}
+            onDoubleClick={() => { if (isImportPreview) return; if (footDraft) footFinish(); else if (poly) finishPoly(); }}
             onPointerLeave={() => { drag.current = null; setGuides([]); }}>
 
             {/* İşaret PNG'leri siyah çizgi; alfayı koruyup rengi temadan
@@ -2557,10 +3039,10 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </filter>
             </defs>
 
-            {plan.underlay && plan.underlay.src && (
-              <image href={plan.underlay.src} x={plan.underlay.x} y={plan.underlay.y}
-                width={plan.underlay.w} height={plan.underlay.h}
-                opacity={plan.underlay.opacity} style={{ pointerEvents: "none" }} />
+            {canvasPlan.underlay && canvasPlan.underlay.src && (
+              <image href={canvasPlan.underlay.src} x={canvasPlan.underlay.x} y={canvasPlan.underlay.y}
+                width={canvasPlan.underlay.w} height={canvasPlan.underlay.h}
+                opacity={canvasPlan.underlay.opacity} style={{ pointerEvents: "none" }} />
             )}
 
             <g className="grid">
@@ -2583,7 +3065,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 Bu yüzden görünmez hedefler HEP en altta, ayrı bir ön geçişte
                 çizilir; üstlerine gelen gerçek şekiller tıklamayı önce onlar
                 yakalar. */}
-            {plan.shapes.map((s) => {
+            {canvasPlan.shapes.map((s) => {
               const st = SHAPES[s.type];
               if (st?.fill !== "none") return null;
               return (
@@ -2597,12 +3079,12 @@ export default function PlanEditor({ cssText = "" } = {}) {
               );
             })}
 
-            {plan.shapes.map((s) => {
+            {canvasPlan.shapes.map((s) => {
               const st = SHAPES[s.type];
               if (s.type === "icon") return null;
-              if (s.type === "pitch") return <Pitch key={s.id} s={s} selected={selShapeId === s.id} />;
+              if (s.type === "pitch") return <Pitch key={s.id} s={s} selected={!isImportPreview && selShapeId === s.id} />;
               if (s.type === "door") {
-                const on = selShapeId === s.id;
+                const on = !isImportPreview && selShapeId === s.id;
                 const num = String(s.label).replace(/\D+/g, "") || "?";
                 /* Kapı, gerçek bir vomitorium gibi DİKDÖRTGEN bir açıklık —
                    yuvarlak rozet değil. Tribüne oyulmuş tünel ağzını temsil
@@ -2617,7 +3099,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 const dcol = colorChan === "gate" ? gateColor(s.label) : st.fill;
                 return (
                   <g key={s.id} className={on ? "dr on" : "dr"}>
-                    {on && (s.blocks || []).map((bid) => {
+                    {on && !isImportPreview && (s.blocks || []).map((bid) => {
                       const m = metaById.get(bid);
                       return m ? <line key={bid} x1={s.x} y1={s.y} x2={m.cx} y2={m.cy} /> : null;
                     })}
@@ -2630,7 +3112,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 );
               }
               return (
-                <g key={s.id} className={selShapeId === s.id ? "shp on" : "shp"}
+                <g key={s.id} className={!isImportPreview && selShapeId === s.id ? "shp on" : "shp"}
                   transform={`translate(${s.x} ${s.y}) rotate(${s.rot})`}>
                   {s.kind === "rect"
                     ? <rect data-s={s.id} x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h} rx={s.type === "pitch" ? 10 : 20}
@@ -2642,10 +3124,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
                         strokeDasharray={s.type === "standing" ? "40 26" : ""} />}
                   {s.label && (() => {
                     const txt = s.label + (s.type === "standing" && s.capacity ? ` · ${s.capacity} kişi` : "");
-                    const w = s.kind === "rect" ? s.w
-                      : Math.max(...s.pts.map((p) => p.x)) - Math.min(...s.pts.map((p) => p.x));
-                    const h = s.kind === "rect" ? s.h
-                      : Math.max(...s.pts.map((p) => p.y)) - Math.min(...s.pts.map((p) => p.y));
+                    const polyBounds = s.kind === "rect" ? null : pointBounds(s.pts);
+                    const w = s.kind === "rect" ? s.w : polyBounds.x1 - polyBounds.x0;
+                    const h = s.kind === "rect" ? s.h : polyBounds.y1 - polyBounds.y0;
                     /* Yazı şeklin içine sığar; ekranda 8 pikselin altına
                        inecekse hiç çizilmez — okunmayan etiket gürültüdür. */
                     const vert = h > w * 1.6;
@@ -2667,7 +3148,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
               <g className="dimmed">
                 {dimmedBlocks.map(({ b, m }) => (
                   <polygon key={`dim${b.id}`} pointerEvents="none"
-                    points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                    points={displayOutline(b, m).map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                     fill="var(--mut)" fillOpacity={dark ? 0.16 : 0.11}
                     stroke="var(--mut)" strokeOpacity={0.45}
                     strokeWidth={Math.max(3, 1.2 / (pxPerCm || 0.01))} />
@@ -2675,23 +3156,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </g>
             )}
 
-            {!seatMode && shown.map(({ b, m }) => {
-              const col = chanColor(b);
-              const bw = lodFont * (String(b.label).length * 0.62 + 0.7);
-              return (
-                <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
-                  <polygon data-b={b.id}
-                    points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
-                    fill={col} fillOpacity={dark ? 0.24 : 0.17}
-                    stroke={col} strokeOpacity={0.95}
-                    strokeWidth={Math.max(4, 1.6 / (pxPerCm || 0.01))} />
-                  <rect className="badge" x={m.cx - bw / 2} y={m.cy - lodFont * 0.62}
-                    width={bw} height={lodFont * 1.24} rx={lodFont * 0.34} fill={badgeColor(col)} />
-                  <text x={m.cx} y={m.cy + lodFont * 0.36} fill="#FBFAF7"
-                    style={{ fontSize: lodFont }}>{b.label}</text>
-                </g>
-              );
-            })}
+            {/* Blok görünümü: taban. Etiket AYRI çiziliyor (rozetler memo'su)
+                — eskiden burada sabit boyda, sığdırmasız, çakışma denetimsiz
+                kendi kopyası vardı ve 56 bloklu stadyumda "FEN FEN FEN FEN"
+                diye üst üste biniyordu. */}
+            {!seatMode && shown.map(({ b, m }) => (
+              <g key={b.id} className={selIds.includes(b.id) ? "lod on" : "lod"}>
+                <polygon data-b={b.id}
+                  points={displayOutline(b, m).map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                  fill={chanColor(b)} fillOpacity={dark ? 0.24 : 0.17}
+                  stroke={chanColor(b)} strokeOpacity={0.95}
+                  strokeWidth={Math.max(4, 1.6 / (pxPerCm || 0.01))} />
+              </g>
+            ))}
 
             {seatMode && drawn.filter(({ b }) => b.kind === "table").map(({ b }) => (
               <g key={`t${b.id}`} className="tbl"
@@ -2713,7 +3190,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
             {seatMode && plates && drawn.filter(({ b }) => b.kind !== "table").map(({ b, m }) => (
               <polygon key={`pl${b.id}`} className="plate"
-                points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
+                points={displayOutline(b, m).map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 fill={chanColor(b)} stroke={chanColor(b)}
                 fillOpacity={dark ? 0.16 : 0.13} strokeOpacity={dark ? 0.5 : 0.6}
                 strokeWidth={Math.max(2, 1.6 / (pxPerCm || 0.01))} />
@@ -2724,23 +3201,16 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 kenarına yapıştırmak koltukların üstüne oturtuyordu. Şimdi:
                 blok tam görünüyorsa rozet tabanın biraz DIŞINA (üstüne)
                 taşıyor; blok üstten kesilmişse ekran kenarına sabitleniyor. */}
-            {seatMode && drawn.filter(({ b }) => b.kind !== "table").map(({ b, m }) => {
-              const vx0 = Math.max(m.bbox.x0, view.x), vx1 = Math.min(m.bbox.x1, view.x + view.w);
-              const vy0 = Math.max(m.bbox.y0, view.y), vy1 = Math.min(m.bbox.y1, view.y + view.h);
-              if (vx1 <= vx0 || vy1 <= vy0) return null;
-              const f = 15 * U;
-              const bw = f * (String(b.label).length * 0.62 + 0.9);
-              const clipped = view.y > m.bbox.y0 + 1;
-              const by = clipped ? view.y + f * 0.35 : m.bbox.y0 - f * 1.5;
-              return (
-                <g key={`sb${b.id}`} className="stick">
-                  <rect x={(vx0 + vx1) / 2 - bw / 2} y={by}
-                    width={bw} height={f * 1.32} rx={f * 0.36} fill={badgeColor(chanColor(b))} />
-                  <text x={(vx0 + vx1) / 2} y={by + f * 1.04}
-                    style={{ fontSize: f }}>{b.label}</text>
-                </g>
-              );
-            })}
+            {/* Sığdırma ve çakışma eleme yukarıda (rozetler memo'su);
+                burada yalnız çizim var. */}
+            {rozetler.map((r) => (
+              <g key={`sb${r.b.id}`} className={seatMode ? "stick" : "lod"}>
+                <rect className="badge" x={r.cx - r.bw / 2} y={r.by} width={r.bw} height={r.h}
+                  rx={r.f * 0.36} fill={badgeColor(chanColor(r.b))} />
+                <text x={r.cx} y={r.by + r.f * 1.04} fill={seatMode ? undefined : "#FBFAF7"}
+                  style={{ fontSize: r.f }}>{r.metin}</text>
+              </g>
+            ))}
 
             {seatMode && drawn.map(({ b, seats, labels }) => (
               <g key={b.id} className={selIds.includes(b.id) ? "blk on" : "blk"}>
@@ -2797,13 +3267,14 @@ export default function PlanEditor({ cssText = "" } = {}) {
                   s.x > view.x && s.x < view.x + view.w && s.y > view.y && s.y < view.y + view.h)
                   .map((s) => (
                     <text key={`n${s.key}`} className="snum" fill={onColor(chanColor(b))}
-                      x={s.x} y={s.y + 3.1 * U} style={{ fontSize: 8.6 * U }}>{s.num}</text>
+                      x={s.x} y={s.y} dominantBaseline="central"
+                      style={{ fontSize: Math.min(14 * U, seatKindWidth(s.seatKind) * 0.65 / Math.max(1, String(s.num).length)) }}>{s.num}</text>
                   ))}
-                {pxPerCm * b.rowGap > 22 && labels.map((l) => (
-                  <text key={l.key} className="rl" x={l.x} y={l.y + 3.6 * U}
-                    style={{ fontSize: 10.5 * U }}>{l.text}</text>
-                ))}
               </g>
+            ))}
+            {seatMode && rowLabels.map((l) => (
+              <text key={l.key} className="rl" x={l.x} y={l.y + 3.6 * U}
+                style={{ fontSize: 10.5 * U }}>{l.text}</text>
             ))}
 
             {ghosts.map((g, i) => (
@@ -2823,13 +3294,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </g>
             ))}
 
-            {breach.length > 0 && metas.filter(({ b }) => breachSet.has(b.id)).map(({ b, m }) => (
+            {!isImportPreview && plates && breach.length > 0 && metas.filter(({ b }) => breachSet.has(b.id)).map(({ b, m }) => (
               <polygon key={`br${b.id}`} className="breach"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
 
-            {collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
+            {!isImportPreview && plates && collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
               <polygon key={`co${b.id}`} className="collide"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
@@ -2838,44 +3309,44 @@ export default function PlanEditor({ cssText = "" } = {}) {
             {/* "Doğrulama" kanalının vurgusu: son rapordaki canlı-olmayan
                 bulgular da (bkz. reportMarks) breach/collide ile aynı dış
                 hat dilinde işaretlenir — err kırmızı kesik, warn amber. */}
-            {reportMarks.err.length > 0 && metas.filter(({ b }) => reportMarks.err.includes(b.id)).map(({ b, m }) => (
+            {!isImportPreview && plates && reportMarks.err.length > 0 && metas.filter(({ b }) => reportMarks.err.includes(b.id)).map(({ b, m }) => (
               <polygon key={`rfe${b.id}`} className="breach"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
-            {reportMarks.warn.length > 0 && metas.filter(({ b }) => reportMarks.warn.includes(b.id)).map(({ b, m }) => (
+            {!isImportPreview && plates && reportMarks.warn.length > 0 && metas.filter(({ b }) => reportMarks.warn.includes(b.id)).map(({ b, m }) => (
               <polygon key={`rfw${b.id}`} className="rfwarn"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
 
-            {plan.shapes.filter((s) => s.type === "icon").map((s) => (
-              <Poi key={s.id} s={s} selected={selShapeId === s.id} U={U} />
+            {canvasPlan.shapes.filter((s) => s.type === "icon").map((s) => (
+              <Poi key={s.id} s={s} selected={!isImportPreview && selShapeId === s.id} U={U} />
             ))}
 
-            {guides.map((g, i) => (
+            {!isImportPreview && guides.map((g, i) => (
               <line key={i} className="guide"
                 x1={g.axis === "x" ? g.v : g.a} y1={g.axis === "x" ? g.a : g.v}
                 x2={g.axis === "x" ? g.v : g.z} y2={g.axis === "x" ? g.z : g.v}
                 strokeWidth={Math.max(2, 1.4 / (pxPerCm || 0.01))} />
             ))}
 
-            {marq && (
+            {!isImportPreview && marq && (
               <rect className="marq" x={Math.min(marq.x0, marq.x1)} y={Math.min(marq.y0, marq.y1)}
                 width={Math.abs(marq.x1 - marq.x0)} height={Math.abs(marq.y1 - marq.y0)} />
             )}
-            {calib && (
+            {!isImportPreview && calib && (
               <g className="cal">
                 <line x1={calib.x0} y1={calib.y0} x2={calib.x1} y2={calib.y1} />
                 <circle cx={calib.x0} cy={calib.y0} r={hSize * 0.7} />
                 <circle cx={calib.x1} cy={calib.y1} r={hSize * 0.7} />
               </g>
             )}
-            {draft && (tool === "grid" || tool === "shape") && (
+            {!isImportPreview && draft && (tool === "grid" || tool === "shape") && (
               <rect className="draft" x={Math.min(draft.x0, draft.x1)} y={Math.min(draft.y0, draft.y1)}
                 width={Math.abs(draft.x1 - draft.x0)} height={Math.abs(draft.y1 - draft.y0)} />
             )}
-            {draft && ["row", "fan", "measure", "cal"].includes(tool) && (
+            {!isImportPreview && draft && ["row", "fan", "measure", "cal"].includes(tool) && (
               <>
                 <line className="draft" x1={draft.x0} y1={draft.y0} x2={draft.x1} y2={draft.y1} />
                 <text className="mtxt" x={(draft.x0 + draft.x1) / 2} y={(draft.y0 + draft.y1) / 2 - 40}
@@ -2884,9 +3355,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 </text>
               </>
             )}
-            {poly && <polyline className="draft" fill="none" points={poly.pts.map((p) => `${p.x},${p.y}`).join(" ")} />}
+            {!isImportPreview && poly && <polyline className="draft" fill="none" points={poly.pts.map((p) => `${p.x},${p.y}`).join(" ")} />}
 
-            {footDraft && footDraft.length > 0 && (
+            {!isImportPreview && footDraft && footDraft.length > 0 && (
               <g className="footd">
                 <polyline points={[...footDraft, footDraft[0]].map((p) => `${p.x},${p.y}`).join(" ")}
                   strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
@@ -2897,7 +3368,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
             )}
           </svg>
 
-          {!plan.blocks.length && !plan.shapes.length && (
+          {!canvasPlan.blocks.length && !canvasPlan.shapes.length && (
             <div className="cempty">Sol menüden bir araç seçip çizmeye başlayın, ya da yukarıdan bir örnek salon açın.</div>
           )}
 
@@ -2909,11 +3380,11 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <div className="lgnd">
               <p>{CHAN_TITLE[colorChan]}<button className="link" onClick={() => setLegend(false)}>gizle</button></p>
 
-              {colorChan === "level" && levels.map((l, i) => (
+              {colorChan === "level" && canvasLevels.map((l, i) => (
                 <div key={l}>
                   <i style={{ background: levelColor(i) }} />
                   <span>{l}</span>
-                  <b className="n">{(levelCounts[l] || 0).toLocaleString("tr-TR")}</b>
+                  <b className="n">{(canvasLevelCounts[l] || 0).toLocaleString("tr-TR")}</b>
                 </div>
               ))}
 
@@ -2942,19 +3413,19 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 <p className="mut sm">Hiç nitelik atanmamış</p>
               )}
 
-              {colorChan === "gate" && gateShapes.map((d) => (
+              {colorChan === "gate" && canvasGateShapes.map((d) => (
                 <div key={d.id}>
                   <i style={{ background: gateColor(d.label) }} />
                   <span>{d.label}</span>
                   <b className="n">{(d.blocks || []).length}</b>
                 </div>
               ))}
-              {colorChan === "gate" && !gateShapes.length && (
+              {colorChan === "gate" && !canvasGateShapes.length && (
                 <p className="mut sm">Hiç kapı tanımlanmamış</p>
               )}
-              {colorChan === "gate" && gateShapes.length > 0 && (() => {
-                const assigned = new Set(gateShapes.flatMap((d) => d.blocks || []));
-                const n = metas.filter(({ b }) => !assigned.has(b.id)).length;
+              {colorChan === "gate" && canvasGateShapes.length > 0 && (() => {
+                const assigned = new Set(canvasGateShapes.flatMap((d) => d.blocks || []));
+                const n = canvasMetas.filter(({ b }) => !assigned.has(b.id)).length;
                 return n > 0 ? (
                   <div><i style={{ background: NEUTRAL }} /><span>Kapı atanmamış</span><b className="n">{n}</b></div>
                 ) : null;
@@ -2974,9 +3445,9 @@ export default function PlanEditor({ cssText = "" } = {}) {
           )}
 
           <div className="status">
-            <span className="n">{totalSeats.toLocaleString("tr-TR")}</span>&nbsp;koltuk
+            <span className="n">{canvasTotalSeats.toLocaleString("tr-TR")}</span>&nbsp;koltuk
             <span className="tsep" />
-            <span className="n">{metas.length}</span>&nbsp;blok
+            <span className="n">{canvasMetas.length}</span>&nbsp;blok
             {selIds.length > 0 && <><span className="tsep" />
               <span className="hi"><span className="n">{selIds.length}</span> blok ·{" "}
               <span className="n">{selSeatTotal.toLocaleString("tr-TR")}</span> koltuk seçili</span></>}
@@ -2986,11 +3457,18 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <span className={seatMode ? "ok" : "wr"}>
               {seatMode ? "koltuk görünümü" : "blok görünümü · yakınlaş"}
             </span>
-            {breach.length > 0 && <><span className="tsep" />
+            <span className="tsep" />
+            <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
+            <span className="n zoompct" title="Okunabilir %100'e zumla (0)" onClick={zoomToReadable}>
+              {zoomPct}%
+            </span>
+            <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
+            <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "Sığdır"}</button>
+            {!isImportPreview && breach.length > 0 && <><span className="tsep" />
               <button className="alert" onClick={() => { setSelIds(breach); setSelShapeId(null); }}>
                 {breach.length} blok salon sınırı dışında
               </button></>}
-            {collide.length > 0 && <><span className="tsep" />
+            {!isImportPreview && collide.length > 0 && <><span className="tsep" />
               <button className="alert" onClick={() => { setSelIds(collide); setSelShapeId(null); }}>
                 {collide.length} blok birbirinin alanına giriyor · en fazla {fmtOverlap(collideArea)}
               </button></>}
@@ -3017,16 +3495,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <span className="tsep" />
             <button className={plates ? "on" : ""} onClick={() => setPlates(!plates)}>Dış hatlar</button>
             <button className={legend ? "on" : ""} onClick={() => setLegend(!legend)}>Lejant</button>
-            <button className="ib" onClick={() => zoomCenter(1.35)} title="Uzaklaş">−</button>
-            <span className="n zoompct" title="%100'e sıfırla" onClick={zoomToAll}>
-              {zoomPct}%
-            </span>
-            <button className="ib" onClick={() => zoomCenter(1 / 1.35)} title="Yakınlaş">+</button>
-            {/* Eskiden "Sığdır" ve "İçeriğe zumla" ayrı düğmelerdi; seçim
-                yokken zoomToSelection zaten zoomToAll'a düşüyordu (bkz.
-                yukarısı) — yani hiçbir şey seçili değilken birebir aynı
-                düğmeydi. Tek düğme: seçim varsa ona odaklan, yoksa Sığdır. */}
-            <button onClick={zoomToSelection}>{selIds.length ? "Seçime zumla" : "Sığdır"}</button>
           </div>
 
           {footDraft && (
@@ -3064,9 +3532,14 @@ export default function PlanEditor({ cssText = "" } = {}) {
           {setOpen && (
             <PlanSettings plan={plan} sample={metas[0]} onClose={() => setSetOpen(false)}
               onCsv={exportCSV} onSvg={exportSVG} onCsvImport={importCSV} onDbImport={importDb} saved={saved} venues={venues} vk={vk}
+              onSourceImport={Store.importSource ? importSource : null}
+              importJob={importJob} onImportAccept={acceptImportJob} onImportCancel={cancelImportJob}
+              onImportRow={patchImportRow} onImportJobPatch={patchImportJob}
+              onImportBulk={bulkImportRows} onImportBuildPreview={buildImageImportPreview}
+              onSpreadsheetGroup={patchSpreadsheetGroup} onSpreadsheetCell={patchSpreadsheetCell}
+              onSpreadsheetBuildPreview={buildSpreadsheetImportPreview}
               theme={theme} onTheme={setThemePref} wheelPref={wheelPref} onWheelPref={setWheelPrefP}
-              onNew={newPlan} onNewStadium={() => newPlanFromTemplate(buildStadiumTemplate, "Yeni stadyum")}
-              onNewHall={() => newPlanFromTemplate(buildHallTemplate, "Yeni salon")}
+              onNew={newPlan}
               onDup={duplicatePlan} onDel={deletePlan}
               onChange={(p) => commit({ ...plan, ...p })} />
           )}
@@ -3092,7 +3565,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 <input value={pubNote} placeholder="Sürüm notu (ör. yan localar eklendi)"
                   onChange={(e) => setPubNote(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && doPublish()} />
-                <button className="pri" onClick={doPublish} disabled={breach.length > 0 || collide.length > 0}>Yayınla</button>
+                <button className="pri" onClick={doPublish}>Yayınla</button>
               </div>
 
               {!versions.length && <p className="mut sm">Henüz sürüm yok. İlk yayın taban çizgisini kurar.</p>}
@@ -3175,7 +3648,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
                 <div key={k} className={i.ids && i.ids.length ? `${i.t} go` : i.t}
                   onClick={i.ids && i.ids.length ? () => {
                     setSelIds(i.ids); setSelShapeId(null);
-                    zoomToBBox(i.ids.map((id) => metaById.get(id)).filter(Boolean));
+                    zoomToBBox(birlestir(i.ids.map((id) => metaById.get(id)?.bbox)));
                   } : undefined}>
                   {i.m}{i.d && <em>{i.d}</em>}
                 </div>
@@ -3190,7 +3663,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <span className="chev">{propsOpen ? "›" : "‹"}</span><em>Özellikler</em>
           </button>
           {propsOpen && (
-          selSeats.size > 1 ? (
+          /* Canlı görünümde panel GÜNLÜĞÜ gösteriyor. Seçim panelleri
+             düzenleme kontrolü dolu; canlıyken hepsi ölü düğme olurdu.
+             Operatörün o an istediği şey "ne yapılıyor", bir bloğun
+             sıra aralığı değil. KES'ten sonra paneller geri geliyor. */
+          live ? (
+            <CanliGunluk live={live} gunluk={liveGunluk} durgun={liveDurgun} onKes={liveKes} />
+          ) : selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
               onGroup={groupSelected} onUngroup={ungroupSelected}
               onClear={() => { setSelSeats(new Set()); setSelSeat(null); }} />
@@ -3228,6 +3707,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
           )}
         </aside>
       </div>
+
     </div>
   );
 }
@@ -3235,6 +3715,49 @@ export default function PlanEditor({ cssText = "" } = {}) {
 /* ─────────────────────────  PANELLER  ───────────────────────── */
 
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
+
+/** Yapay zekâ çizerken operatörün takip paneli.
+ *
+ *  Neden var: bloklar tuvalde beliriyordu ama operatör NE yapıldığını
+ *  göremiyordu — "bir şeyler oluyor" ile "salon bloğu eklendi, 195 koltuk"
+ *  arasındaki fark bu. Kural bulguları da burada: yapay zekâ bir uyarı
+ *  aldıysa operatör onu ANINDA görüyor, sonunda doğrulama çalıştırmayı
+ *  beklemiyor.
+ *
+ *  En yeni EN ÜSTTE: dar bir panelde canlı akış böyle okunur, kaydırmaya
+ *  gerek kalmaz. */
+function CanliGunluk({ live, gunluk, durgun, onKes }) {
+  const kokRef = useRef(null);
+  const sonAdim = gunluk.at(-1)?.t;
+  useEffect(() => {
+    const kok = kokRef.current;
+    kok?.closest(".props")?.scrollTo({ top: 0, behavior: "smooth" });
+    kok?.querySelector(".gnl")?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [sonAdim]);
+  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
+    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const ters = [...gunluk].reverse();
+  return (
+    <div className="canli" ref={kokRef}>
+      <p className="lab">{durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor"}</p>
+      <p className="cad">{live.name}</p>
+      {!ters.length && <p className="mut sm">Henüz adım yok — ilk değişiklik bekleniyor.</p>}
+      <ol className="gnl">
+        {ters.map((a, i) => (
+          <li key={`${a.t}-${i}`} className={i === 0 && !durgun ? "son" : ""}>
+            <span className="sa">{saat(a.t)}</span>
+            <span className="ne">{a.n}</span>
+            <span className="sy">{Number(a.k).toLocaleString("tr-TR")} koltuk · {a.b} blok</span>
+            {(a.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
+          </li>
+        ))}
+      </ol>
+      <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>
+      <p className="mut sm">Devraldığında yapay zekânın yazması durur; çizim planına
+        işlenir ve ⌘Z ile tümünü geri alabilirsin.</p>
+    </div>
+  );
+}
 
 /** Dikdörtgen seçimle işaretlenmiş koltuklara toplu işlem. */
 function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {
@@ -3330,7 +3853,11 @@ function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {
 }
 
 /** Seçim yokken: plan seviyesindeki ayarlar. */
-function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onNewStadium, onNewHall, onDup, onDel, onChange }) {
+function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbImport, onSourceImport,
+  importJob, onImportAccept, onImportCancel, onImportRow, onImportJobPatch, onImportBulk, onImportBuildPreview,
+  onSpreadsheetGroup, onSpreadsheetCell, onSpreadsheetBuildPreview,
+  saved, venues, vk, theme, onTheme, wheelPref, onWheelPref,
+  onNew, onDup, onDel, onChange }) {
   const tpl = plan.idTemplate || DEF_TPL;
   const s = sample ? buildSeats(sample.b, sample.m, tpl).seats.find((x) => !x.gap) : null;
   return (
@@ -3362,23 +3889,157 @@ function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbIm
           Veritabanı çıktısı yükle (db.json)
           <input type="file" accept=".json,application/json" onChange={onDbImport} hidden />
         </label>
+        {onSourceImport && <label className="wide asfile">
+          Kaynak plan yükle (Excel/görsel)
+          <input type="file" accept=".xls,.xlsx,.png,.jpg,.jpeg,.webp,.pdf,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg,image/webp"
+            onChange={onSourceImport} hidden />
+        </label>}
+        {importJob && (
+          <div className="importbox">
+            <b>{importJob.name}</b>
+            <span>{importJob.phase || importJob.status}</span>
+            {importJob.scan && <small>{importJob.scan.seatCount || 0} koltuk · {importJob.scan.rowCount || 0} sıra</small>}
+            {importJob.kind === "image" && importJob.scan && !importJob.preview && (
+              <small>Görsel tarandı. Blok/kat/sıra anlamı çözülmeden önizleme oluşturulmaz.</small>
+            )}
+            {!!importJob.scan?.needsReview?.length && (
+              <small className="stop">Kontrol isteyen sıralar: {importJob.scan.needsReview.join(", ")}</small>
+            )}
+            {!!importJob.scan?.focalCandidates?.length && (
+              <small>Odak adayları: {importJob.scan.focalCandidates.map((f) => `${f.label || f.type} (${Math.round((f.confidence || 0) * 100)}%)`).join(", ")}</small>
+            )}
+            {importJob.kind === "image" && importJob.scan && !importJob.previewPlan && (
+              <div className="importReview">
+                <p className="lab">Satır anlamlandır</p>
+                <div className="rowline">
+                  <input value={importJob.bulkLabel || ""} placeholder="Blok etiketi"
+                    onChange={(e) => onImportJobPatch?.({ bulkLabel: e.target.value })} />
+                  <input value={importJob.bulkLevel || ""} placeholder="Kat"
+                    onChange={(e) => onImportJobPatch?.({ bulkLevel: e.target.value })} />
+                  <button onClick={onImportBulk}>Tüm satırlara ata</button>
+                </div>
+                {(importJob.scan.rows || []).map((row) => {
+                  const a = importJob.rowAssignments?.[row.rowId] || {};
+                  const count = row.seats?.length || row.centers?.length || 0;
+                  return (
+                    <div key={row.rowId} className="importRow">
+                      <b>{row.rowId}</b>
+                      <small>{count} koltuk · %{Math.round((row.confidence || 0) * 100)}</small>
+                      <select value={a.action || "include"}
+                        onChange={(e) => onImportRow?.(row.rowId, { action: e.target.value })}>
+                        <option value="include">Çiz</option>
+                        <option value="exclude">Dışla</option>
+                      </select>
+                      {(a.action || "include") === "include" ? (
+                        <>
+                          <input value={a.label || ""} placeholder="Blok"
+                            onChange={(e) => onImportRow?.(row.rowId, { label: e.target.value })} />
+                          <input value={a.level || ""} placeholder="Kat"
+                            onChange={(e) => onImportRow?.(row.rowId, { level: e.target.value })} />
+                        </>
+                      ) : (
+                        <input className="wide" value={a.reason || ""} placeholder="Dışlama nedeni"
+                          onChange={(e) => onImportRow?.(row.rowId, { reason: e.target.value })} />
+                      )}
+                      {row.needsReview && (
+                        <label className="check">
+                          <input type="checkbox" checked={!!a.reviewed}
+                            onChange={(e) => onImportRow?.(row.rowId, { reviewed: e.target.checked })} />
+                          İnceledim
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
+                <p className="lab">Odak</p>
+                <select className="full" value={importJob.focalChoice || ""}
+                  onChange={(e) => onImportJobPatch?.({ focalChoice: e.target.value })}>
+                  <option value="">seç…</option>
+                  {(importJob.scan.focalCandidates || []).map((f) => (
+                    <option key={f.id} value={f.id}>{f.label || f.type} · %{Math.round((f.confidence || 0) * 100)}</option>
+                  ))}
+                  <option value="none">Kaynakta odak yok</option>
+                </select>
+                <button className="wide pri" disabled={!manualImageImportReady(importJob).ok}
+                  onClick={onImportBuildPreview}>Önizleme üret ve doğrula</button>
+                {!manualImageImportReady(importJob).ok && (
+                  <small className="stop">{manualImageImportReady(importJob).reason}</small>
+                )}
+              </div>
+            )}
+            {importJob.kind === "spreadsheet" && importJob.scan && !importJob.previewPlan && (
+              <div className="importReview">
+                <p className="lab">Excel yerleşimi</p>
+                <select className="full" value={importJob.spreadsheetLayout || ""}
+                  onChange={(e) => onImportJobPatch?.({ spreadsheetLayout: e.target.value })}>
+                  {importJob.scan.family === "flat-list" && <option value="">Yerleşim kararı gerekli…</option>}
+                  {importJob.scan.family !== "flat-list" && <option value="source">Kaynak hücre oranlarını koru</option>}
+                  {importJob.scan.family !== "flat-list" && <option value="normalized">Şematik aralıkları düzenle</option>}
+                  <option value="ring">Halka düzeni (türetilmiş)</option>
+                </select>
+                {(importJob.scan.groups || []).map((group) => {
+                  const a = importJob.groupAssignments?.[group.groupId] || {};
+                  return <div key={group.groupId} className="importRow">
+                    <b>{group.label}</b><small>{group.seatCount} koltuk · {group.rows?.length || 0} sıra</small>
+                    <select value={a.action || "include"}
+                      onChange={(e) => onSpreadsheetGroup?.(group.groupId, { action: e.target.value })}>
+                      <option value="include">Çiz</option><option value="exclude">Dışla</option>
+                    </select>
+                    {(a.action || "include") === "include" ? <>
+                      <input value={a.label || ""} placeholder="Blok"
+                        onChange={(e) => onSpreadsheetGroup?.(group.groupId, { label: e.target.value })} />
+                      <input value={a.level || ""} placeholder="Kat"
+                        onChange={(e) => onSpreadsheetGroup?.(group.groupId, { level: e.target.value })} />
+                    </> : <input className="wide" value={a.reason || ""} placeholder="Dışlama nedeni"
+                      onChange={(e) => onSpreadsheetGroup?.(group.groupId, { reason: e.target.value })} />}
+                  </div>;
+                })}
+                {(importJob.scan.unresolvedCells || []).map((cell) => <div key={cell.sourceId} className="importRow">
+                  <b>{cell.sourceId}</b><small>{cell.text || "Belirsiz hücre"}</small>
+                  <input className="wide" value={importJob.cellReviews?.[cell.sourceId]?.reason || ""}
+                    placeholder="Neden koltuk değil?"
+                    onChange={(e) => onSpreadsheetCell?.(cell.sourceId, { reason: e.target.value })} />
+                </div>)}
+                {importJob.scan.conflicts?.focal && <>
+                  <p className="lab">Odak</p>
+                  <select className="full" value={importJob.spreadsheetFocalChoice || ""}
+                    onChange={(e) => onImportJobPatch?.({ spreadsheetFocalChoice: e.target.value })}>
+                    <option value="">seç…</option>
+                    {importJob.scan.conflicts.focal.focals.map((f) =>
+                      <option key={f.id} value={f.id}>{f.label}</option>)}
+                    <option value="none">Kaynakta odak yok</option>
+                  </select>
+                </>}
+                <button className="wide pri" disabled={!manualSpreadsheetImportReady(importJob).ok}
+                  onClick={onSpreadsheetBuildPreview}>Önizleme üret ve doğrula</button>
+                {!manualSpreadsheetImportReady(importJob).ok &&
+                  <small className="stop">{manualSpreadsheetImportReady(importJob).reason}</small>}
+              </div>
+            )}
+            {importJob.preview && <small>Önizleme: {importJob.preview.blocks} blok · {importJob.preview.seats} koltuk</small>}
+            {importJob.previewPlan && <small>Önizleme tuvalde salt okunur gösteriliyor.</small>}
+            {importJob.verification && <small>{importJob.verification.verified
+              ? importJob.verification.verifiedIdentity === false
+                ? "Kaynak konumları doğrulandı; koltuk kimlikleri çözülmedi (taslak)"
+                : "Doğrulandı"
+              : "Doğrulanamadı"}</small>}
+            {importJob.error && <small className="stop">{importJob.error}</small>}
+            <div className="acts">
+              <button disabled={!importJob.verification?.verified} onClick={onImportAccept}>Kabul et</button>
+              <button onClick={onImportCancel}>İptal</button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="sec">
         <p className="lab">Planlar</p>
         <div className="acts">
-          <button onClick={onNew}>Yeni (boş)</button>
-          <button onClick={onNewStadium}>Yeni (stadyum)</button>
-          <button onClick={onNewHall}>Yeni (salon)</button>
+          <button onClick={onNew}>Yeni plan</button>
           <button onClick={onDup}>Kopyala</button>
           <button className="dgr" disabled={!saved.includes(vk) || Object.keys(venues).length < 2}
             onClick={() => onDel(vk)}>Sil</button>
         </div>
-        <p className="mut sm">
-          Stadyum/salon, boş tuval yerine düzenlenebilir bir başlangıç iskeleti (tribün/kademe +
-          gerçek vomitorium ya da kapı) verir. Plan geçişi üstteki menüden. Düzenlemeler otomatik
-          kaydediliyor; altlık görseli kaydedilmez.
-        </p>
       </div>
 
       <div className="sec">
@@ -4015,7 +4676,8 @@ function BlockPanel({ b, levels, meta, arr, doors, sectionKinds, sectionKind, on
               <option value="seq">Ardışık (1, 2, 3)</option>
               <option value="odd">Sadece tek (101, 103…)</option>
               <option value="even">Sadece çift (102, 104…)</option>
-              <option value="center">Merkezden dışa · tek/çift</option>
+              <option value="center">Merkezden dışa · tek/çift (1-2 ortada)</option>
+              <option value="center-in">Duvardan içeri · tek/çift (1-2 kenarda)</option>
             </select>
           </Row>
           <Row label="Yön">
@@ -4046,4 +4708,3 @@ function BlockPanel({ b, levels, meta, arr, doors, sectionKinds, sectionKind, on
     </div>
   );
 }
-

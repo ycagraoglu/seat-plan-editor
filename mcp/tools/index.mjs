@@ -1,0 +1,34 @@
+import { z } from "zod";
+import { registerPlanTools } from "./plan.mjs";
+import { registerBlockTools } from "./blocks.mjs";
+import { registerVenueTools } from "./venue.mjs";
+import { registerRenderTools } from "./render.mjs";
+import { registerSourceTools } from "./source.mjs";
+import { registerExportTools } from "./export.mjs";
+import { registerReferenceTools } from "./reference.mjs";
+import { registerCapabilityTools } from "./capabilities.mjs";
+import { registerSpreadsheetTools } from "./spreadsheet.mjs";
+import { registerImportTools } from "./import.mjs";
+
+/* Araç kaydı tek yerden. Konu başına bir dosya; yeni faz yeni dosya ekler,
+   burası sadece toplar. */
+export function registerTools(server, session, { allowFilesystemWrite = true } = {}) {
+  server.registerTool("ping", {
+    title: "Bağlantı denetimi",
+    description: "Sunucu ayakta mı, hangi sürüm — bağlantıyı doğrulamak için.",
+    inputSchema: {},
+  }, async () => ({
+    content: [{ type: "text", text: "seat-plan-editor MCP 0.1.0 · hazır" }],
+  }));
+
+  registerPlanTools(server, session, z);
+  registerCapabilityTools(server, session);
+  registerReferenceTools(server, session, z);
+  registerSpreadsheetTools(server, session, z);
+  registerImportTools(server, session);
+  registerBlockTools(server, session, z);
+  registerVenueTools(server, session, z);
+  registerRenderTools(server, session, z);
+  registerSourceTools(server, session, z);
+  if (allowFilesystemWrite) registerExportTools(server, session, z);
+}

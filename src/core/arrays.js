@@ -1,6 +1,7 @@
 import { RAD } from "./geometry.js";
 import { reLabel, freeLabel } from "./labels.js";
 import { nid } from "./ids.js";
+import { bboxUnion } from "./bounds.js";
 
 /* `used`: planda o an kullanılan etiket kümesi — bu modül saf kalsın diye
    çağıran taraftan (PlanEditor.jsx) parametre olarak gelir, plan'a bağımlı
@@ -43,10 +44,7 @@ export function radialArray(blocks, { count, cx, cy, step }, used = new Set()) {
 export function alignSetup(ids, metas, metaById, shapes) {
   const sel = ids.map((id) => metaById.get(id)).filter(Boolean);
   if (!sel.length) return null;
-  const box = {
-    x0: Math.min(...sel.map((m) => m.bbox.x0)), x1: Math.max(...sel.map((m) => m.bbox.x1)),
-    y0: Math.min(...sel.map((m) => m.bbox.y0)), y1: Math.max(...sel.map((m) => m.bbox.y1)),
-  };
+  const box = bboxUnion(sel.map((m) => m.bbox));
   box.cx = (box.x0 + box.x1) / 2; box.cy = (box.y0 + box.y1) / 2;
 
   const tg = [];

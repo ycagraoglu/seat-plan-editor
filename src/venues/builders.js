@@ -138,7 +138,7 @@ export function cutVomitories(blocks, { depth = 3, width = 6 } = {}) {
       x: Math.round((inner.x + outer.x) / 2), y: Math.round((inner.y + outer.y) / 2),
       w: Math.round((centers.length - 1) * b.rowGap), h: Math.round((minCut - 1) * b.seatGap),
       rot: Math.round((Math.atan2(outer.y - inner.y, outer.x - inner.x) * 180) / Math.PI),
-      capacity: 0, fs: 120, blocks: [] });
+      capacity: 0, fs: 120, blocks: [b.id] });
     return { ...b, ov };
   });
   return [cut, doors];

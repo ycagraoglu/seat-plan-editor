@@ -125,6 +125,18 @@ export const LocalStore = {
    farkı görmez, ikisi de aynı sözleşmeyi karşılıyor (test/store-contract.js).
    Yapılandırılmamışsa tarayıcı depolaması: bu depo bir referans proje,
    sunucusuz da açılıp çalışması gerekiyor. */
+function runtimeAuth() {
+  const g = typeof globalThis !== "undefined" ? globalThis : {};
+  const w = typeof window !== "undefined" ? window : {};
+  return w.__SEAT_EDITOR_AUTH__ || g.__SEAT_EDITOR_AUTH__ || {};
+}
+
 const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE) || null;
 
-export const Store = API_BASE ? apiStore(API_BASE) : LocalStore;
+export function makeStore(opts = {}) {
+  const auth = { ...runtimeAuth(), ...opts };
+  const base = auth.apiBase || API_BASE;
+  return base ? apiStore(base, auth) : LocalStore;
+}
+
+export const Store = makeStore();

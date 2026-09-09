@@ -20,7 +20,7 @@
 PRAGMA foreign_keys = ON;
 
 -- ── venue.venues → venue.spaces ───────────────────────────────────────────
-CREATE TABLE venue_venues (
+CREATE TABLE IF NOT EXISTS venue_venues (
   tenant_id   TEXT NOT NULL,               -- Postgres: uuid
   id          TEXT NOT NULL,
   code        TEXT NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE venue_venues (
   UNIQUE (tenant_id, code)
 );
 
-CREATE TABLE venue_spaces (
+CREATE TABLE IF NOT EXISTS venue_spaces (
   tenant_id   TEXT NOT NULL,
   id          TEXT NOT NULL,
   venue_id    TEXT NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE venue_spaces (
 );
 
 -- ── seating.seat_plans → seat_plan_versions ───────────────────────────────
-CREATE TABLE seating_seat_plans (
+CREATE TABLE IF NOT EXISTS seating_seat_plans (
   tenant_id   TEXT NOT NULL,
   id          TEXT NOT NULL,
   space_id    TEXT NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE seating_seat_plans (
 
 -- Sürüm YAYIMLANDIKTAN sonra değişmez (rapor §5.4: "published/superseded
 -- plan altında değiştirilemez"). Kimlik değişmezliği buna dayanır.
-CREATE TABLE seating_seat_plan_versions (
+CREATE TABLE IF NOT EXISTS seating_seat_plan_versions (
   tenant_id     TEXT NOT NULL,
   id            TEXT NOT NULL,
   seat_plan_id  TEXT NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE seating_seat_plan_versions (
 -- Raporun en kritik eksiği buydu: bölümler düz bir listeydi, "Batı Tribünü →
 -- Üst Kat → H Blok" temsil edilemiyordu ve "aynı H kodu farklı katta" kod
 -- hilesi istiyordu. parent_section_id + kardeş-tekil kod ikisini de çözer.
-CREATE TABLE seating_sections (
+CREATE TABLE IF NOT EXISTS seating_sections (
   tenant_id          TEXT NOT NULL,
   version_id         TEXT NOT NULL,
   id                 TEXT NOT NULL,
@@ -96,13 +96,13 @@ CREATE TABLE seating_sections (
 --   UNIQUE NULLS NOT DISTINCT (tenant_id, version_id, parent_section_id, code)
 -- SQLite NULL'ları BİRBİRİNDEN FARKLI saydığı için kök bölümlerde kısıt
 -- çalışmazdı; COALESCE'lı tekil indeks aynı anlamı verir.
-CREATE UNIQUE INDEX ux_sections_sibling_code
+CREATE UNIQUE INDEX IF NOT EXISTS ux_sections_sibling_code
   ON seating_sections (tenant_id, version_id, COALESCE(parent_section_id, ''), code);
 
-CREATE INDEX ix_sections_parent ON seating_sections (tenant_id, version_id, parent_section_id);
+CREATE INDEX IF NOT EXISTS ix_sections_parent ON seating_sections (tenant_id, version_id, parent_section_id);
 
 -- ── seating.rows ──────────────────────────────────────────────────────────
-CREATE TABLE seating_rows (
+CREATE TABLE IF NOT EXISTS seating_rows (
   tenant_id   TEXT NOT NULL,
   version_id  TEXT NOT NULL,
   id          TEXT NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE seating_rows (
 );
 
 -- ── seating.seat_types — §5.4 ─────────────────────────────────────────────
-CREATE TABLE seating_seat_types (
+CREATE TABLE IF NOT EXISTS seating_seat_types (
   tenant_id   TEXT NOT NULL,
   version_id  TEXT NOT NULL,
   id          TEXT NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE seating_seat_types (
 -- Üçüncü sorumluluk: seat_kind "bu ne", features "bu ne özellikte",
 -- seat_group "hangi yerlerle birlikte tek birim". Satış politikası burada
 -- DEĞİL — o Inventory/Commerce'in işi (rapor §4.3).
-CREATE TABLE seating_seat_groups (
+CREATE TABLE IF NOT EXISTS seating_seat_groups (
   tenant_id   TEXT NOT NULL,
   version_id  TEXT NOT NULL,
   id          TEXT NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE seating_seat_groups (
 );
 
 -- ── seating.seats ─────────────────────────────────────────────────────────
-CREATE TABLE seating_seats (
+CREATE TABLE IF NOT EXISTS seating_seats (
   tenant_id     TEXT NOT NULL,
   version_id    TEXT NOT NULL,
   id            TEXT NOT NULL,
@@ -176,12 +176,12 @@ CREATE TABLE seating_seats (
     REFERENCES seating_seat_groups (tenant_id, version_id, id) ON DELETE SET NULL
 );
 
-CREATE INDEX ix_seats_row ON seating_seats (tenant_id, version_id, row_id);
-CREATE INDEX ix_seats_group ON seating_seats (tenant_id, version_id, group_id);
+CREATE INDEX IF NOT EXISTS ix_seats_row ON seating_seats (tenant_id, version_id, row_id);
+CREATE INDEX IF NOT EXISTS ix_seats_group ON seating_seats (tenant_id, version_id, group_id);
 
 -- features 0..N olduğu için ayrı tablo: "tüm erişilebilir koltuklar"
 -- sorgusu bir JSON taraması değil, indeksli bir join olsun.
-CREATE TABLE seating_seat_features (
+CREATE TABLE IF NOT EXISTS seating_seat_features (
   tenant_id   TEXT NOT NULL,
   version_id  TEXT NOT NULL,
   seat_id     TEXT NOT NULL,
@@ -192,7 +192,7 @@ CREATE TABLE seating_seat_features (
 );
 
 -- ── seating.shapes — §6.3, satılabilir envanterden AYRI ───────────────────
-CREATE TABLE seating_shapes (
+CREATE TABLE IF NOT EXISTS seating_shapes (
   tenant_id      TEXT NOT NULL,
   version_id     TEXT NOT NULL,
   id             TEXT NOT NULL,
@@ -211,7 +211,7 @@ CREATE TABLE seating_shapes (
 );
 
 -- ── §5.5 giriş / yönlendirme — fiyat ve envanter TAŞIMAZ ──────────────────
-CREATE TABLE seating_entrances (
+CREATE TABLE IF NOT EXISTS seating_entrances (
   tenant_id   TEXT NOT NULL,
   version_id  TEXT NOT NULL,
   id          TEXT NOT NULL,
@@ -222,7 +222,7 @@ CREATE TABLE seating_entrances (
   FOREIGN KEY (tenant_id, version_id) REFERENCES seating_seat_plan_versions (tenant_id, id) ON DELETE CASCADE
 );
 
-CREATE TABLE seating_entrance_sections (
+CREATE TABLE IF NOT EXISTS seating_entrance_sections (
   tenant_id    TEXT NOT NULL,
   version_id   TEXT NOT NULL,
   entrance_id  TEXT NOT NULL,
@@ -236,7 +236,7 @@ CREATE TABLE seating_entrance_sections (
 
 -- Koltuk düzeyinde yönlendirme: bölüm eşlemesinden daha ayrıntılı adres
 -- gerektiğinde ("B Kapısı → Üst Kat → H Blok → A Sırası → 12").
-CREATE TABLE seating_entrance_seats (
+CREATE TABLE IF NOT EXISTS seating_entrance_seats (
   tenant_id    TEXT NOT NULL,
   version_id   TEXT NOT NULL,
   entrance_id  TEXT NOT NULL,

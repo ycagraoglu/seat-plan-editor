@@ -63,8 +63,9 @@ function computeSeatScan(plan, metas) {
       total++;
       /* Yandan geçiş gerektirmeyen bloklar: masa (etrafı zaten bitişik
          oturma alanı) veya elle işaretlenmiş b.noAisle (loca gibi). */
-      list.push({ id: s.id, seatKind: s.seatKind, seatFeatures: s.seatFeatures, groupId: s.groupId,
+      list.push({ id: s.id, key: s.key, seatKind: s.seatKind, seatFeatures: s.seatFeatures, groupId: s.groupId,
         x: s.x, y: s.y, rot: s.rot,
+        radius: Math.hypot(seatKindWidth(s.seatKind), DEF.seatH) / 2,
         block: b.label, bid: b.id, level: s.level, sec: resolveBlockSectionId(b),
         t: b.kind === "table" || !!b.noAisle,
         outline: m.outline });
@@ -84,7 +85,7 @@ function computeSeatScan(plan, metas) {
      komşuluk taraması — ikisi de aynı çiftlere bakıyor, ayrı ayrı taramak
      iki katı iş olurdu. */
   const CELL = 200, grid = new Map();
-  let clash = 0; const clashPairs = new Set(); const clashIds = new Set();
+  let clash = 0; const clashPairs = new Set(); const clashPairIds = new Set(); const clashIds = new Set();
   list.forEach((q, i) => {
     const k = `${Math.floor(q.x / CELL)}:${Math.floor(q.y / CELL)}`;
     if (!grid.has(k)) grid.set(k, []);
@@ -98,7 +99,14 @@ function computeSeatScan(plan, metas) {
         if (j <= i) return;
         const w = list[j];
         const d = Math.hypot(q.x - w.x, q.y - w.y);
-        if (d < 30) { clash++; clashPairs.add(q.block === w.block ? q.block : `${q.block}↔${w.block}`); clashIds.add(q.bid).add(w.bid); }
+        const singlePair = q.seatKind === DEFAULT_SEAT_KIND && w.seatKind === DEFAULT_SEAT_KIND;
+        if ((singlePair && d < q.radius + w.radius && outlineOverlapArea(seatCorners(q), seatCorners(w)) > 1)
+          || (!singlePair && d < 30)) {
+          clash++;
+          clashPairs.add(q.block === w.block ? q.block : `${q.block}↔${w.block}`);
+          clashPairIds.add([q.key, w.key].map(String).sort((a, b) => a.localeCompare(b)).join("|"));
+          clashIds.add(q.bid).add(w.bid);
+        }
         /* İki masa arasında koridor aranmaz — sandalye sırtları bitişik
            olabilir. Farklı BÖLÜMDEKİ bloklar da aranmaz: aynı düzlemde
            değiller (balkon parterin üstünde durur), aralarında yürünmez.
@@ -113,7 +121,8 @@ function computeSeatScan(plan, metas) {
     }
   });
 
-  return { list, kinds, features, byGroup, seen, unlabeled, total, clash, clashPairs, clashIds, narrow };
+  return { list, kinds, features, byGroup, seen, unlabeled, total, clash,
+    clashPairs, clashPairIds, clashIds, narrow };
 }
 
 /** Kurallara ortak girdi. Her alan EN FAZLA bir kez hesaplanır — üç
@@ -196,7 +205,8 @@ export const RULES = [
       const { outCount, outside, outsideIds } = ctx.seatBoundaryBreach;
       if (!outCount) return [];
       return [{ t: "err", m: `${outCount.toLocaleString("tr-TR")} koltuk salon sınırının dışında`,
-        d: Object.entries(outside).map(([b, n]) => `${b}: ${n}`).join(" · "), ids: [...outsideIds] }];
+        d: Object.entries(outside).map(([b, n]) => `${b}: ${n}`).join(" · "), ids: [...outsideIds],
+        count: outCount }];
     },
   },
   /* Tuvaldeki canlı uyarı blok tabanına, doğrulama koltuklara bakıyordu;
@@ -209,7 +219,7 @@ export const RULES = [
       if (!outBlocks.length) return [];
       return [{ t: "err", m: `${outBlocks.length} bloğun dış hattı salon sınırına taşıyor`,
         d: outBlocks.slice(0, 8).map(({ b }) => b.name || b.label).join(", "),
-        ids: outBlocks.map(({ b }) => b.id) }];
+        ids: outBlocks.map(({ b }) => b.id), count: outBlocks.length }];
     },
   },
   {
@@ -252,7 +262,8 @@ export const RULES = [
          zaten hesapladığı en büyük örtüşme alanını taşır — yeni hesap yok. */
       return [{ t: "err", m: `${hit.size} blok dış hattı başka bir bloğun dış hattıyla çakışıyor`,
         d: pairs.slice(0, 6).map((o) => `${o.a}↔${o.b} (${Math.round(o.area).toLocaleString("tr-TR")}cm²)`).join(" · "),
-        ids: [...hit], maxArea: Math.max(...pairs.map((o) => o.area)) }];
+        ids: [...hit], pairs: pairs.map((o) => [o.ai, o.bi]),
+        count: pairs.length, maxArea: pairs.reduce((max, o) => Math.max(max, o.area), 0) }];
     },
   },
   /* Kat-arası taban çakışması. Gerçek bir salonda balkon partere sarkabilir,
@@ -285,10 +296,11 @@ export const RULES = [
   {
     id: "seat-clash", severity: "err", live: false,
     check(ctx) {
-      const { clash, clashPairs, clashIds } = ctx.seats;
+      const { clash, clashPairs, clashPairIds, clashIds } = ctx.seats;
       if (!clash) return [];
       return [{ t: "err", m: `${clash.toLocaleString("tr-TR")} koltuk çifti üst üste biniyor`,
-        d: [...clashPairs].slice(0, 6).join(" · "), ids: [...clashIds] }];
+        d: [...clashPairs].slice(0, 6).join(" · "), ids: [...clashIds],
+        pairs: [...clashPairIds], count: clash }];
     },
   },
   /* Farklı bloklar arasında insanın geçebileceği bir açıklık olmalı.
@@ -300,7 +312,8 @@ export const RULES = [
       if (narrow.min === Infinity) return [];
       if (narrow.min < 90) return [{ t: "err",
         m: `Bloklar arasında yürüme payı yok — en dar açıklık ${Math.round(narrow.min)} cm`,
-        d: `${narrow.pair} · geçit için en az 90 cm gerekir`, ids: narrow.ids }];
+        d: `${narrow.pair} · geçit için en az 90 cm gerekir`, ids: narrow.ids,
+        severity: 90 - narrow.min }];
       if (narrow.min < 120) return [{ t: "warn",
         m: `Bloklar arası en dar açıklık ${Math.round(narrow.min)} cm`,
         d: `${narrow.pair} · rahat geçiş için 120 cm önerilir`, ids: narrow.ids }];
@@ -412,14 +425,14 @@ export const RULES = [
       const dups = [...ctx.seats.seen].filter(([, n]) => n > 1);
       if (!dups.length) return [];
       return [{ t: "err", m: `${dups.length} yinelenen koltuk kimliği`,
-        d: dups.slice(0, 6).map(([id, n]) => `${id} ×${n}`).join(", ") }];
+        d: dups.slice(0, 6).map(([id, n]) => `${id} ×${n}`).join(", "), count: dups.length }];
     },
   },
   {
     id: "unlabeled-seats", severity: "err", live: false,
     check(ctx) {
       if (!ctx.seats.unlabeled) return [];
-      return [{ t: "err", m: `${ctx.seats.unlabeled} etiketsiz koltuk` }];
+      return [{ t: "err", m: `${ctx.seats.unlabeled} etiketsiz koltuk`, count: ctx.seats.unlabeled }];
     },
   },
   {
@@ -444,7 +457,8 @@ export const RULES = [
       const orphan = ctx.plan.blocks.filter((b) => !ctx.gates || !ctx.gates.has(b.id));
       if (!orphan.length) return [];
       return [{ t: "err", m: `${orphan.length} blok hiçbir kapıya bağlı değil`,
-        d: orphan.slice(0, 8).map((b) => b.name || b.label).join(", "), ids: orphan.map((b) => b.id) }];
+        d: orphan.slice(0, 8).map((b) => b.name || b.label).join(", "), ids: orphan.map((b) => b.id),
+        count: orphan.length }];
     },
   },
   {
@@ -493,7 +507,8 @@ export const RULES = [
         if (corners.some((c) => !inPoly(c.x, c.y, s.outline))) bad.add(s.bid);
       });
       if (!bad.size) return [];
-      return [{ t: "err", m: `${bad.size} bloğun koltuğu kendi dış hattının dışına taşıyor`, ids: [...bad] }];
+      return [{ t: "err", m: `${bad.size} bloğun koltuğu kendi dış hattının dışına taşıyor`, ids: [...bad],
+        count: bad.size }];
     },
   },
   {
@@ -506,7 +521,8 @@ export const RULES = [
         if (corners.some((c) => !inBounds(c.x, c.y, ctx.bounds))) { count++; ids.add(s.bid); }
       });
       if (!count) return [];
-      return [{ t: "err", m: `${count} koltuğun köşesi salon sınırının dışına taşıyor`, ids: [...ids] }];
+      return [{ t: "err", m: `${count} koltuğun köşesi salon sınırının dışına taşıyor`, ids: [...ids],
+        count }];
     },
   },
   /* ── Bölüm ağacı bütünlüğü (mimari rapor §5.1) ────────────────────
@@ -530,7 +546,7 @@ export const RULES = [
       }
       if (!bad.length) return [];
       return [{ t: "err", m: `${bad.length} bölüm döngüsel — bir bölüm kendi atası olamaz`,
-        d: bad.slice(0, 6).map((s) => s.code || s.id).join(" · ") }];
+        d: bad.slice(0, 6).map((s) => s.code || s.id).join(" · "), count: bad.length }];
     },
   },
   {
@@ -552,7 +568,8 @@ export const RULES = [
       const bad = secs.filter((s) => derinlik(s) > AZAMI);
       if (!bad.length) return [];
       return [{ t: "err", m: `${bad.length} bölüm ${AZAMI} seviyelik azami derinliği aşıyor`,
-        d: bad.slice(0, 6).map((s) => `${s.code || s.id} (${derinlik(s)} seviye)`).join(" · ") }];
+        d: bad.slice(0, 6).map((s) => `${s.code || s.id} (${derinlik(s)} seviye)`).join(" · "),
+        count: bad.length, severity: bad.reduce((max, s) => Math.max(max, derinlik(s) - AZAMI), 0) }];
     },
   },
   {
@@ -570,7 +587,7 @@ export const RULES = [
       }
       if (!cakisan.length) return [];
       return [{ t: "err", m: `${cakisan.length} bölüm kodu aynı üst bölüm altında tekrarlanıyor`,
-        d: cakisan.slice(0, 6).map((s) => s.code || s.id).join(" · ") }];
+        d: cakisan.slice(0, 6).map((s) => s.code || s.id).join(" · "), count: cakisan.length }];
     },
   },
 ];

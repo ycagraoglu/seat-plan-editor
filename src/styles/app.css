@@ -13,6 +13,15 @@
 .ed ::selection{ background:rgba(227,6,19,.24); }
 .ed *{ box-sizing:border-box; }
 .ed .n{ font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+.ed.ai-working::after{ content:""; position:fixed; inset:0; z-index:9999; pointer-events:none;
+  border:2px solid var(--acc); animation:ai-working-pulse 1.8s var(--ease) infinite; }
+@keyframes ai-working-pulse{
+  0%,100%{ opacity:.35; box-shadow:inset 0 0 8px rgba(var(--accrgb),.12); }
+  50%{ opacity:1; box-shadow:inset 0 0 18px rgba(var(--accrgb),.42); }
+}
+@media (prefers-reduced-motion:reduce){
+  .ed.ai-working::after{ animation:none; opacity:.75; }
+}
 .grow{ flex:1; }
 .tsep{ width:1px; height:16px; background:var(--line); flex:none; }
 
@@ -27,6 +36,9 @@
   cursor:pointer; font-size:12px; white-space:nowrap; }
 .top button:hover, .btn:hover{ background:var(--panel2); color:var(--bone); }
 .top button.on{ background:var(--accline); color:var(--acc); }
+.top .plan-delete:not(:disabled):hover, .top .plan-delete.armed{
+  border-color:var(--err); color:var(--err); background:transparent; }
+.top .delete-command:not(:disabled):hover{ color:var(--err); }
 .top button:disabled{ opacity:.3; cursor:default; }
 /* color:#fff ham: rozet zemini her zaman doygun (err/warn), --onacc ile aynı değer ama düz yazılmış — mekanik taşımada dokunulmadı. */
 .top .badge{ border-radius:var(--r-pill); font-size:10px; font-weight:700; line-height:1; color:#fff;
@@ -326,6 +338,23 @@ label.asfile{ display:block; text-align:center; }
 button.wide, label.wide{ width:100%; margin-top:8px; background:none; border:1px solid var(--line);
   color:var(--dim); border-radius:var(--r-xs); padding:7px; cursor:pointer; font-size:12px; }
 button.wide:hover{ border-color:var(--acc); color:var(--acc); }
+.importbox{ border:1px solid var(--line); border-radius:var(--r-sm); padding:9px; margin-top:8px;
+  background:var(--panel2); display:grid; gap:5px; }
+.importbox b{ color:var(--bone); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.importbox span,.importbox small{ color:var(--mut); font-size:11px; }
+.importReview{ display:grid; gap:7px; margin-top:4px; }
+.importReview input,.importReview select{ min-width:0; background:var(--panel);
+  border:1px solid var(--line); color:var(--bone); border-radius:var(--r-xs);
+  height:28px; padding:0 7px; font-size:11.5px; }
+.importReview .rowline{ display:grid; grid-template-columns:1fr 1fr auto; gap:5px; }
+.importRow{ display:grid; grid-template-columns:auto auto 64px 1fr 1fr; gap:5px; align-items:center;
+  border:1px solid var(--line); border-radius:var(--r-xs); padding:5px; }
+.importRow b{ font-size:11px; }
+.importRow small{ white-space:nowrap; }
+.importRow .wide{ grid-column:span 2; }
+.importRow .check{ grid-column:1 / -1; display:flex; gap:6px; align-items:center;
+  color:var(--mut); font-size:11px; }
+.importRow .check input{ width:auto; height:auto; accent-color:var(--acc); }
 .checks{ display:flex; gap:13px; margin-top:8px; font-size:11.5px; color:var(--mut); }
 .checks label{ display:flex; align-items:center; gap:5px; cursor:pointer; }
 .checks input{ accent-color:var(--acc); }
@@ -405,3 +434,23 @@ button:focus-visible, input:focus-visible, select:focus-visible, label:focus-vis
   font-size:13px; font-weight:600; cursor:pointer;
   background:var(--panel2); color:var(--bone); border:1px solid var(--line); }
 .crash-actions button.pri{ background:var(--acc); color:var(--onacc); border-color:var(--acc); }
+
+/* Canlı görünüm durduğunda şerit kırmızıdan yeşile döner: "çiziyor,
+   dokunma" ile "durdu, bakabilirsin" bakışta ayrılsın. Yazı da söylüyor
+   ama renk daha hızlı okunuyor — operatör ekrana sürekli bakmıyor. */
+.modestrip .chip.durgun{ color:var(--ok); border-color:var(--ok); background:var(--okline); }
+
+/* Canlı görünüm takip paneli — yapay zekâ çizerken Özellikler'in yerini
+   alır. Adım listesi en yenisi üstte; dar panelde kaydırmadan okunsun. */
+.canli{ padding:12px; display:flex; flex-direction:column; gap:8px; min-height:0; }
+.canli .cad{ font-weight:600; font-size:13px; margin:0; }
+.canli .gnl{ list-style:none; margin:0; padding:0; overflow-y:auto; min-height:0;
+  display:flex; flex-direction:column; gap:6px; }
+.canli .gnl li{ display:grid; grid-template-columns:auto 1fr; gap:2px 8px;
+  padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+.canli .gnl li.son{ border-color:var(--acc); background:var(--accline); }
+.canli .gnl .sa{ font:10.5px var(--mono); color:var(--mut); padding-top:1px; }
+.canli .gnl .ne{ font-size:12px; font-weight:600; }
+.canli .gnl .sy{ grid-column:2; font-size:11px; color:var(--mut); }
+.canli .gnl .uy{ grid-column:2; font-size:11px; color:var(--warn); }
+.canli .btn.wide{ width:100%; justify-content:center; }
