@@ -1,0 +1,273 @@
+{
+  "key": "whatsapp-2026-09-07",
+  "name": "Referanstan Oturma Plani - 2026-09-07",
+  "unit": "cm",
+  "home": null,
+  "underlay": null,
+  "blocks": [
+    {
+      "id": "b587",
+      "kind": "grid",
+      "name": "Üst Sol Yan",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "2,2,2,2,2,2,2,2,2,2,2,2",
+      "align": "left",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "P,O,N,M,L,K,J,I,H,G,F,E",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "UST_SOL",
+      "level": "Salon",
+      "x": -900,
+      "y": -864.4186,
+      "rows": 12
+    },
+    {
+      "id": "b588",
+      "kind": "grid",
+      "name": "Üst Orta Ana",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "16,25,25,25,25,25,25,25,25,25,25,25,25",
+      "align": "center",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "R,P,O,N,M,L,K,J,I,H,G,F,E",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "UST_ORTA",
+      "level": "Salon",
+      "x": -62.2222,
+      "y": -958.6047,
+      "rows": 13
+    },
+    {
+      "id": "b589",
+      "kind": "grid",
+      "name": "Üst Sağ Yan",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "2,2,2,2,2,2,2,2,2,2,2,2",
+      "align": "right",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "P,O,N,M,L,K,J,I,H,G,F,E",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {},
+      "label": "UST_SAG",
+      "level": "Salon",
+      "x": 775,
+      "y": -864.4186,
+      "rows": 12
+    },
+    {
+      "id": "b590",
+      "kind": "grid",
+      "name": "Alt Orta",
+      "rot": 0,
+      "cols": 10,
+      "taper": 0,
+      "curve": 0,
+      "seatGap": 50,
+      "rowGap": 90,
+      "counts": "24,24,24,22",
+      "align": "center",
+      "num": {
+        "rowScheme": "custom",
+        "rowStart": 1,
+        "rowRev": false,
+        "rowCustom": "D,C,B,A",
+        "skipAmbig": true,
+        "seatScheme": "seq",
+        "seatDir": "ltr",
+        "seatStart": 1,
+        "skip": "",
+        "anchor": "order"
+      },
+      "ov": {
+        "3,0": {
+          "at": "wheel"
+        },
+        "3,1": {
+          "at": "comp"
+        },
+        "3,2": {
+          "at": "wheel"
+        },
+        "3,3": {
+          "at": "comp"
+        },
+        "3,4": {
+          "at": "wheel"
+        },
+        "3,5": {
+          "at": "comp"
+        },
+        "3,6": {
+          "at": "wheel"
+        },
+        "3,7": {
+          "at": "comp"
+        },
+        "3,8": {
+          "at": "wheel"
+        },
+        "3,9": {
+          "at": "comp"
+        },
+        "3,10": {
+          "at": "wheel"
+        },
+        "3,11": {
+          "at": "comp"
+        }
+      },
+      "label": "ALT_ORTA",
+      "level": "Salon",
+      "x": -36.6667,
+      "y": 360,
+      "rows": 4
+    }
+  ],
+  "shapes": [
+    {
+      "id": "s591",
+      "kind": "rect",
+      "type": "wall",
+      "label": "SALON SINIRI",
+      "x": 0,
+      "y": -31.395348837209305,
+      "w": 2222.222222222222,
+      "h": 2030.232558139535,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 150
+    },
+    {
+      "id": "s592",
+      "kind": "rect",
+      "type": "screen",
+      "label": "Perde",
+      "x": -62.22222222222223,
+      "y": 925.1162790697675,
+      "w": 2017.7777777777778,
+      "h": 100.46511627906978,
+      "rot": 0,
+      "capacity": 0,
+      "fs": 150
+    },
+    {
+      "id": "s593",
+      "kind": "rect",
+      "type": "wall",
+      "x": 0,
+      "y": -20,
+      "w": 2400,
+      "h": 2200,
+      "rot": 0,
+      "label": "SALON SINIRI GENIS",
+      "capacity": 0,
+      "fs": 150
+    },
+    {
+      "id": "s594",
+      "kind": "rect",
+      "type": "door",
+      "x": -1160,
+      "y": -370,
+      "w": 60,
+      "h": 160,
+      "rot": 0,
+      "label": "KAPI SOL",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b587",
+        "b588"
+      ]
+    },
+    {
+      "id": "s595",
+      "kind": "rect",
+      "type": "door",
+      "x": 1160,
+      "y": -370,
+      "w": 60,
+      "h": 160,
+      "rot": 0,
+      "label": "KAPI SAG",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b588",
+        "b589"
+      ]
+    },
+    {
+      "id": "s596",
+      "kind": "rect",
+      "type": "door",
+      "x": 0,
+      "y": 850,
+      "w": 180,
+      "h": 60,
+      "rot": 0,
+      "label": "KAPI ALT",
+      "capacity": 0,
+      "fs": 150,
+      "blocks": [
+        "b588",
+        "b590"
+      ]
+    }
+  ],
+  "underlayRect": {
+    "x": -1111,
+    "y": -1046.5,
+    "w": 2222,
+    "h": 2093
+  },
+  "sections": [],
+  "groups": [],
+  "versions": [],
+  "published": null,
+  "schemaVersion": 4
+}
