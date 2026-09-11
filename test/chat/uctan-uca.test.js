@@ -19,7 +19,7 @@ import { hepsiniKapat } from "../../chat/oturumlar.mjs";
 
      POST /api/chat → oturum → sağlayıcı adaptörü → @anthropic-ai/sdk →
      HTTP + SSE ayrıştırma → araç çağrısı → süreç-içi MCP köprüsü →
-     29 aracın gerçeği → src/core geometrisi → GET /api/chat akışı
+     32 aracın gerçeği → src/core geometrisi → GET /api/chat akışı
 
    Taklit edilen tek şey modelin KARARI. Para harcanmıyor, ağa çıkılmıyor.
    ══════════════════════════════════════════════════════════════════════════ */
@@ -181,7 +181,7 @@ describe("operatörün cümlesinden kaydedilmiş plana", () => {
     expect(hepsi).toMatch(/Salon hazır/);
   }, 60_000);
 
-  it("MCP'nin 29 aracı modele GERÇEKTEN gönderiliyor — tek kaynak", async () => {
+  it("MCP'nin 32 aracı modele GERÇEKTEN gönderiliyor — tek kaynak", async () => {
     /* Araç şemaları elle yazılmıyor, MCP sunucusundan geliyor. Bunu
        kanıtlamanın yolu: tel üstünde görmek. */
     const g = istekler.map((x) => x.govde).join("");

@@ -21,8 +21,11 @@ export const araclariCevir = (tools) => [{
   })),
 }];
 
-export const kullaniciEkle = (icerik, metin) =>
-  icerik.push({ role: "user", parts: [{ text: metin }] });
+export const kullaniciEkle = (icerik, metin, gorseller = []) =>
+  icerik.push({ role: "user", parts: [
+    { text: metin },
+    ...gorseller.map((g) => ({ inlineData: { mimeType: g.mimeType, data: g.data } })),
+  ] });
 
 export const gorselEkle = (icerik, gorseller) => {
   if (!gorseller.length) return;

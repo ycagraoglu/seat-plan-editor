@@ -1,12 +1,14 @@
 import http from "node:http";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { randomUUID } from "node:crypto";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { openDb, createSchema, loadPayload } from "../db/load.mjs";
 import { buildDbPayload } from "../src/core/db-export.js";
 import { buildMeta } from "../src/core/geometry.js";
 import { gateMap } from "../src/core/gates.js";
-import { sohbetAcikMi, mesajGonder, akisOku } from "../chat/oturumlar.mjs";
+import { sohbetAcikMi, sohbetBilgi, mesajGonder, akisOku, sohbetTemizle } from "../chat/oturumlar.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -46,12 +48,17 @@ export function createDb(file = ":memory:") {
   return db;
 }
 
+/** Canlı çizim süreç durumudur; sunucu yeniden başladıysa artık aktif değildir. */
+export function clearLiveSessions(db) {
+  db.prepare("DELETE FROM editor_prefs WHERE key = ?").run(LIVE_KEY);
+}
+
 const json = (res, code, body) => {
   const s = body === undefined ? "" : JSON.stringify(body);
   res.writeHead(code, { "content-type": "application/json; charset=utf-8",
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
-    "access-control-allow-headers": "content-type, x-tenant-id" });
+    "access-control-allow-headers": "content-type, x-tenant-id, x-file-name" });
   res.end(s);
 };
 
@@ -63,6 +70,17 @@ const govde = (req) => new Promise((ok, no) => {
     b += c;
   });
   req.on("end", () => { try { ok(b ? JSON.parse(b) : null); } catch (e) { no(e); } });
+  req.on("error", no);
+});
+
+const hamGovde = (req) => new Promise((ok, no) => {
+  const cs = []; let n = 0;
+  req.on("data", (c) => {
+    n += c.length;
+    if (n > 32 * 1024 * 1024) { no(new Error("gövde çok büyük")); req.destroy(); return; }
+    cs.push(c);
+  });
+  req.on("end", () => ok(Buffer.concat(cs)));
   req.on("error", no);
 });
 
@@ -244,13 +262,43 @@ export function handler(db) {
          saniyede bir okur. Canlı görünümün yoklama kalıbının aynısı;
          sunucuya ilk durumlu bağlantı girmiyor. */
       if (p === "/api/chat/durum" && m === "GET")
-        return json(res, 200, { acik: sohbetAcikMi() });
+        return json(res, 200, sohbetBilgi());
+
+      if (p === "/api/chat/upload" && m === "POST") {
+        const ad = path.basename(String(req.headers["x-file-name"] || "kaynak"));
+        const ext = path.extname(ad).toLowerCase();
+        if (![".png", ".jpg", ".jpeg", ".webp", ".gif", ".csv", ".json", ".xls", ".xlsx"].includes(ext))
+          return json(res, 400, { hata: "desteklenmeyen dosya türü" });
+        const dir = path.join(tmpdir(), "seat-editor-chat");
+        mkdirSync(dir, { recursive: true });
+        const dosya = path.join(dir, `${Date.now()}-${randomUUID()}${ext}`);
+        writeFileSync(dosya, await hamGovde(req));
+        return json(res, 200, { name: ad, path: dosya,
+          kind: [".xls", ".xlsx"].includes(ext) ? "spreadsheet"
+            : [".csv", ".json"].includes(ext) ? "list" : "image" });
+      }
 
       if (p === "/api/chat") {
         if (m === "GET") {
           const id = u.searchParams.get("id");
           if (!id) return json(res, 400, { hata: "id gerekli" });
           return json(res, 200, await akisOku(id));
+        }
+        if (m === "DELETE") {
+          const id = u.searchParams.get("id");
+          if (!id) return json(res, 400, { hata: "id gerekli" });
+          const ok = await sohbetTemizle(id);
+          const r = db.prepare("SELECT value FROM editor_prefs WHERE tenant_id = ? AND key = ?")
+            .get(tenant, LIVE_KEY);
+          if (r) {
+            try {
+              const d = JSON.parse(r.value);
+              db.prepare(`INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)
+                ON CONFLICT (tenant_id,key) DO UPDATE SET value = excluded.value`)
+                .run(tenant, LIVE_KEY, JSON.stringify({ ...d, gunluk: [] }));
+            } catch { /* bozuk günlük temizlenmez */ }
+          }
+          return json(res, ok ? 204 : 409);
         }
         if (m === "POST") {
           const b = await govde(req);
@@ -320,6 +368,7 @@ export function createServer(db) { return http.createServer(handler(db)); }
 if (process.argv[1] && process.argv[1].endsWith("server/index.mjs")) {
   const port = Number(process.env.PORT) || 8787;
   const db = createDb(process.env.DB_FILE || "db/seating.db");
+  clearLiveSessions(db);
   /* PANEL İÇİ SOHBET DE CANLI YAZSIN.
      canliYaz() SEAT_EDITOR_API yoksa hiçbir şey yapmıyor (bilinçli: MCP
      sunucusuz da çalışsın). stdio yolunda operatör bunu elle veriyor, ama

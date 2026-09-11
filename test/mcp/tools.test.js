@@ -32,6 +32,33 @@ describe("bağlantı ve araç listesi", () => {
   it("aktif plan yokken araç NET hata verir (sessiz boş sonuç değil)", async () => {
     await expect(t.cagir("plan_summary")).rejects.toThrow(/Aktif plan yok/);
   });
+
+  it("editör yeteneklerini plan açmadan makine-okunur biçimde anlatır", async () => {
+    const d = await t.jsonCagir("editor_capabilities");
+    expect(d.unit).toBe("cm");
+    expect(d.coordinateSystem.grid.y).toMatch(/ilk sıra/i);
+    expect(d.coordinateSystem.fan.origin).toMatch(/yay merkezi/i);
+    expect(d.blocks.map((x) => x.kind)).toEqual(["grid", "fan", "table"]);
+    expect(d.reference.workflow).toEqual([
+      "create_plan", "set_underlay", "scan_reference", "submit_reference_analysis",
+      "replace_layout", "verify_reference",
+    ]);
+    expect(d.reference.limitations.join(" ")).toMatch(/dijital|OCR/i);
+    expect(d.spreadsheet.extensions).toEqual([".xls", ".xlsx"]);
+    expect(d.spreadsheet.workflow).toEqual(["scan_spreadsheet", "submit_spreadsheet_analysis",
+      "build_spreadsheet_layout", "verify_spreadsheet"]);
+    expect(d.validation.hardErrors).toContain("footprint-overlap-same-level");
+    expect(d.validation.geometryMustBeZero).toContain("seat-clash");
+    expect(d.validation.sourceDependent).toContain("wheelchair-adequacy");
+    expect(d.validation.note).toMatch(/uydurulmaz/);
+    expect(d.session).toMatchObject({ phase: "no-plan",
+      next: ["scan_spreadsheet", "create_plan", "open_plan", "open_sample"] });
+  });
+
+  it("yetenek yanıtı aktif referans aşamasını da bildirir", async () => {
+    await t.cagir("create_plan", { name: "Bağlam" });
+    expect((await t.jsonCagir("editor_capabilities")).session.phase).toBe("blank-plan");
+  });
 });
 
 describe("plan yaşam döngüsü", () => {
@@ -65,6 +92,12 @@ describe("plan yaşam döngüsü", () => {
 
 describe("blok araçları", () => {
   beforeEach(async () => { await t.cagir("create_plan", { name: "Test Salonu" }); });
+
+  it("görünmez Unicode etiketi blok kodu saymıyor", async () => {
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "\u200b\u200b", level: "P", x: 0, y: 0, rows: 2, cols: 4,
+    })).rejects.toThrow(/görünür bir kod/);
+  });
 
   it("grid blok koltuk sayısından kurulur (rows × cols)", async () => {
     await t.cagir("add_block", { kind: "grid", label: "A", level: "Parter", x: 0, y: 0, rows: 10, cols: 20 });

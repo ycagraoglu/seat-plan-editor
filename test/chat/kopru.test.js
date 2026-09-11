@@ -7,7 +7,7 @@ import { sec, HEPSI } from "../../chat/saglayici/index.mjs";
    KÖPRÜ ve SAĞLAYICI SEÇİMİ
 
    Köprü NÖTR: hiçbir sağlayıcının biçimini bilmiyor, çeviri adaptörlerin
-   işi. Buradaki iddia, 29 aracın tanımının TEK YERDE (mcp/tools/**)
+   işi. Buradaki iddia, 32 aracın tanımının TEK YERDE (mcp/tools/**)
    kalması ve sonucun kayıpsız taşınması.
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -17,8 +17,14 @@ afterAll(async () => { await k?.kapat(); });
 
 describe("köprü · nötr sonuç", () => {
   it("sistem talimatı MCP'den geliyor — ikinci bir metin yok", () => {
-    expect(INSTRUCTIONS).toMatch(/SANTİMETREDİR/);
-    expect(INSTRUCTIONS).toMatch(/TASLAKTIR/);
+    expect(INSTRUCTIONS).toMatch(/scan_reference.*submit_reference_analysis/s);
+    expect(INSTRUCTIONS).toMatch(/Koltuk sayma, koordinat veya bbox üretme/);
+    expect(INSTRUCTIONS).toMatch(/Sonuç\s+taslaktır/);
+    expect(INSTRUCTIONS).toMatch(/editor_capabilities/);
+    expect(INSTRUCTIONS).toMatch(/needsReview.*kullanıcıya sor/s);
+    expect(INSTRUCTIONS).toMatch(/verify_reference verified:true.*tamamlandı/s);
+    expect(INSTRUCTIONS).toMatch(/görünmeyen.*fiziksel nesne ekleme/s);
+    expect(INSTRUCTIONS).toMatch(/kullanıcı istemedikçe export_plan çağırma/);
   });
 
   it("gerçek araç çalışıyor, metin nötr biçimde dönüyor", async () => {

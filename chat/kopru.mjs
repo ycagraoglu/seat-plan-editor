@@ -9,7 +9,7 @@ import { createMcpServer, INSTRUCTIONS } from "../mcp/server.mjs";
    çağırıyor. Bu dosyanın tek işi MCP'ye bağlanmak ve sonucu NÖTR bir biçimde
    döndürmek.
 
-   NEDEN KÖPRÜ: 29 aracın şeması, açıklaması ve doğrulaması mcp/tools/**
+   NEDEN KÖPRÜ: 32 aracın şeması, açıklaması ve doğrulaması mcp/tools/**
    içinde duruyor ve soğuk LLM testleriyle defalarca düzeltildi. Sohbet için
    ikinci bir tanım yazmak o düzeltmelerin bir kopyasını daha bakmak demekti.
    MCP sunucusuna SÜREÇ-İÇİ bağlanıp listTools() ile şemayı OKUYORUZ.

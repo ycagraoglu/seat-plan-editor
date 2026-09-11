@@ -21,9 +21,27 @@ import { canliYaz } from "./live.mjs";
    ══════════════════════════════════════════════════════════════════════════ */
 
 const tr = (n) => Number(n).toLocaleString("tr-TR");
+export const MUTATION_BLOCKERS = new Set(["seats-outside-boundary", "blocks-outside-boundary",
+  "footprint-overlap-same-level", "seat-clash", "narrow-aisle", "seat-in-own-block",
+  "seat-corners-outside-boundary", "duplicate-seat-ids", "unlabeled-seats", "orphan-blocks",
+  "section-cycle", "section-depth", "section-sibling-code"]);
 
 export class Session {
-  constructor() { this.plan = null; this.kesildi = false; this.yeniCizim = false; }
+  constructor() {
+    this.plan = null;
+    this.kesildi = false;
+    this.yeniCizim = false;
+    this.referenceAnalysis = null;
+    this.referenceMode = false;
+    this.referenceSource = null;
+    this.referenceScan = null;
+    this.referenceCompilation = null;
+    this.referenceVerified = false;
+    this.spreadsheetScan = null;
+    this.spreadsheetAnalysis = null;
+    this.spreadsheetCompilation = null;
+    this.spreadsheetVerified = false;
+  }
 
   /** Aktif plan yoksa aracın anlamı yok — net hata, sessiz boş sonuç değil. */
   need() {
@@ -58,10 +76,26 @@ export class Session {
    *  bağladığı için AYNI adla yeniden çizmek de 409 yiyordu ve bozuk
    *  görünüyordu (kullanırken çıktı); bu yüzden niyet ayrıca bildiriliyor:
    *  bir sonraki yazma "yeni çizim" bayrağını taşıyor ve iptali düşürüyor. */
-  yeni(plan) {
+  yeni(plan, { baslik = null, preserveSpreadsheet = false } = {}) {
     this.kesildi = false;
     this.yeniCizim = true;
-    return this.set(plan);
+    this.referenceAnalysis = null;
+    this.referenceMode = false;
+    this.referenceSource = null;
+    this.referenceScan = null;
+    this.referenceCompilation = null;
+    this.referenceVerified = false;
+    if (!preserveSpreadsheet) {
+      this.spreadsheetScan = null;
+      this.spreadsheetAnalysis = null;
+      this.spreadsheetCompilation = null;
+      this.spreadsheetVerified = false;
+    }
+    const next = this.set(plan);
+    canliYaz(next, baslik ? this.adim(baslik, this.derive(next)) : null, true,
+      () => { this.kesildi = true; });
+    this.yeniCizim = false;
+    return next;
   }
 
   /** Türetilmiş her şeyi tek yerden: metas · gates · kural raporu. */
@@ -73,19 +107,41 @@ export class Session {
   }
 
   /** Planı değiştir, sonra ne olduğunu anlat. Tüm değiştirici araçlar bunu kullanır. */
-  mutate(fn, baslik) {
+  mutate(fn, baslik, { reference = false, spreadsheet = false, guard = false, requireClean = false } = {}) {
+    if (this.referenceMode && !reference) {
+      throw new Error("Referans görseli modunda düşük seviyeli düzenleme kapalı."
+        + " scan_reference ve submit_reference_analysis ardından replace_layout kullan;"
+        + " düzeltme gerekiyorsa analizi yenileyip bütünü tekrar kur.");
+    }
+    if (this.spreadsheetScan && !this.spreadsheetVerified && !spreadsheet) {
+      throw new Error("Excel aktarımı sürerken düşük seviyeli düzenleme kapalı."
+        + " submit_spreadsheet_analysis, build_spreadsheet_layout ve verify_spreadsheet sırasını kullan;"
+        + " aktarımı iptal etmek için create_plan, open_plan veya open_sample çağır.");
+    }
     const plan = this.need();
     const next = fn(plan) || plan;
+    const before = this.derive(plan), d = this.derive(next);
+    if (guard) {
+      const count = (findings, id) => findings.filter((f) => f.id === id && f.t === "err").length;
+      const worsened = [...MUTATION_BLOCKERS].filter((id) => requireClean
+        ? count(d.findings, id) > 0 : count(d.findings, id) > count(before.findings, id));
+      if (worsened.length) throw new Error(`Değişiklik geri alındı; yeni/kötüleşen bulgu: ${worsened.join(", ")}`);
+    }
     this.plan = next;
+    if (this.spreadsheetVerified && !spreadsheet) this.spreadsheetVerified = false;
     /* TEK derive: hem LLM'e dönen özet hem operatörün göreceği adım kaydı
        aynı hesaptan çıkıyor. İki kez türetmek 52.000 koltuklu planda her
        araç çağrısını iki katına çıkarırdı. */
-    const d = this.derive(next);
     /* Canlı görünüme yansıt. Beklemiyoruz: SEAT_EDITOR_API yoksa hiç ağa
        çıkmıyor, varsa da sunucu kapalıysa çizim aksamıyor (bkz. live.mjs). */
     canliYaz(next, this.adim(baslik, d), this.yeniCizim, () => { this.kesildi = true; });
     this.yeniCizim = false;                 /* yalnız İLK yazmada bildirilir */
     return this.summaryText(baslik, d);
+  }
+
+  notify(baslik) {
+    const plan = this.need(), d = this.derive(plan);
+    canliYaz(plan, this.adim(baslik, d), false, () => { this.kesildi = true; });
   }
 
   /** Operatörün Özellikler panelinde okuyacağı tek satırlık adım kaydı.
@@ -155,7 +211,8 @@ export class Session {
       seatCount: metas.reduce((a, x) => a + x.m.seatCount, 0),
       levels: selectLevels(plan).map((l) => ({ level: l, seats: selectLevelCounts(metas)[l] || 0 })),
       blocks: metas.map(({ b, m }) => ({
-        id: b.id, label: b.label, name: b.name || "", level: b.level || "", kind: b.kind,
+        id: b.id, label: b.hideLabel ? "" : b.label, code: b.label,
+        name: b.name || "", level: b.level || "", kind: b.kind,
         seats: m.seatCount, rows: m.rows,
         /* Sıra etiketleri: LLM'in numaralandırmayı DOĞRULAYABİLMESİ için.
            "22 sıra var" yetmez — "4'ten 25'e mi, 25'ten 4'e mi" sorusunun

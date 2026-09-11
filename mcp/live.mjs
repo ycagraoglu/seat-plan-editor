@@ -34,6 +34,15 @@ import { stripUnderlay } from "../src/core/plan.js";
 
 export const ONEK = "ai-";
 
+/** Loginli ana uygulama için MCP kimliği. Yerelde ikisi de boş kalabilir. */
+export const editorHeaders = (ek = {}) => ({
+  ...(process.env.SEAT_EDITOR_TOKEN
+    ? { authorization: `Bearer ${process.env.SEAT_EDITOR_TOKEN}` } : {}),
+  ...(process.env.SEAT_EDITOR_TENANT
+    ? { "x-tenant-id": process.env.SEAT_EDITOR_TENANT } : {}),
+  ...ek,
+});
+
 /** Canlı görünümde kullanılacak anahtar. Ön ek zaten varsa iki kez konmaz. */
 export const canliAnahtar = (key) => {
   const k = String(key || "plan");
@@ -64,9 +73,11 @@ export function canliYaz(plan, adim, yeni, onKesildi) {
        "bu, devam değil, baştan başlama" diyor. */
     yeni: !!yeni,
   });
-  bekleyen = fetch(`${taban.replace(/\/+$/, "")}/live`, {
-    method: "PUT", headers: { "content-type": "application/json" }, body: govde,
-  })
+  /* Yeni boş plan ile hemen arkasından gelen ilk değişiklik ters sırada
+     ulaşırsa eski çizim geri gelebilir. Canlı yazmaları çağrı sırasıyla yap. */
+  bekleyen = (bekleyen || Promise.resolve()).then(() => fetch(`${taban.replace(/\/+$/, "")}/live`, {
+    method: "PUT", headers: editorHeaders({ "content-type": "application/json" }), body: govde,
+  }))
     .then((r) => { if (r.status === 409 && onKesildi) onKesildi(); })
     .catch(() => { /* sunucu kapalı/erişilemez — çizim devam etmeli */ });
 }

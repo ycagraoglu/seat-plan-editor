@@ -27,6 +27,7 @@ describe("renderSvg — LOD ve kapsam", () => {
     const r = renderSvg(SUREYYA, { scope: "all" });
     expect(r.seatsDrawn).toBe(true);
     expect(r.seats).toBe(386);
+    expect(r.svg).not.toContain("<polygon points=");
   });
 
   it("52.838 koltuklu planda koltuk çizilmez — o ölçekte okunmaz ve dosyayı şişirir", () => {
@@ -111,9 +112,19 @@ describe("altlık — organizatörün planı arkada", () => {
 
   it("yüklenir ve render'a bindirilir", async () => {
     await t.cagir("open_sample", { key: "sureyya" });
-    expect(await t.cagir("set_underlay", { path: dosya })).toContain("Altlık yüklendi");
+    expect(await t.cagir("set_underlay",
+      { path: dosya, x: -3000, y: -3000, width: 6000, height: 6000 })).toContain("Altlık yüklendi");
     const r = await t.client.callTool({ name: "render", arguments: { scope: "all" } });
     expect(r.content[0].text).toContain("altlık bindirildi");
+  });
+
+  it("boş planda ilk bloktan ÖNCE kaynak görülebiliyor", async () => {
+    await t.cagir("create_plan", { name: "Boş" });
+    await t.cagir("set_underlay", { path: dosya });
+    const r = await t.client.callTool({ name: "render", arguments: { scope: "all" } });
+    expect(r.isError).not.toBe(true);
+    expect(r.content[0].text).toMatch(/0 blok.*altlık bindirildi/);
+    expect(r.content.some((x) => x.type === "image")).toBe(true);
   });
 
   it("withUnderlay:false ile kapatılabilir", async () => {
@@ -162,10 +173,10 @@ describe("altlık dünyada konumlanabiliyor", () => {
 
   it("x/y/width/height verilince o dikdörtgene oturur", async () => {
     await t.cagir("create_plan", { name: "T" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 5, cols: 10 });
     const r = await t.cagir("set_underlay",
       { path: dosya, x: -2900, y: -4600, width: 5800, height: 7700 });
     expect(r).toContain("5800×7700");
-    await t.cagir("add_block", { kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 5, cols: 10 });
     /* Aracın KENDİSİNDEN geç — renderSvg'yi doğrudan çağırmak kabloyu
        sınamaz; ilk yazışımda öyle yapmıştım ve konumu yok saymak testi
        kırmıyordu (sabotaj yakaladı). */
@@ -173,12 +184,34 @@ describe("altlık dünyada konumlanabiliyor", () => {
     expect(c.content[0].text).toContain("konumlu");
   });
 
-  it("verilmezse HİZALANMAYACAĞI açıkça söyleniyor", async () => {
+  it("verilmezse bloklu planda kaynak karşılaştırmasını engelliyor", async () => {
     await t.cagir("create_plan", { name: "T" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 5, cols: 10 });
     /* Sessizce gerilmiş bir altlık, LLM'i "çizim tutuyor" sanmaya iter. */
     expect(await t.cagir("set_underlay", { path: dosya })).toMatch(/hizalanmaz/);
-    await t.cagir("add_block", { kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 5, cols: 10 });
-    const c = await t.client.callTool({ name: "render", arguments: { scope: "all" } });
-    expect(c.content[0].text).toContain("GERİLMİŞ");
+    await expect(t.cagir("render", { scope: "all" }))
+      .rejects.toThrow(/kaynak karşılaştırması sayılamaz/);
+  });
+
+  it("replace_layout altlığı taranan piksel koordinatlarına otomatik hizalıyor", async () => {
+    await t.cagir("create_plan", { name: "T" });
+    await t.cagir("set_underlay", { path: dosya });
+    const scan = await t.jsonCagir("scan_reference", { path: dosya });
+    await t.cagir("submit_reference_analysis", { scanId: scan.scanId,
+      venueKind: "general", groups: [], excludedRows: [] });
+    await t.cagir("replace_layout");
+    expect(t.session.plan.underlayRect.w).toBeGreaterThan(0);
+    expect(await t.cagir("render", { scope: "all" })).toContain("konumlu");
+  });
+
+  it("altlık sonrası tek tek plan yamalamayı reddediyor", async () => {
+    await t.cagir("create_plan", { name: "T" });
+    await t.cagir("set_underlay", { path: dosya });
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "A", level: "S", x: 0, y: 0, rows: 2, cols: 4,
+    })).rejects.toThrow(/replace_layout/);
+    await expect(t.cagir("add_shape", {
+      type: "note", label: "MAIN AISLE", x: 0, y: 0, w: 500, h: 100,
+    })).rejects.toThrow(/replace_layout/);
   });
 });

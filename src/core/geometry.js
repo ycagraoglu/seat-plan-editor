@@ -671,3 +671,10 @@ export function buildSeats(b, meta, tpl) {
   }
   return { seats, labels };
 }
+
+/** Kaynak şemadaki dış hat görseldir; teknik koltuk zarfını değiştirmez. */
+export function displayOutline(b, meta) {
+  if (!b.visualFoot?.length) return meta.outline;
+  const cos = Math.cos((b.rot || 0) * RAD), sin = Math.sin((b.rot || 0) * RAD);
+  return b.visualFoot.map((p) => toWorld(b, p, cos, sin));
+}

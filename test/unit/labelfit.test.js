@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { etiketSigdirici, ortakOnek, oran, TABAN_PX } from "../../src/core/labelfit.js";
+import { disEtiketYeri, etiketSigdirici, ortakOnek, oran, TABAN_PX } from "../../src/core/labelfit.js";
 import { contentBBox, planHome } from "../../src/core/plan.js";
 import { newGrid } from "../../src/PlanEditor.jsx";
 
@@ -127,5 +127,24 @@ describe("rozet, bloğuna sığar", () => {
 
   it("boş etiket yazılmaz", () => {
     expect(sig(["A"])("", 500)).toBe(null);
+    expect(sig(["A"])("\u200b\u200b", 500)).toBe(null);
+  });
+});
+
+describe("rozet, başka bloğun koltuklarını kapatmaz", () => {
+  const blok = { x0: 0, x1: 100, y0: 100, y1: 200 };
+
+  it("üst taraf doluysa etiketi bloğun altına taşır", () => {
+    const yer = disEtiketYeri(blok, 80, 20,
+      [{ x0: 0, x1: 100, y0: 40, y1: 100 }], 5);
+    expect(yer).toMatchObject({ cx: 50, by: 205 });
+  });
+
+  it("iki taraf da doluysa etiketi gizler", () => {
+    const yer = disEtiketYeri(blok, 80, 20, [
+      { x0: 0, x1: 100, y0: 40, y1: 100 },
+      { x0: 0, x1: 100, y0: 200, y1: 260 },
+    ], 5);
+    expect(yer).toBe(null);
   });
 });

@@ -5,6 +5,9 @@ import { registerVenueTools } from "./venue.mjs";
 import { registerRenderTools } from "./render.mjs";
 import { registerSourceTools } from "./source.mjs";
 import { registerExportTools } from "./export.mjs";
+import { registerReferenceTools } from "./reference.mjs";
+import { registerCapabilityTools } from "./capabilities.mjs";
+import { registerSpreadsheetTools } from "./spreadsheet.mjs";
 
 /* Araç kaydı tek yerden. Konu başına bir dosya; yeni faz yeni dosya ekler,
    burası sadece toplar. */
@@ -18,6 +21,9 @@ export function registerTools(server, session) {
   }));
 
   registerPlanTools(server, session, z);
+  registerCapabilityTools(server, session);
+  registerReferenceTools(server, session, z);
+  registerSpreadsheetTools(server, session, z);
   registerBlockTools(server, session, z);
   registerVenueTools(server, session, z);
   registerRenderTools(server, session, z);

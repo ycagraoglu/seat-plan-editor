@@ -81,6 +81,18 @@ for (const K of KURULUM) {
       const g = JSON.stringify(istemci.istekler[0]);
       expect(g).toMatch(/create_bowl/);
       expect(g).toMatch(/cut_vomitories/);
+      if (K.ad === "openai") expect(istemci.istekler[0].messages[0].role).toBe("developer");
+      await o.kapat();
+    });
+
+    it("yüklenen kaynak İLK model isteğine doğrudan görsel olarak giriyor", async () => {
+      const { istemci, ac } = kur([K.metin("gördüm")]);
+      const o = await ac();
+      await tur(o, "bu planı çiz", undefined,
+        [{ mimeType: "image/jpeg", data: "aGVsbG8=" }]);
+      const ilk = JSON.stringify(istemci.istekler[0]);
+      expect(ilk).toMatch(/image\/jpeg/);
+      expect(ilk).toMatch(/aGVsbG8=/);
       await o.kapat();
     });
 

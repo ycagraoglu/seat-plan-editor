@@ -184,7 +184,7 @@ yapmaz (Bölüm 1'e bak).
 ### Claude Code
 
 Depoda `.mcp.json` var; klonlayıp Claude Code'u bu klasörde açman yeter.
-29 araç `mcp__seat-plan-editor__*` olarak görünür.
+32 araç `mcp__seat-plan-editor__*` olarak görünür.
 
 ### Claude Desktop
 
@@ -216,7 +216,13 @@ args = ["/MUTLAK/YOL/seat-editor/mcp/index.mjs"]
 
 [mcp_servers.seat-plan-editor.env]
 SEAT_EDITOR_API = "http://localhost:8787/api"
+# Loginli uzak uygulamada backend'in ürettiği kısa ömürlü erişim bilgileri:
+# SEAT_EDITOR_TOKEN = "..."
+# SEAT_EDITOR_TENANT = "..."
 ```
+
+`SEAT_EDITOR_TOKEN` kullanıcı şifresi veya tarayıcı çerezi değildir. Loginli
+uygulamanın bu MCP bağlantısı için ürettiği kısa ömürlü bearer token olmalıdır.
 
 ### Komut satırı (hata ayıklama)
 
@@ -230,7 +236,7 @@ node mcp/cli.mjs reset
 > **Kod değişince istemciyi yeniden başlat.** MCP sunucusu oturum başında
 > ayağa kalkıp `src/core/**`'u belleğe alıyor; sonraki değişikliği görmüyor.
 
-### 29 araç
+### 32 araç
 
 **Plan**
 
@@ -243,6 +249,7 @@ node mcp/cli.mjs reset
 | `open_plan` | Kayıtlı planı aç | `key` |
 | `plan_summary` | Planı yapısal olarak oku | — |
 | `validate` | 26 kurala göre denetle, hedef değerlerle | — |
+| `editor_capabilities` | Koordinatları, blok türlerini, sınırları ve sıradaki uygun araçları oku | — |
 
 **Blok**
 
@@ -280,6 +287,14 @@ node mcp/cli.mjs reset
 |---|---|---|
 | `render` | Çizimin PNG'si | — |
 | `set_underlay` | Organizatörün planını altlık yap | `path` |
+| `scan_reference` | Görsel/PDF koltuklarını yerel tara | `path` |
+| `scan_spreadsheet` | Excel hücre planını yerel tara | `path` |
+| `submit_spreadsheet_analysis` | Excel blok/kat etiketlerini onayla | `scanId`, `venueKind` |
+| `build_spreadsheet_layout` | Excel planını atomik kur | — |
+| `verify_spreadsheet` | Excel hücreleriyle birebir doğrula | — |
+| `submit_reference_analysis` | Satırları anlamlı gruplara bağla | `scanId,groups` |
+| `replace_layout` | Taranmış planı atomik kur | — |
+| `verify_reference` | Kaynak eşleşmesini doğrula | — |
 | `match_seat_list` | CSV/db.json listesiyle karşılaştır | `path` |
 | `remove_extra_seats` | Listede olmayanları kaldır | — |
 | `adopt_ids` | Listedeki kalıcı kimliği benimse | — |
@@ -305,7 +320,7 @@ sohbet katmanı MCP'yi tüketiyor.
 ```
 src/core/**          geometri, kurallar, numaralandırma, dışa aktarım
 src/venues/**         salon kurguları
-mcp/**                29 araç + oturum
+mcp/**                32 araç + oturum
 chat/**               sohbet döngüsü + üç sağlayıcı adaptörü
 server/index.mjs      depo + canlı görünüm + sohbet rotaları
 db/                   şema
@@ -340,7 +355,7 @@ durum gerekir.
 
 ### Sağlayıcı eklemek
 
-`chat/saglayici/` altına bir dosya; döngüye, rotalara, panele ve 29 araca
+`chat/saglayici/` altına bir dosya; döngüye, rotalara, panele ve 32 araca
 dokunulmuyor. Test paketi üç sağlayıcıyı aynı senaryolarla koşuyor —
 yenisini oraya bir satırla eklersin.
 
@@ -364,6 +379,6 @@ korunuyor mu, cevabı orada.
 | Görselden **tek tek koltuk sayılamaz** | Sıra başına koltuk ya listeden gelir ya varsayımdır — işaretlenmeli |
 | İlk turda konumlar tutmaz | `render` + `validate` döngüsüyle düzelir; 2–3 tur normal |
 | Kapı verisi hiçbir görselde yok | Organizatörden ayrıca istenmeli |
-| Excel doğrudan okunamaz | CSV dışa aktarımı istenmeli |
+| Excel planı | `.xls/.xlsx` dosyasını doğrudan ver; MCP dört adımlı Excel akışını kullanır |
 | Yayına alma yok | Operatör editörde onaylar |
 | Sohbet için sunucu şart | `npm run dev` ile editör çalışır ama sohbet olmaz |

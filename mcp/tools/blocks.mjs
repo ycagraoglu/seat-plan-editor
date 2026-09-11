@@ -4,6 +4,7 @@ import { linearArray, radialArray } from "../../src/core/arrays.js";
 import { nid } from "../../src/core/ids.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
+const temizEtiket = (v) => String(v ?? "").replace(/\p{Cf}/gu, "").trim();
 
 /* Adım günlüğü operatöre gidiyor; "grid" değil "ızgara" okumalı. */
 const TUR = { grid: "Izgara", fan: "Yelpaze", table: "Masalı" };
@@ -44,9 +45,9 @@ export function registerBlockTools(server, session, z) {
       label: z.string().describe("Blok kodu — kat içinde tekil olmalı, ör. \"A\", \"112\""),
       level: z.string().describe("Kat/bölüm yolu, ör. \"Parter\" ya da \"Maraton / Üst\""),
       x: z.number().describe("Bloğun yatay MERKEZİ (cm)"),
-      y: z.number().describe("İLK SIRANIN çizgisi (cm) — bloğun merkezi DEĞİL."
-        + " Sıralar +y yönünde geriye doğru dizilir; blok y'den aşağı uzar."
-        + " Gerçek yerini plan_summary'deki bbox'tan oku."),
+      y: z.number().describe("grid: İLK SIRANIN çizgisi; sıralar +y yönünde ilerler. "
+        + "fan: YAY MERKEZİ; ilk sıra r0 uzaklığındadır. table: MASA MERKEZİ. "
+        + "Dönüş uygulanınca gerçek yerini plan_summary bbox alanından doğrula."),
       name: z.string().optional().describe("Okunur ad, ör. \"Maraton Üst A Blok\""),
       rot: z.number().optional().describe("Dönüş (derece)"),
       rows: z.number().int().positive().optional().describe("Sıra sayısı (grid/fan)"),
@@ -67,7 +68,10 @@ export function registerBlockTools(server, session, z) {
       aCenter: z.number().optional().describe("Fan: yay merkezi açısı"),
       color: z.string().optional().describe("Blok rengi (#RRGGBB); verilmezse kata göre otomatik"),
     },
-  }, async (a) => metin(session.mutate((plan) => {
+  }, async (a) => {
+    const label = temizEtiket(a.label);
+    if (!label) throw new Error("Blok etiketi görünür bir kod olmalı; boşluk veya görünmez karakter kullanma.");
+    return metin(session.mutate((plan) => {
     /* Türe göre ZORUNLU alanlar. Eksikse blok yine kurulurdu ama sessizce
        yanlış olurdu: rows'suz grid 0 koltuk üretip "Blok eklendi" diyordu,
        r0'suz fan geometrisi bozuk koltuklar üretiyordu. LLM ikisinde de
@@ -90,10 +94,10 @@ export function registerBlockTools(server, session, z) {
 
     let b;
     if (a.kind === "table") {
-      b = tbl(a.label, a.x, a.y, a.seats ?? 4, a.tW ?? 120, 0);
+      b = tbl(label, a.x, a.y, a.seats ?? 4, a.tW ?? 120, 0);
       b.level = a.level;
     } else {
-      const ortak = { label: a.label, level: a.level, x: a.x, y: a.y };
+      const ortak = { label, level: a.level, x: a.x, y: a.y };
       const opsiyonel = {};
       for (const k of ["name", "rot", "rows", "cols", "counts", "seatGap", "rowGap",
         "curve", "taper", "r0", "aStart", "aEnd", "mode", "align", "pad", "aCenter", "color"]) {
@@ -102,11 +106,12 @@ export function registerBlockTools(server, session, z) {
       b = a.kind === "fan" ? fanB({ ...ortak, ...opsiyonel }) : gr({ ...ortak, ...opsiyonel });
       /* reLabel: kodu yazmakla kalmaz, sayısal alanları da yuvarlar —
          builders.js'in kendi seed'i de aynısını yapıyor. */
-      b = reLabel(b, a.label);
+      b = reLabel(b, label);
     }
     return { ...plan, blocks: [...plan.blocks, b] };
-  }, `${TUR[a.kind]} blok eklendi: "${a.label}"${a.rows ? ` · ${a.rows} sıra` : ""}`
-     + `${a.level ? ` · ${a.level}` : ""}`)));
+    }, `${TUR[a.kind]} blok eklendi: "${label}"${a.rows ? ` · ${a.rows} sıra` : ""}`
+       + `${a.level ? ` · ${a.level}` : ""}`));
+  });
 
   server.registerTool("update_block", {
     title: "Blok değiştir",
@@ -129,7 +134,12 @@ export function registerBlockTools(server, session, z) {
       align: z.enum(["center", "left", "right"]).optional(),
       pad: z.number().optional().describe("Taban payı (cm)"),
     },
-  }, async ({ id, ...yama }) => metin(session.mutate((plan) => {
+  }, async ({ id, ...yama }) => {
+    if (yama.label !== undefined) {
+      yama.label = temizEtiket(yama.label);
+      if (!yama.label) throw new Error("Blok etiketi görünür bir kod olmalı; boşluk veya görünmez karakter kullanma.");
+    }
+    return metin(session.mutate((plan) => {
     const hedef = bul(plan, id);
     const temiz = Object.fromEntries(Object.entries(yama).filter(([, v]) => v !== undefined));
     return {
@@ -144,7 +154,8 @@ export function registerBlockTools(server, session, z) {
         return nb;
       }),
     };
-  }, `"${id}" bloğu değiştirildi`)));
+    }, `"${id}" bloğu değiştirildi`));
+  });
 
   server.registerTool("delete_block", {
     title: "Blok sil",

@@ -39,8 +39,21 @@ export const TABAN_PX = 8;
  *  tüketicide AYNI yaklaşıklığın kullanılması. */
 export const oran = (metin) => String(metin).length * 0.62 + 0.9;
 
+/** Bloğun dışındaki rozet için üstü, sonra altı dener; koltuk alanını kapatmaz. */
+export function disEtiketYeri(bbox, width, height, engeller = [], gap = 0) {
+  const cx = (bbox.x0 + bbox.x1) / 2;
+  const adaylar = [bbox.y0 - height - gap, bbox.y1 + gap];
+  for (const by of adaylar) {
+    const kutu = { x0: cx - width / 2, x1: cx + width / 2, y0: by, y1: by + height };
+    if (!engeller.some((e) => kutu.x0 < e.x1 && kutu.x1 > e.x0
+      && kutu.y0 < e.y1 && kutu.y1 > e.y0)) return { cx, by, ...kutu };
+  }
+  return null;
+}
+
 /** Kelimelere böler. Tire BÖLÜNMEZ — "SALON-ARKA" tek addır. */
-const kelimeler = (metin) => String(metin ?? "").trim().split(/\s+/).filter(Boolean);
+const temizMetin = (metin) => String(metin ?? "").replace(/\p{Cf}/gu, "").trim();
+const kelimeler = (metin) => temizMetin(metin).split(/\s+/).filter(Boolean);
 
 /** Son kelime. */
 export const kisaAd = (metin) => kelimeler(metin).slice(-1)[0] || "";
@@ -65,7 +78,7 @@ export function ortakOnek(etiketler) {
  *           => {metin:string, boy:number, oran:number}|null}   null = yazma
  */
 export function etiketSigdirici(etiketler = [], taban = TABAN_PX) {
-  const tum = [...etiketler].filter(Boolean).map(String);
+  const tum = [...etiketler].map(temizMetin).filter(Boolean);
   const kes = ortakOnek(tum);
 
   /* Bir etiketin denenecek kısaltmaları — uzundan kısaya. */
@@ -85,7 +98,7 @@ export function etiketSigdirici(etiketler = [], taban = TABAN_PX) {
   }
 
   return (metin, enDunya, enBuyukBoy, pxPerDunya) => {
-    const ad = String(metin ?? "");
+    const ad = temizMetin(metin);
     if (!ad) return null;
     const liste = adaylar(ad);
     for (let i = 0; i < liste.length; i++) {
