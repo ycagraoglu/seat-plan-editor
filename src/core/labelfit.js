@@ -40,7 +40,8 @@ export const TABAN_PX = 8;
 export const oran = (metin) => String(metin).length * 0.62 + 0.9;
 
 /** Kelimelere böler. Tire BÖLÜNMEZ — "SALON-ARKA" tek addır. */
-const kelimeler = (metin) => String(metin ?? "").trim().split(/\s+/).filter(Boolean);
+const temizMetin = (metin) => String(metin ?? "").replace(/\p{Cf}/gu, "").trim();
+const kelimeler = (metin) => temizMetin(metin).split(/\s+/).filter(Boolean);
 
 /** Son kelime. */
 export const kisaAd = (metin) => kelimeler(metin).slice(-1)[0] || "";
@@ -65,7 +66,7 @@ export function ortakOnek(etiketler) {
  *           => {metin:string, boy:number, oran:number}|null}   null = yazma
  */
 export function etiketSigdirici(etiketler = [], taban = TABAN_PX) {
-  const tum = [...etiketler].filter(Boolean).map(String);
+  const tum = [...etiketler].map(temizMetin).filter(Boolean);
   const kes = ortakOnek(tum);
 
   /* Bir etiketin denenecek kısaltmaları — uzundan kısaya. */
@@ -85,7 +86,7 @@ export function etiketSigdirici(etiketler = [], taban = TABAN_PX) {
   }
 
   return (metin, enDunya, enBuyukBoy, pxPerDunya) => {
-    const ad = String(metin ?? "");
+    const ad = temizMetin(metin);
     if (!ad) return null;
     const liste = adaylar(ad);
     for (let i = 0; i < liste.length; i++) {

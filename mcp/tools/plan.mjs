@@ -1,5 +1,6 @@
 import { yeniPlan } from "../session.mjs";
 import { BUILTINS } from "../../src/venues/index.js";
+import { editorHeaders } from "../live.mjs";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
 const json = (o) => ({ content: [{ type: "text", text: JSON.stringify(o, null, 2) }] });
@@ -61,7 +62,7 @@ export function registerPlanTools(server, session, z) {
     return t.replace(/\/+$/, "");
   };
   const getir = async (yol) => {
-    const r = await fetch(`${taban()}${yol}`);
+    const r = await fetch(`${taban()}${yol}`, { headers: editorHeaders() });
     if (!r.ok) throw new Error(`Depo yanıtı: HTTP ${r.status}`);
     return r.json();
   };

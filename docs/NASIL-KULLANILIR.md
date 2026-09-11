@@ -184,7 +184,7 @@ yapmaz (Bölüm 1'e bak).
 ### Claude Code
 
 Depoda `.mcp.json` var; klonlayıp Claude Code'u bu klasörde açman yeter.
-29 araç `mcp__seat-plan-editor__*` olarak görünür.
+31 araç `mcp__seat-plan-editor__*` olarak görünür.
 
 ### Claude Desktop
 
@@ -216,7 +216,13 @@ args = ["/MUTLAK/YOL/seat-editor/mcp/index.mjs"]
 
 [mcp_servers.seat-plan-editor.env]
 SEAT_EDITOR_API = "http://localhost:8787/api"
+# Loginli uzak uygulamada backend'in ürettiği kısa ömürlü erişim bilgileri:
+# SEAT_EDITOR_TOKEN = "..."
+# SEAT_EDITOR_TENANT = "..."
 ```
+
+`SEAT_EDITOR_TOKEN` kullanıcı şifresi veya tarayıcı çerezi değildir. Loginli
+uygulamanın bu MCP bağlantısı için ürettiği kısa ömürlü bearer token olmalıdır.
 
 ### Komut satırı (hata ayıklama)
 
@@ -230,7 +236,7 @@ node mcp/cli.mjs reset
 > **Kod değişince istemciyi yeniden başlat.** MCP sunucusu oturum başında
 > ayağa kalkıp `src/core/**`'u belleğe alıyor; sonraki değişikliği görmüyor.
 
-### 29 araç
+### 31 araç
 
 **Plan**
 

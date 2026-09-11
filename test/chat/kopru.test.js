@@ -17,8 +17,20 @@ afterAll(async () => { await k?.kapat(); });
 
 describe("köprü · nötr sonuç", () => {
   it("sistem talimatı MCP'den geliyor — ikinci bir metin yok", () => {
-    expect(INSTRUCTIONS).toMatch(/SANTİMETREDİR/);
-    expect(INSTRUCTIONS).toMatch(/TASLAKTIR/);
+    expect(INSTRUCTIONS).toMatch(/ayrı tarayıcıdaki editörde çalışmanı canlı izler/);
+    expect(INSTRUCTIONS).toMatch(/Editörün birimi santimetredir/);
+    expect(INSTRUCTIONS).toMatch(/Sonuç\s+taslaktır/);
+    expect(INSTRUCTIONS).toMatch(/Salon adı, genel/);
+    expect(INSTRUCTIONS).toMatch(/plan_summary/);
+    expect(INSTRUCTIONS).toMatch(/render/);
+    expect(INSTRUCTIONS).toMatch(/validate/);
+    expect(INSTRUCTIONS).toMatch(/Kullanıcı 'baştan çiz' derse/);
+    expect(INSTRUCTIONS).toMatch(/submit_reference_analysis/);
+    expect(INSTRUCTIONS).toMatch(/replace_layout/);
+    expect(INSTRUCTIONS).toMatch(/İlk kurulumda add_block\/update_block/);
+    expect(INSTRUCTIONS).toMatch(/Kaynaklı işte varsayım YASAKTIR/);
+    expect(INSTRUCTIONS).toMatch(/Validate temiz olsun diye veri uydurma/);
+    expect(INSTRUCTIONS).toMatch(/kullanıcı istemedikçe export_plan çağırma/);
   });
 
   it("gerçek araç çalışıyor, metin nötr biçimde dönüyor", async () => {

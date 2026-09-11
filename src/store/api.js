@@ -75,8 +75,8 @@ export function apiStore(base = "/api", tenant = null) {
     async liveGet() {
       try { return await gonder("/live"); } catch { return null; }
     },
-    /* Panel içi sohbet — aynı sınıf yetenek. Anahtar sunucuda durur,
-       tarayıcı yalnız "açık mı" öğrenir. */
+    /* Eski sunucu sohbet rotalarının programatik istemci sözleşmesi.
+       Editörde panel yok; bunlar yalnız geriye dönük API uyumluluğu. */
     async sohbetDurum() {
       try { return await gonder("/chat/durum"); } catch { return { acik: false }; }
     },
@@ -90,7 +90,22 @@ export function apiStore(base = "/api", tenant = null) {
     async sohbetOku(id) {
       try { return await gonder(`/chat?id=${encodeURIComponent(id)}`); } catch { return null; }
     },
-
+    async sohbetTemizle(id) {
+      try {
+        const r = await fetch(u(`/chat?id=${encodeURIComponent(id)}`), { method: "DELETE", headers: basliklar });
+        return r.status === 204;
+      } catch { return false; }
+    },
+    async sohbetDosya(file) {
+      try {
+        const r = await fetch(u("/chat/upload"), {
+          method: "POST",
+          headers: { ...basliklar, "content-type": file.type || "application/octet-stream", "x-file-name": file.name },
+          body: await file.arrayBuffer(),
+        });
+        return r.ok ? r.json() : null;
+      } catch { return null; }
+    },
     async liveStop() {
       try { await gonder("/live", { method: "DELETE" }); return true; }
       catch { return false; }

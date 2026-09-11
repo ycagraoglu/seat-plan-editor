@@ -64,7 +64,9 @@ export function renderSvg(plan, { scope = "all", seats = "auto", underlay = null
   const secili = scope === "all" ? tumMetas
     : tumMetas.filter(({ b }) => b.id === scope || b.label === scope
       || levelMatches(b.level, scope));
-  if (!secili.length) throw new Error(`Kapsamda blok yok: ${scope}`);
+  /* Yüklenen kaynak, ilk blok çizilmeden ÖNCE görülebilmeli. Altlık yoksa
+     boş kapsam hâlâ hatadır; altlık varsa boş plan onun inceleme tuvalidir. */
+  if (!secili.length && !underlay) throw new Error(`Kapsamda blok yok: ${scope}`);
 
   const koltukSayisi = secili.reduce((a, x) => a + x.m.seatCount, 0);
   const koltukCiz = seats === "on" || (seats === "auto" && koltukSayisi <= maxSeats);

@@ -49,6 +49,10 @@ export function registerRenderTools(server, session, z) {
     },
   }, async ({ scope = "all", seats = "auto", withUnderlay = true, width = 1400 }) => {
     const plan = session.need();
+    if (withUnderlay && plan.underlay && plan.blocks.length && !plan.underlayRect) {
+      throw new Error("Altlık hizasız; bu render kaynak karşılaştırması sayılamaz."
+        + " set_underlay için x/y/width/height ver veya submit_reference_analysis ardından replace_layout kullan.");
+    }
     const r = renderSvg(plan, {
       scope, seats, width,
       underlay: withUnderlay ? plan.underlay || null : null,
@@ -107,6 +111,7 @@ export function registerRenderTools(server, session, z) {
       ? { x, y, w: width, h: height } : null;
     session.set({ ...plan, underlay: `data:${mime};base64,${buf.toString("base64")}`,
       underlayRect: rect });
+    session.referenceMode = true;
     return metin(`Altlık yüklendi: ${path.basename(dosya)} (${Math.round(buf.length / 1024)} KB)`
       + (rect ? `\nDünyada yeri: ${rect.w}×${rect.h} cm, sol üst (${rect.x}, ${rect.y}).`
         : `\nDünyadaki yeri VERİLMEDİ — görüntü kutusuna gerilecek, bindirme`

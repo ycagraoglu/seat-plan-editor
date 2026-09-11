@@ -23,7 +23,13 @@ import { canliYaz } from "./live.mjs";
 const tr = (n) => Number(n).toLocaleString("tr-TR");
 
 export class Session {
-  constructor() { this.plan = null; this.kesildi = false; this.yeniCizim = false; }
+  constructor() {
+    this.plan = null;
+    this.kesildi = false;
+    this.yeniCizim = false;
+    this.referenceAnalysis = null;
+    this.referenceMode = false;
+  }
 
   /** Aktif plan yoksa aracın anlamı yok — net hata, sessiz boş sonuç değil. */
   need() {
@@ -61,7 +67,12 @@ export class Session {
   yeni(plan) {
     this.kesildi = false;
     this.yeniCizim = true;
-    return this.set(plan);
+    this.referenceAnalysis = null;
+    this.referenceMode = false;
+    const next = this.set(plan);
+    canliYaz(next, null, true, () => { this.kesildi = true; });
+    this.yeniCizim = false;
+    return next;
   }
 
   /** Türetilmiş her şeyi tek yerden: metas · gates · kural raporu. */
@@ -73,7 +84,12 @@ export class Session {
   }
 
   /** Planı değiştir, sonra ne olduğunu anlat. Tüm değiştirici araçlar bunu kullanır. */
-  mutate(fn, baslik) {
+  mutate(fn, baslik, { reference = false } = {}) {
+    if (this.referenceMode && !reference) {
+      throw new Error("Referans görseli modunda düşük seviyeli düzenleme kapalı."
+        + " submit_reference_analysis ardından replace_layout kullan;"
+        + " düzeltme gerekiyorsa analizi yenileyip bütünü tekrar kur.");
+    }
     const plan = this.need();
     const next = fn(plan) || plan;
     this.plan = next;

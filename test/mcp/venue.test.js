@@ -168,6 +168,12 @@ describe("şekiller ve kapılar", () => {
       .rejects.toThrow(/w ve h zorunlu/);
   });
 
+  it("görünmez etiketli boş not dikdörtgeni oluşturmaz", async () => {
+    await expect(t.cagir("add_shape", {
+      type: "note", label: "\u200b", x: 0, y: 0, w: 500, h: 100,
+    })).rejects.toThrow(/görünür label/);
+  });
+
   it("BİR BLOK BİRDEN ÇOK KAPIDAN girilebilir (Şükrü Saracoğlu Maraton Üst A-E → 26 ve 27)", async () => {
     await t.cagir("add_shape", { type: "door", x: -500, y: 4000, w: 300, h: 300, label: "KAPI 26" });
     await t.cagir("add_shape", { type: "door", x: 500, y: 4000, w: 300, h: 300, label: "KAPI 27" });

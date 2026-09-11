@@ -1,5 +1,8 @@
 import { oturumAc, tur } from "./dongu.mjs";
-import { acikMi } from "./saglayici/index.mjs";
+import { acikMi, sec } from "./saglayici/index.mjs";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { tmpdir } from "node:os";
 
 /* ══════════════════════════════════════════════════════════════════════════
    KONUŞMALAR — sunucu belleğinde, konuşma başına bir oturum
@@ -22,10 +25,33 @@ import { acikMi } from "./saglayici/index.mjs";
 const konusmalar = new Map();
 const OMUR_MS = 30 * 60 * 1000;      /* boşta kalan konuşma bu süre sonra düşer */
 const AKIS_SINIRI = 400;             /* bellekte tutulan satır */
+const GORSEL_MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+  ".webp": "image/webp", ".gif": "image/gif" };
+
+/* Kaynak ilk model kararında DOĞRUDAN görülsün. Yalnız kendi upload
+   klasörümüz okunur; sohbet metni keyfî bir sunucu dosyasını açamaz. */
+const kaynakGorselleri = async (mesaj) => {
+  const eslesme = String(mesaj).match(/\n\nKaynak görsel: ([^\n]+)\n/);
+  if (!eslesme) return [];
+  const kok = path.resolve(tmpdir(), "seat-editor-chat") + path.sep;
+  const dosya = path.resolve(eslesme[1]);
+  const mimeType = GORSEL_MIME[path.extname(dosya).toLowerCase()];
+  if (!dosya.startsWith(kok) || !mimeType) return [];
+  try {
+    const buf = await readFile(dosya);
+    return buf.length <= 4 * 1024 * 1024 ? [{ mimeType, data: buf.toString("base64") }] : [];
+  } catch { return []; }
+};
 
 /* Üç sağlayıcıdan HANGİSİ varsa sohbet açık. Panel yalnız bu cevabı
    görüyor — anahtarın kendisi tarayıcıya hiç gitmiyor. */
 export const sohbetAcikMi = () => acikMi();
+export const sohbetBilgi = () => {
+  try {
+    const s = sec();
+    return s ? { acik: true, saglayici: s.ad, model: s.VARSAYILAN_MODEL } : { acik: false };
+  } catch { return { acik: false }; }
+};
 
 /* Ham SDK hatası operatöre gösterilecek metin değil:
    `401 {"type":"error","error":{"type":"authentication_error",...}}`
@@ -74,10 +100,11 @@ export async function mesajGonder(id, mesaj) {
 
   k.calisiyor = true;
   ekle(k, { rol: "kullanici", metin: mesaj });
+  const gorseller = await kaynakGorselleri(mesaj);
 
   /* Bilerek beklenmiyor. Hata YUTULMUYOR — akışa düşüyor, yoksa operatör
      sonsuza dek "çalışıyor" görür ve neden durduğunu hiç öğrenemez. */
-  tur(k.oturum, mesaj, (olay) => ekle(k, { rol: "arac", metin: olay.ad }))
+  tur(k.oturum, mesaj, (olay) => ekle(k, { rol: "arac", metin: olay.ad }), gorseller)
     .then((r) => {
       if (r.durum === "bitti") ekle(k, { rol: "asistan", metin: r.metin });
       else ekle(k, { rol: "uyari", metin: r.metin, durum: r.durum });
@@ -94,6 +121,15 @@ export async function akisOku(id) {
   if (!k) return { calisiyor: false, akis: [] };
   k.sonKullanim = Date.now();
   return { calisiyor: k.calisiyor, akis: k.akis };
+}
+
+export async function sohbetTemizle(id) {
+  const k = konusmalar.get(id);
+  if (!k) return true;
+  if (k.calisiyor) return false;
+  await k.oturum?.kapat?.();
+  konusmalar.delete(id);
+  return true;
 }
 
 /** Testlerin ve kapanışın kullandığı temizlik. */

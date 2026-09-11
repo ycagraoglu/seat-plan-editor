@@ -127,5 +127,6 @@ describe("rozet, bloğuna sığar", () => {
 
   it("boş etiket yazılmaz", () => {
     expect(sig(["A"])("", 500)).toBe(null);
+    expect(sig(["A"])("\u200b\u200b", 500)).toBe(null);
   });
 });

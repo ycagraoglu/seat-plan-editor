@@ -66,6 +66,12 @@ describe("plan yaşam döngüsü", () => {
 describe("blok araçları", () => {
   beforeEach(async () => { await t.cagir("create_plan", { name: "Test Salonu" }); });
 
+  it("görünmez Unicode etiketi blok kodu saymıyor", async () => {
+    await expect(t.cagir("add_block", {
+      kind: "grid", label: "\u200b\u200b", level: "P", x: 0, y: 0, rows: 2, cols: 4,
+    })).rejects.toThrow(/görünür bir kod/);
+  });
+
   it("grid blok koltuk sayısından kurulur (rows × cols)", async () => {
     await t.cagir("add_block", { kind: "grid", label: "A", level: "Parter", x: 0, y: 0, rows: 10, cols: 20 });
     const d = await t.jsonCagir("plan_summary");

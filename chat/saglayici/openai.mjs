@@ -9,7 +9,7 @@ import { aciklama, sadelestir } from "./sema.mjs";
 export const ad = "openai";
 export const varMi = () => !!process.env.OPENAI_API_KEY;
 /* Hesaptan hesaba değişiyor — SOHBET_MODEL ile ez. */
-export const VARSAYILAN_MODEL = process.env.SOHBET_MODEL || "gpt-4o";
+export const VARSAYILAN_MODEL = process.env.SOHBET_MODEL || "gpt-5-mini";
 export const istemciKur = () => new OpenAI();
 
 export const araclariCevir = (tools) => tools.map((t) => ({
@@ -20,7 +20,14 @@ export const araclariCevir = (tools) => tools.map((t) => ({
   },
 }));
 
-export const kullaniciEkle = (mesajlar, metin) => mesajlar.push({ role: "user", content: metin });
+export const kullaniciEkle = (mesajlar, metin, gorseller = []) => mesajlar.push({
+  role: "user",
+  content: gorseller.length ? [
+    { type: "text", text: metin },
+    ...gorseller.map((g) => ({ type: "image_url",
+      image_url: { url: `data:${g.mimeType};base64,${g.data}` } })),
+  ] : metin,
+});
 
 export const gorselEkle = (mesajlar, gorseller) => {
   if (!gorseller.length) return;
@@ -34,7 +41,7 @@ export const gorselEkle = (mesajlar, gorseller) => {
 export async function cagir(istemci, { model, system, mesajlar, araclar }) {
   const r = await istemci.chat.completions.create({
     model, tools: araclar,
-    messages: [{ role: "system", content: system }, ...mesajlar],
+    messages: [{ role: "developer", content: system }, ...mesajlar],
   });
   const m = r.choices?.[0]?.message || {};
   const cagrilar = (m.tool_calls || []).map((c) => ({

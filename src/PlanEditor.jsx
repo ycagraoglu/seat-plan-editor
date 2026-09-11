@@ -13,7 +13,6 @@ import { buildDbPayload, dbSeatRows } from "./core/db-export.js";
 import { Store } from "./store/index.js";
 import { buildCtx, runRules } from "./core/rules.js";
 import { BUILTINS, EMPTY } from "./venues/index.js";
-import { buildStadiumTemplate, buildHallTemplate } from "./venues/templates.js";
 import { mergeSavedVenues, isProtectedSample, forkSample, stampSchema } from "./core/schema.js";
 import { reducer, initialState } from "./ui/state/reducer.js";
 import { selectPlan, selectLevels, selectLevelCounts, selectTotalSeats, selectSelectedBlocks, levelMatches, selectBlockLevels, deleteTarget } from "./ui/state/selectors.js";
@@ -79,6 +78,7 @@ const ICONS = {
   info: [{d:"M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"},{d:"M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0"}],
   undo: [{d:"M9 13l-4 -4l4 -4"},{d:"M5 9h7a4 4 0 1 1 0 8h-1"}],
   redo: [{d:"M15 13l4 -4l-4 -4"},{d:"M19 9h-7a4 4 0 1 0 0 8h1"}],
+  trash: [{d:"M4 7h16"},{d:"M10 11v6"},{d:"M14 11v6"},{d:"M5 7l1 14h12l1 -14"},{d:"M9 7v-3h6v3"}],
 };
 
 /* Tabler Icons (MIT) — 24'lük ızgara, 2 kalınlık, yuvarlak uçlar.
@@ -737,7 +737,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
      fazla alanı ilgilendiren HER ŞEY tek bir saf reducer'da. Okuma
      tarafı aşağıda düz const'lara açılıyor, geri kalan ~3000 satır
      bu isimleri DEĞİŞMEDEN okumaya devam ediyor. */
-  const [state, dispatch] = useReducer(reducer, initialState(BUILTINS, "gs"));
+  const [state, dispatch] = useReducer(reducer, initialState(BUILTINS, "empty"));
   const {
     venues, vk, past, future, rev,
     selIds, selShapeId, selSeat, selSeats,
@@ -778,7 +778,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     brushKind: Object.keys(ATTRS)[0], brushFeatures: [], poiKind: "wc",
     snapOn: true, gridStep: 50,
     lin: { count: 6, dx: 1500, dy: 0 }, rad: { count: 3, cx: 0, cy: 0, step: -30 },
-    wheelPref: "auto", theme: "system", legend: false, plates: true, q: "",
+    wheelPref: "auto", theme: "system", legend: false, plates: false, q: "",
     toolsOpen: true, propsOpen: true,
     /* A6.4: tek renk kanalı — "level" (Kat) varsayılan, bugünkü davranış.
        toolPrefs'te yaşıyor çünkü belgeden bağımsız bir görünüm tercihi,
@@ -836,6 +836,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const [guides, setGuides] = useState([]);
   const [hoverId, setHoverId] = useState("");
   const [setOpen, setSetOpen] = useState(false);
+  const [planDeleteArmed, setPlanDeleteArmed] = useState(false);
   const [footDraft, setFootDraft] = useState(null);
   const [sysDark, setSysDark] = useState(true);
   const [msg, setMsgOk] = useState("");
@@ -890,20 +891,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
   const durgunRef = useRef(false);
   const [liveGunluk, setLiveGunluk] = useState([]);
 
-  /* ── PANEL İÇİ SOHBET ──────────────────────────────────────────────
-     Operatör sağdaki kutuya "Bursa Tayyare'yi çiz" yazıyor; model
-     SUNUCUDA çalışıyor ve editörün araçlarını çağırıyor. Operatörün
-     bilgisayarında hiçbir program yok, hiçbir ayar yok, token yok.
-
-     Anahtar sunucuda: panel yalnız "açık mı" sorusunun cevabını alıyor.
-     Kapalıysa bu panel HİÇ görünmüyor, editör bugünkü gibi çalışıyor. */
-  const [sohbetAcik, setSohbetAcik] = useState(false);
-  const [sohbetAkis, setSohbetAkis] = useState([]);
-  const [sohbetCalisiyor, setSohbetCalisiyor] = useState(false);
-  const [sohbetGirdi, setSohbetGirdi] = useState("");
-  /* Konuşma kimliği sekme ömürlü — yenilenince yeni konuşma başlar.
-     Kalıcı olması gereken şey PLAN, o zaten depoda. */
-  const sohbetId = useRef(`k${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`);
   useEffect(() => {
     /* localStorage kurulumunda canlı görünüm YOK: iki ayrı süreç ancak
        sunucu üzerinden buluşabilir. Sunucusuz editör aynen çalışmalı. */
@@ -950,40 +937,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
     tur();
     return () => { dead = true; clearInterval(t); };
   }, []);
-
-  useEffect(() => {
-    if (Store.driver !== "api" || !Store.sohbetDurum) return;
-    let dead = false;
-    (async () => {
-      const d = await Store.sohbetDurum();
-      if (!dead) setSohbetAcik(!!d?.acik);
-    })();
-    /* Canlı görünümle AYNI hızda: iki yoklama da yerel sunucuda, ikisi
-       birlikte saniyede iki küçük istek — ölçülebilir bir yük değil. */
-    const t = setInterval(async () => {
-      const r = await Store.sohbetOku(sohbetId.current);
-      if (dead || !r) return;
-      setSohbetCalisiyor(r.calisiyor);
-      setSohbetAkis((o) => (o.length === r.akis.length ? o : r.akis));
-    }, 1000);
-    return () => { dead = true; clearInterval(t); };
-  }, []);
-
-  const sohbetYolla = useCallback(async () => {
-    const m = sohbetGirdi.trim();
-    if (!m || sohbetCalisiyor) return;
-    setSohbetGirdi("");
-    /* İyimser satır: ağ turunu beklemeden görünsün, yoklama zaten
-       sunucudaki gerçek akışla değiştirecek. */
-    setSohbetAkis((o) => [...o, { t: new Date().toISOString(), rol: "kullanici", metin: m }]);
-    setSohbetCalisiyor(true);
-    const r = await Store.sohbetGonder(sohbetId.current, m);
-    if (!r) {
-      setSohbetAkis((o) => [...o, { t: new Date().toISOString(), rol: "hata",
-        metin: "Sunucuya ulaşılamadı." }]);
-      setSohbetCalisiyor(false);
-    }
-  }, [sohbetGirdi, sohbetCalisiyor]);
 
   /* KES: kilidi düşür, yapay zekânın yazmasını durdur, çizimi KALICI kıl.
      commit şart — live/apply rev'i artırmadığı için plan yalnız sunucuda
@@ -1517,19 +1470,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
     switchVenue2(k, p);
     setRev((r) => r + 1);
   };
-  /* Şablondan yeni plan — newPlan() ile AYNI akış (p<timestamp> anahtarı,
-     versions/published sıfırlanır), tek fark boş EMPTY yerine şablon
-     üretecinin (src/venues/templates.js) döndürdüğü bloklar/şekillerle
-     başlaması. build() ÇAĞRILDIĞINDA nid() üretir — duplicatePlan()'daki
-     gibi kimlikler o an paylaşılan sayaçtan gelir, örnek salonların modül
-     yüklemede sabitlenmiş sırasına hiç dokunmaz (bkz. templates.js başlığı). */
-  const newPlanFromTemplate = (build, name) => {
-    const k = `p${Date.now().toString(36)}`;
-    const p = { ...build(), key: k, name, versions: [], published: null };
-    setVenues((v) => ({ ...v, [k]: p }));
-    switchVenue2(k, p);
-    setRev((r) => r + 1);
-  };
   const duplicatePlan = () => {
     const k = `p${Date.now().toString(36)}`;
     const copy = JSON.parse(JSON.stringify({ ...plan, underlay: null }));
@@ -1545,6 +1485,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     setRev((r) => r + 1);
   };
   const deletePlan = async (k) => {
+    setPlanDeleteArmed(false);
     await Store.remove(k);
     setSaved((s) => s.filter((x) => x !== k));
     setVenues((v) => { const n = { ...v }; delete n[k]; return n; });
@@ -2295,6 +2236,29 @@ export default function PlanEditor({ cssText = "" } = {}) {
     });
   };
 
+  const deleteSelection = () => {
+    switch (deleteTarget({ selSeats, selSeat, selIds, selShapeId })) {
+      case "seats":
+        seatOps((o) => ({ ...o, rm: true, gap: false }));
+        setMsg(`${selSeats.size} koltuk silindi`); return;
+      case "seat": toggleOv(selSeat, "rm"); return;
+      case "blocks":
+        commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) });
+        setSelIds([]); return;
+      case "shape":
+        commit({ ...plan, shapes: plan.shapes.filter((s) => s.id !== selShapeId) });
+        setSelShapeId(null); return;
+      default: return;
+    }
+  };
+
+  const clearCanvas = () => {
+    commit({ ...plan, blocks: [], shapes: [], groups: [], sections: [],
+      underlay: null, underlayRect: null });
+    setSelIds([]); setSelShapeId(null); setSelSeat(null); setSelSeats(new Set());
+    setReport(null); setMatch(null); setMsg("Tuval temizlendi — geri almak için ⌘Z");
+  };
+
   useEffect(() => {
     const h = (e) => {
       if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
@@ -2341,20 +2305,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
         /* Öncelik sırası ui/state/selectors.js'te (deleteTarget) — koltuk
            seçimi HER ZAMAN bloktan önce. Sıra oradaki notta anlatılan bir
            veri kaybı hatasının karşılığı, burada tekrar yazılmıyor. */
-        switch (deleteTarget({ selSeats, selSeat, selIds, selShapeId })) {
-          case "seats":
-            seatOps((o) => ({ ...o, rm: true, gap: false }));
-            setMsg(`${selSeats.size} koltuk silindi`);
-            return;
-          case "seat": toggleOv(selSeat, "rm"); return;
-          case "blocks":
-            commit({ ...plan, blocks: plan.blocks.filter((b) => !selIds.includes(b.id)) });
-            setSelIds([]); return;
-          case "shape":
-            commit({ ...plan, shapes: plan.shapes.filter((s) => s.id !== selShapeId) });
-            setSelShapeId(null); return;
-          default: return;
-        }
+        deleteSelection(); return;
       }
     };
     window.addEventListener("keydown", h);
@@ -2554,7 +2505,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
     x: liveKes });
 
   return (
-    <div className={`ed ${dark ? "dark" : "light"}`}>
+    <div className={`ed ${dark ? "dark" : "light"}${live && !liveDurgun ? " ai-working" : ""}`}>
       <div className="gate">
         <p>Bu editör geniş bir çalışma alanı gerektirir.
           <span>Lütfen masaüstü tarayıcıda veya en az 1024px genişliğinde bir pencerede açın.</span>
@@ -2564,9 +2515,15 @@ export default function PlanEditor({ cssText = "" } = {}) {
       <header className="top">
         <select className="venue" value={vk} disabled={!!live}
           title={live ? "Yapay zekâ çizerken salon değiştirilemez — KES" : undefined}
-          onChange={(e) => switchVenue(e.target.value)}>
+          onChange={(e) => { setPlanDeleteArmed(false); switchVenue(e.target.value); }}>
           {Object.entries(venues).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
         </select>
+        <button className={`plan-delete${planDeleteArmed ? " armed" : ""}`}
+          disabled={!!live || isProtectedSample(vk, BUILTINS)}
+          title={isProtectedSample(vk, BUILTINS) ? "Yerleşik örnek planlar silinemez" : "Seçili planı tamamen sil"}
+          onClick={() => planDeleteArmed ? deletePlan(vk) : setPlanDeleteArmed(true)}>
+          <Icon n="trash" />{planDeleteArmed ? "Emin misin?" : "Planı sil"}
+        </button>
         <span className={`sv ${saveState}`}>
           {saveState === "saving" ? "kaydediliyor" : saveState === "saved" ? "kaydedildi"
             : saveState === "error" ? "kaydedilemedi" : "otomatik kayıt"}
@@ -2587,7 +2544,12 @@ export default function PlanEditor({ cssText = "" } = {}) {
 
         <button className="ib" onClick={undo} disabled={!past.length} title="Geri al (⌘Z)"><Icon n="undo" /></button>
         <button className="ib" onClick={redo} disabled={!future.length} title="Yinele (⇧⌘Z)"><Icon n="redo" /></button>
+        <button className="delete-command" onClick={clearCanvas}
+          disabled={!!live || (!plan.blocks.length && !plan.shapes.length && !plan.underlay)}
+          title="Tuvaldeki tüm öğeleri sil"><Icon n="trash" /><span>Tuvali temizle</span></button>
         <span className="tsep" />
+        <button onClick={newPlan} disabled={!!live}
+          title={live ? "Önce canlı çizimi devral (KES)" : "Yeni boş plan oluştur"}>+ Yeni plan</button>
         <button className={setOpen ? "on" : ""} onClick={() => { setSetOpen(!setOpen); setVerOpen(false); }}>Ayarlar</button>
         <button className={verOpen ? "on" : ""} onClick={() => { setVerOpen(!verOpen); setSetOpen(false); }}>Sürümler</button>
         <button onClick={runValidate}>Doğrula
@@ -3017,13 +2979,13 @@ export default function PlanEditor({ cssText = "" } = {}) {
               </g>
             ))}
 
-            {breach.length > 0 && metas.filter(({ b }) => breachSet.has(b.id)).map(({ b, m }) => (
+            {plates && breach.length > 0 && metas.filter(({ b }) => breachSet.has(b.id)).map(({ b, m }) => (
               <polygon key={`br${b.id}`} className="breach"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
 
-            {collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
+            {plates && collide.length > 0 && metas.filter(({ b }) => collideSet.has(b.id)).map(({ b, m }) => (
               <polygon key={`co${b.id}`} className="collide"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
@@ -3032,12 +2994,12 @@ export default function PlanEditor({ cssText = "" } = {}) {
             {/* "Doğrulama" kanalının vurgusu: son rapordaki canlı-olmayan
                 bulgular da (bkz. reportMarks) breach/collide ile aynı dış
                 hat dilinde işaretlenir — err kırmızı kesik, warn amber. */}
-            {reportMarks.err.length > 0 && metas.filter(({ b }) => reportMarks.err.includes(b.id)).map(({ b, m }) => (
+            {plates && reportMarks.err.length > 0 && metas.filter(({ b }) => reportMarks.err.includes(b.id)).map(({ b, m }) => (
               <polygon key={`rfe${b.id}`} className="breach"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
             ))}
-            {reportMarks.warn.length > 0 && metas.filter(({ b }) => reportMarks.warn.includes(b.id)).map(({ b, m }) => (
+            {plates && reportMarks.warn.length > 0 && metas.filter(({ b }) => reportMarks.warn.includes(b.id)).map(({ b, m }) => (
               <polygon key={`rfw${b.id}`} className="rfwarn"
                 points={m.outline.map((p) => `${p.x.toFixed(0)},${p.y.toFixed(0)}`).join(" ")}
                 strokeWidth={Math.max(3, 2 / (pxPerCm || 0.01))} />
@@ -3259,8 +3221,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
             <PlanSettings plan={plan} sample={metas[0]} onClose={() => setSetOpen(false)}
               onCsv={exportCSV} onSvg={exportSVG} onCsvImport={importCSV} onDbImport={importDb} saved={saved} venues={venues} vk={vk}
               theme={theme} onTheme={setThemePref} wheelPref={wheelPref} onWheelPref={setWheelPrefP}
-              onNew={newPlan} onNewStadium={() => newPlanFromTemplate(buildStadiumTemplate, "Yeni stadyum")}
-              onNewHall={() => newPlanFromTemplate(buildHallTemplate, "Yeni salon")}
+              onNew={newPlan}
               onDup={duplicatePlan} onDel={deletePlan}
               onChange={(p) => commit({ ...plan, ...p })} />
           )}
@@ -3388,13 +3349,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
              düzenleme kontrolü dolu; canlıyken hepsi ölü düğme olurdu.
              Operatörün o an istediği şey "ne yapılıyor", bir bloğun
              sıra aralığı değil. KES'ten sonra paneller geri geliyor. */
-          /* Sohbet açıksa panel ODUR: adım günlüğünü de içinde taşıyor,
-             292px'e iki kutu sığmaz. Kapalıysa bugünkü davranış aynen. */
-          sohbetAcik ? (
-            <SohbetPaneli akis={sohbetAkis} gunluk={liveGunluk} calisiyor={sohbetCalisiyor}
-              live={live} durgun={liveDurgun} onKes={liveKes}
-              girdi={sohbetGirdi} setGirdi={setSohbetGirdi} onYolla={sohbetYolla} />
-          ) : live ? (
+          live ? (
             <CanliGunluk live={live} gunluk={liveGunluk} durgun={liveDurgun} onKes={liveKes} />
           ) : selSeats.size > 1 ? (
             <MultiSeatPanel n={selSeats.size} onOps={seatOps} groupKinds={GROUP_KINDS}
@@ -3434,6 +3389,7 @@ export default function PlanEditor({ cssText = "" } = {}) {
           )}
         </aside>
       </div>
+
     </div>
   );
 }
@@ -3441,63 +3397,6 @@ export default function PlanEditor({ cssText = "" } = {}) {
 /* ─────────────────────────  PANELLER  ───────────────────────── */
 
 const Row = ({ label, children }) => <label className="pr"><span>{label}</span>{children}</label>;
-
-/** Panel içi sohbet — operatörün yazdığı yer VE ne yapıldığının akışı.
- *
- *  TEK ZAMAN ÇİZELGESİ: mesajlar ve araç adımları ayrı kutularda değil,
- *  kronolojik olarak aynı listede. Sağ panel 292px; iki kutu sığmaz ve
- *  zaten operatörün okuduğu şey tek bir hikâye — "şunu istedim, şunlar
- *  yapıldı, şu cevap geldi".
- *
- *  Adımlar SOHBET akışından değil CANLI GÜNLÜKTEN geliyor: sohbet tarafı
- *  yalnız araç adını biliyor, günlük ise koltuk sayısını ve kural
- *  bulgularını da taşıyor. İkisi zaman damgasıyla birleştiriliyor. */
-function SohbetPaneli({ akis, gunluk, calisiyor, live, durgun, onKes, girdi, setGirdi, onYolla }) {
-  const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
-    { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-  /* Sohbetin kendi "arac" satırları atılıyor — aynı olayın zengin hâli
-     günlükte var, ikisini de göstermek tekrar olurdu. */
-  const satirlar = [
-    ...akis.filter((x) => x.rol !== "arac").map((x) => ({ ...x, tip: x.rol })),
-    ...gunluk.map((a) => ({ t: a.t, tip: "adim", metin: a.n, k: a.k, b: a.b, u: a.u })),
-  ].sort((x, y) => String(x.t).localeCompare(String(y.t)));
-
-  return (
-    <div className="sohbet">
-      <p className="lab">
-        {live ? (durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor") : "Yapay zekâ yardımcısı"}
-      </p>
-      {live && <button className="btn wide" onClick={onKes}>Çizimi devral (KES)</button>}
-
-      <ol className="akis">
-        {!satirlar.length && (
-          <li className="ipucu">Bir salon adı yazıp çizdirebilirsin.<br />
-            Örnek: <em>“Bursa Tayyare Kültür Merkezi’ni çiz”</em> ya da
-            <em> “kayıtlı planlarımı listele”</em>.</li>
-        )}
-        {satirlar.map((r, i) => (
-          <li key={`${r.t}-${i}`} className={r.tip}>
-            <span className="sa">{saat(r.t)}</span>
-            <span className="mt">{r.metin}</span>
-            {r.tip === "adim" && (
-              <span className="sy">{Number(r.k).toLocaleString("tr-TR")} koltuk · {r.b} blok</span>
-            )}
-            {(r.u || []).map((u, j) => <span key={j} className="uy">{u}</span>)}
-          </li>
-        ))}
-        {calisiyor && <li className="bekle"><span className="sa" /><span className="mt">çalışıyor…</span></li>}
-      </ol>
-
-      <div className="pubrow">
-        <input value={girdi} placeholder={calisiyor ? "yanıt bekleniyor…" : "Ne çizelim?"}
-          disabled={calisiyor}
-          onChange={(e) => setGirdi(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && onYolla()} />
-        <button className="pri" onClick={onYolla} disabled={calisiyor || !girdi.trim()}>Gönder</button>
-      </div>
-    </div>
-  );
-}
 
 /** Yapay zekâ çizerken operatörün takip paneli.
  *
@@ -3510,11 +3409,18 @@ function SohbetPaneli({ akis, gunluk, calisiyor, live, durgun, onKes, girdi, set
  *  En yeni EN ÜSTTE: dar bir panelde canlı akış böyle okunur, kaydırmaya
  *  gerek kalmaz. */
 function CanliGunluk({ live, gunluk, durgun, onKes }) {
+  const kokRef = useRef(null);
+  const sonAdim = gunluk.at(-1)?.t;
+  useEffect(() => {
+    const kok = kokRef.current;
+    kok?.closest(".props")?.scrollTo({ top: 0, behavior: "smooth" });
+    kok?.querySelector(".gnl")?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [sonAdim]);
   const saat = (t) => new Date(t).toLocaleTimeString("tr-TR",
     { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const ters = [...gunluk].reverse();
   return (
-    <div className="canli">
+    <div className="canli" ref={kokRef}>
       <p className="lab">{durgun ? "✓ Çizim durdu" : "● Yapay zekâ çiziyor"}</p>
       <p className="cad">{live.name}</p>
       {!ters.length && <p className="mut sm">Henüz adım yok — ilk değişiklik bekleniyor.</p>}
@@ -3629,7 +3535,7 @@ function MultiSeatPanel({ n, onOps, onClear, groupKinds, onGroup, onUngroup }) {
 }
 
 /** Seçim yokken: plan seviyesindeki ayarlar. */
-function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onNewStadium, onNewHall, onDup, onDel, onChange }) {
+function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbImport, saved, venues, vk, theme, onTheme, wheelPref, onWheelPref, onNew, onDup, onDel, onChange }) {
   const tpl = plan.idTemplate || DEF_TPL;
   const s = sample ? buildSeats(sample.b, sample.m, tpl).seats.find((x) => !x.gap) : null;
   return (
@@ -3666,18 +3572,11 @@ function PlanSettings({ plan, sample, onClose, onCsv, onSvg, onCsvImport, onDbIm
       <div className="sec">
         <p className="lab">Planlar</p>
         <div className="acts">
-          <button onClick={onNew}>Yeni (boş)</button>
-          <button onClick={onNewStadium}>Yeni (stadyum)</button>
-          <button onClick={onNewHall}>Yeni (salon)</button>
+          <button onClick={onNew}>Yeni plan</button>
           <button onClick={onDup}>Kopyala</button>
           <button className="dgr" disabled={!saved.includes(vk) || Object.keys(venues).length < 2}
             onClick={() => onDel(vk)}>Sil</button>
         </div>
-        <p className="mut sm">
-          Stadyum/salon, boş tuval yerine düzenlenebilir bir başlangıç iskeleti (tribün/kademe +
-          gerçek vomitorium ya da kapı) verir. Plan geçişi üstteki menüden. Düzenlemeler otomatik
-          kaydediliyor; altlık görseli kaydedilmez.
-        </p>
       </div>
 
       <div className="sec">
@@ -4346,4 +4245,3 @@ function BlockPanel({ b, levels, meta, arr, doors, sectionKinds, sectionKind, on
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { baglan } from "./harness.js";
-import { createDb, createServer } from "../../server/index.mjs";
+import { clearLiveSessions, createDb, createServer } from "../../server/index.mjs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { rmSync } from "node:fs";
@@ -40,6 +40,16 @@ const bekle = async (kosul, tur = 50) => {
 };
 const canli = () => fetch(`${taban}/live`).then((r) => r.json());
 
+it("sunucu başlangıcı eski canlı oturumu temizler, kayıtlı planı silmez", () => {
+  db.prepare("INSERT INTO editor_prefs (tenant_id,key,value) VALUES (?,?,?)")
+    .run("t1", "__live", JSON.stringify({ key: "ai-eski", revoked: false }));
+  db.prepare("INSERT INTO editor_plans (tenant_id,key,document,updated_at) VALUES (?,?,?,?)")
+    .run("t1", "ai-eski", JSON.stringify({ key: "ai-eski", blocks: [] }), new Date().toISOString());
+  clearLiveSessions(db);
+  expect(db.prepare("SELECT 1 FROM editor_prefs WHERE key = '__live'").get()).toBeUndefined();
+  expect(db.prepare("SELECT 1 FROM editor_plans WHERE key = 'ai-eski'").get()).toBeTruthy();
+});
+
 describe("SEAT_EDITOR_API verilmemişken", () => {
   it("hiç ağa çıkmıyor — plan sunucuda GÖRÜNMÜYOR", async () => {
     delete process.env.SEAT_EDITOR_API;
@@ -55,6 +65,41 @@ describe("SEAT_EDITOR_API verilmemişken", () => {
 describe("SEAT_EDITOR_API verilmişken", () => {
   beforeEach(() => { process.env.SEAT_EDITOR_API = taban; });
   afterAll(() => { delete process.env.SEAT_EDITOR_API; });
+
+  it("create_plan tek başına eski çizimi hemen temizliyor", async () => {
+    const t = await baglan();
+    await t.cagir("create_plan", { name: "Eski", key: "salon" });
+    await t.cagir("add_block", { kind: "grid", label: "A", level: "L", x: 0, y: 0, rows: 5, cols: 10 });
+    await bekle(async () => {
+      const plan = await (await fetch(`${taban}/plans/ai-salon`)).json();
+      return plan.blocks?.length === 1 ? true : null;
+    });
+
+    await t.cagir("create_plan", { name: "Yeni Boş", key: "salon" });
+    const plan = await bekle(async () => {
+      const x = await (await fetch(`${taban}/plans/ai-salon`)).json();
+      return x.name === "Yeni Boş" && x.blocks?.length === 0 ? x : null;
+    });
+    expect(plan).not.toBeNull();
+    expect((await canli()).name).toBe("Yeni Boş");
+    await t.kapat();
+  });
+
+  it("MCP tenant kimliğini canlı API'ye taşıyor", async () => {
+    process.env.SEAT_EDITOR_TENANT = "musteri-7";
+    try {
+      const t = await baglan();
+      await t.cagir("create_plan", { name: "Tenant Plan", key: "tenant-plan" });
+      const d = await bekle(async () => {
+        const r = await fetch(`${taban}/live`, { headers: { "x-tenant-id": "musteri-7" } });
+        const x = await r.json();
+        return x.aktif ? x : null;
+      });
+      expect(d.key).toBe("ai-tenant-plan");
+      expect((await canli()).aktif).toBe(false);
+      await t.kapat();
+    } finally { delete process.env.SEAT_EDITOR_TENANT; }
+  });
 
   it("her değişiklik canlı görünüme yansıyor", async () => {
     const t = await baglan();

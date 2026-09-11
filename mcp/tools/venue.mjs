@@ -6,6 +6,7 @@ import { nid } from "../../src/core/ids.js";
 import { pitchDims } from "../../src/core/pitches.js";
 
 const metin = (t) => ({ content: [{ type: "text", text: t }] });
+const temizEtiket = (v) => String(v ?? "").replace(/\p{Cf}/gu, "").trim();
 
 /* Şema sözlüğü İngilizce (veritabanı CHECK kısıtı); operatörün panelinde
    Türkçesi görünsün. */
@@ -291,7 +292,12 @@ export function registerVenueTools(server, session, z) {
           + "· spot ışık · smoke sigara · parking otopark · wifi · nursery emzirme · "
           + "lounge oturma alanı · show gösteri"),
     },
-  }, async (a) => metin(session.mutate((plan) => {
+  }, async (a) => {
+    const label = temizEtiket(a.label);
+    if (a.type === "note" && !label) {
+      throw new Error("note için görünür label zorunlu; boşluk veya görünmez karakter kullanma.");
+    }
+    return metin(session.mutate((plan) => {
     if (a.type === "pitch" && !a.sport) throw new Error("pitch için sport zorunlu.");
     if (a.type === "icon" && !a.icon) throw new Error("icon için icon türü zorunlu (bkz. sözlük).");
     /* Çokgen ve ikon kendi ölçüsünü taşır; gerisi w/h ister. */
@@ -311,15 +317,16 @@ export function registerVenueTools(server, session, z) {
         ? { w: pitchDims(a.sport).w, h: pitchDims(a.sport).h }
         : { w: a.w ?? (a.type === "icon" ? 120 : 0), h: a.h ?? (a.type === "icon" ? 120 : 0) }),
       rot: a.rot ?? 0,
-      label: a.label ?? "", capacity: a.capacity ?? 0, fs: a.fs ?? 150,
+      label, capacity: a.capacity ?? 0, fs: a.fs ?? 150,
       ...(cokgen ? { pts: a.points } : {}),
       ...(a.type === "icon" ? { icon: a.icon, size: 30 } : {}),
       ...(a.sport ? { sport: a.sport } : {}),
       ...(a.type === "door" ? { blocks: [] } : {}),
     };
     return { ...plan, shapes: [...(plan.shapes || []), s] };
-  }, `${SEKIL_ADI[a.type] || a.type}${a.icon ? ` (${a.icon})` : ""} kondu`
-     + `${a.label ? `: "${a.label}"` : ""}${cokgenNot(a)}`)));
+    }, `${SEKIL_ADI[a.type] || a.type}${a.icon ? ` (${a.icon})` : ""} kondu`
+       + `${label ? `: "${label}"` : ""}${cokgenNot(a)}`));
+  });
 
   server.registerTool("assign_gate", {
     title: "Kapıya blok ata",
